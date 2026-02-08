@@ -306,7 +306,7 @@
             const shortDesc = `${movie.origin_name} (${movie.year}). Một bộ phim hấp dẫn thuộc thể loại ${movie.category ? movie.category.map(c => c.name).join(', ') : 'Hành động'}.`;
 
             return `
-                <div class="movie-card" onclick="alert('Chức năng chuyển trang xem phim sẽ được cập nhật sau!')">
+                <div class="movie-card" onclick="window.location.href='xemphim.html?slug=${movie.slug}'">
                     <img src="${imgUrl}" alt="${movie.name}" class="movie-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/220x330?text=HopPhim+Error'">
                     
                     <div class="movie-info-hover">
