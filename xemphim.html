@@ -4,215 +4,509 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đang xem phim - HopPhim</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
+    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao với giao diện hiện đại, tốc độ tải phim nhanh và kho phim khổng lồ." />
+    <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
+    <meta property="og:url" content="https://hopphim.netlify.app" />
+    <meta property="og:type" content="article" />
+
+    <link rel="icon" type="image/webp" href="LOGO.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
-            --primary-color: #e50914;
-            --dark-bg: #141414;
-            --darker-bg: #0b0b0b;
-            --light-text: #fff;
-            --gray-text: #b3b3b3;
+            /* Đồng bộ màu với Index */
+            --bg-body: #191b24;
+            --bg-dark: #0f111a;
+            --bg-card: #23252f;
+            --text-main: #ffffff;
+            --text-sub: #a0a0a0;
+            --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62);
+            --primary-color: #FF5E62;
+            --font-main: 'Inter', sans-serif;
+            --card-radius: 8px;
+            --transition: all 0.3s ease-in-out;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Roboto', sans-serif; background-color: var(--dark-bg); color: var(--light-text); }
-        a { text-decoration: none; color: inherit; }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        
+        body { 
+            font-family: var(--font-main); 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            overflow-x: hidden;
+        }
 
-        /* --- HEADER GỌN NHẸ --- */
+/* --- CẬP NHẬT LOGO & CHỮ GRADIENT --- */
+        .logo {
+            display: flex;             /* Xếp ảnh và chữ nằm ngang */
+            align-items: center;       /* Căn giữa theo chiều dọc */
+            gap: 12px;                 /* Khoảng cách giữa ảnh và chữ */
+            cursor: pointer;
+        }
+
+        .logo img { 
+            height: 42px;              /* Giảm xíu cho cân đối với chữ */
+            object-fit: contain; 
+        }
+
+        /* Style cho chữ HOPPHIM */
+        .logo-text {
+            font-size: 1.5rem;         /* Kích thước chữ */
+            font-weight: 900;          /* Chữ đậm */
+            letter-spacing: 1px;       /* Khoảng cách các ký tự */
+            text-transform: uppercase; /* Viết hoa */
+            
+            /* Hiệu ứng Gradient Cam-Hồng */
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            
+            white-space: nowrap;       /* Đảm bảo chữ luôn trên 1 dòng */
+        }
+
+        /* Responsive cho mobile: Giảm size chữ logo xíu nếu cần */
+        @media (max-width: 768px) {
+            .logo img { height: 35px; }
+            .logo-text { font-size: 1.2rem; }
+        }
+
+        /* Utility */
+        .text-gradient {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 4%; }
+
+        /* --- HEADER (Copy từ Index) --- */
         header {
-            padding: 15px 4%; display: flex; align-items: center; justify-content: space-between;
-            background-color: var(--darker-bg); border-bottom: 1px solid #333;
+            position: fixed; top: 0; width: 100%; height: 70px;
+            padding: 0 4%; display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000; background: var(--bg-dark); /* Header trang con để nền tối luôn */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
-        .logo { font-size: 24px; font-weight: 900; color: var(--primary-color); text-transform: uppercase; }
-        .back-btn { display: flex; align-items: center; gap: 5px; font-weight: 500; transition: color 0.3s; }
-        .back-btn:hover { color: var(--primary-color); }
+        .logo img { height: 45px; object-fit: contain; cursor: pointer; }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links li a { color: #ccc; text-decoration: none; font-size: 14px; font-weight: 600; text-transform: uppercase; transition: 0.3s; position: relative; }
+        .nav-links li a:hover { color: #fff; }
+        .nav-links li a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0%; height: 2px; background: var(--gradient-main); transition: 0.3s; }
+        .nav-links li a:hover::after { width: 100%; }
+        .search-box { display: flex; align-items: center; background: #23252f; padding: 8px 16px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.05); }
+        .search-box input { background: transparent; border: none; color: #fff; margin-left: 10px; font-family: var(--font-main); font-size: 14px; width: 150px; }
 
-        /* --- PLAYER SECTION --- */
-        .player-container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 20px auto;
+        /* --- LAYOUT WATCH PAGE --- */
+        .watch-wrapper {
+            display: grid;
+            grid-template-columns: 2.8fr 1.2fr; /* Chia cột 70-30 */
+            gap: 30px;
+            padding-top: 100px; /* Tránh header */
+            padding-bottom: 50px;
+        }
+
+        /* --- PLAYER SECTION (LEFT) --- */
+        .player-box {
             background: #000;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-        }
-
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%; /* Tỉ lệ 16:9 */
-            height: 0;
+            border-radius: var(--card-radius);
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+            position: relative;
         }
-
-        .video-wrapper iframe {
+        .aspect-ratio-16-9 {
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            position: relative;
+        }
+        .aspect-ratio-16-9 iframe {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
         }
 
-        /* --- INFO & EPISODES --- */
-        .movie-detail { max-width: 1200px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-        
-        /* Cột trái: Thông tin */
-        .movie-meta h1 { font-size: 2rem; margin-bottom: 10px; }
-        .movie-meta .sub-info { color: var(--gray-text); font-size: 0.9rem; margin-bottom: 15px; display: flex; gap: 15px; }
-        .movie-desc { line-height: 1.6; color: #ddd; margin-bottom: 20px; font-weight: 300; }
-        .tags span { background: #333; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; margin-right: 5px; color: #bbb;}
-
-        /* Cột phải: Danh sách tập */
-        .server-section { background: var(--darker-bg); padding: 20px; border-radius: 8px; height: fit-content; }
-        .server-title { font-size: 1.1rem; margin-bottom: 15px; border-left: 3px solid var(--primary-color); padding-left: 10px; }
-        .episode-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto; }
-        
-        .ep-btn {
-            background: #333; color: #fff; border: none; padding: 10px 0;
-            cursor: pointer; border-radius: 4px; font-weight: bold; transition: all 0.2s;
+        /* Movie Info Block */
+        .movie-info-block {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: var(--card-radius);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .ep-btn:hover { background: #555; }
-        .ep-btn.active { background: var(--primary-color); color: #fff; pointer-events: none; }
+        
+        .movie-breadcrumbs { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 10px; }
+        .movie-breadcrumbs a { color: var(--text-sub); text-decoration: none; }
+        .movie-breadcrumbs a:hover { color: var(--primary-color); }
 
+        .movie-title-large { font-size: 2rem; font-weight: 800; margin-bottom: 5px; line-height: 1.2; }
+        .movie-origin-name { font-size: 1.1rem; color: var(--text-sub); margin-bottom: 15px; font-weight: 500; }
+
+        .movie-tags { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tag-item { 
+            background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px; 
+            font-size: 0.8rem; font-weight: 600; color: #e0e0e0;
+        }
+        .tag-highlight { background: var(--gradient-main); color: #fff; }
+
+        .movie-description {
+            color: #d1d5db; line-height: 1.6; font-size: 0.95rem;
+            padding: 15px; background: rgba(0,0,0,0.2); border-radius: 6px;
+        }
+
+        /* Episode List */
+        .episode-block {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: var(--card-radius);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .section-header { 
+            font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; 
+            border-left: 4px solid var(--primary-color); padding-left: 10px; color: #fff;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .server-name { font-size: 0.9rem; color: var(--text-sub); font-weight: 400; text-transform: uppercase; }
+
+        .episode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            max-height: 300px; overflow-y: auto;
+            padding-right: 5px;
+        }
+        /* Scrollbar cho list tập */
+        .episode-grid::-webkit-scrollbar { width: 5px; }
+        .episode-grid::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+
+        .ep-btn {
+            background: #191b24; color: #fff; border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 0; text-align: center; border-radius: 6px; cursor: pointer;
+            font-weight: 600; transition: 0.2s;
+        }
+        .ep-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--primary-color); }
+        .ep-btn.active { 
+            background: var(--gradient-main); border-color: transparent; 
+            box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3);
+        }
+
+        /* --- SIDEBAR (RIGHT) - ĐỀ XUẤT --- */
+        .sidebar { position: sticky; top: 90px; height: fit-content; }
+        
+        .sidebar-card {
+            display: flex; gap: 15px; margin-bottom: 15px;
+            padding: 10px; background: var(--bg-card); border-radius: 8px;
+            transition: 0.2s; cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .sidebar-card:hover { 
+            background: #2a2d3a; 
+            border-color: rgba(255, 94, 98, 0.3);
+            transform: translateX(-5px);
+        }
+        
+        .sb-thumb {
+            width: 80px; height: 110px; flex-shrink: 0;
+            border-radius: 6px; overflow: hidden;
+        }
+        .sb-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .sb-info { display: flex; flex-direction: column; justify-content: center; }
+        .sb-title { 
+            font-size: 0.95rem; font-weight: 700; margin-bottom: 5px; 
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            color: #fff;
+        }
+        .sb-meta { font-size: 0.8rem; color: var(--text-sub); }
+        .sb-views { font-size: 0.75rem; color: #FF8F50; margin-top: 5px; display: flex; align-items: center; gap: 5px;}
+
+        /* --- FOOTER (Copy từ Index) --- */
+        footer { 
+            background: var(--bg-dark); padding: 60px 4% 20px; margin-top: 50px; 
+            border-top: 1px solid #23252f; font-size: 0.9rem;
+        }
+        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-bottom: 40px; }
+        .footer-col h3 { font-size: 1.1rem; color: #fff; margin-bottom: 20px; font-weight: 700; }
+        .footer-title-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li a { color: var(--text-sub); text-decoration: none; transition: 0.3s; }
+        .footer-col ul li a:hover { color: var(--primary-color); }
+        .footer-bottom { border-top: 1px solid #23252f; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.8rem; }
+        
         /* Loading */
         .loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--dark-bg); display: flex; justify-content: center; align-items: center;
-            font-size: 1.5rem; color: var(--primary-color); z-index: 9999;
+            position: fixed; inset: 0; background: var(--bg-body); z-index: 2000;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
         }
+        .loader-spinner {
+            width: 50px; height: 50px; border-radius: 50%; border: 3px solid transparent;
+            border-top-color: #FF5E62; border-right-color: #FF8F50;
+            animation: spin 0.8s linear infinite; box-shadow: 0 0 15px rgba(255, 94, 98, 0.5); margin-bottom: 15px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Responsive */
+        @media (max-width: 900px) {
+            .watch-wrapper { grid-template-columns: 1fr; }
+            .sidebar { margin-top: 20px; }
+            .nav-links { display: none; }
+        }
+
+        /* --- FOOTER LOGO STYLE --- */
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px; /* Khoảng cách giữa ảnh và chữ */
+            margin-bottom: 10px;
+        }
+
+        .footer-brand img {
+            height: 50px; /* Logo footer để to hơn header một chút nhìn cho vững */
+            object-fit: contain;
+        }
+
+        /* Responsive: Mobile thì logo nhỏ lại xíu */
         @media (max-width: 768px) {
-            .movie-detail { grid-template-columns: 1fr; }
-            .player-container { margin: 0; }
+            .footer-brand img { height: 40px; }
         }
     </style>
 </head>
 <body>
 
-    <div id="loading" class="loading-screen">
-        <i class="fas fa-spinner fa-spin"></i> &nbsp; Đang tải phim...
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loader-spinner"></div>
+        <div class="text-gradient" style="font-weight: 600;">Đang tải phim...</div>
     </div>
 
-    <header>
-        <div class="logo">HOPPHIM</div>
-        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Quay lại trang chủ</a>
+    <header id="header">
+        <div class="logo" onclick="window.location.href='index.html'">
+            <img src="LOGO.WEBP" alt="HopPhim">
+            <span class="logo-text">HOPPHIM</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Trang chủ</a></li>
+            <li><a href="#">Phim Bộ</a></li>
+            <li><a href="#">Phim Lẻ</a></li>
+            <li><a href="#">Hàn Quốc</a></li>
+            <li><a href="#">Trung Quốc</a></li>
+        </ul>
+        <div class="search-box">
+            <i class="fas fa-search" style="color: #a0a0a0"></i>
+            <input type="text" placeholder="Tìm phim...">
+        </div>
     </header>
 
-    <div class="player-container">
-        <div class="video-wrapper">
-            <iframe id="videoPlayer" src="" allowfullscreen></iframe>
-        </div>
-    </div>
-
-    <div class="movie-detail" id="movieDetail">
-        <div class="left-col">
-            <div class="movie-meta">
-                <h1 id="mName">Tên Phim</h1>
-                <div class="sub-info">
-                    <span id="mYear">2024</span>
-                    <span id="mTime">-- phút</span>
-                    <span style="color: #46d369">HD - Vietsub</span>
+    <div class="container">
+        <div class="watch-wrapper">
+            
+            <div class="main-content">
+                <div class="player-box">
+                    <div class="aspect-ratio-16-9">
+                        <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+                    </div>
                 </div>
-                <div class="tags" id="mCategory">
-                    </div>
-            </div>
-            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-            <h3>Nội dung</h3>
-            <p class="movie-desc" id="mContent">Đang cập nhật nội dung...</p>
-        </div>
 
-        <div class="right-col">
-            <div class="server-section">
-                <h3 class="server-title">Danh sách tập</h3>
-                <div class="episode-list" id="episodeList">
+                <div class="movie-info-block">
+                    <div class="movie-breadcrumbs">
+                        <a href="index.html">Trang chủ</a> / <span id="breadCrumbTitle">Đang xem</span>
+                    </div>
+                    <h1 class="movie-title-large text-gradient" id="mName">Loading...</h1>
+                    <div class="movie-origin-name" id="mOrigin">Loading...</div>
+                    
+                    <div class="movie-tags" id="mTags">
+                        </div>
+
+                    <div class="movie-description" id="mContent">
+                        Đang tải nội dung phim...
+                    </div>
+                </div>
+
+                <div class="episode-block">
+                    <div class="section-header">
+                        <span>Danh sách tập</span>
+                        <span class="server-name"><i class="fas fa-server"></i> Server VIP</span>
+                    </div>
+                    <div class="episode-grid" id="episodeList">
+                        </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="section-header" style="border-left-color: #FF8F50; margin-bottom: 15px;">
+                    <span style="font-size: 1.1rem;">Đề xuất cho bạn</span>
+                </div>
+                <div id="relatedList">
                     </div>
             </div>
+
         </div>
     </div>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="footer-brand">
+                    <img src="logo.webp" alt="HopPhim">
+                    <span class="logo-text">HOPPHIM</span>
+                </div>
+                
+                <p style="color: #a0a0a0; line-height: 1.6; margin-top: 15px;">
+                    Trang xem phim trực tuyến miễn phí chất lượng cao với giao diện hiện đại, tốc độ tải phim nhanh và kho phim khổng lồ.
+                </p>
+            </div>
+            <div class="footer-col">
+                <h3>Danh mục</h3>
+                <ul>
+                    <li><a href="#">Phim Mới Cập Nhật</a></li>
+                    <li><a href="#">Phim Chiếu Rạp</a></li>
+                    <li><a href="#">Phim Bộ Độc Quyền</a></li>
+                    <li><a href="#">TV Shows</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Quốc gia</h3>
+                <ul>
+                    <li><a href="#">Hàn Quốc</a></li>
+                    <li><a href="#">Trung Quốc</a></li>
+                    <li><a href="#">Âu Mỹ</a></li>
+                    <li><a href="#">Thái Lan</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Hỗ trợ</h3>
+                <ul>
+                    <li><a href="#">Hỏi đáp (FAQ)</a></li>
+                    <li><a href="#">Liên hệ quảng cáo</a></li>
+                    <li><a href="#">Chính sách riêng tư</a></li>
+                    <li><a href="#">Khiếu nại bản quyền</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 HopPhim. Design by HopTeam.</p>
+        </div>
+    </footer>
 
     <script>
         // Lấy Slug từ URL
         const urlParams = new URLSearchParams(window.location.search);
         const movieSlug = urlParams.get('slug');
+        const API_BASE = 'https://ophim1.com/v1/api/phim';
+        const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
 
-        const loading = document.getElementById('loading');
-        const videoPlayer = document.getElementById('videoPlayer');
-        const episodeList = document.getElementById('episodeList');
+        // DOM Elements
+        const player = document.getElementById('videoPlayer');
+        const epList = document.getElementById('episodeList');
+        const relatedList = document.getElementById('relatedList');
+        const loadingScreen = document.getElementById('loadingScreen');
 
-        // Hàm gọi API chi tiết
+        // 1. MAIN FUNCTION: LOAD PHIM
         async function loadMovie() {
             if (!movieSlug) {
-                alert("Không tìm thấy phim!");
+                alert('Không tìm thấy phim!');
                 window.location.href = 'index.html';
                 return;
             }
 
             try {
-                // API chi tiết phim của OPhim
-                const response = await fetch(`https://ophim1.com/v1/api/phim/${movieSlug}`);
-                const data = await response.json();
+                const res = await fetch(`${API_BASE}/${movieSlug}`);
+                const data = await res.json();
 
                 if (data.status) {
-                    renderMovieInfo(data.data);
+                    renderInfo(data.data.item);
+                    renderEpisodes(data.data.item.episodes);
+                    loadRelated(data.data.item.category?.[0]?.slug); // Load đề xuất cùng thể loại
                 } else {
-                    alert("Phim đang bị lỗi hoặc không tồn tại.");
+                    alert('Lỗi tải phim');
                 }
-            } catch (error) {
-                console.error(error);
-                alert("Lỗi kết nối server.");
+            } catch (e) {
+                console.error(e);
             } finally {
-                loading.style.display = 'none';
+                loadingScreen.style.display = 'none';
             }
         }
 
-        // Render Thông tin & Tập
-        function renderMovieInfo(movie) {
-            // 1. Điền thông tin cơ bản
-            document.title = `Xem phim ${movie.item.name} - HopPhim`;
-            document.getElementById('mName').innerText = `${movie.item.name} (${movie.item.origin_name})`;
-            document.getElementById('mYear').innerText = movie.item.year;
-            document.getElementById('mTime').innerText = movie.item.time;
-            document.getElementById('mContent').innerHTML = movie.item.content; // OPhim trả về HTML trong content
+        // 2. RENDER THÔNG TIN
+        function renderInfo(movie) {
+            document.title = `Xem phim ${movie.name} - HopPhim`;
+            document.getElementById('breadCrumbTitle').innerText = movie.name;
+            document.getElementById('mName').innerText = movie.name;
+            document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
+            document.getElementById('mContent').innerHTML = movie.content;
 
-            // Render thể loại
-            const cats = movie.item.category.map(c => `<span>${c.name}</span>`).join('');
-            document.getElementById('mCategory').innerHTML = cats;
-
-            // 2. Xử lý tập phim (Quan trọng nhất)
-            const episodes = movie.item.episodes[0].server_data; // Lấy server đầu tiên
-            
-            // Mặc định phát tập 1 (hoặc tập mới nhất tùy logic, ở đây lấy tập đầu)
-            if (episodes.length > 0) {
-                playEpisode(episodes[0].link_embed, 0); // Phát tập đầu tiên
+            // Render Tags
+            let tagsHtml = `<span class="tag-item tag-highlight">${movie.quality}</span>`;
+            tagsHtml += `<span class="tag-item">${movie.lang}</span>`;
+            tagsHtml += `<span class="tag-item">${movie.time}</span>`;
+            if (movie.category) {
+                movie.category.forEach(cat => {
+                    tagsHtml += `<span class="tag-item">${cat.name}</span>`;
+                });
             }
+            document.getElementById('mTags').innerHTML = tagsHtml;
+        }
 
-            // Render danh sách nút
-            let buttonsHtml = '';
-            episodes.forEach((ep, index) => {
-                buttonsHtml += `<button class="ep-btn" id="btn-ep-${index}" onclick="playEpisode('${ep.link_embed}', ${index})">${ep.name}</button>`;
+        // 3. RENDER TẬP PHIM
+        function renderEpisodes(episodes) {
+            if (!episodes || episodes.length === 0) return;
+            const serverData = episodes[0].server_data; // Lấy server đầu tiên
+            
+            let html = '';
+            serverData.forEach((ep, index) => {
+                // Mặc định chọn tập 1
+                if (index === 0) player.src = ep.link_embed;
+                
+                html += `<div class="ep-btn ${index === 0 ? 'active' : ''}" onclick="changeEp('${ep.link_embed}', this)">${ep.name}</div>`;
             });
-            episodeList.innerHTML = buttonsHtml;
-            
-            // Active nút đầu tiên
-            if(episodes.length > 0) document.getElementById('btn-ep-0').classList.add('active');
+            epList.innerHTML = html;
         }
 
-        // Hàm chuyển tập
-        function playEpisode(link, index) {
-            // Đổi link iframe
-            videoPlayer.src = link;
+        // Hàm đổi tập
+        window.changeEp = function(link, btn) {
+            player.src = link;
+            document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn lên player
+        }
 
-            // Cập nhật giao diện nút Active
-            const allBtns = document.querySelectorAll('.ep-btn');
-            allBtns.forEach(btn => btn.classList.remove('active'));
-            
-            const activeBtn = document.getElementById(`btn-ep-${index}`);
-            if(activeBtn) activeBtn.classList.add('active');
-
-            // Scroll lên player (trên mobile cho tiện)
-            if(window.innerWidth < 768) {
-                window.scrollTo({top: 0, behavior: 'smooth'});
+        // 4. LOAD ĐỀ XUẤT (Giả lập lấy list mới nhất hoặc theo category)
+        async function loadRelated(catSlug) {
+            // Demo lấy danh sách phim lẻ mới nhất để làm đề xuất
+            try {
+                const res = await fetch(`https://ophim1.com/v1/api/danh-sach/phim-le?page=1`);
+                const data = await res.json();
+                
+                if (data?.data?.items) {
+                    // Lấy 5 phim đầu tiên làm đề xuất
+                    const list = data.data.items.slice(0, 5); 
+                    let html = '';
+                    list.forEach(m => {
+                        const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+                        html += `
+                            <div class="sidebar-card" onclick="window.location.href='xemphim.html?slug=${m.slug}'">
+                                <div class="sb-thumb">
+                                    <img src="${img}" alt="${m.name}">
+                                </div>
+                                <div class="sb-info">
+                                    <div class="sb-title">${m.name}</div>
+                                    <div class="sb-meta">${m.origin_name}</div>
+                                    <div class="sb-views"><i class="fas fa-eye"></i> ${Math.floor(Math.random() * 10000)} lượt xem</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    relatedList.innerHTML = html;
+                }
+            } catch (e) {
+                relatedList.innerHTML = '<div style="color:#aaa">Không có đề xuất</div>';
             }
         }
 
-        // Chạy ngay đi
+        // Chạy
         loadMovie();
+
     </script>
 </body>
 </html>

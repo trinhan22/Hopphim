@@ -3,242 +3,469 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HopPhim - Xem Phim Thả Ga Style Netflix</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>HopPhim - Phim Hay Trong Tầm Tay</title>
+    <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
+    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao với giao diện hiện đại, tốc độ tải phim nhanh và kho phim khổng lồ." />
+    <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
+    <meta property="og:url" content="https://hopphim.netlify.app" />
+    <meta property="og:type" content="article" />
+
+    <link rel="icon" type="image/webp" href="LOGO.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary-color: #e50914;
-            --dark-bg: #141414;
-            --darker-bg: #0b0b0b;
-            --light-text: #fff;
-            --gray-text: #b3b3b3;
-            --card-width: 220px; /* Card to hơn xíu cho đẹp */
-            --card-height: 330px;
+            /* --- COLOR PALETTE MỚI --- */
+            --bg-body: #191b24;       /* Nền Body */
+            --bg-dark: #0f111a;       /* Nền Header/Footer */
+            --text-main: #ffffff;
+            --text-sub: #a0a0a0;
+            
+            /* Gradient Text theo yêu cầu */
+            --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62);
+            --primary-color: #FF5E62; /* Màu đơn sắc dự phòng */
+            
+            --font-main: 'Inter', sans-serif;
+            --card-radius: 8px;
+            --transition: all 0.3s ease-in-out;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; scrollbar-width: thin; scrollbar-color: var(--primary-color) var(--darker-bg);}
-        body { font-family: 'Roboto', sans-serif; background-color: var(--dark-bg); color: var(--light-text); overflow-x: hidden; }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         
-        /* Custom Scrollbar cho đẹp */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--darker-bg); }
-        ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 10px; }
+        body { 
+            font-family: var(--font-main); 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            overflow-x: hidden;
+        }
 
-        /* --- HEADER & NAV --- */
+        /* Utility Class cho chữ Gradient */
+        .text-gradient {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        /* --- HEADER --- */
         header {
-            position: fixed; top: 0; width: 100%; padding: 15px 4%; display: flex;
-            justify-content: space-between; align-items: center; z-index: 1000;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
-            transition: background-color 0.4s;
+            position: fixed; top: 0; width: 100%; height: 70px;
+            padding: 0 4%;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000;
+            background: transparent;
+            transition: var(--transition);
         }
-        header.scrolled { background-color: var(--darker-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        
-        .logo img {
-            height: 40px; /* Chỗ để logo ảnh của ông */
-            /* Ví dụ: content: url('path/to/your/logo.png'); */
+        /* Khi scroll thì hiện nền #0f111a */
+        header.scrolled {
+            background: var(--bg-dark);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
-        /* Tạm thời tôi dùng text demo, ông có ảnh thì xóa dòng dưới và dùng thẻ img bên trên */
-        .logo-text-demo { font-size: 30px; font-weight: 900; color: var(--primary-color); text-transform: uppercase; letter-spacing: 2px;}
 
-        .nav-links { display: flex; gap: 25px; list-style: none; align-items: center;}
-        .nav-links li a { color: var(--light-text); text-decoration: none; font-size: 15px; font-weight: 500; transition: color 0.3s; }
-        .nav-links li a:hover { color: var(--gray-text); }
-        .search-box { display: flex; align-items: center; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 4px; }
-        .search-box input { background: transparent; border: none; color: #fff; outline: none; width: 220px; margin-left: 10px; font-size: 14px;}
+/* --- CẬP NHẬT LOGO & CHỮ GRADIENT --- */
+        .logo {
+            display: flex;             /* Xếp ảnh và chữ nằm ngang */
+            align-items: center;       /* Căn giữa theo chiều dọc */
+            gap: 12px;                 /* Khoảng cách giữa ảnh và chữ */
+            cursor: pointer;
+        }
 
-        /* --- HERO SECTION (WELCOME STYLE) --- */
+        .logo img { 
+            height: 42px;              /* Giảm xíu cho cân đối với chữ */
+            object-fit: contain; 
+        }
+
+        /* Style cho chữ HOPPHIM */
+        .logo-text {
+            font-size: 1.5rem;         /* Kích thước chữ */
+            font-weight: 900;          /* Chữ đậm */
+            letter-spacing: 1px;       /* Khoảng cách các ký tự */
+            text-transform: uppercase; /* Viết hoa */
+            
+            /* Hiệu ứng Gradient Cam-Hồng */
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            
+            white-space: nowrap;       /* Đảm bảo chữ luôn trên 1 dòng */
+        }
+
+        /* Responsive cho mobile: Giảm size chữ logo xíu nếu cần */
+        @media (max-width: 768px) {
+            .logo img { height: 35px; }
+            .logo-text { font-size: 1.2rem; }
+        }
+
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links li a { 
+            color: #ccc; text-decoration: none; font-size: 14px; font-weight: 600; 
+            text-transform: uppercase; transition: 0.3s; position: relative;
+        }
+        .nav-links li a:hover { color: #fff; }
+        /* Gạch chân gradient khi hover menu */
+        .nav-links li a::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 0%; height: 2px;
+            background: var(--gradient-main); transition: 0.3s;
+        }
+        .nav-links li a:hover::after { width: 100%; }
+
+        .search-box { 
+            display: flex; align-items: center; 
+            background: #23252f; 
+            padding: 8px 16px; border-radius: 50px; 
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .search-box input { 
+            background: transparent; border: none; color: #fff; 
+            margin-left: 10px; font-family: var(--font-main); font-size: 14px; width: 150px;
+        }
+
+        /* --- HERO --- */
+/* --- HERO (ĐÃ FIX LỖI ÁM ĐEN TEXT) --- */
         .hero {
-            height: 85vh; background-size: cover; background-position: center; position: relative;
-            display: flex; align-items: center; justify-content: center; text-align: center;
-            margin-bottom: -100px; /* Kéo nội dung lên đè lên hero một chút */
+            height: 75vh; 
+            display: flex; align-items: center; justify-content: center;
+            position: relative; 
+            margin-bottom: 20px;
+            
+            /* Lớp phủ đen mờ 50% (rgba 0,0,0,0.5) đè lên ảnh để làm nổi chữ */
+            /* Nhớ thay đường dẫn ảnh của ông vào đây */
+            background-image: url('home-background.jpg');
+            
+            background-size: cover; 
+            background-position: center center;
+            background-repeat: no-repeat;
         }
+
+        /* Lớp Gradient đen ở chân (giữ nguyên để hòa vào nội dung dưới) */
         .hero::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, var(--dark-bg) 100%);
+            content: ''; 
+            position: absolute; 
+            bottom: 0; left: 0; 
+            width: 100%; 
+            height: 200px; /* Chiều cao vùng chuyển màu */
+            background: linear-gradient(to bottom, transparent 0%, #191b24 100%);
+            z-index: 1; 
+            pointer-events: none;
         }
-        .hero-content { z-index: 10; max-width: 800px; padding: 20px; }
-        .hero-title { font-size: 3.5rem; margin-bottom: 20px; font-weight: 900; text-shadow: 3px 3px 6px rgba(0,0,0,0.8); }
-        .hero-desc { font-size: 1.3rem; font-weight: 300; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
 
-        /* --- MOVIE LISTS & SLIDER CONTROLS --- */
-        main { position: relative; z-index: 20; padding-top: 20px; background: linear-gradient(to bottom, transparent, var(--dark-bg) 15%);}
-        .category-section { padding: 25px 4%; position: relative; }
+        .hero-content { 
+            z-index: 10; 
+            text-align: center; max-width: 900px; padding: 20px; 
+            animation: fadeUp 1s ease-out;
+        }
+
+        .hero-title { 
+            font-size: 4rem; font-weight: 900; margin-bottom: 15px; letter-spacing: -2px;
+            
+            /* Gradient Text Sạch (Không bóng) */
+            background: var(--gradient-main); 
+            -webkit-background-clip: text; 
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            /* QUAN TRỌNG: Đã xóa toàn bộ text-shadow và filter drop-shadow */
+            /* Giúp màu cam-hồng giữ nguyên độ tươi, không bị ám đen */
+        }
+
+        .hero-desc { 
+            font-size: 1.2rem; color: #e2e8f0; font-weight: 500; 
+            max-width: 700px; margin: 0 auto;
+            /* Vẫn giữ bóng nhẹ cho text mô tả màu trắng này thì ok */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- CATEGORY SECTION --- */
+        main { position: relative; z-index: 20; padding-bottom: 50px; }
+        .category-section { padding: 0 4% 50px; }
         
-        .category-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 15px; }
-        .category-title { font-size: 1.5rem; font-weight: 700; color: #e5e5e5; }
-        .see-all-link { color: var(--gray-text); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: color 0.3s; cursor: pointer; display: flex; align-items: center;}
-        .see-all-link:hover { color: var(--light-text); }
-        .see-all-link i { margin-left: 5px; font-size: 0.8rem;}
+        .category-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-left: 4px solid var(--primary-color); padding-left: 15px; }
+        /* Tiêu đề danh mục gradient */
+        .category-title { font-size: 1.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; }
+        
+        .see-all-link { 
+            color: var(--text-sub); font-size: 0.9rem; cursor: pointer; font-weight: 600; 
+            display: flex; align-items: center; gap: 5px; transition: 0.3s;
+        }
+        .see-all-link:hover { color: var(--primary-color); }
 
-        .slider-container { position: relative; group: hover .slider-arrow { opacity: 1; } }
-        .movie-row { display: flex; overflow-x: scroll; overflow-y: hidden; gap: 10px; padding: 20px 0; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; }
+        .slider-container { position: relative; }
+        .movie-row { 
+            display: flex; gap: 15px; overflow-x: auto; scroll-behavior: smooth; 
+            padding-bottom: 10px; scrollbar-width: none;
+        }
         .movie-row::-webkit-scrollbar { display: none; }
-
-        /* Nút mũi tên trái phải */
+        
         .slider-arrow {
-            position: absolute; top: 50%; transform: translateY(-50%); z-index: 90;
-            background: rgba(0,0,0,0.5); color: #fff; border: none; width: 50px; height: 100%;
-            font-size: 2rem; cursor: pointer; opacity: 0; transition: opacity 0.3s, background 0.3s;
+            position: absolute; top: 50%; transform: translateY(-50%); z-index: 50;
+            width: 45px; height: 45px; border-radius: 50%;
+            background: rgba(15,17,26, 0.8); color: #fff; border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer; opacity: 0; transition: 0.3s;
             display: flex; align-items: center; justify-content: center;
         }
         .slider-container:hover .slider-arrow { opacity: 1; }
-        .slider-arrow:hover { background: rgba(0,0,0,0.8); color: var(--primary-color); }
-        .arrow-left { left: -4%; border-top-right-radius: 4px; border-bottom-right-radius: 4px;}
-        .arrow-right { right: -4%; border-top-left-radius: 4px; border-bottom-left-radius: 4px;}
+        .slider-arrow:hover { background: var(--primary-color); border-color: var(--primary-color); }
+        .arrow-left { left: -20px; }
+        .arrow-right { right: -20px; }
 
-
-        /* --- MOVIE CARD V2 (NETFLIX HOVER STYLE) --- */
+        /* --- CARD STYLE: SLIDE UP (TRỒI LÊN) --- */
         .movie-card {
-            flex: 0 0 var(--card-width); position: relative; height: var(--card-height);
-            border-radius: 6px; overflow: hidden; cursor: pointer; transition: all 0.3s ease-in-out;
-            border: 1px solid transparent;
-        }
-        .movie-poster { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s, filter 0.4s; }
-        
-        /* Khi hover vào card */
-        .movie-card:hover {
-            transform: scale(1.05); /* Phóng to nhẹ */
-            z-index: 99;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            border-color: rgba(255,255,255,0.1);
-        }
-        .movie-card:hover .movie-poster {
-            filter: brightness(0.4) blur(2px); /* Làm tối và mờ ảnh nền */
+            flex: 0 0 200px; height: 300px; 
+            position: relative; 
+            border-radius: var(--card-radius);
+            overflow: hidden; /* Quan trọng để che phần thừa */
+            cursor: pointer; 
+            background: #23252f;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
         }
 
-        /* Phần thông tin trồi lên khi hover */
-        .movie-info-hover {
-            position: absolute; bottom: 0; left: 0; width: 100%;
+        .movie-poster { 
+            width: 100%; height: 100%; object-fit: cover; 
+            transition: transform 0.5s ease;
+        }
+
+        /* Lớp phủ đen để chữ dễ đọc */
+        .card-overlay-gradient {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+            opacity: 0.9; z-index: 2; pointer-events: none;
+        }
+
+        /* Container thông tin: Mặc định nằm thấp xuống */
+        .movie-info-slideup {
+            position: absolute; 
+            bottom: 0; left: 0; width: 100%;
             padding: 15px;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 40%, transparent);
-            opacity: 0; transform: translateY(20px); transition: all 0.4s ease-in-out;
-            display: flex; flex-direction: column; gap: 8px;
-        }
-        .movie-card:hover .movie-info-hover {
-            opacity: 1; transform: translateY(0); bottom: 10px;
+            z-index: 5;
+            transform: translateY(65px); /* Đẩy xuống để ẩn nút, chỉ hiện tên */
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1); /* Easing mượt */
         }
 
-        .hover-btns { display: flex; gap: 10px; margin-bottom: 5px; }
-        .h-btn {
-            width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5);
-            display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5);
-            color: #fff; transition: all 0.2s; font-size: 0.9rem;
-        }
-        .h-btn-play { background: #fff; color: #000; border: none; }
-        .h-btn:hover { transform: scale(1.1); border-color: #fff; }
-        .h-btn-play:hover { background: var(--primary-color); color: #fff;}
-
-        .movie-name-hover { font-size: 1rem; font-weight: 700; margin-bottom: 5px; }
-        .movie-meta-hover { font-size: 0.8rem; display: flex; gap: 10px; color: #46d369; font-weight: 600; align-items: center;}
-        .quality-tag { border: 1px solid rgba(255,255,255,0.4); padding: 1px 5px; color: #fff; font-size: 0.7rem; border-radius: 3px; }
+        /* --- HIỆU ỨNG HOVER --- */
+        .movie-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(255, 94, 98, 0.15); }
+        .movie-card:hover .movie-poster { transform: scale(1.1); filter: brightness(0.6); }
         
-        /* Mô tả ngắn trong hover */
-        .movie-desc-hover {
-            font-size: 0.8rem; color: #ddd; line-height: 1.4;
-            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; /* Giới hạn 3 dòng */
-            margin-top: 5px; font-weight: 300;
-        }
+        /* Khi hover, thông tin trồi lên (về vị trí 0) */
+        .movie-card:hover .movie-info-slideup { transform: translateY(0); }
 
-
-        /* --- MODAL POPUP (XEM TẤT CẢ) --- */
-        .modal {
-            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.9); overflow-y: auto; padding: 50px 4%; opacity: 0; transition: opacity 0.3s;
+        /* Nội dung bên trong Card */
+        .movie-name { 
+            font-size: 1rem; font-weight: 700; color: #fff; 
+            margin-bottom: 5px; line-height: 1.3;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
-        .modal.active { display: block; opacity: 1;}
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; position: sticky; top: 0; background: var(--dark-bg); padding: 20px 0; z-index: 2001;}
-        .modal-title { font-size: 2rem; }
-        .close-modal { font-size: 2.5rem; color: var(--gray-text); cursor: pointer; transition: color 0.2s;}
-        .close-modal:hover { color: var(--primary-color); }
         
-        /* Grid Layout cho Modal */
-        .modal-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px 15px;
+        .movie-meta {
+            font-size: 0.75rem; color: #cbd5e1; 
+            display: flex; gap: 8px; align-items: center; margin-bottom: 15px;
+            font-weight: 500;
         }
-        .modal-grid .movie-card { width: 100%; height: 280px; } /* Card trong modal nhỏ hơn xíu */
+        .quality-badge { 
+            background: var(--gradient-main); color: #fff; 
+            padding: 1px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700;
+        }
 
+        /* Nút hành động trong Card */
+        .card-actions {
+            display: flex; gap: 10px;
+            opacity: 0; transition: opacity 0.3s ease 0.1s; /* Hiện chậm 1 xíu */
+        }
+        .movie-card:hover .card-actions { opacity: 1; }
 
-        /* --- FOOTER --- */
-        footer { background: var(--darker-bg); padding: 50px 4% 20px; margin-top: 50px; color: var(--gray-text); font-size: 0.9rem;}
-        .footer-content { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-bottom: 30px;}
-        .footer-col h3 { color: #fff; margin-bottom: 15px; font-size: 1.1rem; }
+        .btn-action {
+            flex: 1; padding: 8px; border: none; border-radius: 6px;
+            font-size: 0.8rem; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+        .btn-play { background: #fff; color: #000; }
+        .btn-play:hover { background: var(--gradient-main); color: #fff; }
+        .btn-list { background: rgba(255,255,255,0.1); color: #fff; backdrop-filter: blur(4px); }
+        .btn-list:hover { background: rgba(255,255,255,0.3); }
+
+        /* --- FOOTER (FULL INFO) --- */
+        footer { 
+            background: var(--bg-dark); 
+            padding: 60px 4% 20px; 
+            margin-top: 80px; 
+            border-top: 1px solid #23252f;
+            font-size: 0.9rem;
+        }
+        .footer-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px;
+            margin-bottom: 40px;
+        }
+        .footer-col h3 { 
+            font-size: 1.1rem; color: #fff; margin-bottom: 20px; font-weight: 700;
+        }
+        /* Tô màu gradient cho tiêu đề footer */
+        .footer-title-gradient {
+            background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
         .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 10px; }
-        .footer-col ul li a { color: var(--gray-text); text-decoration: none; }
-        .footer-col ul li a:hover { text-decoration: underline; }
-        .copyright { text-align: center; border-top: 1px solid #333; padding-top: 20px; font-size: 0.8rem;}
-        .social-icons a { color: #fff; margin-right: 15px; font-size: 1.2rem; transition: color 0.3s;}
-        .social-icons a:hover { color: var(--primary-color); }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li a { color: var(--text-sub); text-decoration: none; transition: 0.3s; }
+        .footer-col ul li a:hover { color: var(--primary-color); padding-left: 5px; }
 
-        .loading { text-align: center; padding: 50px; color: var(--primary-color); font-size: 1.2rem;}
+        .footer-bottom {
+            border-top: 1px solid #23252f; padding-top: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            color: #64748b; font-size: 0.8rem;
+        }
+        .social-icons a { 
+            color: #fff; background: #23252f; 
+            width: 35px; height: 35px; border-radius: 50%; 
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-left: 10px; transition: 0.3s;
+        }
+        .social-icons a:hover { background: var(--gradient-main); transform: translateY(-3px); }
 
-        /* Responsive cơ bản */
+        /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
             .hero-title { font-size: 2.5rem; }
-            .nav-links { display: none; } /* Tạm ẩn menu trên mobile cho gọn */
-            .footer-content { grid-template-columns: 1fr 1fr; }
-            .slider-arrow { display: none !important; } /* Ẩn nút mũi tên trên mobile, dùng cảm ứng */
+            .nav-links { display: none; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+            .movie-info-slideup { transform: translateY(0); } /* Mobile hiện luôn nút */
+            .card-actions { opacity: 1; }
+        }
+
+        /* Modal & Loading */
+        .modal { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(15, 17, 26, 0.95); padding: 40px; overflow-y: auto; }
+        .modal.active { display: block; }
+        .modal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .modal-grid .movie-card { width: 100%; height: 280px; }
+        .loading { text-align: center; padding: 50px; color: var(--primary-color); }
+
+        /* --- LOADING XỊN (GRADIENT SPINNER) --- */
+        .loading-container {
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 300px; /* Chiều cao vùng loading */
+            width: 100%;
+        }
+
+        .loader-spinner {
+            width: 50px; 
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            /* Tạo viền gradient xoay */
+            border-top-color: #FF5E62; 
+            border-right-color: #FF8F50;
+            
+            /* Hiệu ứng xoay và phát sáng (Glow) */
+            animation: spin 0.8s linear infinite;
+            box-shadow: 0 0 15px rgba(255, 94, 98, 0.5); 
+            margin-bottom: 15px;
+        }
+
+        .loading-text-pro {
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            /* Chữ Gradient đập đập (Pulse) */
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulseText 1.5s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.98); }
+        }
+
+        /* --- FOOTER LOGO STYLE --- */
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px; /* Khoảng cách giữa ảnh và chữ */
+            margin-bottom: 10px;
+        }
+
+        .footer-brand img {
+            height: 50px; /* Logo footer để to hơn header một chút nhìn cho vững */
+            object-fit: contain;
+        }
+
+        /* Responsive: Mobile thì logo nhỏ lại xíu */
+        @media (max-width: 768px) {
+            .footer-brand img { height: 40px; }
         }
     </style>
 </head>
 <body>
 
     <header id="header">
-        <div class="logo">
-            <span class="logo-text-demo">HOPPHIM</span>
+        <div class="logo" onclick="loadHome()">
+            <img src="LOGO.WEBP" alt="HopPhim">
+            <span class="logo-text">HOPPHIM</span>
         </div>
         <ul class="nav-links">
             <li><a href="#" onclick="loadHome()">Trang chủ</a></li>
             <li><a href="#" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ</a></li>
             <li><a href="#" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Lẻ</a></li>
-            <li><a href="#" onclick="loadCountry('han-quoc', 'Phim Hàn Quốc')">Hàn Quốc</a></li>
-            <li><a href="#" onclick="loadCountry('trung-quoc', 'Phim Trung Quốc')">Trung Quốc</a></li>
-            <li><a href="#" onclick="loadCategory('hoat-hinh', 'Anime')">Anime</a></li>
+            <li><a href="#" onclick="loadCountry('han-quoc', 'Hàn Quốc')">Hàn Quốc</a></li>
+            <li><a href="#" onclick="loadCountry('trung-quoc', 'Trung Quốc')">Trung Quốc</a></li>
         </ul>
         <div class="search-box">
-            <i class="fas fa-search" style="color: var(--gray-text)"></i>
-            <input type="text" id="searchInput" placeholder="Tìm kiếm phim, diễn viên...">
+            <i class="fas fa-search" style="color: #a0a0a0"></i>
+            <input type="text" id="searchInput" placeholder="Tìm phim...">
         </div>
     </header>
 
     <section id="hero" class="hero">
         <div class="hero-content">
-            <h1 class="hero-title">Chào mừng bạn đến với HopPhim</h1>
-            <p class="hero-desc">Khám phá hàng ngàn bộ phim bom tấn, phim bộ độc quyền và Anime hấp dẫn. Cập nhật liên tục, xem miễn phí chất lượng cao.</p>
+            <h1 class="hero-title">HopPhim - Phim Hay<br>Trong Tầm Tay</h1>
+            <p class="hero-desc">Kho phim miễn phí chất lượng cao, cập nhật liên tục 24/7. Trải nghiệm điện ảnh đỉnh cao ngay tại nhà.</p>
         </div>
     </section>
 
-    <main id="main-content">
-        </main>
+    <main id="main-content"></main>
 
     <div id="modalPopup" class="modal">
-        <div class="modal-header">
-            <h2 id="modalTitle" class="modal-title">Danh sách phim</h2>
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-        </div>
-        <div id="modalContent" class="modal-grid">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px; color:#fff;">
+                <h2 id="modalTitle" class="text-gradient" style="font-size: 2rem; font-weight:800">Danh sách</h2>
+                <span onclick="closeModal()" style="font-size:2rem; cursor:pointer;">&times;</span>
             </div>
+            <div id="modalContent" class="modal-grid"></div>
+        </div>
     </div>
 
     <footer>
-        <div class="footer-content">
+        <div class="footer-grid">
             <div class="footer-col">
-                <h3>HopPhim</h3>
-                <p>Trải nghiệm xem phim đỉnh cao, giao diện hiện đại, tốc độ nhanh chóng.</p>
-                <div class="social-icons" style="margin-top: 15px;">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
+                <div class="footer-brand">
+                    <img src="logo.webp" alt="HopPhim">
+                    <span class="logo-text">HOPPHIM</span>
                 </div>
+                
+                <p style="color: #a0a0a0; line-height: 1.6; margin-top: 15px;">
+                    Trang xem phim trực tuyến miễn phí chất lượng cao với giao diện hiện đại, tốc độ tải phim nhanh và kho phim khổng lồ.
+                </p>
             </div>
             <div class="footer-col">
                 <h3>Danh mục</h3>
                 <ul>
-                    <li><a href="#">Phim Mới</a></li>
+                    <li><a href="#">Phim Mới Cập Nhật</a></li>
                     <li><a href="#">Phim Chiếu Rạp</a></li>
-                    <li><a href="#">Phim Bộ Đang Chiếu</a></li>
+                    <li><a href="#">Phim Bộ Độc Quyền</a></li>
                     <li><a href="#">TV Shows</a></li>
                 </ul>
             </div>
@@ -248,244 +475,157 @@
                     <li><a href="#">Hàn Quốc</a></li>
                     <li><a href="#">Trung Quốc</a></li>
                     <li><a href="#">Âu Mỹ</a></li>
-                    <li><a href="#">Nhật Bản</a></li>
+                    <li><a href="#">Thái Lan</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>Hỗ trợ</h3>
                 <ul>
                     <li><a href="#">Hỏi đáp (FAQ)</a></li>
-                    <li><a href="#">Liên hệ</a></li>
+                    <li><a href="#">Liên hệ quảng cáo</a></li>
                     <li><a href="#">Chính sách riêng tư</a></li>
-                    <li><a href="#">Điều khoản sử dụng</a></li>
+                    <li><a href="#">Khiếu nại bản quyền</a></li>
                 </ul>
             </div>
         </div>
-        <div class="copyright">
-            <p>&copy; 2024 HopPhim. Design by a Pro Developer for my graphic designer friend.</p>
+        <div class="footer-bottom">
+            <p>&copy; 2026 HopPhim. Design by HopTeam.</p>
         </div>
     </footer>
 
     <script>
-        // --- CẤU HÌNH API ---
         const API_BASE = 'https://ophim1.com/v1/api';
         const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
 
-        // --- DOM Elements ---
         const heroSection = document.getElementById('hero');
         const mainContent = document.getElementById('main-content');
-        const searchInput = document.getElementById('searchInput');
         const header = document.getElementById('header');
         const modalPopup = document.getElementById('modalPopup');
-        const modalContent = document.getElementById('modalContent');
-        const modalTitle = document.getElementById('modalTitle');
 
-        // --- UTILS ---
-        // Hiệu ứng scroll header
-        window.addEventListener('scroll', () => {
-            header.classList.toggle('scrolled', window.scrollY > 50);
-        });
+        window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 20));
 
-        // Hàm gọi API chung
         async function fetchAPI(endpoint) {
-            try {
-                const response = await fetch(`${API_BASE}${endpoint}`);
-                if (!response.ok) throw new Error('Network response was not ok');
-                return await response.json();
-            } catch (error) {
-                console.error("Lỗi API:", error);
-                return null;
-            }
+            try { return await (await fetch(API_BASE + endpoint)).json(); } catch { return null; }
         }
 
-        // Tạo HTML cho 1 Movie Card (Dùng chung cho Slider và Modal)
+        // --- TẠO CARD VỚI HIỆU ỨNG TRỒI LÊN (SLIDE UP) ---
         function createCardHTML(movie) {
-             // Xử lý ảnh fallback nếu lỗi
             const imgUrl = movie.thumb_url.startsWith('http') ? movie.thumb_url : `${IMG_BASE}${movie.thumb_url}`;
-            // Giả lập mô tả ngắn vì API list không trả về content chi tiết, ta lấy tạm tên gốc + năm
-            const shortDesc = `${movie.origin_name} (${movie.year}). Một bộ phim hấp dẫn thuộc thể loại ${movie.category ? movie.category.map(c => c.name).join(', ') : 'Hành động'}.`;
+            const playLink = `xemphim.html?slug=${movie.slug}`;
 
             return `
-                <div class="movie-card" onclick="window.location.href='xemphim.html?slug=${movie.slug}'">
-                    <img src="${imgUrl}" alt="${movie.name}" class="movie-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/220x330?text=HopPhim+Error'">
+                <div class="movie-card" onclick="window.location.href='${playLink}'">
+                    <img src="${imgUrl}" alt="${movie.name}" class="movie-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/200x300?text=No+Img'">
                     
-                    <div class="movie-info-hover">
-                        <div class="hover-btns">
-                             <button class="h-btn h-btn-play"><i class="fas fa-play"></i></button>
-                             <button class="h-btn"><i class="fas fa-plus"></i></button>
-                             <button class="h-btn" style="margin-left: auto;"><i class="fas fa-chevron-down"></i></button>
-                        </div>
-                        <div class="movie-name-hover">${movie.name}</div>
-                         <div class="movie-meta-hover">
-                            <span style="color: #46d369;">98% Match</span>
-                            <span class="quality-tag">${movie.quality || 'HD'}</span>
+                    <div class="card-overlay-gradient"></div>
+
+                    <div class="movie-info-slideup">
+                        <div class="movie-name">${movie.name}</div>
+                        
+                        <div class="movie-meta">
+                            <span class="quality-badge">${movie.quality || 'HD'}</span>
                             <span>${movie.year}</span>
+                            <span style="color: #FF5E62; font-size: 0.7rem;">●</span>
+                            <span>${movie.lang || 'Vietsub'}</span>
                         </div>
-                         <div class="movie-desc-hover">${shortDesc}</div>
+
+                        <div class="card-actions">
+                            <button class="btn-action btn-play"><i class="fas fa-play"></i> Xem ngay</button>
+                            <button class="btn-action btn-list"><i class="fas fa-plus"></i></button>
+                        </div>
                     </div>
                 </div>
             `;
         }
 
-        // --- RENDER FUNCTIONS ---
-
-        // 1. Load Hero Background Image (Lấy phim mới nhất làm nền)
         async function loadHeroBg() {
             const data = await fetchAPI('/home');
             if (data?.data?.items?.[0]) {
-                 // Ưu tiên poster_url cho ảnh to, nếu không có thì dùng thumb
-                const bgUrl = data.data.items[0].poster_url.startsWith('http') ? data.data.items[0].poster_url : `${IMG_BASE}${data.data.items[0].poster_url}`;
-                heroSection.style.backgroundImage = `url('${bgUrl}')`;
+                const bg = data.data.items[0].poster_url;
+                heroSection.style.setProperty('--hero-bg', `url('${bg.startsWith('http') ? bg : IMG_BASE + bg}')`);
             }
         }
 
-        // 2. Tạo Slider Row (Có mũi tên và nút Xem tất cả)
         function createMovieRow(title, movies, slugForSeeAll) {
             const section = document.createElement('section');
             section.className = 'category-section';
-            const rowId = 'row-' + Math.random().toString(36).substr(2, 9); // ID duy nhất cho mỗi row
-
-            let cardsHtml = movies.map(createCardHTML).join('');
-
+            const rowId = 'row-' + Math.random().toString(36).substr(2, 9);
             section.innerHTML = `
                 <div class="category-header">
-                    <h2 class="category-title">${title}</h2>
+                    <h2 class="category-title text-gradient">${title}</h2>
                     ${slugForSeeAll ? `<a class="see-all-link" onclick="openModal('${slugForSeeAll}', '${title}')">Xem tất cả <i class="fas fa-chevron-right"></i></a>` : ''}
                 </div>
                 <div class="slider-container">
-                    <button class="slider-arrow arrow-left" onclick="slide('${rowId}', 'left')"><i class="fas fa-chevron-left"></i></button>
-                    <div class="movie-row" id="${rowId}">
-                        ${cardsHtml}
-                    </div>
-                    <button class="slider-arrow arrow-right" onclick="slide('${rowId}', 'right')"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            `;
+                    <button class="slider-arrow arrow-left" onclick="slide('${rowId}', -1)"><i class="fas fa-chevron-left"></i></button>
+                    <div class="movie-row" id="${rowId}">${movies.map(createCardHTML).join('')}</div>
+                    <button class="slider-arrow arrow-right" onclick="slide('${rowId}', 1)"><i class="fas fa-chevron-right"></i></button>
+                </div>`;
             return section;
         }
-        
-        // Hàm điều khiển trượt slider
-        function slide(rowId, direction) {
-            const row = document.getElementById(rowId);
-            const scrollAmount = row.clientWidth * 0.8; // Trượt 80% chiều rộng màn hình
-            if (direction === 'left') {
-                row.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-            } else {
-                row.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-            }
+
+        function slide(id, dir) {
+            const row = document.getElementById(id);
+            row.scrollBy({ left: dir * row.clientWidth * 0.8, behavior: 'smooth' });
         }
 
-
-        // 3. Load Trang Chủ (Tổng hợp nhiều mục)
         async function loadHome() {
-            mainContent.innerHTML = '<div class="loading"><i class="fas fa-circle-notch fa-spin"></i> Đang tải HopPhim...</div>';
-            searchInput.value = ''; // Xóa ô tìm kiếm
-            
-            // Gọi song song các API
-            const [home, phimLe, phimBo, hanQuoc, hoatHinh] = await Promise.all([
-                fetchAPI('/home'), // Lấy phim mới cập nhật
-                fetchAPI('/danh-sach/phim-le'),
-                fetchAPI('/danh-sach/phim-bo'),
-                fetchAPI('/quoc-gia/han-quoc'),
-                fetchAPI('/danh-sach/hoat-hinh')
+            mainContent.innerHTML = `
+                <div class="loading-container">
+                    <div class="loader-spinner"></div>
+                    <div class="loading-text-pro">Đang tải kho phim...</div>
+                </div>
+            `;
+            const [home, le, bo, han, hoat] = await Promise.all([
+                fetchAPI('/home'), fetchAPI('/danh-sach/phim-le'), fetchAPI('/danh-sach/phim-bo'),
+                fetchAPI('/quoc-gia/han-quoc'), fetchAPI('/danh-sach/hoat-hinh')
             ]);
-
-            mainContent.innerHTML = ''; // Clear loading
-
-            // Thứ tự hiển thị trên trang chủ
-            if (home?.data?.items) mainContent.appendChild(createMovieRow('Mới Cập Nhật', home.data.items, null)); // Home không có xem tất cả cụ thể
-            if (phimLe?.data?.items) mainContent.appendChild(createMovieRow('Phim Lẻ Hot', phimLe.data.items, '/danh-sach/phim-le'));
-            if (phimBo?.data?.items) mainContent.appendChild(createMovieRow('Phim Bộ Binge-Worthy', phimBo.data.items, '/danh-sach/phim-bo'));
-            if (hanQuoc?.data?.items) mainContent.appendChild(createMovieRow('K-Drama Tuyển Chọn', hanQuoc.data.items, '/quoc-gia/han-quoc'));
-            if (hoatHinh?.data?.items) mainContent.appendChild(createMovieRow('Thế Giới Anime', hoatHinh.data.items, '/danh-sach/hoat-hinh'));
-        }
-
-        // 4. Load danh mục riêng lẻ (Khi click menu)
-        async function loadCategory(slug, title) {
-            mainContent.innerHTML = '<div class="loading">Loading...</div>';
-            const data = await fetchAPI(`/${slug.includes('quoc-gia') ? '' : 'danh-sach/'}${slug}`); // Hack nhẹ để check endpoint
             mainContent.innerHTML = '';
-            if (data?.data?.items) {
-                // Ở trang riêng thì không cần nút "Xem tất cả" nữa
-                mainContent.appendChild(createMovieRow(title, data.data.items, null));
-            }
-        }
-         // Wrapper cho quốc gia vì endpoint khác xíu
-        async function loadCountry(slug, title) {
-             mainContent.innerHTML = '<div class="loading">Loading...</div>';
-             const data = await fetchAPI(`/quoc-gia/${slug}`);
-             mainContent.innerHTML = '';
-             if(data?.data?.items) {
-                  mainContent.appendChild(createMovieRow(title, data.data.items, null));
-             }
+            if(home?.data?.items) mainContent.appendChild(createMovieRow('Phim Mới Cập Nhật', home.data.items));
+            if(le?.data?.items) mainContent.appendChild(createMovieRow('Phim Lẻ Hot', le.data.items, '/danh-sach/phim-le'));
+            if(bo?.data?.items) mainContent.appendChild(createMovieRow('Phim Bộ Tuyển Chọn', bo.data.items, '/danh-sach/phim-bo'));
+            if(han?.data?.items) mainContent.appendChild(createMovieRow('K-Drama', han.data.items, '/quoc-gia/han-quoc'));
+            if(hoat?.data?.items) mainContent.appendChild(createMovieRow('Anime', hoat.data.items, '/danh-sach/hoat-hinh'));
         }
 
-        // --- MODAL POPUP LOGIC ---
-        async function openModal(apiEndpoint, title) {
-            modalTitle.innerText = title;
-            modalContent.innerHTML = '<div class="loading" style="grid-column: 1/-1">Đang tải danh sách đầy đủ...</div>';
+        async function loadCategory(slug, title) {
+            const isCountry = ['han-quoc', 'trung-quoc'].includes(slug);
+            const data = await fetchAPI(`/${isCountry ? 'quoc-gia' : 'danh-sach'}/${slug}`);
+            mainContent.innerHTML = '';
+            if(data?.data?.items) mainContent.appendChild(createMovieRow(title, data.data.items));
+        }
+        async function loadCountry(slug, title) { loadCategory(slug, title); }
+
+        async function openModal(slug, title) {
+            document.getElementById('modalTitle').innerText = title;
             modalPopup.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Khóa scroll body lại
-
-            // Mặc định API trả về 1 trang, muốn lấy nhiều phải loop hoặc pagination (Demo lấy 2 trang cho nhiều)
-            const [page1, page2] = await Promise.all([
-                fetchAPI(apiEndpoint + '?page=1'),
-                fetchAPI(apiEndpoint + '?page=2')
-            ]);
-            
-            let allMovies = [];
-            if (page1?.data?.items) allMovies = [...page1.data.items];
-            if (page2?.data?.items) allMovies = [...allMovies, ...page2.data.items];
-
-            if (allMovies.length > 0) {
-                modalContent.innerHTML = allMovies.map(createCardHTML).join('');
-            } else {
-                 modalContent.innerHTML = '<div style="grid-column: 1/-1; text-align: center;">Không tải được dữ liệu.</div>';
-            }
+            const data = await fetchAPI(slug + '?page=1');
+            const container = document.getElementById('modalContent');
+            container.innerHTML = data?.data?.items ? data.data.items.map(m => `
+                <div class="movie-card" onclick="window.location.href='xemphim.html?slug=${m.slug}'">
+                    <img src="${m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url}" class="movie-poster">
+                    <div class="movie-info-slideup" style="transform: translateY(0); padding: 10px;">
+                        <div class="movie-name" style="font-size:0.9rem">${m.name}</div>
+                    </div>
+                </div>
+            `).join('') : 'Trống';
         }
+        function closeModal() { modalPopup.classList.remove('active'); }
 
-        function closeModal() {
-            modalPopup.classList.remove('active');
-            document.body.style.overflow = 'auto'; // Mở khóa scroll
-             // Đợi animation đóng xong mới xóa content để tránh giật
-            setTimeout(() => { modalContent.innerHTML = ''; }, 300);
-        }
-        
-        // Đóng modal khi click ra ngoài
-        window.onclick = function(event) {
-            if (event.target == modalPopup) closeModal();
-        }
-
-        // --- SEARCH LOGIC (Debounce) ---
+        const searchInput = document.getElementById('searchInput');
         let timeout = null;
-        searchInput.addEventListener('keyup', function (e) {
+        searchInput.addEventListener('keyup', (e) => {
             clearTimeout(timeout);
-            timeout = setTimeout(async () => {
-                const keyword = e.target.value;
-                if (keyword.length > 1) {
-                    const data = await fetchAPI(`/tim-kiem?keyword=${keyword}`);
-                    mainContent.innerHTML = '';
-                    if (data?.data?.items?.length > 0) {
-                        // Tìm kiếm thì hiện dạng Grid luôn cho dễ nhìn, tái sử dụng class modal-grid
-                        mainContent.innerHTML = `
-                            <section class="category-section">
-                                <h2 class="category-title">Kết quả tìm kiếm: "${keyword}"</h2>
-                                <div class="modal-grid" style="margin-top: 20px;">
-                                    ${data.data.items.map(createCardHTML).join('')}
-                                </div>
-                            </section>
-                        `;
-                    } else {
-                        mainContent.innerHTML = `<h3 style="text-align:center; padding:50px; color: var(--gray-text)">Không tìm thấy phim nào cho "${keyword}"</h3>`;
-                    }
-                } else if (keyword.length === 0) {
-                    loadHome();
-                }
+            timeout = setTimeout(() => {
+                if(e.target.value.length > 2) {
+                    fetchAPI(`/tim-kiem?keyword=${e.target.value}`).then(data => {
+                        mainContent.innerHTML = '';
+                        if(data?.data?.items) mainContent.appendChild(createMovieRow(`Kết quả: ${e.target.value}`, data.data.items));
+                    });
+                } else if(e.target.value.length === 0) loadHome();
             }, 500);
         });
 
-        // --- INIT ---
-        loadHeroBg(); // Load ảnh nền cho Hero
-        loadHome();   // Load nội dung chính
+        loadHeroBg(); loadHome();
     </script>
 </body>
 </html>
