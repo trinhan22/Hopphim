@@ -11,290 +11,294 @@
     <meta property="og:type" content="article" />
 
     <link rel="icon" type="image/webp" href="LOGO.webp" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* --- CSS GỐC (PC) --- */
         :root {
-            /* Đồng bộ màu với Index */
-            --bg-body: #191b24;
-            --bg-dark: #0f111a;
+            --bg-body: #191b24; --bg-dark: #0f111a; --text-main: #ffffff; --text-sub: #a0a0a0;
             --bg-card: #23252f;
-            --text-main: #ffffff;
-            --text-sub: #a0a0a0;
-            --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62);
-            --primary-color: #FF5E62;
-            --font-main: 'Inter', sans-serif;
-            --card-radius: 8px;
-            --transition: all 0.3s ease-in-out;
+            --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62); --primary-color: #FF5E62;
+            --badge-bg: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%);
+            --font-main: 'Inter', sans-serif; --card-radius: 12px; --transition: all 0.3s ease-in-out;
+            --mobile-menu-bg: #15171e; --mobile-border: rgba(255,255,255,0.05);
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { font-family: var(--font-main); background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
+        .text-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        
-        body { 
-            font-family: var(--font-main); 
-            background-color: var(--bg-body); 
-            color: var(--text-main); 
-            overflow-x: hidden;
+        /* LOADING SCREEN (FIXED) */
+        #loadingScreen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100vh; /* Phủ kín chiều cao màn hình */
+            background: var(--bg-body);
+            z-index: 9999; /* Đè lên mọi thứ */
+            display: flex;
+            justify-content: center; /* Căn giữa ngang */
+            align-items: center; /* Căn giữa dọc */
+            flex-direction: column;
+            gap: 15px;
         }
+        .loader-spinner {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 94, 98, 0.1);
+            border-top-color: #FF5E62;
+            border-right-color: #FF8F50;
+            animation: spin 0.8s linear infinite;
+            box-shadow: 0 0 15px rgba(255, 94, 98, 0.3);
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-/* --- CẬP NHẬT LOGO & CHỮ GRADIENT --- */
-        .logo {
-            display: flex;             /* Xếp ảnh và chữ nằm ngang */
-            align-items: center;       /* Căn giữa theo chiều dọc */
-            gap: 12px;                 /* Khoảng cách giữa ảnh và chữ */
-            cursor: pointer;
-        }
-
-        .logo img { 
-            height: 42px;              /* Giảm xíu cho cân đối với chữ */
-            object-fit: contain; 
-        }
-
-        /* Style cho chữ HOPPHIM */
-        .logo-text {
-            font-size: 1.5rem;         /* Kích thước chữ */
-            font-weight: 900;          /* Chữ đậm */
-            letter-spacing: 1px;       /* Khoảng cách các ký tự */
-            text-transform: uppercase; /* Viết hoa */
-            
-            /* Hiệu ứng Gradient Cam-Hồng */
-            background: var(--gradient-main);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            
-            white-space: nowrap;       /* Đảm bảo chữ luôn trên 1 dòng */
-        }
-
-        /* Responsive cho mobile: Giảm size chữ logo xíu nếu cần */
-        @media (max-width: 768px) {
-            .logo img { height: 35px; }
-            .logo-text { font-size: 1.2rem; }
-        }
-
-        /* Utility */
-        .text-gradient {
-            background: var(--gradient-main);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: inline-block;
-        }
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 4%; }
-
-        /* --- HEADER (Copy từ Index) --- */
-        header {
-            position: fixed; top: 0; width: 100%; height: 70px;
-            padding: 0 4%; display: flex; justify-content: space-between; align-items: center;
-            z-index: 1000; background: var(--bg-dark); /* Header trang con để nền tối luôn */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-        }
-        .logo img { height: 45px; object-fit: contain; cursor: pointer; }
+        /* HEADER & MENU */
+        header { position: fixed; top: 0; width: 100%; height: 70px; padding: 0 4%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: var(--bg-dark); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
+        .header-left-group { display: flex; align-items: center; gap: 20px; }
+        .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; z-index: 1002; }
+        .logo img { height: 40px; object-fit: contain; }
+        .logo-text { font-size: 1.5rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .nav-links { display: flex; gap: 30px; list-style: none; }
         .nav-links li a { color: #ccc; text-decoration: none; font-size: 14px; font-weight: 600; text-transform: uppercase; transition: 0.3s; position: relative; }
         .nav-links li a:hover { color: #fff; }
         .nav-links li a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0%; height: 2px; background: var(--gradient-main); transition: 0.3s; }
         .nav-links li a:hover::after { width: 100%; }
+        .right-elements { display: flex; align-items: center; gap: 15px; }
         .search-box { display: flex; align-items: center; background: #23252f; padding: 8px 16px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.05); }
         .search-box input { background: transparent; border: none; color: #fff; margin-left: 10px; font-family: var(--font-main); font-size: 14px; width: 150px; }
-
-        /* --- LAYOUT WATCH PAGE --- */
-        .watch-wrapper {
-            display: grid;
-            grid-template-columns: 2.8fr 1.2fr; /* Chia cột 70-30 */
-            gap: 30px;
-            padding-top: 100px; /* Tránh header */
-            padding-bottom: 50px;
-        }
-
-        /* --- PLAYER SECTION (LEFT) --- */
-        .player-box {
-            background: #000;
-            border-radius: var(--card-radius);
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
-            position: relative;
-        }
-        .aspect-ratio-16-9 {
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            position: relative;
-        }
-        .aspect-ratio-16-9 iframe {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
-        }
-
-        /* Movie Info Block */
-        .movie-info-block {
-            background: var(--bg-card);
-            padding: 25px;
-            border-radius: var(--card-radius);
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
+        .menu-toggle, .mobile-search-trigger { display: none; font-size: 1.5rem; color: #fff; cursor: pointer; }
         
+        /* Desktop Auth */
+        .desktop-auth { position: relative; }
+        .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; white-space: nowrap; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 94, 98, 0.4); }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary-color); cursor: pointer; display: none; object-fit: cover; }
+        .user-dropdown { position: absolute; top: 100%; right: 0; width: 200px; margin-top: 15px; background: #23252f; border-radius: 8px; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); }
+        .user-dropdown.active { display: flex; }
+        .user-info-item { padding: 12px; color: #fff; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .dropdown-item { background: transparent; border: none; color: #ccc; text-align: left; padding: 10px; cursor: pointer; transition: 0.2s; border-radius: 4px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
+        .dropdown-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        /* OVERLAYS (MOBILE) */
+        .mobile-overlay { display: none; position: fixed; inset: 0; z-index: 3000; transition: 0.3s ease-in-out; }
+        .mobile-overlay.active { transform: translateX(0) !important; opacity: 1 !important; }
+        .close-btn-overlay { position: absolute; font-size: 1.8rem; color: #fff; cursor: pointer; z-index: 10; }
+        
+        #mobileMenuOverlay { display: block; background: var(--mobile-menu-bg); transform: translateX(-100%); padding: 25px; width: 300px; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
+        .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .menu-logo { display: flex; align-items: center; gap: 10px; }
+        .menu-logo img { height: 35px; }
+        .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        #mobileMenuOverlay .close-btn-overlay { position: static; color: #fff; opacity: 0.7; }
+        .member-btn-large { width: 100%; padding: 12px; background: linear-gradient(90deg, #FF8F50, #FF5E62); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
+        .mobile-menu-grid { display: flex; flex-direction: column; gap: 5px; }
+        .mobile-menu-link { color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem; padding: 12px 0; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--mobile-border); }
+        .mobile-menu-link i { width: 25px; color: var(--primary-color); text-align: center; }
+        
+        #mobileSearchOverlay { display: block; background: #1f212d; transform: translateY(-100%); opacity: 0; }
+        #mobileSearchOverlay.active { transform: translateY(0) !important; opacity: 1 !important; }
+        .search-header-mobile { display: flex; align-items: center; padding: 15px 20px; background: #2a2d3a; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; font-family: var(--font-main); margin-right: 15px; }
+        #mobileSearchOverlay .close-btn-overlay { position: static; color: #fff; }
+        .search-content-mobile { padding: 20px; overflow-y: auto; height: calc(100vh - 70px); }
+
+        /* CONTENT */
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 4%; }
+        .watch-wrapper { display: grid; grid-template-columns: 2.8fr 1.2fr; gap: 30px; padding-top: 100px; padding-bottom: 50px; }
+        .player-box { background: #000; border-radius: var(--card-radius); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; position: relative; }
+        .aspect-ratio-16-9 { width: 100%; padding-top: 56.25%; position: relative; }
+        .aspect-ratio-16-9 iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        .movie-info-block { background: var(--bg-card); padding: 25px; border-radius: var(--card-radius); margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .movie-breadcrumbs { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 10px; }
         .movie-breadcrumbs a { color: var(--text-sub); text-decoration: none; }
-        .movie-breadcrumbs a:hover { color: var(--primary-color); }
-
         .movie-title-large { font-size: 2rem; font-weight: 800; margin-bottom: 5px; line-height: 1.2; }
         .movie-origin-name { font-size: 1.1rem; color: var(--text-sub); margin-bottom: 15px; font-weight: 500; }
-
         .movie-tags { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tag-item { 
-            background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px; 
-            font-size: 0.8rem; font-weight: 600; color: #e0e0e0;
-        }
+        .tag-item { background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; color: #e0e0e0; }
         .tag-highlight { background: var(--gradient-main); color: #fff; }
+        .movie-description { color: #d1d5db; line-height: 1.6; font-size: 0.95rem; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 6px; }
 
-        .movie-description {
-            color: #d1d5db; line-height: 1.6; font-size: 0.95rem;
-            padding: 15px; background: rgba(0,0,0,0.2); border-radius: 6px;
-        }
-
-        /* Episode List */
-        .episode-block {
-            background: var(--bg-card);
-            padding: 25px;
-            border-radius: var(--card-radius);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .section-header { 
-            font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; 
-            border-left: 4px solid var(--primary-color); padding-left: 10px; color: #fff;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .episode-block { background: var(--bg-card); padding: 25px; border-radius: var(--card-radius); border: 1px solid rgba(255,255,255,0.05); }
+        .section-header { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; border-left: 4px solid var(--primary-color); padding-left: 10px; color: #fff; display: flex; justify-content: space-between; align-items: center; }
         .server-name { font-size: 0.9rem; color: var(--text-sub); font-weight: 400; text-transform: uppercase; }
-
-        .episode-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            gap: 10px;
-            max-height: 300px; overflow-y: auto;
-            padding-right: 5px;
-        }
-        /* Scrollbar cho list tập */
-        .episode-grid::-webkit-scrollbar { width: 5px; }
-        .episode-grid::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
-
-        .ep-btn {
-            background: #191b24; color: #fff; border: 1px solid rgba(255,255,255,0.1);
-            padding: 10px 0; text-align: center; border-radius: 6px; cursor: pointer;
-            font-weight: 600; transition: 0.2s;
-        }
+        .episode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; max-height: 300px; overflow-y: auto; padding-right: 5px; }
+        .episode-grid::-webkit-scrollbar { width: 5px; } .episode-grid::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+        .ep-btn { background: #191b24; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 10px 0; text-align: center; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
         .ep-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--primary-color); }
-        .ep-btn.active { 
-            background: var(--gradient-main); border-color: transparent; 
-            box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3);
-        }
+        .ep-btn.active { background: var(--gradient-main); border-color: transparent; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
 
-        /* --- SIDEBAR (RIGHT) - ĐỀ XUẤT --- */
         .sidebar { position: sticky; top: 90px; height: fit-content; }
-        
-        .sidebar-card {
-            display: flex; gap: 15px; margin-bottom: 15px;
-            padding: 10px; background: var(--bg-card); border-radius: 8px;
-            transition: 0.2s; cursor: pointer;
-            border: 1px solid transparent;
-        }
-        .sidebar-card:hover { 
-            background: #2a2d3a; 
-            border-color: rgba(255, 94, 98, 0.3);
-            transform: translateX(-5px);
-        }
-        
-        .sb-thumb {
-            width: 80px; height: 110px; flex-shrink: 0;
-            border-radius: 6px; overflow: hidden;
-        }
+        .sidebar-card { display: flex; gap: 15px; margin-bottom: 15px; padding: 10px; background: var(--bg-card); border-radius: 8px; transition: 0.2s; cursor: pointer; border: 1px solid transparent; }
+        .sidebar-card:hover { background: #2a2d3a; border-color: rgba(255, 94, 98, 0.3); transform: translateX(-5px); }
+        .sb-thumb { width: 80px; height: 110px; flex-shrink: 0; border-radius: 6px; overflow: hidden; }
         .sb-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        
         .sb-info { display: flex; flex-direction: column; justify-content: center; }
-        .sb-title { 
-            font-size: 0.95rem; font-weight: 700; margin-bottom: 5px; 
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-            color: #fff;
-        }
+        .sb-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: #fff; }
         .sb-meta { font-size: 0.8rem; color: var(--text-sub); }
         .sb-views { font-size: 0.75rem; color: #FF8F50; margin-top: 5px; display: flex; align-items: center; gap: 5px;}
 
-        /* --- FOOTER (Copy từ Index) --- */
-        footer { 
-            background: var(--bg-dark); padding: 60px 4% 20px; margin-top: 50px; 
-            border-top: 1px solid #23252f; font-size: 0.9rem;
-        }
+        footer { background: var(--bg-dark); padding: 60px 4% 20px; margin-top: 80px; border-top: 1px solid #23252f; font-size: 0.9rem; }
         .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-bottom: 40px; }
         .footer-col h3 { font-size: 1.1rem; color: #fff; margin-bottom: 20px; font-weight: 700; }
-        .footer-title-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 12px; }
-        .footer-col ul li a { color: var(--text-sub); text-decoration: none; transition: 0.3s; }
-        .footer-col ul li a:hover { color: var(--primary-color); }
+        .footer-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .footer-brand img { height: 50px; object-fit: contain; }
+        .footer-col ul { list-style: none; } .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li a { color: var(--text-sub); text-decoration: none; transition: 0.3s; } .footer-col ul li a:hover { color: var(--primary-color); }
         .footer-bottom { border-top: 1px solid #23252f; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.8rem; }
-        
-        /* Loading */
-        .loading-screen {
-            position: fixed; inset: 0; background: var(--bg-body); z-index: 2000;
-            display: flex; justify-content: center; align-items: center; flex-direction: column;
-        }
-        .loader-spinner {
-            width: 50px; height: 50px; border-radius: 50%; border: 3px solid transparent;
-            border-top-color: #FF5E62; border-right-color: #FF8F50;
-            animation: spin 0.8s linear infinite; box-shadow: 0 0 15px rgba(255, 94, 98, 0.5); margin-bottom: 15px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Responsive */
+        /* Card Style cho Đề xuất Search (Giống Index) */
+        .category-section { padding: 0; margin-bottom: 20px; }
+        .category-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-left: 4px solid var(--primary-color); padding-left: 10px; }
+        .category-title { font-size: 1.1rem; font-weight: 800; text-transform: uppercase; }
+        .slider-container { position: relative; }
+        .movie-row { display: flex; gap: 10px; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 10px; scrollbar-width: none; }
+        .movie-row::-webkit-scrollbar { display: none; }
+        .slider-arrow { display: none; }
+        .movie-card { flex: 0 0 140px; height: 210px; position: relative; border-radius: var(--card-radius); overflow: hidden; cursor: pointer; background: #23252f; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.3s ease; }
+        .movie-poster { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 30%, transparent 60%); z-index: 2; pointer-events: none; }
+        .card-info { position: absolute; bottom: 0; left: 0; width: 100%; padding: 8px; z-index: 5; transition: transform 0.3s ease; }
+        .movie-name { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 2px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .movie-meta { display: flex; align-items: center; gap: 5px; font-size: 0.65rem; color: #e0e0e0; font-weight: 500; }
+        .hover-actions { display: none; }
+
+        /* ================= MOBILE OPTIMIZATION ================= */
         @media (max-width: 900px) {
-            .watch-wrapper { grid-template-columns: 1fr; }
-            .sidebar { margin-top: 20px; }
-            .nav-links { display: none; }
-        }
+            header { height: 60px; padding: 0 4%; justify-content: space-between; }
+            .header-left-group { gap: 25px; order: 1; }
+            .menu-toggle { display: block; font-size: 1.5rem; }
+            .logo { order: 2; margin: 0; }
+            .logo img { height: 32px; }
+            .logo-text { display: block; font-size: 1.2rem; }
+            .right-elements { order: 3; gap: 15px; }
+            .mobile-search-trigger { display: block; font-size: 1.2rem; }
+            
+            .nav-links, .search-box, .desktop-auth { display: none !important; }
 
-        /* --- FOOTER LOGO STYLE --- */
-        .footer-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px; /* Khoảng cách giữa ảnh và chữ */
-            margin-bottom: 10px;
-        }
+            #mobileMenuOverlay { display: block; background: var(--mobile-menu-bg); transform: translateX(-100%); padding: 25px; width: 300px; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
+            .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+            .menu-logo { display: flex; align-items: center; gap: 10px; }
+            .menu-logo img { height: 35px; }
+            .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            #mobileMenuOverlay .close-btn-overlay { position: static; color: #fff; opacity: 0.7; }
 
-        .footer-brand img {
-            height: 50px; /* Logo footer để to hơn header một chút nhìn cho vững */
-            object-fit: contain;
-        }
+            .member-btn-large { width: 100%; padding: 12px; background: linear-gradient(90deg, #FF8F50, #FF5E62); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
+            .mobile-menu-grid { display: flex; flex-direction: column; gap: 5px; }
+            .mobile-menu-link { color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem; padding: 12px 0; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--mobile-border); }
+            .mobile-menu-link i { width: 25px; color: var(--primary-color); text-align: center; }
+            .mobile-menu-link:hover { color: #fff; padding-left: 5px; transition: 0.2s; }
 
-        /* Responsive: Mobile thì logo nhỏ lại xíu */
-        @media (max-width: 768px) {
-            .footer-brand img { height: 40px; }
+            #mobileSearchOverlay { display: block; background: #1f212d; transform: translateY(-100%); opacity: 0; }
+            #mobileSearchOverlay.active { transform: translateY(0) !important; opacity: 1 !important; }
+            .search-header-mobile { display: flex; align-items: center; padding: 15px 20px; background: #2a2d3a; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; font-family: var(--font-main); margin-right: 15px; }
+            #mobileSearchOverlay .close-btn-overlay { position: static; color: #fff; }
+            .search-content-mobile { padding: 20px; overflow-y: auto; height: calc(100vh - 70px); }
+
+            /* Content Layout */
+            .watch-wrapper { grid-template-columns: 1fr; padding-top: 80px; gap: 20px; }
+            .movie-title-large { font-size: 1.5rem; }
+            .episode-grid { grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)); gap: 8px; }
+            .ep-btn { font-size: 0.9rem; padding: 12px 0; }
+            .sidebar { position: static; margin-top: 20px; }
+            .sidebar-card { padding: 8px; gap: 10px; }
+            .sb-thumb { width: 70px; height: 110px; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+            .footer-col:first-child { grid-column: span 2; text-align: center; }
+            .footer-brand { justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-    <div id="loadingScreen" class="loading-screen">
+    <div id="loadingScreen">
         <div class="loader-spinner"></div>
         <div class="text-gradient" style="font-weight: 600;">Đang tải phim...</div>
     </div>
 
-    <header id="header">
-        <div class="logo" onclick="window.location.href='index.html'">
-            <img src="LOGO.WEBP" alt="HopPhim">
-            <span class="logo-text">HOPPHIM</span>
+    <div id="mobileMenuOverlay" class="mobile-overlay">
+        <div class="menu-header">
+            <div class="menu-logo">
+                <img src="LOGO.WEBP" alt="HopPhim">
+                <span>HOPPHIM</span>
+            </div>
+             <i class="fas fa-times close-btn-overlay" onclick="closeMobileMenu()"></i>
         </div>
-        <ul class="nav-links">
-            <li><a href="index.html">Trang chủ</a></li>
-            <li><a href="#">Phim Bộ</a></li>
-            <li><a href="#">Phim Lẻ</a></li>
-            <li><a href="#">Hàn Quốc</a></li>
-            <li><a href="#">Trung Quốc</a></li>
+        
+        <button class="member-btn-large" id="mobileMemberBtn" onclick="window.location.href='login.html'">
+            <i class="fas fa-user-circle"></i> <span id="mobileMemberText">Đăng nhập / Đăng ký</span>
+        </button>
+
+        <div class="mobile-menu-grid">
+            <a href="index.html" class="mobile-menu-link" onclick="closeMobileMenu()">
+                <i class="fas fa-home"></i> Trang chủ
+            </a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()">
+                <i class="fas fa-tv"></i> Phim Bộ
+            </a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()">
+                <i class="fas fa-film"></i> Phim Lẻ
+            </a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()">
+                <i class="fas fa-globe-asia"></i> Hàn Quốc
+            </a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()">
+                <i class="fas fa-torii-gate"></i> Trung Quốc
+            </a>
+        </div>
+    </div>
+
+    <div id="mobileSearchOverlay" class="mobile-overlay">
+        <div class="search-header-mobile">
+            <i class="fas fa-search" style="color: #a0a0a0; margin-right: 10px;"></i>
+            <input type="text" id="mobileSearchInput" class="search-input-mobile" placeholder="Nhập tên phim...">
+            <i class="fas fa-times close-btn-overlay" onclick="closeMobileSearch()"></i>
+        </div>
+        <div class="search-content-mobile">
+            <div id="mobileSearchResults"></div>
+        </div>
+    </div>
+
+    <header id="header">
+        <div class="header-left-group">
+            <div class="menu-toggle" onclick="openMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="logo" onclick="window.location.href='index.html'">
+                <img src="LOGO.WEBP" alt="HopPhim">
+                <span class="logo-text">HOPPHIM</span>
+            </div>
+        </div>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="index.html" onclick="closeMenu()">Trang chủ</a></li>
+            <li><a href="#" onclick="closeMenu()">Phim Bộ</a></li>
+            <li><a href="#" onclick="closeMenu()">Phim Lẻ</a></li>
+            <li><a href="#" onclick="closeMenu()">Hàn Quốc</a></li>
+            <li><a href="#" onclick="closeMenu()">Trung Quốc</a></li>
         </ul>
-        <div class="search-box">
-            <i class="fas fa-search" style="color: #a0a0a0"></i>
-            <input type="text" placeholder="Tìm phim...">
+
+        <div class="right-elements">
+            <div class="mobile-search-trigger" onclick="openMobileSearch()">
+                 <i class="fas fa-search"></i>
+            </div>
+            
+            <div class="search-box">
+                <i class="fas fa-search" style="color: #a0a0a0"></i>
+                <input type="text" placeholder="Tìm kiếm phim...">
+            </div>
+            <div class="desktop-auth" style="position: relative;">
+                <button id="btnLogin" class="btn-login" onclick="window.location.href='login.html'">Đăng nhập</button>
+                <img id="userAvatar" class="user-avatar" src="" alt="User" onclick="toggleUserDropdown()">
+                <div id="userMenu" class="user-dropdown">
+                    <div id="userNameDisplay" class="user-info-item">User</div>
+                    <button class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -314,13 +318,8 @@
                     </div>
                     <h1 class="movie-title-large text-gradient" id="mName">Loading...</h1>
                     <div class="movie-origin-name" id="mOrigin">Loading...</div>
-                    
-                    <div class="movie-tags" id="mTags">
-                        </div>
-
-                    <div class="movie-description" id="mContent">
-                        Đang tải nội dung phim...
-                    </div>
+                    <div class="movie-tags" id="mTags"></div>
+                    <div class="movie-description" id="mContent">Đang tải nội dung phim...</div>
                 </div>
 
                 <div class="episode-block">
@@ -328,8 +327,7 @@
                         <span>Danh sách tập</span>
                         <span class="server-name"><i class="fas fa-server"></i> Server VIP</span>
                     </div>
-                    <div class="episode-grid" id="episodeList">
-                        </div>
+                    <div class="episode-grid" id="episodeList"></div>
                 </div>
             </div>
 
@@ -337,8 +335,7 @@
                 <div class="section-header" style="border-left-color: #FF8F50; margin-bottom: 15px;">
                     <span style="font-size: 1.1rem;">Đề xuất cho bạn</span>
                 </div>
-                <div id="relatedList">
-                    </div>
+                <div id="relatedList"></div>
             </div>
 
         </div>
@@ -351,9 +348,8 @@
                     <img src="logo.webp" alt="HopPhim">
                     <span class="logo-text">HOPPHIM</span>
                 </div>
-                
                 <p style="color: #a0a0a0; line-height: 1.6; margin-top: 15px;">
-                    Trang xem phim trực tuyến miễn phí chất lượng cao với giao diện hiện đại, tốc độ tải phim nhanh và kho phim khổng lồ.
+                    Trang xem phim trực tuyến miễn phí chất lượng cao.
                 </p>
             </div>
             <div class="footer-col">
@@ -362,7 +358,6 @@
                     <li><a href="#">Phim Mới Cập Nhật</a></li>
                     <li><a href="#">Phim Chiếu Rạp</a></li>
                     <li><a href="#">Phim Bộ Độc Quyền</a></li>
-                    <li><a href="#">TV Shows</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -371,7 +366,6 @@
                     <li><a href="#">Hàn Quốc</a></li>
                     <li><a href="#">Trung Quốc</a></li>
                     <li><a href="#">Âu Mỹ</a></li>
-                    <li><a href="#">Thái Lan</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -379,8 +373,7 @@
                 <ul>
                     <li><a href="#">Hỏi đáp (FAQ)</a></li>
                     <li><a href="#">Liên hệ quảng cáo</a></li>
-                    <li><a href="#">Chính sách riêng tư</a></li>
-                    <li><a href="#">Khiếu nại bản quyền</a></li>
+                    <li><a href="#">Báo lỗi</a></li>
                 </ul>
             </div>
         </div>
@@ -389,46 +382,232 @@
         </div>
     </footer>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc",
+            authDomain: "hopphim-29e1c.firebaseapp.com",
+            projectId: "hopphim-29e1c",
+            storageBucket: "hopphim-29e1c.firebasestorage.app",
+            messagingSenderId: "1076044580405",
+            appId: "1:1076044580405:web:a3485f8533604f305e537c",
+            measurementId: "G-6RT4CX2NR0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // UI Elements
+        const btnLogin = document.getElementById('btnLogin');
+        const userAvatar = document.getElementById('userAvatar');
+        const userMenu = document.getElementById('userMenu');
+        
+        // Mobile UI Elements
+        const mobileMemberBtn = document.getElementById('mobileMemberBtn');
+        const mobileMemberText = document.getElementById('mobileMemberText');
+
+        window.logout = async () => {
+            await signOut(auth);
+            userMenu.classList.remove('active');
+            closeMobileMenu();
+        }
+        window.toggleUserDropdown = () => userMenu.classList.toggle('active');
+
+        // Check Login State
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const photo = user.photoURL || 'Guest.webp';
+                const name = user.displayName || 'Thành viên';
+
+                // Desktop Update
+                btnLogin.style.display = 'none';
+                userAvatar.style.display = 'block';
+                userAvatar.src = photo;
+                document.getElementById('userNameDisplay').innerText = name;
+
+                // Mobile Update (Chỉ hiện trong Menu)
+                mobileMemberText.innerText = name;
+                mobileMemberBtn.innerHTML = `<img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;"> <span>${name}</span>`;
+                mobileMemberBtn.onclick = null; 
+            } else {
+                // Reset
+                btnLogin.style.display = 'block';
+                userAvatar.style.display = 'none';
+                userMenu.classList.remove('active');
+
+                mobileMemberText.innerText = "Đăng nhập / Đăng ký";
+                mobileMemberBtn.innerHTML = `<i class="fas fa-user-circle"></i> <span>Đăng nhập / Đăng ký</span>`;
+                mobileMemberBtn.onclick = () => window.location.href='login.html';
+            }
+        });
+
+        // Hàm Lưu Lịch Sử
+        window.saveToHistory = async (movie) => {
+            const user = auth.currentUser;
+            if (!user) return; 
+
+            const movieData = {
+                slug: movie.slug,
+                name: movie.name,
+                origin_name: movie.origin_name,
+                thumb_url: movie.thumb_url, 
+                quality: movie.quality,
+                year: movie.year,
+                timestamp: Date.now() 
+            };
+
+            const userRef = doc(db, "users", user.uid);
+            try {
+                const docSnap = await getDoc(userRef);
+                if (docSnap.exists()) {
+                    let history = docSnap.data().watchHistory || [];
+                    history = history.filter(m => m.slug !== movie.slug);
+                    history.push(movieData);
+                    if (history.length > 20) history.shift();
+                    await updateDoc(userRef, { watchHistory: history });
+                } else {
+                    await setDoc(userRef, { email: user.email, watchHistory: [movieData] });
+                }
+                console.log("Saved history!");
+            } catch (e) { console.error("Error saving history:", e); }
+        };
+    </script>
+
     <script>
-        // Lấy Slug từ URL
+        // --- MOBILE OVERLAY FUNCTIONS ---
+        const menuOverlay = document.getElementById('mobileMenuOverlay');
+        const searchOverlay = document.getElementById('mobileSearchOverlay');
+        const mobileSearchInput = document.getElementById('mobileSearchInput');
+        const mobileSearchResults = document.getElementById('mobileSearchResults');
+
+        function openMobileMenu() { menuOverlay.classList.add('active'); }
+        function closeMobileMenu() { menuOverlay.classList.remove('active'); }
+
+        async function openMobileSearch() {
+            searchOverlay.classList.add('active');
+            mobileSearchInput.focus();
+            if(!mobileSearchResults.hasChildNodes()) {
+                 const data = await fetchAPI('/danh-sach/phim-le?page=1');
+                 if(data?.data?.items) {
+                      mobileSearchResults.innerHTML = '';
+                      mobileSearchResults.appendChild(createMovieRow('Phim Đề Xuất', data.data.items));
+                 }
+            }
+        }
+        function closeMobileSearch() {
+            searchOverlay.classList.remove('active');
+            mobileSearchInput.value = '';
+        }
+        
+        let mobileSearchTimeout = null;
+        mobileSearchInput.addEventListener('keyup', (e) => {
+            clearTimeout(mobileSearchTimeout);
+            mobileSearchTimeout = setTimeout(() => {
+                const keyword = e.target.value;
+                if(keyword.length > 2) {
+                     mobileSearchResults.innerHTML = '<div class="loader-spinner" style="margin: 20px auto;"></div>';
+                     fetchAPI(`/tim-kiem?keyword=${keyword}`).then(data => {
+                        mobileSearchResults.innerHTML = '';
+                        if(data?.data?.items) {
+                            mobileSearchResults.appendChild(createMovieRow(`Kết quả: ${keyword}`, data.data.items));
+                        } else {
+                             mobileSearchResults.innerHTML = '<div style="color:#ccc;text-align:center;padding:20px;">Không tìm thấy</div>';
+                        }
+                    });
+                } else if (keyword.length === 0) {
+                    mobileSearchResults.innerHTML = '';
+                    fetchAPI('/danh-sach/phim-le?page=1').then(data => {
+                        if(data?.data?.items) mobileSearchResults.appendChild(createMovieRow('Phim Đề Xuất', data.data.items));
+                    });
+                }
+            }, 500);
+        });
+
+        // --- CORE LOGIC ---
+        const navLinks = document.getElementById('navLinks');
+        const mainContent = document.getElementById('main-content');
+        const header = document.getElementById('header');
+        const loadingScreen = document.getElementById('loadingScreen');
+
+        function toggleMenu() { navLinks.classList.toggle('active'); }
+        function closeMenu() { navLinks.classList.remove('active'); }
+
         const urlParams = new URLSearchParams(window.location.search);
         const movieSlug = urlParams.get('slug');
         const API_BASE = 'https://ophim1.com/v1/api/phim';
         const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
 
-        // DOM Elements
         const player = document.getElementById('videoPlayer');
         const epList = document.getElementById('episodeList');
         const relatedList = document.getElementById('relatedList');
-        const loadingScreen = document.getElementById('loadingScreen');
 
-        // 1. MAIN FUNCTION: LOAD PHIM
+        window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 20));
+
+        async function fetchAPI(endpoint) {
+            try { return await (await fetch('https://ophim1.com/v1/api' + endpoint)).json(); } catch { return null; }
+        }
+
+        window.createCardHTML = function(movie) {
+            let imgUrl = movie.thumb_url;
+            if (!imgUrl.startsWith('http')) imgUrl = `${IMG_BASE}${movie.thumb_url}`;
+            const playLink = `xemphim.html?slug=${movie.slug}`;
+
+            return `
+                <div class="movie-card" onclick="window.location.href='${playLink}'">
+                    <img src="${imgUrl}" alt="${movie.name}" class="movie-poster" loading="lazy">
+                    <div class="card-overlay"></div>
+                    <div class="card-info">
+                        <div class="movie-name">${movie.name}</div>
+                        <div class="movie-meta">
+                            <span class="badge-hd">${movie.quality || 'HD'}</span>
+                            <span>${movie.year}</span>
+                            <span class="dot"></span>
+                            <span>${movie.lang || 'Vietsub'}</span>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        window.slide = function(id, dir) {
+            const row = document.getElementById(id);
+            row.scrollBy({ left: dir * row.clientWidth * 0.8, behavior: 'smooth' });
+        }
+
+        function createMovieRow(title, movies, slugForSeeAll) {
+            const section = document.createElement('section');
+            section.className = 'category-section';
+            const rowId = 'row-' + Math.random().toString(36).substr(2, 9);
+            section.innerHTML = `
+                <div class="category-header">
+                    <h2 class="category-title text-gradient">${title}</h2>
+                </div>
+                <div class="slider-container">
+                    <div class="movie-row" id="${rowId}">${movies.map(window.createCardHTML).join('')}</div>
+                </div>`;
+            return section;
+        }
+
         async function loadMovie() {
             if (!movieSlug) {
                 alert('Không tìm thấy phim!');
                 window.location.href = 'index.html';
                 return;
             }
-
             try {
                 const res = await fetch(`${API_BASE}/${movieSlug}`);
                 const data = await res.json();
-
                 if (data.status) {
                     renderInfo(data.data.item);
                     renderEpisodes(data.data.item.episodes);
-                    loadRelated(data.data.item.category?.[0]?.slug); // Load đề xuất cùng thể loại
-                } else {
-                    alert('Lỗi tải phim');
-                }
-            } catch (e) {
-                console.error(e);
-            } finally {
-                loadingScreen.style.display = 'none';
-            }
+                    loadRelated();
+                } else { alert('Lỗi tải phim'); }
+            } catch (e) { console.error(e); } finally { loadingScreen.style.display = 'none'; }
         }
 
-        // 2. RENDER THÔNG TIN
         function renderInfo(movie) {
             document.title = `Xem phim ${movie.name} - HopPhim`;
             document.getElementById('breadCrumbTitle').innerText = movie.name;
@@ -436,77 +615,59 @@
             document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
             document.getElementById('mContent').innerHTML = movie.content;
 
-            // Render Tags
             let tagsHtml = `<span class="tag-item tag-highlight">${movie.quality}</span>`;
             tagsHtml += `<span class="tag-item">${movie.lang}</span>`;
-            tagsHtml += `<span class="tag-item">${movie.time}</span>`;
-            if (movie.category) {
-                movie.category.forEach(cat => {
-                    tagsHtml += `<span class="tag-item">${cat.name}</span>`;
-                });
-            }
+            if (movie.category) movie.category.forEach(cat => tagsHtml += `<span class="tag-item">${cat.name}</span>`);
             document.getElementById('mTags').innerHTML = tagsHtml;
+
+            setTimeout(() => {
+                if (window.saveToHistory) window.saveToHistory(movie);
+            }, 3000);
         }
 
-        // 3. RENDER TẬP PHIM
         function renderEpisodes(episodes) {
             if (!episodes || episodes.length === 0) return;
-            const serverData = episodes[0].server_data; // Lấy server đầu tiên
-            
+            const serverData = episodes[0].server_data;
             let html = '';
             serverData.forEach((ep, index) => {
-                // Mặc định chọn tập 1
                 if (index === 0) player.src = ep.link_embed;
-                
                 html += `<div class="ep-btn ${index === 0 ? 'active' : ''}" onclick="changeEp('${ep.link_embed}', this)">${ep.name}</div>`;
             });
             epList.innerHTML = html;
         }
 
-        // Hàm đổi tập
         window.changeEp = function(link, btn) {
             player.src = link;
             document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn lên player
+            if(window.innerWidth < 900) window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 4. LOAD ĐỀ XUẤT (Giả lập lấy list mới nhất hoặc theo category)
-        async function loadRelated(catSlug) {
-            // Demo lấy danh sách phim lẻ mới nhất để làm đề xuất
+        async function loadRelated() {
             try {
                 const res = await fetch(`https://ophim1.com/v1/api/danh-sach/phim-le?page=1`);
                 const data = await res.json();
-                
                 if (data?.data?.items) {
-                    // Lấy 5 phim đầu tiên làm đề xuất
                     const list = data.data.items.slice(0, 5); 
                     let html = '';
                     list.forEach(m => {
                         const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
                         html += `
                             <div class="sidebar-card" onclick="window.location.href='xemphim.html?slug=${m.slug}'">
-                                <div class="sb-thumb">
-                                    <img src="${img}" alt="${m.name}">
-                                </div>
+                                <div class="sb-thumb"><img src="${img}" alt="${m.name}"></div>
                                 <div class="sb-info">
                                     <div class="sb-title">${m.name}</div>
                                     <div class="sb-meta">${m.origin_name}</div>
                                     <div class="sb-views"><i class="fas fa-eye"></i> ${Math.floor(Math.random() * 10000)} lượt xem</div>
                                 </div>
-                            </div>
-                        `;
+                            </div>`;
                     });
                     relatedList.innerHTML = html;
                 }
-            } catch (e) {
-                relatedList.innerHTML = '<div style="color:#aaa">Không có đề xuất</div>';
-            }
+            } catch (e) { relatedList.innerHTML = '<div style="color:#aaa">Không có đề xuất</div>'; }
         }
 
-        // Chạy
         loadMovie();
-
     </script>
 </body>
 </html>

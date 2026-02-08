@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - HopPhim</title>
+    <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
+    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao với giao diện hiện đại, tốc độ tải phim nhanh và kho phim khổng lồ." />
+    <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
+    <meta property="og:url" content="https://hopphim.netlify.app" />
+    <meta property="og:type" content="article" />
+
+    <link rel="icon" type="image/webp" href="LOGO.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-body: #0f111a;
+            --bg-card: rgba(35, 37, 47, 0.85);
+            --text-main: #ffffff;
+            --text-sub: #a0a0a0;
+            --primary: #FF5E62;
+            --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62);
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-main); }
+
+        body {
+            background-color: var(--bg-body);
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            position: relative; overflow: hidden;
+        }
+
+        /* Nền mờ */
+        .bg-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(15, 17, 26, 0.8), rgba(255, 94, 98, 0.1)), url('home-background.jpg');
+            background-size: cover; background-position: center;
+            filter: blur(15px); z-index: -1; transform: scale(1.1);
+        }
+
+        .back-home {
+            position: absolute; top: 20px; left: 20px;
+            color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.9rem; font-weight: 600;
+            display: flex; align-items: center; gap: 8px; transition: 0.3s; z-index: 10;
+            background: rgba(0,0,0,0.3); padding: 8px 15px; border-radius: 30px;
+        }
+        .back-home:hover { color: #fff; background: var(--gradient-main); }
+
+        /* Login Card */
+        .login-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px 25px;
+            border-radius: 16px;
+            width: 90%; max-width: 360px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            animation: fadeUp 0.5s ease-out;
+        }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .logo-img { height: 50px; margin-bottom: 10px; object-fit: contain; }
+        
+        h2 { color: var(--text-main); font-size: 1.5rem; margin-bottom: 5px; font-weight: 800; }
+        .text-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
+        .subtitle { color: var(--text-sub); font-size: 0.85rem; margin-bottom: 20px; }
+
+        /* Form */
+        .input-group { margin-bottom: 12px; text-align: left; }
+        .input-field {
+            width: 100%; padding: 10px 15px;
+            border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3); color: #fff; font-size: 0.9rem;
+            transition: 0.3s; outline: none;
+        }
+        .input-field:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
+        .input-field::placeholder { color: rgba(255,255,255,0.3); font-size: 0.85rem; }
+
+        .btn-submit {
+            width: 100%; padding: 10px;
+            background: var(--gradient-main); color: white;
+            border: none; border-radius: 50px;
+            font-size: 0.95rem; font-weight: 700; cursor: pointer;
+            transition: 0.3s; margin-top: 5px;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 94, 98, 0.4); }
+        .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        .divider { margin: 20px 0; display: flex; align-items: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+        .divider span { padding: 0 10px; }
+
+        .btn-google {
+            width: 100%; background: #fff; color: #1f1f1f;
+            padding: 10px; border-radius: 50px; border: none;
+            font-weight: 600; font-size: 0.9rem;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+            cursor: pointer; transition: 0.3s;
+        }
+        .btn-google img { height: 20px; width: 20px; }
+        .btn-google:hover { background: #f0f0f0; transform: translateY(-2px); }
+
+        .register-link {
+            margin-top: 20px; font-size: 0.85rem; color: var(--text-sub);
+        }
+        .register-link a { color: #fff; font-weight: 700; text-decoration: none; transition: 0.2s; }
+        .register-link a:hover { color: var(--primary); text-decoration: underline; }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-overlay"></div>
+    <a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Quay lại</a>
+
+    <div class="login-card">
+        <img src="LOGO.WEBP" alt="HopPhim" class="logo-img">
+        <h2>Xin chào!</h2>
+        <p class="subtitle">Đăng nhập để đồng bộ <span class="text-gradient">HopPhim</span></p>
+
+        <form id="login-form">
+            <div class="input-group">
+                <input type="email" id="email" class="input-field" placeholder="Email" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" class="input-field" placeholder="Mật khẩu" required>
+            </div>
+            <button type="submit" id="btn-submit" class="btn-submit">Đăng nhập</button>
+        </form>
+
+        <div class="divider"><span>HOẶC</span></div>
+
+        <button id="google-login-btn" class="btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
+            Tiếp tục với Google
+        </button>
+
+        <div class="register-link">
+            Bạn chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // CONFIG CHUẨN CỦA HOPPHIM
+        const firebaseConfig = {
+            apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc",
+            authDomain: "hopphim-29e1c.firebaseapp.com",
+            projectId: "hopphim-29e1c",
+            storageBucket: "hopphim-29e1c.firebasestorage.app",
+            messagingSenderId: "1076044580405",
+            appId: "1:1076044580405:web:a3485f8533604f305e537c",
+            measurementId: "G-6RT4CX2NR0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const REDIRECT_URL = "index.html"; 
+
+        // 1. Kiểm tra trạng thái đăng nhập
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Nếu đã đăng nhập, chuyển về trang chủ
+                window.location.href = REDIRECT_URL; 
+            }
+        });
+
+        // 2. Xử lý Đăng nhập bằng Email/Password
+        document.getElementById("login-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const btn = document.getElementById("btn-submit");
+
+            // Hiệu ứng Loading
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Đang xử lý...';
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // Nếu thành công, onAuthStateChanged sẽ tự chạy và chuyển trang
+            } catch (err) {
+                btn.disabled = false;
+                btn.innerText = "Đăng nhập";
+                
+                // Xử lý thông báo lỗi tiếng Việt
+                let msg = "Đăng nhập thất bại.";
+                if (err.code === 'auth/invalid-credential') msg = "Sai email hoặc mật khẩu.";
+                else if (err.code === 'auth/user-not-found') msg = "Tài khoản không tồn tại.";
+                else if (err.code === 'auth/wrong-password') msg = "Sai mật khẩu.";
+                else if (err.code === 'auth/too-many-requests') msg = "Bạn thử quá nhiều lần. Vui lòng đợi chút.";
+                
+                alert(msg);
+                console.error(err);
+            }
+        });
+
+        // 3. Xử lý Đăng nhập Google
+        document.getElementById("google-login-btn").addEventListener("click", async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (err) {
+                alert("Lỗi Google: " + err.message);
+            }
+        });
+    </script>
+
+</body>
+</html>
