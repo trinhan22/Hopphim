@@ -4,13 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đang xem phim - HopPhim</title>
-    <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
-    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao." />
-    <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
-    <meta property="og:url" content="https://hopphim.netlify.app" />
-    <meta property="og:type" content="article" />
+    <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
 
-    <link rel="icon" type="image/webp" href="LOGO.WEBP" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -28,10 +23,60 @@
         body { font-family: var(--font-main); background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
         .text-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
 
+        /* --- CSS QUẢNG CÁO (ADS) --- */
+        /* Lớp phủ toàn màn hình (Z-Index cao nhất) */
+        #ad-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); 
+            display: flex; justify-content: center; align-items: center;
+            z-index: 99999; /* Cao hơn cả Loading */
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        /* Khối quảng cáo chính */
+        #ad-container {
+            width: 90%; height: 90%;
+            max-width: 900px; max-height: 506px; /* Tỉ lệ 16:9 */
+            background-color: #fff; border-radius: 12px; 
+            overflow: hidden; position: relative; 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); 
+            transform: scale(1); transition: transform 0.5s ease;
+        }
+
+        #ad-container::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.75); 
+            border-radius: 12px; pointer-events: none; z-index: 900; 
+        }
+
+        #ad-iframe { width: 100%; height: 100%; margin-top: 0; border: none; display: block; z-index: 10; }
+
+        /* Nút điều khiển Ads */
+        #skip-button, #go-to-website-button {
+            position: absolute; top: 0; margin-top: 10px;
+            padding: 8px 12px; background-color: rgba(0, 0, 0, 0.85); 
+            color: white; border: none; border-radius: 4px; 
+            font-weight: 600; font-size: 14px; cursor: pointer; z-index: 1000; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); transition: all 0.2s ease;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+        }
+
+        #skip-button:hover, #go-to-website-button:hover {
+            background-color: rgba(0, 0, 0, 0.95); transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        #go-to-website-button { left: 10px; }
+        #skip-button { right: 10px; cursor: not-allowed; }
+        #skip-button.enabled { background-color: #3870e0; cursor: pointer; font-weight: 700; }
+        #skip-button.enabled:hover { background-color: #2b60cc; transform: translateY(-1px); }
+        /* --- END CSS ADS --- */
+
+
         /* LOADING */
         #loadingScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-            background: var(--bg-body); z-index: 9999;
+            background: var(--bg-body); z-index: 9990; /* Thấp hơn Ads */
             display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 15px;
         }
         .loader-spinner {
@@ -154,7 +199,7 @@
         }
         .movie-info-bg {
             position: absolute; inset: 0; background-size: cover; background-position: center;
-            opacity: 0.15; filter: blur(10px) saturate(150%); z-index: 0; pointer-events: none;
+            opacity: 0.15; filter: blur(15px) saturate(150%); z-index: 0; pointer-events: none;
         }
         .movie-info-content { position: relative; z-index: 1; }
         
@@ -245,13 +290,19 @@
     </style>
 </head>
 <body>
+    
+    <div id="ad-overlay">
+        <div id="ad-container">
+            <button id="go-to-website-button">Go to website</button>
+            <button id="skip-button" disabled>Skip ad (<span>5</span>)</button>
+            <iframe id="ad-iframe" title="Nội dung quảng cáo nhúng"></iframe>
+        </div>
+    </div>
 
     <div id="loadingScreen">
         <div class="loader-spinner"></div>
         <div class="text-gradient" style="font-weight: 600;">Đang tải phim...</div>
     </div>
-
-    <div id="ad-placeholder"></div>
 
     <div id="toast-container"></div>
 
@@ -259,7 +310,7 @@
         <div class="confirm-box">
             <div class="confirm-icon"><i class="fas fa-exclamation-circle"></i></div>
             <h3 class="confirm-title">Xác nhận</h3>
-            <p class="confirm-desc" id="confirmMsg">Bạn có chắc chắn muốn thực hiện?</p>
+            <p class="confirm-desc" id="confirmMsg">Bạn có chắc chắn muốn thực hiện hành động này?</p>
             <div class="confirm-actions">
                 <button class="btn-confirm btn-cancel" id="btnConfirmNo">Hủy bỏ</button>
                 <button class="btn-confirm btn-ok" id="btnConfirmYes">Đồng ý</button>
@@ -318,7 +369,7 @@
             <div class="mobile-search-trigger" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
             <div class="search-box">
                 <i class="fas fa-search" style="color: #a0a0a0"></i>
-                <input type="text" placeholder="Tìm kiếm phim...">
+                <input type="text" placeholder="Tìm phim...">
             </div>
             <div class="desktop-auth" style="position: relative;">
                 <button id="btnLogin" class="btn-login" onclick="window.location.href='/login.html'">Đăng nhập</button>
@@ -764,21 +815,57 @@
         loadMovie();
 
     </script>
+    
+    <script>
+        const adUrls = ["https://hopvan.netlify.app/"];
+        
+        function getRandomAdUrl() {
+            const randomIndex = Math.floor(Math.random() * adUrls.length);
+            return adUrls[randomIndex];
+        }
 
-<link rel="stylesheet" href="./ads/ads.css">
+        const adOverlay = document.getElementById('ad-overlay');
+        const skipButton = document.getElementById('skip-button');
+        const goToWebsiteButton = document.getElementById('go-to-website-button'); 
+        const adIframe = document.getElementById('ad-iframe');
 
-<script>
-    // Tải file HTML và nhét vào div #ad-placeholder
-    fetch('./ads/ads.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('ad-placeholder').innerHTML = data;
+        if (adOverlay && skipButton && goToWebsiteButton && adIframe) { 
+            // 1. Áp dụng URL ngay khi load
+            const selectedAdUrl = getRandomAdUrl();
+            adIframe.src = selectedAdUrl;
             
-            // Sau khi HTML hiện ra thì mới chạy file JS của quảng cáo
-            const script = document.createElement('script');
-            script.src = "./ads/ads.js";
-            document.body.appendChild(script);
-        });
-</script>
+            const countdownSpan = skipButton.querySelector('span');
+            let timeLeft = 5; 
+            if (countdownSpan) countdownSpan.textContent = timeLeft;
+
+            // 2. Logic Countdown
+            const countdownInterval = setInterval(() => {
+                timeLeft -= 1;
+                if (timeLeft > 0) {
+                    if (countdownSpan) countdownSpan.textContent = timeLeft;
+                    else skipButton.textContent = `Skip ad (${timeLeft})`;
+                } else {
+                    clearInterval(countdownInterval); 
+                    skipButton.textContent = 'Skip ad'; 
+                    skipButton.classList.add('enabled');
+                    skipButton.removeAttribute('disabled'); 
+                }
+            }, 1000); 
+
+            // 3. Sự kiện Click
+            skipButton.addEventListener('click', () => {
+                if (skipButton.classList.contains('enabled')) {
+                    adOverlay.style.opacity = '0'; 
+                    setTimeout(() => { adOverlay.style.display = 'none'; }, 500); 
+                }
+            });
+
+            goToWebsiteButton.addEventListener('click', () => {
+                window.open(selectedAdUrl, '_blank'); 
+                adOverlay.style.opacity = '0'; 
+                setTimeout(() => { adOverlay.style.display = 'none'; }, 500);
+            });
+        }
+    </script>
 </body>
 </html>
