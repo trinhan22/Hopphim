@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -19,125 +18,65 @@
     
     <style>
         :root {
-            --bg-body: #191b24; --bg-dark: #0f111a; --text-main: #ffffff; --text-sub: #a0a0a0;
-            --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62); --primary-color: #FF5E62;
+            --bg-body: #191b24; 
+            --bg-dark: #0f111a; 
+            --text-main: #ffffff; 
+            --text-sub: #a0a0a0;
+            --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62); 
+            --primary-color: #FF5E62;
             --badge-bg: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%);
-            --font-main: 'Inter', sans-serif; --card-radius: 12px; --transition: all 0.3s ease-in-out;
-            --mobile-menu-bg: #15171e; --mobile-border: rgba(255,255,255,0.05);
+            --font-main: 'Inter', sans-serif; 
+            --card-radius: 12px;
+            --mobile-menu-bg: #15171e; 
+            --mobile-border: rgba(255,255,255,0.05);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
         body { font-family: var(--font-main); background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
         .text-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
 
-        /* --- TOAST NOTIFICATION --- */
+        /* --- TOAST & CONFIRM (Giữ nguyên) --- */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast {
-            background: #23252f; color: #fff; padding: 15px 25px; border-radius: 12px;
-            display: flex; align-items: center; gap: 12px; min-width: 300px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary-color);
-            animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto;
-        }
-        .toast.success { border-left-color: #2ecc71; }
-        .toast.error { border-left-color: #ff4757; }
-        .toast i { font-size: 1.2rem; }
+        .toast { background: #23252f; color: #fff; padding: 15px 25px; border-radius: 12px; display: flex; align-items: center; gap: 12px; min-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary-color); animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto; }
+        .toast.success { border-left-color: #2ecc71; } .toast.error { border-left-color: #ff4757; } .toast i { font-size: 1.2rem; }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* --- CUSTOM CONFIRM MODAL --- */
-        .custom-confirm-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10001;
-            display: none; justify-content: center; align-items: center;
-            opacity: 0; transition: 0.3s; backdrop-filter: blur(5px);
-        }
+        .custom-confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10001; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.3s; backdrop-filter: blur(5px); }
         .custom-confirm-overlay.active { display: flex; opacity: 1; }
-        .confirm-box {
-            background: #1f222e; width: 90%; max-width: 400px; padding: 30px;
-            border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
-            transform: scale(0.9); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
+        .confirm-box { background: #1f222e; width: 90%; max-width: 400px; padding: 30px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1); transform: scale(0.9); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         .custom-confirm-overlay.active .confirm-box { transform: scale(1); }
         .confirm-icon { font-size: 3rem; margin-bottom: 15px; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .confirm-title { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
         .confirm-desc { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 25px; line-height: 1.5; }
         .confirm-actions { display: flex; gap: 15px; justify-content: center; }
         .btn-confirm { padding: 10px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; font-size: 0.95rem; }
-        .btn-cancel { background: transparent; color: #ccc; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .btn-ok { background: var(--gradient-main); color: #fff; box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3); }
-        .btn-ok:hover { transform: translateY(-2px); }
+        .btn-cancel { background: transparent; color: #ccc; border: 1px solid rgba(255,255,255,0.2); } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-ok { background: var(--gradient-main); color: #fff; box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3); } .btn-ok:hover { transform: translateY(-2px); }
 
-        /* --- NEW LOADING SCREEN STYLE --- */
-        #loadingScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-            background: var(--bg-body); z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
-        }
-        
-        .loading-img {
-            width: 600px; /* Mặc định cho PC */
-            max-width: 80vw; /* Đảm bảo không bao giờ tràn màn hình mobile */
-            height: auto;
-            object-fit: contain;
-            
-            /* Animation Zoom In & Idle */
-            animation: 
-                zoomIn 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards,
-                floatIdle 4s ease-in-out infinite 0.8s; 
-        }
-
-        /* Khi màn hình nhỏ hơn 900px (Mobile/Tablet) */
-        @media (max-width: 900px) {
-            .loading-img {
-                width: 300px; /* Thu nhỏ lại cho xinh trên điện thoại */
-            }
-        }
-
-        /* Class kích hoạt Zoom Out khi tải xong */
-        .loading-img.zoom-out {
-            animation: zoomOut 0.5s cubic-bezier(0.6, -0.28, 0.74, 0.05) forwards !important;
-        }
-
-        /* 1. Zoom In: Từ ngoài (rất to) bay vào giữa */
-        @keyframes zoomIn {
-            0% { transform: scale(3); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* 2. Idle: Thu nhỏ dần chậm rãi */
-        @keyframes floatIdle {
-            0% { transform: scale(1); }
-            50% { transform: scale(0.85); } 
-            100% { transform: scale(1); }
-        }
-
-        /* 3. Zoom Out: Biến mất */
-        @keyframes zoomOut {
-            from { transform: scale(1); opacity: 1; }
-            to { transform: scale(0); opacity: 0; }
-        }
+        /* --- LOADING SCREEN --- */
+        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg-body); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .loading-img { width: 600px; max-width: 80vw; height: auto; object-fit: contain; animation: zoomIn 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards, floatIdle 4s ease-in-out infinite 0.8s; }
+        .loading-img.zoom-out { animation: zoomOut 0.5s cubic-bezier(0.6, -0.28, 0.74, 0.05) forwards !important; }
+        @media (max-width: 900px) { .loading-img { width: 300px; } }
+        @keyframes zoomIn { 0% { transform: scale(3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes floatIdle { 0% { transform: scale(1); } 50% { transform: scale(0.85); } 100% { transform: scale(1); } }
+        @keyframes zoomOut { from { transform: scale(1); opacity: 1; } to { transform: scale(0); opacity: 0; } }
 
         /* HEADER PC */
-        header { position: fixed; top: 0; width: 100%; height: 70px; padding: 0 4%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: transparent; transition: var(--transition); }
+        header { position: fixed; top: 0; width: 100%; height: 70px; padding: 0 4%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: transparent; transition: all 0.3s ease-in-out; }
         header.scrolled { background: var(--bg-dark); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
-        
         .header-left-group { display: flex; align-items: center; gap: 20px; }
         .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; z-index: 1002; }
         .logo img { height: 40px; object-fit: contain; }
         .logo-text { font-size: 1.5rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        
         .nav-links { display: flex; gap: 30px; list-style: none; }
         .nav-links li a { color: #ccc; text-decoration: none; font-size: 14px; font-weight: 600; text-transform: uppercase; transition: 0.3s; position: relative; }
         .nav-links li a:hover { color: #fff; }
         .nav-links li a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0%; height: 2px; background: var(--gradient-main); transition: 0.3s; }
         .nav-links li a:hover::after { width: 100%; }
-        
         .right-elements { display: flex; align-items: center; gap: 15px; }
         .search-box { display: flex; align-items: center; background: #23252f; padding: 8px 16px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.05); }
         .search-box input { background: transparent; border: none; color: #fff; margin-left: 10px; font-family: var(--font-main); font-size: 14px; width: 150px; }
-        
         .menu-toggle, .mobile-search-trigger { display: none; font-size: 1.5rem; color: #fff; cursor: pointer; }
-
-        /* User Login PC */
         .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; white-space: nowrap; }
         .btn-login:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 94, 98, 0.4); }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary-color); cursor: pointer; display: none; object-fit: cover; }
@@ -147,9 +86,20 @@
         .dropdown-item { background: transparent; border: none; color: #ccc; text-align: left; padding: 10px; cursor: pointer; transition: 0.2s; border-radius: 4px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
         .dropdown-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
-        /* HERO & CARD */
-        .hero { height: 75vh; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 20px; background-image: url('home-background.jpg'); background-size: cover; background-position: center center; background-repeat: no-repeat; }
-        .hero::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 250px; background: linear-gradient(to bottom, transparent 0%, #191b24 100%); z-index: 1; pointer-events: none; }
+        /* --- HERO SECTION --- */
+        .hero { 
+            height: 70vh; 
+            display: flex; align-items: center; justify-content: center; 
+            position: relative; 
+            background-image: url('home-background.jpg'); 
+            background-size: cover; background-position: center center; background-repeat: no-repeat; 
+        }
+        .hero::after { 
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; 
+            height: 250px; 
+            background: linear-gradient(to bottom, transparent 0%, var(--bg-body) 100%); 
+            z-index: 1; pointer-events: none; 
+        }
         .hero-content { z-index: 10; text-align: center; max-width: 900px; padding: 20px; animation: fadeUp 1s ease-out; }
         .hero-title { font-size: 4rem; font-weight: 900; margin-bottom: 15px; letter-spacing: -2px; background: var(--gradient-main); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3)); }
         .hero-desc { font-size: 1.2rem; color: #fff; font-weight: 500; max-width: 700px; margin: 0 auto; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
@@ -162,14 +112,15 @@
         .see-all-link { color: var(--text-sub); font-size: 0.9rem; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
         .see-all-link:hover { color: var(--primary-color); }
 
+        /* --- SLIDER (Regular Movies) --- */
         .slider-container { position: relative; }
         .movie-row { display: flex; gap: 15px; overflow-x: auto; scroll-behavior: smooth; padding: 10px 0; scrollbar-width: none; }
         .movie-row::-webkit-scrollbar { display: none; }
         .slider-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 50; width: 45px; height: 45px; border-radius: 50%; background: rgba(15,17,26, 0.8); color: #fff; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; opacity: 0; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
-        .slider-container:hover .slider-arrow { opacity: 1; }
-        .slider-arrow:hover { background: var(--primary-color); border-color: var(--primary-color); }
+        .slider-container:hover .slider-arrow { opacity: 1; } .slider-arrow:hover { background: var(--primary-color); border-color: var(--primary-color); }
         .arrow-left { left: -20px; } .arrow-right { right: -20px; }
 
+        /* --- MOVIE CARD (Regular) --- */
         .movie-card { flex: 0 0 200px; height: 300px; position: relative; border-radius: var(--card-radius); overflow: hidden; cursor: pointer; background: #23252f; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.3s ease; }
         .movie-poster { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 30%, transparent 60%); z-index: 2; pointer-events: none; }
@@ -178,26 +129,115 @@
         .movie-meta { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: #e0e0e0; font-weight: 500; }
         .badge-hd { background: var(--badge-bg); color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
         .dot { width: 4px; height: 4px; background: #FF5E62; border-radius: 50%; }
-        
         .hover-actions { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; gap: 10px; z-index: 6; opacity: 0; transition: all 0.3s ease; }
-        .btn-hover-play { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); border: 2px solid #fff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; cursor: pointer; }
+        .btn-hover-play, .btn-hover-delete { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); border: 2px solid #fff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; cursor: pointer; }
+        .btn-hover-delete { background: rgba(255, 71, 87, 0.8); }
         .btn-hover-play:hover { background: var(--primary-color); border-color: var(--primary-color); transform: scale(1.1); }
-        
-        .btn-hover-delete {
-            width: 45px; height: 45px; border-radius: 50%;
-            background: rgba(255, 71, 87, 0.8);
-            backdrop-filter: blur(4px); border: 2px solid #fff;
-            color: #fff; display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; transition: 0.2s; cursor: pointer;
-        }
-        .btn-hover-delete:hover {
-            background: #ff4757; transform: scale(1.1); border-color: #ff4757;
-        }
-
+        .btn-hover-delete:hover { background: #ff4757; transform: scale(1.1); border-color: #ff4757; }
         .movie-card:hover { transform: scale(1.05); z-index: 10; box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
         .movie-card:hover .movie-poster { filter: brightness(0.6); }
         .movie-card:hover .hover-actions { opacity: 1; }
 
+        /* ======================== TOP 5 SECTION (STYLE ẢNH 2: POSTER TRÊN, SỐ NGOÀI) ======================== */
+        .top-10-wrapper {
+            position: relative;
+            z-index: 20; 
+            margin-top: 50px; 
+            padding-bottom: 20px;
+        }
+
+        .top-10-header {
+            padding: 0 4% 10px;
+            display: flex; align-items: center; gap: 15px;
+        }
+        
+        .top-10-header h2 {
+            font-size: 2.2rem; font-weight: 900; font-style: italic; text-transform: uppercase; color: #fff; 
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px;
+        }
+
+        /* GRID LAYOUT CHO TOP 5 PC */
+        .top-5-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5 Cột đều nhau */
+            gap: 20px;
+            padding: 20px 4%;
+        }
+
+        /* CARD TOP MỚI */
+        .top-card-style2 {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .top-card-style2:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Khung Poster: Bo góc, đổ bóng */
+        .top-poster-style2 {
+            width: 100%;
+            aspect-ratio: 2/3; /* Tỷ lệ poster chuẩn */
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .top-poster-style2 img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* INFO ROW: Hàng ngang chứa Số + Text */
+        .top-info-row {
+            display: flex;
+            align-items: flex-start; /* Căn hàng trên */
+            margin-top: 15px; /* Cách poster ra */
+        }
+
+        /* SỐ HẠNG: Nằm bên trái, to, màu vàng */
+        .top-rank-style2 {
+            font-size: 4rem; 
+            line-height: 0.9;
+            font-family: 'Impact', sans-serif;
+            font-style: italic;
+            font-weight: 900;
+            color: #eebb5d; /* Màu vàng kem */
+            margin-right: 15px; 
+            text-shadow: 2px 2px 0px #000;
+            flex-shrink: 0; /* Không bị co lại */
+        }
+
+        /* Khối chữ: Bên phải */
+        .top-text-style2 {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 2px;
+        }
+
+        .top-title-style2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.4;
+            margin-bottom: 4px;
+            
+            /* Cắt chữ nếu quá dài (2 dòng) */
+            display: -webkit-box;
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .top-meta-style2 {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* ======================== FOOTER & MODAL ======================== */
         footer { background: var(--bg-dark); padding: 60px 4% 20px; margin-top: 80px; border-top: 1px solid #23252f; font-size: 0.9rem; }
         .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-bottom: 40px; }
         .footer-col h3 { font-size: 1.1rem; color: #fff; margin-bottom: 20px; font-weight: 700; }
@@ -206,82 +246,49 @@
         .footer-col ul { list-style: none; } .footer-col ul li { margin-bottom: 12px; }
         .footer-col ul li a { color: var(--text-sub); text-decoration: none; transition: 0.3s; } .footer-col ul li a:hover { color: var(--primary-color); padding-left: 5px; }
         .footer-bottom { border-top: 1px solid #23252f; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.8rem; }
-        
         .modal { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(15, 17, 26, 0.95); padding: 40px; overflow-y: auto; }
         .modal.active { display: block; }
         .modal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
         .modal-grid .movie-card { width: 100%; height: 280px; }
 
-        /* --- MOBILE OVERLAYS --- */
+        /* --- MOBILE OVERLAYS & RESPONSIVE --- */
         .mobile-overlay { display: none; position: fixed; inset: 0; z-index: 3000; transition: 0.3s ease-in-out; }
         .mobile-overlay.active { transform: translateX(0) !important; opacity: 1 !important; }
         .close-btn-overlay { position: absolute; font-size: 1.8rem; color: #fff; cursor: pointer; z-index: 10; }
-
-        /* ================= MOBILE OPTIMIZATION ================= */
         @media (max-width: 900px) {
             header { height: 60px; padding: 0 4%; justify-content: space-between; }
             .header-left-group { gap: 25px; order: 1; }
             .menu-toggle { display: block; font-size: 1.5rem; }
-            .logo { order: 2; margin: 0; }
-            .logo img { height: 32px; }
-            .logo-text { display: block; font-size: 1.2rem; }
+            .logo { order: 2; margin: 0; } .logo img { height: 32px; } .logo-text { display: block; font-size: 1.2rem; }
             .right-elements { order: 3; gap: 15px; }
             .mobile-search-trigger { display: block; font-size: 1.2rem; }
-            
             .nav-links, .search-box, .desktop-auth { display: none !important; }
-
-            /* 2. MOBILE MENU OVERLAY */
-            #mobileMenuOverlay {
-                display: block; background: var(--mobile-menu-bg);
-                transform: translateX(-100%); padding: 25px; width: 300px;
-                box-shadow: 5px 0 20px rgba(0,0,0,0.5);
-            }
+            #mobileMenuOverlay { display: block; background: var(--mobile-menu-bg); transform: translateX(-100%); padding: 25px; width: 300px; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
             .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-            .menu-logo { display: flex; align-items: center; gap: 10px; }
-            .menu-logo img { height: 35px; }
-            .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            .menu-logo { display: flex; align-items: center; gap: 10px; } .menu-logo img { height: 35px; } .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
             #mobileMenuOverlay .close-btn-overlay { position: static; color: #fff; opacity: 0.7; }
-
-            .member-btn-large {
-                width: 100%; padding: 12px; 
-                background: linear-gradient(90deg, #FF8F50, #FF5E62);
-                color: #fff; border: none; border-radius: 8px; 
-                font-weight: 700; font-size: 1rem;
-                display: flex; align-items: center; justify-content: center; gap: 10px;
-                margin-bottom: 25px; cursor: pointer;
-                box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3);
-            }
-            
+            .member-btn-large { width: 100%; padding: 12px; background: linear-gradient(90deg, #FF8F50, #FF5E62); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
             .mobile-menu-grid { display: flex; flex-direction: column; gap: 5px; }
-            .mobile-menu-link {
-                color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem;
-                padding: 12px 0; display: flex; align-items: center; gap: 15px;
-                border-bottom: 1px solid var(--mobile-border);
-            }
-            .mobile-menu-link i { width: 25px; color: var(--primary-color); text-align: center; }
-            .mobile-menu-link:hover { color: #fff; padding-left: 5px; transition: 0.2s; }
-
-            /* 3. MOBILE SEARCH OVERLAY */
-            #mobileSearchOverlay {
-                display: block; background: #1f212d;
-                transform: translateY(-100%); opacity: 0;
-            }
+            .mobile-menu-link { color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem; padding: 12px 0; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--mobile-border); }
+            .mobile-menu-link i { width: 25px; color: var(--primary-color); text-align: center; } .mobile-menu-link:hover { color: #fff; padding-left: 5px; transition: 0.2s; }
+            #mobileSearchOverlay { display: block; background: #1f212d; transform: translateY(-100%); opacity: 0; }
             #mobileSearchOverlay.active { transform: translateY(0) !important; opacity: 1 !important; }
             .search-header-mobile { display: flex; align-items: center; padding: 15px 20px; background: #2a2d3a; border-bottom: 1px solid rgba(255,255,255,0.1); }
             .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; font-family: var(--font-main); margin-right: 15px; }
             #mobileSearchOverlay .close-btn-overlay { position: static; color: #fff; }
             .search-content-mobile { padding: 20px; overflow-y: auto; height: calc(100vh - 70px); }
             
-            /* Card Style Mobile (Horizontal) */
-            .sidebar-card { display: flex; gap: 15px; margin-bottom: 15px; padding: 10px; background: var(--bg-card); border-radius: 8px; transition: 0.2s; cursor: pointer; border: 1px solid transparent; }
-            .sb-thumb { width: 70px; height: 100px; flex-shrink: 0; border-radius: 6px; overflow: hidden; }
-            .sb-thumb img { width: 100%; height: 100%; object-fit: cover; }
-            .sb-info { display: flex; flex-direction: column; justify-content: center; }
-            .sb-title { font-size: 0.95rem; font-weight: 700; color: #fff; }
-
-            /* Content Adjustment */
-            .hero { height: 50vh; }
-            .hero-title { font-size: 2.2rem; } .hero-desc { font-size: 0.9rem; }
+            /* Responsive cho Top 5 (Mobile: Trượt ngang) */
+            .top-5-grid {
+                display: flex; gap: 15px; overflow-x: auto; padding: 10px 4% 20px;
+                scroll-behavior: smooth; scrollbar-width: none;
+            }
+            .top-5-grid::-webkit-scrollbar { display: none; }
+            .top-card-style2 { flex: 0 0 160px; /* Chiều rộng card trên mobile */ }
+            .top-rank-style2 { font-size: 3rem; margin-right: 10px; }
+            .top-title-style2 { font-size: 0.9rem; }
+            
+            .hero { height: 50vh; } .hero-title { font-size: 2.2rem; } .hero-desc { font-size: 0.9rem; }
             .movie-card { flex: 0 0 140px; height: 210px; }
             .slider-arrow { display: none; }
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -313,39 +320,20 @@
 
     <div id="mobileMenuOverlay" class="mobile-overlay">
         <div class="menu-header">
-            <div class="menu-logo">
-                <img src="/LOGO.WEBP" alt="HopPhim">
-                <span>HOPPHIM</span>
-            </div>
+            <div class="menu-logo"><img src="/LOGO.WEBP" alt="HopPhim"><span>HOPPHIM</span></div>
              <i class="fas fa-times close-btn-overlay" onclick="closeMobileMenu()"></i>
         </div>
-        
         <button class="member-btn-large" id="mobileMemberBtn" onclick="window.location.href='/login.html'">
             <i class="fas fa-user-circle"></i> <span id="mobileMemberText">Đăng nhập / Đăng ký</span>
         </button>
-
         <div class="mobile-menu-grid">
-            <a href="/" class="mobile-menu-link" onclick="closeMobileMenu(); loadHome()">
-                <i class="fas fa-home"></i> Trang chủ
-            </a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('phim-bo', 'Phim Bộ')">
-                <i class="fas fa-tv"></i> Phim Bộ
-            </a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('phim-le', 'Phim Lẻ')">
-                <i class="fas fa-film"></i> Phim Lẻ
-            </a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCountry('han-quoc', 'Hàn Quốc')">
-                <i class="fas fa-globe-asia"></i> Hàn Quốc
-            </a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCountry('trung-quoc', 'Trung Quốc')">
-                <i class="fas fa-torii-gate"></i> Trung Quốc
-            </a>
-            <a href="hopteam.html" class="mobile-menu-link" onclick="closeMobileMenu()">
-                <i class="fas fa-users"></i> Về HopTeam
-            </a>
-            <a href="/profile.html" class="mobile-menu-link" id="mobileAccountLink" style="display: none;" onclick="closeMobileMenu()">
-                <i class="fas fa-user-cog"></i> Quản lý tài khoản
-            </a>
+            <a href="/" class="mobile-menu-link" onclick="closeMobileMenu(); loadHome()"><i class="fas fa-home"></i> Trang chủ</a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('phim-bo', 'Phim Bộ')"><i class="fas fa-tv"></i> Phim Bộ</a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('phim-le', 'Phim Lẻ')"><i class="fas fa-film"></i> Phim Lẻ</a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCountry('han-quoc', 'Hàn Quốc')"><i class="fas fa-globe-asia"></i> Hàn Quốc</a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCountry('trung-quoc', 'Trung Quốc')"><i class="fas fa-torii-gate"></i> Trung Quốc</a>
+            <a href="hopteam.html" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-users"></i> Về HopTeam</a>
+            <a href="/profile.html" class="mobile-menu-link" id="mobileAccountLink" style="display: none;" onclick="closeMobileMenu()"><i class="fas fa-user-cog"></i> Quản lý tài khoản</a>
         </div>
     </div>
 
@@ -355,22 +343,14 @@
             <input type="text" id="mobileSearchInput" class="search-input-mobile" placeholder="Nhập tên phim...">
             <i class="fas fa-times close-btn-overlay" onclick="closeMobileSearch()"></i>
         </div>
-        <div class="search-content-mobile">
-            <div id="mobileSearchResults"></div>
-        </div>
+        <div class="search-content-mobile"><div id="mobileSearchResults"></div></div>
     </div>
 
     <header id="header">
         <div class="header-left-group">
-            <div class="menu-toggle" onclick="openMobileMenu()">
-                <i class="fas fa-bars"></i>
-            </div>
-            <div class="logo" onclick="loadHome()">
-                <img src="/LOGO.WEBP" alt="HopPhim">
-                <span class="logo-text">HOPPHIM</span>
-            </div>
+            <div class="menu-toggle" onclick="openMobileMenu()"><i class="fas fa-bars"></i></div>
+            <div class="logo" onclick="loadHome()"><img src="/LOGO.WEBP" alt="HopPhim"><span class="logo-text">HOPPHIM</span></div>
         </div>
-
         <ul class="nav-links" id="navLinks">
             <li><a href="/" onclick="loadHome()">Trang chủ</a></li>
             <li><a href="#" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ</a></li>
@@ -379,15 +359,9 @@
             <li><a href="#" onclick="loadCountry('trung-quoc', 'Trung Quốc')">Trung Quốc</a></li>
             <li><a href="hopteam.html">Về HopTeam</a></li>
         </ul>
-
         <div class="right-elements">
-            <div class="mobile-search-trigger" onclick="openMobileSearch()">
-                 <i class="fas fa-search"></i>
-            </div>
-            <div class="search-box">
-                <i class="fas fa-search" style="color: #a0a0a0"></i>
-                <input type="text" id="searchInput" placeholder="Tìm kiếm phim...">
-            </div>
+            <div class="mobile-search-trigger" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
+            <div class="search-box"><i class="fas fa-search" style="color: #a0a0a0"></i><input type="text" id="searchInput" placeholder="Tìm kiếm phim..."></div>
             <div class="desktop-auth" style="position: relative;">
                 <button id="btnLogin" class="btn-login" onclick="window.location.href='/login.html'">Đăng nhập</button>
                 <img id="userAvatar" class="user-avatar" src="" alt="User" onclick="toggleUserDropdown()">
@@ -424,13 +398,8 @@
     <footer>
         <div class="footer-grid">
             <div class="footer-col">
-                <div class="footer-brand">
-                    <img src="/logo.webp" alt="HopPhim">
-                    <span class="logo-text">HOPPHIM</span>
-                </div>
-                <p style="color: #a0a0a0; line-height: 1.6; margin-top: 15px;">
-                    Trang xem phim trực tuyến miễn phí chất lượng cao.
-                </p>
+                <div class="footer-brand"><img src="/logo.webp" alt="HopPhim"><span class="logo-text">HOPPHIM</span></div>
+                <p style="color: #a0a0a0; line-height: 1.6; margin-top: 15px;">Trang xem phim trực tuyến miễn phí chất lượng cao.</p>
             </div>
             <div class="footer-col">
                 <h3>Danh mục</h3>
@@ -457,9 +426,7 @@
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 HopPhim. All Rights Reserved By HopTeam.</p>
-        </div>
+        <div class="footer-bottom"><p>&copy; 2026 HopPhim. All Rights Reserved By HopTeam.</p></div>
     </footer>
 
     <script type="module">
@@ -662,21 +629,13 @@
             const screen = document.getElementById('loadingScreen');
             const img = document.querySelector('.loading-img');
             if(screen && img) {
-                // Kích hoạt class zoom-out
                 img.classList.add('zoom-out');
-                
-                // Đợi animation chạy xong (0.5s) rồi mới ẩn div
                 setTimeout(() => {
                     screen.style.display = 'none';
                 }, 500); 
             }
         }
-
-        // Gọi hàm ẩn loading sau 2.5 giây (hoặc khi data load xong)
-        setTimeout(() => {
-            hideLoading();
-        }, 2500);
-
+        setTimeout(() => { hideLoading(); }, 2500);
 
         // --- TIME HELPER ---
         function timeSince(date) {
@@ -721,8 +680,8 @@
             mobileSearchTimeout = setTimeout(() => {
                 const keyword = e.target.value;
                 if(keyword.length > 2) {
-                     mobileSearchResults.innerHTML = '<div class="loader-spinner" style="margin: 20px auto;"></div>';
-                     fetchAPI(`/tim-kiem?keyword=${keyword}`).then(data => {
+                      mobileSearchResults.innerHTML = '<div class="loader-spinner" style="margin: 20px auto;"></div>';
+                      fetchAPI(`/tim-kiem?keyword=${keyword}`).then(data => {
                         mobileSearchResults.innerHTML = '';
                         if(data?.data?.items) {
                             mobileSearchResults.appendChild(createMovieRow(`Kết quả: ${keyword}`, data.data.items));
@@ -753,7 +712,71 @@
             try { return await (await fetch('https://ophim1.com/v1/api' + endpoint)).json(); } catch { return null; }
         }
 
-        // 1. CREATE CARD HTML (CLEAN URL)
+        // --- CẤU HÌNH TOP 5 THỦ CÔNG ---
+        const MANUAL_TOP_5 = [
+            "yet-hi",
+            "tieng-yeu-nay-anh-dich-duoc-khong", 
+            "con-say-mua-xuan",
+            "kho-do-danh",
+            "nu-hoang-nuoc-mat" 
+        ];
+
+        // 1. TẠO HTML TOP 5 (GIAO DIỆN CHUẨN POSTER TRÊN - THÔNG TIN DƯỚI)
+        window.createTop10HTML = function(movie, index) {
+            let displayImg = movie.poster_url; 
+            if (!displayImg || displayImg === "") displayImg = movie.thumb_url;
+            if (!displayImg.startsWith('http')) displayImg = `${IMG_BASE}${displayImg}`;
+            
+            const playLink = `/xem-phim/${movie.slug}`;
+            const rank = index + 1; 
+
+            return `
+                <div class="top-card-style2" onclick="window.location.href='${playLink}'">
+                    <div class="top-poster-style2">
+                        <img src="${displayImg}" loading="lazy" alt="${movie.name}">
+                        <div style="position:absolute; top:10px; right:10px; background:var(--primary-color); color:#fff; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:4px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                            ${movie.quality || 'HD'}
+                        </div>
+                    </div>
+                    
+                    <div class="top-info-row">
+                        <div class="top-rank-style2">${rank}</div>
+                        <div class="top-text-style2">
+                            <div class="top-title-style2">${movie.name}</div>
+                            <div class="top-meta-style2">${movie.origin_name} (${movie.year})</div>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        // HÀM TẢI TOP 10
+        async function loadManualTop10() {
+            const promises = MANUAL_TOP_5.map(slug => fetchAPI(`/phim/${slug}`));
+            const results = await Promise.all(promises);
+            const validMovies = results
+                .filter(res => res && res.status && res.data && res.data.item)
+                .map(res => res.data.item);
+
+            if (validMovies.length > 0) {
+                const section = document.createElement('section');
+                section.className = 'top-10-wrapper';
+                const rowId = 'row-top-10';
+
+                section.innerHTML = `
+                    <div class="top-10-header">
+                        <i class="fas fa-fire" style="color: #FF5E62; font-size: 2rem;"></i>
+                        <h2>TOP 5 THỊNH HÀNH</h2>
+                    </div>
+                    
+                    <div class="top-5-grid">
+                        ${validMovies.map((m, i) => window.createTop10HTML(m, i)).join('')}
+                    </div>
+                `;
+                mainContent.prepend(section);
+            }
+        }
+
+        // 2. TẠO HTML CHO CARD THƯỜNG
         window.createCardHTML = function(movie) {
             let imgUrl = movie.thumb_url;
             if (!imgUrl.startsWith('http')) imgUrl = `${IMG_BASE}${movie.thumb_url}`;
@@ -781,12 +804,10 @@
                 </div>`;
         }
 
-        // 2. CREATE HISTORY CARD HTML (CLEAN URL)
         window.createHistoryCardHTML = function(movie, timeLabel) {
             let imgUrl = movie.thumb_url;
             if (!imgUrl.startsWith('http')) imgUrl = `${IMG_BASE}${movie.thumb_url}`;
             const playLink = `/xem-phim/${movie.slug}`;
-            
             const safeTime = timeSince(movie.timestamp);
 
             return `
@@ -832,27 +853,28 @@
         }
 
         async function loadHome() {
-            // Không bật loading ở đây nữa vì đã có loading toàn trang lúc đầu
             try {
-                const [home, le, bo, han, hoat] = await Promise.all([
-                    fetchAPI('/home'), fetchAPI('/danh-sach/phim-le'), fetchAPI('/danh-sach/phim-bo'),
-                    fetchAPI('/quoc-gia/han-quoc'), fetchAPI('/danh-sach/hoat-hinh')
+                mainContent.innerHTML = ''; 
+                await loadManualTop10(); // Tải Top 10 trước
+
+                const [home, bo, han, hoat] = await Promise.all([
+                    fetchAPI('/home'), 
+                    fetchAPI('/danh-sach/phim-bo'),
+                    fetchAPI('/quoc-gia/han-quoc'), 
+                    fetchAPI('/danh-sach/hoat-hinh')
                 ]);
-                mainContent.innerHTML = '';
+                
                 if(home?.data?.items) mainContent.appendChild(createMovieRow('Phim Mới Cập Nhật', home.data.items));
-                if(le?.data?.items) mainContent.appendChild(createMovieRow('Phim Lẻ Hot', le.data.items, '/danh-sach/phim-le'));
                 if(bo?.data?.items) mainContent.appendChild(createMovieRow('Phim Bộ Tuyển Chọn', bo.data.items, '/danh-sach/phim-bo'));
                 if(han?.data?.items) mainContent.appendChild(createMovieRow('K-Drama', han.data.items, '/quoc-gia/han-quoc'));
                 if(hoat?.data?.items) mainContent.appendChild(createMovieRow('Anime', hoat.data.items, '/danh-sach/hoat-hinh'));
+
             } catch(e) { console.log(e); } 
-            finally { 
-                // Khi tải xong data thì mới ẩn Loading
-                hideLoading();
-            }
+            finally { hideLoading(); }
         }
 
         async function loadCategory(slug, title) {
-            const data = await fetchAPI(`/${['han-quoc','trung-quoc'].includes(slug)?'quoc-gia':'danh-sach'}/${slug}`);
+            const data = await fetchAPI(`/${['han-quoc','trung-quoc','au-my'].includes(slug)?'quoc-gia':'danh-sach'}/${slug}`);
             mainContent.innerHTML = '';
             if(data?.data?.items) mainContent.appendChild(createMovieRow(title, data.data.items));
         }
@@ -882,43 +904,5 @@
 
         loadHome();
     </script>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
 </body>
 </html>
