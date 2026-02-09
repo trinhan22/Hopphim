@@ -243,7 +243,7 @@
 
     <div id="loadingScreen">
         <div class="loader-spinner"></div>
-        <div class="text-gradient" style="font-weight: 600;">Đang tải...</div>
+        <div class="text-gradient" style="font-weight: 600;">Đang tải phim...</div>
     </div>
 
     <div id="toast-container"></div>
@@ -252,7 +252,7 @@
         <div class="confirm-box">
             <div class="confirm-icon"><i class="fas fa-exclamation-circle"></i></div>
             <h3 class="confirm-title">Xác nhận</h3>
-            <p class="confirm-desc" id="confirmMsg">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+            <p class="confirm-desc" id="confirmMsg">Bạn có chắc chắn muốn thực hiện?</p>
             <div class="confirm-actions">
                 <button class="btn-confirm btn-cancel" id="btnConfirmNo">Hủy bỏ</button>
                 <button class="btn-confirm btn-ok" id="btnConfirmYes">Đồng ý</button>
@@ -452,6 +452,7 @@
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, setDoc, addDoc, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // 1. CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc",
             authDomain: "hopphim-29e1c.firebaseapp.com",
@@ -466,7 +467,12 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // UI
+        // 2. CONSTANTS
+        const API_BASE = 'https://ophim1.com/v1/api/phim';
+        const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
+        
+        // UI Elements
+        const loadingScreen = document.getElementById('loadingScreen');
         const btnLogin = document.getElementById('btnLogin');
         const userAvatar = document.getElementById('userAvatar');
         const userMenu = document.getElementById('userMenu');
@@ -475,20 +481,29 @@
         const mobileAccountLink = document.getElementById('mobileAccountLink');
         const cmtMyAvatar = document.getElementById('cmtMyAvatar');
 
-        window.logout = async () => {
-            const ok = await window.customConfirm("Bạn có chắc chắn muốn đăng xuất?");
-            if(ok) {
-                await signOut(auth);
-                userMenu.classList.remove('active');
-                closeMobileMenu();
-                window.showToast("Đã đăng xuất!", "success");
-            }
-        }
-        window.toggleUserDropdown = () => userMenu.classList.toggle('active');
-
         let currentUser = null;
 
-        // AUTH STATE
+        // 3. SLUG LOGIC (CRITICAL FOR COMMENTS & LOADING)
+        const urlParams = new URLSearchParams(window.location.search);
+        let movieSlug = urlParams.get('slug');
+
+        // Logic Hybrid: Nếu không có ?slug=, lấy từ đường dẫn (Clean URL)
+        if (!movieSlug) {
+            const path = window.location.pathname;
+            const parts = path.split('/').filter(part => part !== '');
+            const lastPart = parts[parts.length - 1];
+            if (lastPart && lastPart !== 'index.html' && lastPart !== 'xem-phim') {
+                movieSlug = lastPart;
+            }
+        }
+
+        // Nếu vẫn không có slug, quay về trang chủ
+        if (!movieSlug) {
+            alert('Không tìm thấy phim!');
+            window.location.href = '/'; 
+        }
+
+        // 4. AUTH & USER STATE
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
@@ -519,7 +534,18 @@
             }
         });
 
-        // --- HELPER: TOAST & CONFIRM ---
+        // 5. GLOBAL FUNCTIONS (EXPOSE TO WINDOW)
+        window.logout = async () => {
+            const ok = await window.customConfirm("Bạn có chắc chắn muốn đăng xuất?");
+            if(ok) {
+                await signOut(auth);
+                userMenu.classList.remove('active');
+                closeMobileMenu();
+                window.showToast("Đã đăng xuất!", "success");
+            }
+        }
+        window.toggleUserDropdown = () => userMenu.classList.toggle('active');
+
         window.showToast = (msg, type = 'success') => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -540,29 +566,7 @@
             });
         }
 
-        // --- SLUG LOGIC (QUAN TRỌNG) ---
-        // 1. Ưu tiên lấy từ ?slug= (Test Local)
-        const urlParams = new URLSearchParams(window.location.search);
-        let movieSlug = urlParams.get('slug');
-
-        // 2. Nếu không có ?slug=, lấy từ đường dẫn (Netlify: /xem-phim/slug)
-        if (!movieSlug) {
-            const path = window.location.pathname;
-            const parts = path.split('/').filter(part => part !== '');
-            // Lấy phần tử cuối cùng
-            const lastPart = parts[parts.length - 1];
-            // Tránh lấy nhầm 'index.html' hoặc 'xem-phim' nếu URL là /xem-phim/
-            if (lastPart && lastPart !== 'index.html' && lastPart !== 'xem-phim') {
-                movieSlug = lastPart;
-            }
-        }
-
-        if (!movieSlug) {
-            window.showToast('Không tìm thấy phim!', 'error');
-            setTimeout(() => window.location.href = '/', 2000);
-        }
-
-        // --- BÌNH LUẬN LOGIC ---
+        // --- COMMENT LOGIC ---
         window.sendComment = async () => {
             if(!currentUser) {
                 window.showToast("Vui lòng đăng nhập để bình luận!", "error");
@@ -572,9 +576,9 @@
             if(!text) return;
 
             try {
-                // Sửa: Dùng movieSlug đã lấy ở trên
+                // ADD COMMENT TO FIRESTORE
                 await addDoc(collection(db, "comments"), {
-                    movieId: movieSlug, 
+                    movieId: movieSlug, // Uses the correctly calculated slug
                     userId: currentUser.uid,
                     userName: currentUser.displayName || "Thành viên",
                     userAvatar: currentUser.photoURL || "/Guest.webp",
@@ -583,19 +587,19 @@
                 });
                 document.getElementById('cmtInput').value = '';
                 window.showToast("Đã gửi bình luận!", "success");
-            } catch(e) { window.showToast("Lỗi gửi bình luận: " + e.message, "error"); }
+            } catch(e) { 
+                console.error(e);
+                window.showToast("Lỗi gửi bình luận: " + e.message, "error"); 
+            }
         }
 
+        // Realtime Listener
         if(movieSlug) {
             const q = query(collection(db, "comments"), where("movieId", "==", movieSlug), orderBy("timestamp", "desc"));
             onSnapshot(q, (snapshot) => {
                 const list = document.getElementById('commentList');
                 if(snapshot.empty) {
-                    list.innerHTML = `
-                        <div class="empty-comment">
-                            <i class="fas fa-comment-slash"></i>
-                            Chưa có bình luận nào. Hãy là người đầu tiên!
-                        </div>`;
+                    list.innerHTML = `<div class="empty-comment"><i class="fas fa-comment-slash"></i> Chưa có bình luận nào. Hãy là người đầu tiên!</div>`;
                     return;
                 }
                 
@@ -616,85 +620,25 @@
                                 </div>
                                 <div class="comment-text">${c.content}</div>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
                 list.innerHTML = html;
             });
         }
 
-        // LƯU LỊCH SỬ
-        window.saveToHistory = async (movie) => {
-            if (!currentUser) return; 
-            const movieData = {
-                slug: movie.slug, name: movie.name, origin_name: movie.origin_name,
-                thumb_url: movie.thumb_url, quality: movie.quality, year: movie.year,
-                timestamp: Date.now() 
-            };
-            const userRef = doc(db, "users", currentUser.uid);
-            try {
-                const docSnap = await getDoc(userRef);
-                let history = docSnap.exists() ? (docSnap.data().watchHistory || []) : [];
-                history = history.filter(m => m.slug !== movie.slug);
-                history.push(movieData);
-                if (history.length > 20) history.shift();
-                await setDoc(userRef, { watchHistory: history }, { merge: true });
-            } catch (e) { console.error(e); }
-        };
-
-        function timeSince(date) {
-            if (!date) return "Gần đây";
-            const seconds = Math.floor((Date.now() - date) / 1000);
-            if (seconds < 60) return "Vừa xong";
-            const minutes = Math.floor(seconds / 60);
-            if (minutes < 60) return minutes + " phút trước";
-            const hours = Math.floor(minutes / 60);
-            if (hours < 24) return hours + " giờ trước";
-            return Math.floor(hours / 24) + " ngày trước";
-        }
-    </script>
-
-    <script>
-        const menuOverlay = document.getElementById('mobileMenuOverlay');
-        const searchOverlay = document.getElementById('mobileSearchOverlay');
-        const mobileSearchInput = document.getElementById('mobileSearchInput');
-        const mobileSearchResults = document.getElementById('mobileSearchResults');
-
-        function openMobileMenu() { menuOverlay.classList.add('active'); }
-        function closeMobileMenu() { menuOverlay.classList.remove('active'); }
-        async function openMobileSearch() { searchOverlay.classList.add('active'); mobileSearchInput.focus(); }
-        function closeMobileSearch() { searchOverlay.classList.remove('active'); mobileSearchInput.value = ''; }
-
-        const API_BASE = 'https://ophim1.com/v1/api/phim';
-        const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
-        const loadingScreen = document.getElementById('loadingScreen');
-        
-        // Fail safe loading
-        setTimeout(() => { if(loadingScreen) loadingScreen.style.display = 'none'; }, 3000);
-
+        // 6. MOVIE LOGIC
         async function loadMovie() {
-            // Biến movieSlug được lấy từ module script bên trên (cần chuyển logic vào đây hoặc dùng global variable)
-            // Tuy nhiên, do cấu trúc module, ta sẽ lấy lại slug ở đây cho chắc chắn
-            const urlParams = new URLSearchParams(window.location.search);
-            let slug = urlParams.get('slug');
-            if (!slug) {
-                const path = window.location.pathname;
-                const parts = path.split('/').filter(part => part !== '');
-                const lastPart = parts[parts.length - 1];
-                if (lastPart && lastPart !== 'index.html' && lastPart !== 'xem-phim') slug = lastPart;
-            }
-
-            if (!slug) return;
-
             try {
-                const res = await fetch(`${API_BASE}/${slug}`);
+                const res = await fetch(`${API_BASE}/${movieSlug}`);
                 const data = await res.json();
                 if (data.status) {
                     renderInfo(data.data.item);
                     renderEpisodes(data.data.item.episodes);
                     loadRelated();
                 } else { window.showToast('Lỗi tải phim', 'error'); }
-            } catch (e) { console.error(e); } finally { loadingScreen.style.display = 'none'; }
+            } catch (e) { console.error(e); } finally { 
+                if(loadingScreen) loadingScreen.style.display = 'none'; 
+            }
         }
 
         function renderInfo(movie) {
@@ -712,16 +656,13 @@
             tagsHtml += `<span class="tag-item">${movie.lang || 'Vietsub'}</span>`;
             tagsHtml += `<span class="tag-item">${movie.year}</span>`;
             
-            if (movie.category) {
-                movie.category.forEach(cat => { tagsHtml += `<span class="tag-item">${cat.name}</span>`; });
-            }
-            if (movie.country && movie.country[0]) {
-                 tagsHtml += `<span class="tag-item"><i class="fas fa-globe"></i> ${movie.country[0].name}</span>`;
-            }
+            if (movie.category) movie.category.forEach(cat => { tagsHtml += `<span class="tag-item">${cat.name}</span>`; });
+            if (movie.country && movie.country[0]) tagsHtml += `<span class="tag-item"><i class="fas fa-globe"></i> ${movie.country[0].name}</span>`;
 
             document.getElementById('mTags').innerHTML = tagsHtml;
             
-            setTimeout(() => { if (window.saveToHistory) window.saveToHistory(movie); }, 3000);
+            // Save history after loading
+            setTimeout(() => { if (currentUser) saveToHistory(movie); }, 3000);
         }
 
         function renderEpisodes(episodes) {
@@ -755,7 +696,7 @@
                     let html = '';
                     data.data.items.slice(0,5).forEach(m => {
                         const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-                        // SỬA LINK CLEAN URL
+                        // Correct Clean URL Link
                         html += `
                             <div class="sidebar-card" onclick="window.location.href='/xem-phim/${m.slug}'">
                                 <div class="sb-thumb"><img src="${img}"></div>
@@ -771,7 +712,50 @@
             } catch(e) {}
         }
 
+        // HISTORY SAVING
+        async function saveToHistory(movie) {
+            if (!currentUser) return; 
+            const movieData = {
+                slug: movie.slug, name: movie.name, origin_name: movie.origin_name,
+                thumb_url: movie.thumb_url, quality: movie.quality, year: movie.year,
+                timestamp: Date.now() 
+            };
+            const userRef = doc(db, "users", currentUser.uid);
+            try {
+                const docSnap = await getDoc(userRef);
+                let history = docSnap.exists() ? (docSnap.data().watchHistory || []) : [];
+                history = history.filter(m => m.slug !== movie.slug);
+                history.push(movieData);
+                if (history.length > 20) history.shift();
+                await setDoc(userRef, { watchHistory: history }, { merge: true });
+            } catch (e) { console.error(e); }
+        }
+
+        function timeSince(date) {
+            if (!date) return "Gần đây";
+            const seconds = Math.floor((Date.now() - date) / 1000);
+            if (seconds < 60) return "Vừa xong";
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return minutes + " phút trước";
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return hours + " giờ trước";
+            return Math.floor(hours / 24) + " ngày trước";
+        }
+
+        // --- MOBILE UI HELPERS ---
+        const menuOverlay = document.getElementById('mobileMenuOverlay');
+        const searchOverlay = document.getElementById('mobileSearchOverlay');
+        const mobileSearchInput = document.getElementById('mobileSearchInput');
+        const mobileSearchResults = document.getElementById('mobileSearchResults');
+
+        window.openMobileMenu = () => menuOverlay.classList.add('active');
+        window.closeMobileMenu = () => menuOverlay.classList.remove('active');
+        window.openMobileSearch = () => { searchOverlay.classList.add('active'); mobileSearchInput.focus(); }
+        window.closeMobileSearch = () => { searchOverlay.classList.remove('active'); mobileSearchInput.value = ''; }
+
+        // Start App
         loadMovie();
+
     </script>
 </body>
 </html>
