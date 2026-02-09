@@ -24,32 +24,38 @@
         .text-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
 
         /* --- CSS QUẢNG CÁO (ADS) --- */
-        /* Lớp phủ toàn màn hình (Z-Index cao nhất) */
         #ad-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.85); 
             display: flex; justify-content: center; align-items: center;
-            z-index: 99999; /* Cao hơn cả Loading */
+            z-index: 99999; 
             transition: opacity 0.5s ease, visibility 0.5s ease;
         }
 
-        /* Khối quảng cáo chính */
         #ad-container {
             width: 90%; height: 90%;
             max-width: 900px; max-height: 506px; /* Tỉ lệ 16:9 */
-            background-color: #fff; border-radius: 12px; 
+            background-color: #000; border-radius: 12px; 
             overflow: hidden; position: relative; 
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); 
             transform: scale(1); transition: transform 0.5s ease;
         }
 
+        /* Hiệu ứng viền tối */
         #ad-container::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.75); 
+            box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.5); 
             border-radius: 12px; pointer-events: none; z-index: 900; 
         }
 
-        #ad-iframe { width: 100%; height: 100%; margin-top: 0; border: none; display: block; z-index: 10; }
+        /* THAY ĐỔI: Style cho ảnh GIF thay vì Iframe */
+        #ad-image { 
+            width: 100%; height: 100%; 
+            object-fit: cover; /* Giúp ảnh full khung không bị méo */
+            display: block; 
+            z-index: 10; 
+            cursor: pointer; /* Cho biết ảnh có thể click */
+        }
 
         /* Nút điều khiển Ads */
         #skip-button, #go-to-website-button {
@@ -76,7 +82,7 @@
         /* LOADING */
         #loadingScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-            background: var(--bg-body); z-index: 9990; /* Thấp hơn Ads */
+            background: var(--bg-body); z-index: 9990;
             display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 15px;
         }
         .loader-spinner {
@@ -199,7 +205,7 @@
         }
         .movie-info-bg {
             position: absolute; inset: 0; background-size: cover; background-position: center;
-            opacity: 0.15; filter: blur(15px) saturate(150%); z-index: 0; pointer-events: none;
+            opacity: 0.20; filter: blur(10px) saturate(150%); z-index: 0; pointer-events: none;
         }
         .movie-info-content { position: relative; z-index: 1; }
         
@@ -295,7 +301,11 @@
         <div id="ad-container">
             <button id="go-to-website-button">Go to website</button>
             <button id="skip-button" disabled>Skip ad (<span>5</span>)</button>
-            <iframe id="ad-iframe" title="Nội dung quảng cáo nhúng"></iframe>
+            
+            <img id="ad-image" 
+                 src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjEx.../giphy.gif" 
+                 alt="Quảng cáo"
+                 title="Nhấn để xem chi tiết">
         </div>
     </div>
 
@@ -369,7 +379,7 @@
             <div class="mobile-search-trigger" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
             <div class="search-box">
                 <i class="fas fa-search" style="color: #a0a0a0"></i>
-                <input type="text" placeholder="Tìm phim...">
+                <input type="text" placeholder="Tìm kiếm phim...">
             </div>
             <div class="desktop-auth" style="position: relative;">
                 <button id="btnLogin" class="btn-login" onclick="window.location.href='/login.html'">Đăng nhập</button>
@@ -817,28 +827,27 @@
     </script>
     
     <script>
-        const adUrls = ["https://hopvan.netlify.app/"];
-        
-        function getRandomAdUrl() {
-            const randomIndex = Math.floor(Math.random() * adUrls.length);
-            return adUrls[randomIndex];
-        }
+        // CẤU HÌNH QUẢNG CÁO
+        const adConfig = {
+            gifUrl: "https://hopvan.netlify.app/IMG/hero-video.gif", // Thay link GIF của bạn vào đây
+            targetUrl: "https://hopvan.netlify.app/", // Trang web đích khi bấm vào quảng cáo
+            skipTime: 5 // Thời gian đếm ngược (giây)
+        };
 
         const adOverlay = document.getElementById('ad-overlay');
+        const adImage = document.getElementById('ad-image');
         const skipButton = document.getElementById('skip-button');
         const goToWebsiteButton = document.getElementById('go-to-website-button'); 
-        const adIframe = document.getElementById('ad-iframe');
 
-        if (adOverlay && skipButton && goToWebsiteButton && adIframe) { 
-            // 1. Áp dụng URL ngay khi load
-            const selectedAdUrl = getRandomAdUrl();
-            adIframe.src = selectedAdUrl;
+        if (adOverlay && skipButton && goToWebsiteButton && adImage) { 
+            // 1. Áp dụng URL ảnh GIF
+            adImage.src = adConfig.gifUrl;
             
+            // 2. Logic Đếm ngược
             const countdownSpan = skipButton.querySelector('span');
-            let timeLeft = 5; 
+            let timeLeft = adConfig.skipTime; 
             if (countdownSpan) countdownSpan.textContent = timeLeft;
 
-            // 2. Logic Countdown
             const countdownInterval = setInterval(() => {
                 timeLeft -= 1;
                 if (timeLeft > 0) {
@@ -852,19 +861,34 @@
                 }
             }, 1000); 
 
-            // 3. Sự kiện Click
-            skipButton.addEventListener('click', () => {
+            // 3. Sự kiện Click nút Bỏ qua
+            skipButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Ngăn click lan ra ngoài
                 if (skipButton.classList.contains('enabled')) {
-                    adOverlay.style.opacity = '0'; 
-                    setTimeout(() => { adOverlay.style.display = 'none'; }, 500); 
+                    closeAd();
                 }
             });
 
-            goToWebsiteButton.addEventListener('click', () => {
-                window.open(selectedAdUrl, '_blank'); 
+            // 4. Sự kiện Click nút "Go to website"
+            goToWebsiteButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openTarget();
+            });
+
+            // 5. Sự kiện Click vào chính ảnh quảng cáo (cũng mở link)
+            adImage.addEventListener('click', () => {
+                openTarget();
+            });
+
+            function openTarget() {
+                window.open(adConfig.targetUrl, '_blank'); 
+                closeAd();
+            }
+
+            function closeAd() {
                 adOverlay.style.opacity = '0'; 
                 setTimeout(() => { adOverlay.style.display = 'none'; }, 500);
-            });
+            }
         }
     </script>
 </body>
