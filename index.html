@@ -67,7 +67,6 @@
         .btn-ok:hover { transform: translateY(-2px); }
 
         /* --- NEW LOADING SCREEN STYLE --- */
-/* --- CẬP NHẬT LOADING SCREEN STYLE --- */
         #loadingScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
             background: var(--bg-body); z-index: 9999;
@@ -75,17 +74,22 @@
         }
         
         .loading-img {
-            width: 600px; /* Đã chỉnh width lên 600px theo ý ông */
+            width: 600px; /* Mặc định cho PC */
+            max-width: 80vw; /* Đảm bảo không bao giờ tràn màn hình mobile */
             height: auto;
             object-fit: contain;
             
-            /* Animation gộp: 
-               1. zoomIn: 0.8s đầu, từ to (scale 3) thu về giữa.
-               2. floatIdle: Chạy vô hạn sau 0.8s, hiệu ứng thu nhỏ chậm rãi.
-            */
+            /* Animation Zoom In & Idle */
             animation: 
                 zoomIn 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards,
                 floatIdle 4s ease-in-out infinite 0.8s; 
+        }
+
+        /* Khi màn hình nhỏ hơn 900px (Mobile/Tablet) */
+        @media (max-width: 900px) {
+            .loading-img {
+                width: 300px; /* Thu nhỏ lại cho xinh trên điện thoại */
+            }
         }
 
         /* Class kích hoạt Zoom Out khi tải xong */
@@ -99,14 +103,14 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* 2. Idle: Trong lúc đợi thì ảnh thu nhỏ lại dần dần (chậm rãi) */
+        /* 2. Idle: Thu nhỏ dần chậm rãi */
         @keyframes floatIdle {
             0% { transform: scale(1); }
-            50% { transform: scale(0.85); } /* Thu nhỏ xuống 85% */
+            50% { transform: scale(0.85); } 
             100% { transform: scale(1); }
         }
 
-        /* 3. Zoom Out: Thu nhỏ biến mất với tốc độ tương đương Zoom In */
+        /* 3. Zoom Out: Biến mất */
         @keyframes zoomOut {
             from { transform: scale(1); opacity: 1; }
             to { transform: scale(0); opacity: 0; }
