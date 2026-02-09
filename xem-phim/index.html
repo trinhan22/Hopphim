@@ -15,7 +15,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../ads/ads.css">
     
     <style>
         /* --- CSS GLOBAL --- */
@@ -252,11 +251,7 @@
         <div class="text-gradient" style="font-weight: 600;">Đang tải phim...</div>
     </div>
 
-    <div id="ads-container">
-        <div class="banner-quang-cao">
-            ... nội dung quảng cáo ...
-        </div>
-    </div>
+    <div id="ad-placeholder"></div>
 
     <div id="toast-container"></div>
 
@@ -458,8 +453,6 @@
             <p>&copy; 2026 HopPhim. Design by HopTeam.</p>
         </div>
     </footer>
-
-    <script src="../ads/ads.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -771,5 +764,21 @@
         loadMovie();
 
     </script>
+
+<link rel="stylesheet" href="./ads/ads.css">
+
+<script>
+    // Tải file HTML và nhét vào div #ad-placeholder
+    fetch('./ads/ads.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('ad-placeholder').innerHTML = data;
+            
+            // Sau khi HTML hiện ra thì mới chạy file JS của quảng cáo
+            const script = document.createElement('script');
+            script.src = "./ads/ads.js";
+            document.body.appendChild(script);
+        });
+</script>
 </body>
 </html>
