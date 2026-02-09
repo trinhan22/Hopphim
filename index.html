@@ -4,13 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HopPhim - Phim Hay Trong Tầm Tay</title>
-    <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
-    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao với giao diện hiện đại, tốc độ tải phim nhanh và kho phim khổng lồ." />
+    
+    <meta property="og:title" content="HopPhim" />
     <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
-    <meta property="og:url" content="https://hopphim.netlify.app" />
-    <meta property="og:type" content="article" />
-
-    <link rel="icon" type="image/webp" href="LOGO.webp" />
+    <link rel="icon" type="image/webp" href="LOGO.WEBP" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,36 +21,62 @@
             --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62); --primary-color: #FF5E62;
             --badge-bg: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%);
             --font-main: 'Inter', sans-serif; --card-radius: 12px; --transition: all 0.3s ease-in-out;
-            
-            /* Mobile Colors */
-            --mobile-menu-bg: #15171e;
-            --mobile-border: rgba(255,255,255,0.05);
+            --mobile-menu-bg: #15171e; --mobile-border: rgba(255,255,255,0.05);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
         body { font-family: var(--font-main); background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
         .text-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
 
-        /* --- FIX LOADING SCREEN (CĂN GIỮA & FULL MÀN HÌNH) --- */
+        /* --- TOAST NOTIFICATION (THÔNG BÁO GÓC) --- */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            background: #23252f; color: #fff; padding: 15px 25px; border-radius: 8px;
+            display: flex; align-items: center; gap: 12px; min-width: 300px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); border-left: 4px solid var(--primary-color);
+            animation: slideInRight 0.3s ease; transition: 0.3s;
+        }
+        .toast.success { border-left-color: #2ecc71; }
+        .toast.error { border-left-color: #ff4757; }
+        .toast i { font-size: 1.2rem; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* --- CUSTOM CONFIRM MODAL (POPUP XÁC NHẬN) --- */
+        .custom-confirm-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10001;
+            display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: 0.3s; backdrop-filter: blur(4px);
+        }
+        .custom-confirm-overlay.active { display: flex; opacity: 1; }
+        
+        .confirm-box {
+            background: #1f222e; width: 90%; max-width: 400px; padding: 30px;
+            border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
+            transform: scale(0.9); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .custom-confirm-overlay.active .confirm-box { transform: scale(1); }
+        
+        .confirm-icon { font-size: 3rem; margin-bottom: 15px; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .confirm-title { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
+        .confirm-desc { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 25px; line-height: 1.5; }
+        
+        .confirm-actions { display: flex; gap: 15px; justify-content: center; }
+        .btn-confirm { padding: 10px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; font-size: 0.95rem; }
+        .btn-cancel { background: transparent; color: #ccc; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-ok { background: var(--gradient-main); color: #fff; box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3); }
+        .btn-ok:hover { transform: translateY(-2px); }
+
+        /* LOADING SCREEN */
         #loadingScreen {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100vh;
-            background: var(--bg-body);
-            z-index: 9999;
-            display: flex;             /* Quan trọng để căn giữa */
-            justify-content: center;   /* Căn giữa ngang */
-            align-items: center;       /* Căn giữa dọc */
-            flex-direction: column;
-            gap: 15px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: var(--bg-body); z-index: 9999;
+            display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 15px;
         }
         .loader-spinner {
-            width: 50px; height: 50px;
-            border-radius: 50%;
-            border: 4px solid rgba(255, 94, 98, 0.1);
-            border-top-color: #FF5E62;
-            border-right-color: #FF8F50;
-            animation: spin 0.8s linear infinite;
-            box-shadow: 0 0 15px rgba(255, 94, 98, 0.3);
+            width: 50px; height: 50px; border-radius: 50%;
+            border: 4px solid rgba(255, 94, 98, 0.1); border-top-color: #FF5E62; border-right-color: #FF8F50;
+            animation: spin 0.8s linear infinite; box-shadow: 0 0 15px rgba(255, 94, 98, 0.3);
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -79,7 +102,6 @@
         .menu-toggle, .mobile-search-trigger { display: none; font-size: 1.5rem; color: #fff; cursor: pointer; }
 
         /* User Login PC */
-        .desktop-auth { position: relative; }
         .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; white-space: nowrap; }
         .btn-login:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 94, 98, 0.4); }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary-color); cursor: pointer; display: none; object-fit: cover; }
@@ -89,7 +111,7 @@
         .dropdown-item { background: transparent; border: none; color: #ccc; text-align: left; padding: 10px; cursor: pointer; transition: 0.2s; border-radius: 4px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
         .dropdown-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
-        /* HERO & CONTENT */
+        /* HERO & CARD */
         .hero { height: 75vh; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 20px; background-image: url('home-background.jpg'); background-size: cover; background-position: center center; background-repeat: no-repeat; }
         .hero::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 250px; background: linear-gradient(to bottom, transparent 0%, #191b24 100%); z-index: 1; pointer-events: none; }
         .hero-content { z-index: 10; text-align: center; max-width: 900px; padding: 20px; animation: fadeUp 1s ease-out; }
@@ -120,9 +142,22 @@
         .movie-meta { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: #e0e0e0; font-weight: 500; }
         .badge-hd { background: var(--badge-bg); color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
         .dot { width: 4px; height: 4px; background: #FF5E62; border-radius: 50%; }
+        
         .hover-actions { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; gap: 10px; z-index: 6; opacity: 0; transition: all 0.3s ease; }
-        .btn-hover-play { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); border: 2px solid #fff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; }
+        .btn-hover-play { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); border: 2px solid #fff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; cursor: pointer; }
         .btn-hover-play:hover { background: var(--primary-color); border-color: var(--primary-color); transform: scale(1.1); }
+        
+        .btn-hover-delete {
+            width: 45px; height: 45px; border-radius: 50%;
+            background: rgba(255, 71, 87, 0.8);
+            backdrop-filter: blur(4px); border: 2px solid #fff;
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; transition: 0.2s; cursor: pointer;
+        }
+        .btn-hover-delete:hover {
+            background: #ff4757; transform: scale(1.1); border-color: #ff4757;
+        }
+
         .movie-card:hover { transform: scale(1.05); z-index: 10; box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
         .movie-card:hover .movie-poster { filter: brightness(0.6); }
         .movie-card:hover .hover-actions { opacity: 1; }
@@ -141,14 +176,13 @@
         .modal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
         .modal-grid .movie-card { width: 100%; height: 280px; }
 
-        /* --- MOBILE OVERLAYS (ẨN TRÊN PC) --- */
+        /* --- MOBILE OVERLAYS --- */
         .mobile-overlay { display: none; position: fixed; inset: 0; z-index: 3000; transition: 0.3s ease-in-out; }
         .mobile-overlay.active { transform: translateX(0) !important; opacity: 1 !important; }
         .close-btn-overlay { position: absolute; font-size: 1.8rem; color: #fff; cursor: pointer; z-index: 10; }
 
         /* ================= MOBILE OPTIMIZATION ================= */
         @media (max-width: 900px) {
-            /* Header */
             header { height: 60px; padding: 0 4%; justify-content: space-between; }
             .header-left-group { gap: 25px; order: 1; }
             .menu-toggle { display: block; font-size: 1.5rem; }
@@ -158,25 +192,44 @@
             .right-elements { order: 3; gap: 15px; }
             .mobile-search-trigger { display: block; font-size: 1.2rem; }
             
-            /* Ẩn PC components */
             .nav-links, .search-box, .desktop-auth { display: none !important; }
 
-            /* Mobile Menu Overlay */
-            #mobileMenuOverlay { display: block; background: var(--mobile-menu-bg); transform: translateX(-100%); padding: 25px; width: 300px; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
+            /* 2. MOBILE MENU OVERLAY */
+            #mobileMenuOverlay {
+                display: block; background: var(--mobile-menu-bg);
+                transform: translateX(-100%); padding: 25px; width: 300px;
+                box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+            }
             .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
             .menu-logo { display: flex; align-items: center; gap: 10px; }
             .menu-logo img { height: 35px; }
             .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
             #mobileMenuOverlay .close-btn-overlay { position: static; color: #fff; opacity: 0.7; }
 
-            .member-btn-large { width: 100%; padding: 12px; background: linear-gradient(90deg, #FF8F50, #FF5E62); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
+            .member-btn-large {
+                width: 100%; padding: 12px; 
+                background: linear-gradient(90deg, #FF8F50, #FF5E62);
+                color: #fff; border: none; border-radius: 8px; 
+                font-weight: 700; font-size: 1rem;
+                display: flex; align-items: center; justify-content: center; gap: 10px;
+                margin-bottom: 25px; cursor: pointer;
+                box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3);
+            }
+            
             .mobile-menu-grid { display: flex; flex-direction: column; gap: 5px; }
-            .mobile-menu-link { color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem; padding: 12px 0; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--mobile-border); }
+            .mobile-menu-link {
+                color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem;
+                padding: 12px 0; display: flex; align-items: center; gap: 15px;
+                border-bottom: 1px solid var(--mobile-border);
+            }
             .mobile-menu-link i { width: 25px; color: var(--primary-color); text-align: center; }
             .mobile-menu-link:hover { color: #fff; padding-left: 5px; transition: 0.2s; }
 
-            /* Mobile Search Overlay */
-            #mobileSearchOverlay { display: block; background: #1f212d; transform: translateY(-100%); opacity: 0; }
+            /* 3. MOBILE SEARCH OVERLAY */
+            #mobileSearchOverlay {
+                display: block; background: #1f212d;
+                transform: translateY(-100%); opacity: 0;
+            }
             #mobileSearchOverlay.active { transform: translateY(0) !important; opacity: 1 !important; }
             .search-header-mobile { display: flex; align-items: center; padding: 15px 20px; background: #2a2d3a; border-bottom: 1px solid rgba(255,255,255,0.1); }
             .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; font-family: var(--font-main); margin-right: 15px; }
@@ -209,6 +262,20 @@
         <div class="text-gradient" style="font-weight: 600;">Đang tải phim...</div>
     </div>
 
+    <div id="toast-container"></div>
+
+    <div id="confirmModal" class="custom-confirm-overlay">
+        <div class="confirm-box">
+            <div class="confirm-icon"><i class="fas fa-exclamation-circle"></i></div>
+            <h3 class="confirm-title">Xác nhận</h3>
+            <p class="confirm-desc" id="confirmMsg">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+            <div class="confirm-actions">
+                <button class="btn-confirm btn-cancel" id="btnConfirmNo">Hủy bỏ</button>
+                <button class="btn-confirm btn-ok" id="btnConfirmYes">Đồng ý</button>
+            </div>
+        </div>
+    </div>
+
     <div id="mobileMenuOverlay" class="mobile-overlay">
         <div class="menu-header">
             <div class="menu-logo">
@@ -238,6 +305,9 @@
             <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCountry('trung-quoc', 'Trung Quốc')">
                 <i class="fas fa-torii-gate"></i> Trung Quốc
             </a>
+            <a href="profile.html" class="mobile-menu-link" id="mobileAccountLink" style="display: none;" onclick="closeMobileMenu()">
+                <i class="fas fa-user-cog"></i> Quản lý tài khoản
+            </a>
         </div>
     </div>
 
@@ -251,7 +321,6 @@
             <div id="mobileSearchResults"></div>
         </div>
     </div>
-
 
     <header id="header">
         <div class="header-left-group">
@@ -276,7 +345,6 @@
             <div class="mobile-search-trigger" onclick="openMobileSearch()">
                  <i class="fas fa-search"></i>
             </div>
-
             <div class="search-box">
                 <i class="fas fa-search" style="color: #a0a0a0"></i>
                 <input type="text" id="searchInput" placeholder="Tìm kiếm phim...">
@@ -286,6 +354,7 @@
                 <img id="userAvatar" class="user-avatar" src="" alt="User" onclick="toggleUserDropdown()">
                 <div id="userMenu" class="user-dropdown">
                     <div id="userNameDisplay" class="user-info-item">User</div>
+                    <button class="dropdown-item" onclick="window.location.href='profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
                     <button class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
                 </div>
             </div>
@@ -357,7 +426,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc",
@@ -373,65 +442,152 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Desktop Elements
+        // UI Elements
         const btnLogin = document.getElementById('btnLogin');
         const userAvatar = document.getElementById('userAvatar');
         const userMenu = document.getElementById('userMenu');
-        
-        // Mobile Elements
         const mobileMemberBtn = document.getElementById('mobileMemberBtn');
         const mobileMemberText = document.getElementById('mobileMemberText');
-
+        const mobileAccountLink = document.getElementById('mobileAccountLink');
         const historyContainer = document.getElementById('history-container');
+
+        let currentUser = null;
 
         window.logout = async () => {
             await signOut(auth);
             userMenu.classList.remove('active');
             closeMobileMenu();
+            window.showToast("Đã đăng xuất!", "success");
         }
         window.toggleUserDropdown = () => userMenu.classList.toggle('active');
 
         // Check Login State
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                currentUser = user;
                 const photo = user.photoURL || 'Guest.webp';
                 const name = user.displayName || 'Thành viên';
 
-                // Desktop Update
                 btnLogin.style.display = 'none';
                 userAvatar.style.display = 'block';
                 userAvatar.src = photo;
                 document.getElementById('userNameDisplay').innerText = name;
 
-                // Mobile Update (Chỉ hiện trong Menu)
                 mobileMemberText.innerText = name;
-                mobileMemberBtn.innerHTML = `<img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;"> <span>${name}</span>`;
-                mobileMemberBtn.onclick = null; 
+                mobileMemberBtn.innerHTML = `<img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid var(--primary-color)"> <span>${name}</span>`;
+                mobileMemberBtn.onclick = () => window.location.href = 'profile.html';
+                mobileAccountLink.style.display = 'flex';
 
                 loadHistory(user.uid);
             } else {
-                // Desktop Reset
+                currentUser = null;
                 btnLogin.style.display = 'block';
                 userAvatar.style.display = 'none';
                 userMenu.classList.remove('active');
 
-                // Mobile Reset
                 mobileMemberText.innerText = "Đăng nhập / Đăng ký";
                 mobileMemberBtn.innerHTML = `<i class="fas fa-user-circle"></i> <span>Đăng nhập / Đăng ký</span>`;
                 mobileMemberBtn.onclick = () => window.location.href='login.html';
+                mobileAccountLink.style.display = 'none';
 
                 historyContainer.innerHTML = '';
             }
         });
 
-        // Load History Logic
+        // 1. HELPER: SHOW TOAST
+        window.showToast = (msg, type = 'success') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 2. HELPER: CUSTOM CONFIRM
+        window.customConfirm = (message) => {
+            return new Promise((resolve) => {
+                const overlay = document.getElementById('confirmModal');
+                const msgEl = document.getElementById('confirmMsg');
+                const btnYes = document.getElementById('btnConfirmYes');
+                const btnNo = document.getElementById('btnConfirmNo');
+
+                msgEl.innerText = message;
+                overlay.classList.add('active');
+
+                // Xử lý sự kiện 1 lần
+                btnYes.onclick = () => { overlay.classList.remove('active'); resolve(true); };
+                btnNo.onclick = () => { overlay.classList.remove('active'); resolve(false); };
+            });
+        }
+
+        // 3. XÓA KHỎI LỊCH SỬ (Dùng Custom Popup)
+        window.removeFromHistory = async (slug) => {
+            if(!currentUser) return;
+            const confirm = await window.customConfirm("Bạn có chắc muốn xóa phim này khỏi lịch sử?");
+            if(!confirm) return;
+
+            const userRef = doc(db, "users", currentUser.uid);
+            try {
+                const docSnap = await getDoc(userRef);
+                if(!docSnap.exists()) return;
+
+                let history = docSnap.data().watchHistory || [];
+                const newHistory = history.filter(m => m.slug !== slug);
+                
+                await updateDoc(userRef, { watchHistory: newHistory });
+                
+                if (newHistory.length === 0) {
+                    historyContainer.innerHTML = ''; 
+                } else {
+                    renderHistoryRow(newHistory.slice().reverse()); 
+                }
+                window.showToast("Đã xóa khỏi lịch sử!");
+            } catch(e) { 
+                console.error(e);
+                window.showToast("Lỗi khi xóa phim!", "error");
+            }
+        }
+
+        // 4. THÊM VÀO DANH SÁCH (Dùng Toast)
+        window.addToMyList = async (movieSlug, movieName, thumbUrl) => {
+            if (!currentUser) {
+                window.showToast("Vui lòng đăng nhập để lưu!", "error");
+                return setTimeout(() => window.location.href = 'login.html', 1500);
+            }
+
+            const userRef = doc(db, "users", currentUser.uid);
+            try {
+                const docSnap = await getDoc(userRef);
+                let list = docSnap.exists() ? (docSnap.data().myList || []) : [];
+                
+                if (list.some(m => m.slug === movieSlug)) {
+                    window.showToast("Phim đã có trong danh sách!", "error");
+                    return;
+                }
+                
+                list.push({ slug: movieSlug, name: movieName, thumb_url: thumbUrl, timestamp: Date.now() });
+                
+                if(docSnap.exists()) await updateDoc(userRef, { myList: list });
+                else await setDoc(userRef, { email: currentUser.email, myList: list });
+
+                window.showToast("Đã thêm vào danh sách yêu thích!");
+            } catch (e) { window.showToast("Lỗi lưu phim: " + e.message, "error"); }
+        };
+
+        // LOAD HISTORY
         async function loadHistory(uid) {
             try {
                 const docSnap = await getDoc(doc(db, "users", uid));
-                if(docSnap.exists() && docSnap.data().watchHistory) {
+                if(docSnap.exists() && docSnap.data().watchHistory && docSnap.data().watchHistory.length > 0) {
                     const history = docSnap.data().watchHistory.reverse();
-                    if(history.length > 0) renderHistoryRow(history);
-                }
+                    renderHistoryRow(history);
+                } else { historyContainer.innerHTML = ''; }
             } catch(e) { console.error(e); }
         }
 
@@ -439,10 +595,11 @@
             const section = document.createElement('section');
             section.className = 'category-section';
             const rowId = 'history-row';
-            const html = movies.map(m => window.createCardHTML(m)).join('');
+            const html = movies.map(m => window.createHistoryCardHTML(m)).join('');
+            
             section.innerHTML = `
                 <div class="category-header">
-                    <h2 class="category-title text-gradient"><i class="fas fa-history"></i> Xem gần đây</h2>
+                    <h2 class="category-title text-gradient"><i class="fas fa-history"></i> Xem tiếp</h2>
                 </div>
                 <div class="slider-container">
                     <button class="slider-arrow arrow-left" onclick="window.slide('${rowId}', -1)"><i class="fas fa-chevron-left"></i></button>
@@ -455,6 +612,12 @@
     </script>
 
     <script>
+        // --- FIX LOADING ---
+        setTimeout(() => {
+            const loader = document.getElementById('loadingScreen');
+            if (loader) loader.style.display = 'none';
+        }, 2500);
+
         // --- MOBILE OVERLAY FUNCTIONS ---
         const menuOverlay = document.getElementById('mobileMenuOverlay');
         const searchOverlay = document.getElementById('mobileSearchOverlay');
@@ -490,17 +653,7 @@
                      fetchAPI(`/tim-kiem?keyword=${keyword}`).then(data => {
                         mobileSearchResults.innerHTML = '';
                         if(data?.data?.items) {
-                            // Hiển thị kết quả tìm kiếm dạng list nhỏ cho Mobile Search
-                            let html = '';
-                            data.data.items.forEach(m => {
-                                const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-                                html += `
-                                <div class="sidebar-card" onclick="window.location.href='xemphim.html?slug=${m.slug}'">
-                                    <div class="sb-thumb"><img src="${img}"></div>
-                                    <div class="sb-info"><div class="sb-title" style="color:#fff">${m.name}</div></div>
-                                </div>`;
-                            });
-                            mobileSearchResults.innerHTML = html;
+                            mobileSearchResults.appendChild(createMovieRow(`Kết quả: ${keyword}`, data.data.items));
                         } else {
                              mobileSearchResults.innerHTML = '<div style="color:#ccc;text-align:center;padding:20px;">Không tìm thấy</div>';
                         }
@@ -517,12 +670,19 @@
         const modalPopup = document.getElementById('modalPopup');
         const loadingScreen = document.getElementById('loadingScreen');
 
+        function toggleMenu() { navLinks.classList.toggle('active'); }
+        function closeMenu() { navLinks.classList.remove('active'); }
+
         window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 20));
+
+        const API_BASE = 'https://ophim1.com/v1/api';
+        const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
 
         async function fetchAPI(endpoint) {
             try { return await (await fetch('https://ophim1.com/v1/api' + endpoint)).json(); } catch { return null; }
         }
 
+        // 1. Card Phim Thường
         window.createCardHTML = function(movie) {
             let imgUrl = movie.thumb_url;
             if (!imgUrl.startsWith('http')) imgUrl = `${IMG_BASE}${movie.thumb_url}`;
@@ -543,7 +703,34 @@
                     </div>
                     <div class="hover-actions">
                         <button class="btn-hover-play"><i class="fas fa-play"></i></button>
-                        <button class="btn-hover-play"><i class="fas fa-plus"></i></button>
+                        <button class="btn-hover-play" onclick="event.stopPropagation(); addToMyList('${movie.slug}', '${movie.name}', '${movie.thumb_url}')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>`;
+        }
+
+        // 2. Card Lịch Sử (Nút xóa màu đỏ)
+        window.createHistoryCardHTML = function(movie, timeLabel) {
+            let imgUrl = movie.thumb_url;
+            if (!imgUrl.startsWith('http')) imgUrl = `${IMG_BASE}${movie.thumb_url}`;
+            const playLink = `xemphim.html?slug=${movie.slug}`;
+
+            return `
+                <div class="movie-card" onclick="window.location.href='${playLink}'">
+                    <img src="${imgUrl}" alt="${movie.name}" class="movie-poster" loading="lazy">
+                    <div class="card-overlay"></div>
+                    <div class="card-info">
+                        <div class="movie-name">${movie.name}</div>
+                        <div class="movie-meta" style="color: var(--primary-color); font-weight: 700;">
+                            <i class="fas fa-clock"></i> ${timeLabel}
+                        </div>
+                    </div>
+                    <div class="hover-actions">
+                        <button class="btn-hover-play"><i class="fas fa-play"></i></button>
+                        <button class="btn-hover-delete" onclick="event.stopPropagation(); removeFromHistory('${movie.slug}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </div>`;
         }
@@ -570,29 +757,29 @@
             return section;
         }
 
-        const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
-
         async function loadHome() {
-            loadingScreen.style.display = 'flex';
-            const [home, le, bo, han, hoat] = await Promise.all([
-                fetchAPI('/home'), fetchAPI('/danh-sach/phim-le'), fetchAPI('/danh-sach/phim-bo'),
-                fetchAPI('/quoc-gia/han-quoc'), fetchAPI('/danh-sach/hoat-hinh')
-            ]);
-            mainContent.innerHTML = '';
-            if(home?.data?.items) mainContent.appendChild(createMovieRow('Phim Mới Cập Nhật', home.data.items));
-            if(le?.data?.items) mainContent.appendChild(createMovieRow('Phim Lẻ Hot', le.data.items, '/danh-sach/phim-le'));
-            if(bo?.data?.items) mainContent.appendChild(createMovieRow('Phim Bộ Tuyển Chọn', bo.data.items, '/danh-sach/phim-bo'));
-            if(han?.data?.items) mainContent.appendChild(createMovieRow('K-Drama', han.data.items, '/quoc-gia/han-quoc'));
-            if(hoat?.data?.items) mainContent.appendChild(createMovieRow('Anime', hoat.data.items, '/danh-sach/hoat-hinh'));
-            loadingScreen.style.display = 'none';
+            if(loadingScreen) loadingScreen.style.display = 'flex';
+            try {
+                const [home, le, bo, han, hoat] = await Promise.all([
+                    fetchAPI('/home'), fetchAPI('/danh-sach/phim-le'), fetchAPI('/danh-sach/phim-bo'),
+                    fetchAPI('/quoc-gia/han-quoc'), fetchAPI('/danh-sach/hoat-hinh')
+                ]);
+                mainContent.innerHTML = '';
+                if(home?.data?.items) mainContent.appendChild(createMovieRow('Phim Mới Cập Nhật', home.data.items));
+                if(le?.data?.items) mainContent.appendChild(createMovieRow('Phim Lẻ Hot', le.data.items, '/danh-sach/phim-le'));
+                if(bo?.data?.items) mainContent.appendChild(createMovieRow('Phim Bộ Tuyển Chọn', bo.data.items, '/danh-sach/phim-bo'));
+                if(han?.data?.items) mainContent.appendChild(createMovieRow('K-Drama', han.data.items, '/quoc-gia/han-quoc'));
+                if(hoat?.data?.items) mainContent.appendChild(createMovieRow('Anime', hoat.data.items, '/danh-sach/hoat-hinh'));
+            } catch(e) { console.log(e); } 
+            finally { if(loadingScreen) loadingScreen.style.display = 'none'; }
         }
 
         async function loadCategory(slug, title) {
-            loadingScreen.style.display = 'flex';
+            if(loadingScreen) loadingScreen.style.display = 'flex';
             const data = await fetchAPI(`/${['han-quoc','trung-quoc'].includes(slug)?'quoc-gia':'danh-sach'}/${slug}`);
             mainContent.innerHTML = '';
             if(data?.data?.items) mainContent.appendChild(createMovieRow(title, data.data.items));
-            loadingScreen.style.display = 'none';
+            if(loadingScreen) loadingScreen.style.display = 'none';
         }
         async function loadCountry(slug, title) { loadCategory(slug, title); }
 
