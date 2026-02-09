@@ -4,20 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HopPhim - Phim Hay Trong Tầm Tay</title>
+    
     <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
-    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao với giao diện hiện đại, tốc độ tải phim nhanh và kho phim khổng lồ." />
     <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
-    <meta property="og:url" content="https://hopphim.netlify.app" />
-    <meta property="og:type" content="article" />
+    <link rel="icon" type="image/webp" href="LOGO.WEBP" />
 
-    <link rel="icon" type="image/webp" href="LOGO.webp" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- CSS GỐC (PC) --- */
         :root {
             --bg-body: #191b24; --bg-dark: #0f111a; --text-main: #ffffff; --text-sub: #a0a0a0;
             --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62); --primary-color: #FF5E62;
@@ -29,24 +26,24 @@
         body { font-family: var(--font-main); background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
         .text-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
 
-        /* --- TOAST NOTIFICATION (THÔNG BÁO GÓC) --- */
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        /* --- TOAST NOTIFICATION --- */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
         .toast {
-            background: #23252f; color: #fff; padding: 15px 25px; border-radius: 8px;
+            background: #23252f; color: #fff; padding: 15px 25px; border-radius: 12px;
             display: flex; align-items: center; gap: 12px; min-width: 300px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3); border-left: 4px solid var(--primary-color);
-            animation: slideInRight 0.3s ease; transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary-color);
+            animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto;
         }
         .toast.success { border-left-color: #2ecc71; }
         .toast.error { border-left-color: #ff4757; }
         .toast i { font-size: 1.2rem; }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* --- CUSTOM CONFIRM MODAL (POPUP XÁC NHẬN) --- */
+        /* --- CUSTOM CONFIRM MODAL --- */
         .custom-confirm-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10001;
             display: none; justify-content: center; align-items: center;
-            opacity: 0; transition: 0.3s; backdrop-filter: blur(4px);
+            opacity: 0; transition: 0.3s; backdrop-filter: blur(5px);
         }
         .custom-confirm-overlay.active { display: flex; opacity: 1; }
         
@@ -69,7 +66,7 @@
         .btn-ok { background: var(--gradient-main); color: #fff; box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3); }
         .btn-ok:hover { transform: translateY(-2px); }
 
-        /* LOADING SCREEN */
+        /* LOADING */
         #loadingScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
             background: var(--bg-body); z-index: 9999;
@@ -82,7 +79,7 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* HEADER PC */
+        /* HEADER */
         header { position: fixed; top: 0; width: 100%; height: 70px; padding: 0 4%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: transparent; transition: var(--transition); }
         header.scrolled { background: var(--bg-dark); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
         
@@ -100,10 +97,9 @@
         .right-elements { display: flex; align-items: center; gap: 15px; }
         .search-box { display: flex; align-items: center; background: #23252f; padding: 8px 16px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.05); }
         .search-box input { background: transparent; border: none; color: #fff; margin-left: 10px; font-family: var(--font-main); font-size: 14px; width: 150px; }
-        
         .menu-toggle, .mobile-search-trigger { display: none; font-size: 1.5rem; color: #fff; cursor: pointer; }
 
-        /* User Login PC */
+        /* AUTH */
         .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; white-space: nowrap; }
         .btn-login:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 94, 98, 0.4); }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary-color); cursor: pointer; display: none; object-fit: cover; }
@@ -113,7 +109,7 @@
         .dropdown-item { background: transparent; border: none; color: #ccc; text-align: left; padding: 10px; cursor: pointer; transition: 0.2s; border-radius: 4px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
         .dropdown-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
-        /* HERO & CARD */
+        /* HERO & CONTENT */
         .hero { height: 75vh; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 20px; background-image: url('home-background.jpg'); background-size: cover; background-position: center center; background-repeat: no-repeat; }
         .hero::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 250px; background: linear-gradient(to bottom, transparent 0%, #191b24 100%); z-index: 1; pointer-events: none; }
         .hero-content { z-index: 10; text-align: center; max-width: 900px; padding: 20px; animation: fadeUp 1s ease-out; }
@@ -148,17 +144,8 @@
         .hover-actions { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; gap: 10px; z-index: 6; opacity: 0; transition: all 0.3s ease; }
         .btn-hover-play { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); border: 2px solid #fff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; cursor: pointer; }
         .btn-hover-play:hover { background: var(--primary-color); border-color: var(--primary-color); transform: scale(1.1); }
-        
-        .btn-hover-delete {
-            width: 45px; height: 45px; border-radius: 50%;
-            background: rgba(255, 71, 87, 0.8);
-            backdrop-filter: blur(4px); border: 2px solid #fff;
-            color: #fff; display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; transition: 0.2s; cursor: pointer;
-        }
-        .btn-hover-delete:hover {
-            background: #ff4757; transform: scale(1.1); border-color: #ff4757;
-        }
+        .btn-hover-delete { width: 45px; height: 45px; border-radius: 50%; background: rgba(255, 71, 87, 0.8); backdrop-filter: blur(4px); border: 2px solid #fff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; cursor: pointer; }
+        .btn-hover-delete:hover { background: #ff4757; transform: scale(1.1); border-color: #ff4757; }
 
         .movie-card:hover { transform: scale(1.05); z-index: 10; box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
         .movie-card:hover .movie-poster { filter: brightness(0.6); }
@@ -183,7 +170,6 @@
         .mobile-overlay.active { transform: translateX(0) !important; opacity: 1 !important; }
         .close-btn-overlay { position: absolute; font-size: 1.8rem; color: #fff; cursor: pointer; z-index: 10; }
 
-        /* ================= MOBILE OPTIMIZATION ================= */
         @media (max-width: 900px) {
             header { height: 60px; padding: 0 4%; justify-content: space-between; }
             .header-left-group { gap: 25px; order: 1; }
@@ -193,59 +179,34 @@
             .logo-text { display: block; font-size: 1.2rem; }
             .right-elements { order: 3; gap: 15px; }
             .mobile-search-trigger { display: block; font-size: 1.2rem; }
-            
             .nav-links, .search-box, .desktop-auth { display: none !important; }
 
-            /* 2. MOBILE MENU OVERLAY */
-            #mobileMenuOverlay {
-                display: block; background: var(--mobile-menu-bg);
-                transform: translateX(-100%); padding: 25px; width: 300px;
-                box-shadow: 5px 0 20px rgba(0,0,0,0.5);
-            }
+            #mobileMenuOverlay { display: block; background: var(--mobile-menu-bg); transform: translateX(-100%); padding: 25px; width: 300px; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
             .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
             .menu-logo { display: flex; align-items: center; gap: 10px; }
             .menu-logo img { height: 35px; }
             .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
             #mobileMenuOverlay .close-btn-overlay { position: static; color: #fff; opacity: 0.7; }
 
-            .member-btn-large {
-                width: 100%; padding: 12px; 
-                background: linear-gradient(90deg, #FF8F50, #FF5E62);
-                color: #fff; border: none; border-radius: 8px; 
-                font-weight: 700; font-size: 1rem;
-                display: flex; align-items: center; justify-content: center; gap: 10px;
-                margin-bottom: 25px; cursor: pointer;
-                box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3);
-            }
-            
+            .member-btn-large { width: 100%; padding: 12px; background: linear-gradient(90deg, #FF8F50, #FF5E62); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
             .mobile-menu-grid { display: flex; flex-direction: column; gap: 5px; }
-            .mobile-menu-link {
-                color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem;
-                padding: 12px 0; display: flex; align-items: center; gap: 15px;
-                border-bottom: 1px solid var(--mobile-border);
-            }
+            .mobile-menu-link { color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem; padding: 12px 0; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--mobile-border); }
             .mobile-menu-link i { width: 25px; color: var(--primary-color); text-align: center; }
             .mobile-menu-link:hover { color: #fff; padding-left: 5px; transition: 0.2s; }
 
-            /* 3. MOBILE SEARCH OVERLAY */
-            #mobileSearchOverlay {
-                display: block; background: #1f212d;
-                transform: translateY(-100%); opacity: 0;
-            }
+            #mobileSearchOverlay { display: block; background: #1f212d; transform: translateY(-100%); opacity: 0; }
             #mobileSearchOverlay.active { transform: translateY(0) !important; opacity: 1 !important; }
             .search-header-mobile { display: flex; align-items: center; padding: 15px 20px; background: #2a2d3a; border-bottom: 1px solid rgba(255,255,255,0.1); }
             .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; font-family: var(--font-main); margin-right: 15px; }
             #mobileSearchOverlay .close-btn-overlay { position: static; color: #fff; }
             .search-content-mobile { padding: 20px; overflow-y: auto; height: calc(100vh - 70px); }
             
-            /* Card Style Mobile (Horizontal) */
             .sidebar-card { display: flex; gap: 15px; margin-bottom: 15px; padding: 10px; background: var(--bg-card); border-radius: 8px; transition: 0.2s; cursor: pointer; border: 1px solid transparent; }
             .sb-thumb { width: 70px; height: 100px; flex-shrink: 0; border-radius: 6px; overflow: hidden; }
             .sb-thumb img { width: 100%; height: 100%; object-fit: cover; }
             .sb-info { display: flex; flex-direction: column; justify-content: center; }
             .sb-title { font-size: 0.95rem; font-weight: 700; color: #fff; }
 
-            /* Content Adjustment */
             .hero { height: 50vh; }
             .hero-title { font-size: 2.2rem; } .hero-desc { font-size: 0.9rem; }
             .movie-card { flex: 0 0 140px; height: 210px; }
@@ -430,6 +391,7 @@
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc",
             authDomain: "hopphim-29e1c.firebaseapp.com",
@@ -455,6 +417,7 @@
 
         let currentUser = null;
 
+        // AUTH FUNCTIONS
         window.logout = async () => {
             await signOut(auth);
             userMenu.classList.remove('active');
@@ -463,7 +426,7 @@
         }
         window.toggleUserDropdown = () => userMenu.classList.toggle('active');
 
-        // Check Login State
+        // AUTH STATE OBSERVER
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
@@ -522,13 +485,12 @@
                 msgEl.innerText = message;
                 overlay.classList.add('active');
 
-                // Xử lý sự kiện 1 lần
                 btnYes.onclick = () => { overlay.classList.remove('active'); resolve(true); };
                 btnNo.onclick = () => { overlay.classList.remove('active'); resolve(false); };
             });
         }
 
-        // 3. XÓA KHỎI LỊCH SỬ (Dùng Custom Popup)
+        // 3. XÓA KHỎI LỊCH SỬ
         window.removeFromHistory = async (slug) => {
             if(!currentUser) return;
             const confirm = await window.customConfirm("Bạn có chắc muốn xóa phim này khỏi lịch sử?");
@@ -556,7 +518,7 @@
             }
         }
 
-        // 4. THÊM VÀO DANH SÁCH (Dùng Toast)
+        // 4. THÊM VÀO DANH SÁCH
         window.addToMyList = async (movieSlug, movieName, thumbUrl) => {
             if (!currentUser) {
                 window.showToast("Vui lòng đăng nhập để lưu!", "error");
@@ -589,7 +551,9 @@
                 if(docSnap.exists() && docSnap.data().watchHistory && docSnap.data().watchHistory.length > 0) {
                     const history = docSnap.data().watchHistory.reverse();
                     renderHistoryRow(history);
-                } else { historyContainer.innerHTML = ''; }
+                } else {
+                    historyContainer.innerHTML = ''; 
+                }
             } catch(e) { console.error(e); }
         }
 
@@ -619,6 +583,18 @@
             const loader = document.getElementById('loadingScreen');
             if (loader) loader.style.display = 'none';
         }, 2500);
+
+        // --- TIME HELPER ---
+        function timeSince(date) {
+            if (!date) return "Gần đây";
+            const seconds = Math.floor((Date.now() - date) / 1000);
+            if (seconds < 60) return "Vừa xong";
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return minutes + " phút trước";
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return hours + " giờ trước";
+            return Math.floor(hours / 24) + " ngày trước";
+        }
 
         // --- MOBILE OVERLAY FUNCTIONS ---
         const menuOverlay = document.getElementById('mobileMenuOverlay');
@@ -684,11 +660,12 @@
             try { return await (await fetch('https://ophim1.com/v1/api' + endpoint)).json(); } catch { return null; }
         }
 
-        // 1. Card Phim Thường
+        // 1. CREATE CARD HTML (CLEAN URL)
         window.createCardHTML = function(movie) {
             let imgUrl = movie.thumb_url;
             if (!imgUrl.startsWith('http')) imgUrl = `${IMG_BASE}${movie.thumb_url}`;
-            const playLink = `xemphim.html?slug=${movie.slug}`;
+            // FIX: Use clean URL /xem-phim/slug
+            const playLink = `/xem-phim/${movie.slug}`;
 
             return `
                 <div class="movie-card" onclick="window.location.href='${playLink}'">
@@ -712,11 +689,14 @@
                 </div>`;
         }
 
-        // 2. Card Lịch Sử (Nút xóa màu đỏ)
+        // 2. CREATE HISTORY CARD HTML (CLEAN URL)
         window.createHistoryCardHTML = function(movie, timeLabel) {
             let imgUrl = movie.thumb_url;
             if (!imgUrl.startsWith('http')) imgUrl = `${IMG_BASE}${movie.thumb_url}`;
-            const playLink = `xemphim.html?slug=${movie.slug}`;
+            // FIX: Use clean URL /xem-phim/slug
+            const playLink = `/xem-phim/${movie.slug}`;
+            
+            const safeTime = timeSince(movie.timestamp);
 
             return `
                 <div class="movie-card" onclick="window.location.href='${playLink}'">
@@ -724,8 +704,9 @@
                     <div class="card-overlay"></div>
                     <div class="card-info">
                         <div class="movie-name">${movie.name}</div>
-                        <div class="movie-meta" style="color: var(--primary-color); font-weight: 700;">
-                            <i class="fas fa-clock"></i> ${timeLabel}
+                        <div class="movie-meta">
+                            <i class="fas fa-clock" style="color:var(--primary-color); margin-right:5px"></i>
+                            <span style="color: #ddd; font-weight: 500;">${safeTime}</span>
                         </div>
                     </div>
                     <div class="hover-actions">

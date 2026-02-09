@@ -4,13 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập - HopPhim</title>
-    <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
-    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao với giao diện hiện đại, tốc độ tải phim nhanh và kho phim khổng lồ." />
-    <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
-    <meta property="og:url" content="https://hopphim.netlify.app" />
-    <meta property="og:type" content="article" />
-
-    <link rel="icon" type="image/webp" href="LOGO.webp" />
+    <link rel="icon" type="image/webp" href="LOGO.WEBP" />
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -35,6 +30,19 @@
             display: flex; justify-content: center; align-items: center;
             position: relative; overflow: hidden;
         }
+
+        /* --- TOAST NOTIFICATION (NEW) --- */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast {
+            background: #23252f; color: #fff; padding: 15px 25px; border-radius: 12px;
+            display: flex; align-items: center; gap: 12px; min-width: 300px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary);
+            animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto;
+        }
+        .toast.success { border-left-color: #2ecc71; }
+        .toast.error { border-left-color: #ff4757; }
+        .toast i { font-size: 1.2rem; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
         /* Nền mờ */
         .bg-overlay {
@@ -76,31 +84,31 @@
         /* Form */
         .input-group { margin-bottom: 12px; text-align: left; }
         .input-field {
-            width: 100%; padding: 10px 15px;
+            width: 100%; padding: 12px 15px;
             border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
             background: rgba(0,0,0,0.3); color: #fff; font-size: 0.9rem;
             transition: 0.3s; outline: none;
         }
-        .input-field:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
+        .input-field:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); box-shadow: 0 0 0 2px rgba(255, 94, 98, 0.2); }
         .input-field::placeholder { color: rgba(255,255,255,0.3); font-size: 0.85rem; }
 
         .btn-submit {
-            width: 100%; padding: 10px;
+            width: 100%; padding: 12px;
             background: var(--gradient-main); color: white;
             border: none; border-radius: 50px;
             font-size: 0.95rem; font-weight: 700; cursor: pointer;
-            transition: 0.3s; margin-top: 5px;
+            transition: 0.3s; margin-top: 10px;
         }
         .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 94, 98, 0.4); }
         .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
-        .divider { margin: 20px 0; display: flex; align-items: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; }
+        .divider { margin: 25px 0; display: flex; align-items: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; }
         .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
         .divider span { padding: 0 10px; }
 
         .btn-google {
             width: 100%; background: #fff; color: #1f1f1f;
-            padding: 10px; border-radius: 50px; border: none;
+            padding: 12px; border-radius: 50px; border: none;
             font-weight: 600; font-size: 0.9rem;
             display: flex; justify-content: center; align-items: center; gap: 8px;
             cursor: pointer; transition: 0.3s;
@@ -109,7 +117,7 @@
         .btn-google:hover { background: #f0f0f0; transform: translateY(-2px); }
 
         .register-link {
-            margin-top: 20px; font-size: 0.85rem; color: var(--text-sub);
+            margin-top: 25px; font-size: 0.85rem; color: var(--text-sub);
         }
         .register-link a { color: #fff; font-weight: 700; text-decoration: none; transition: 0.2s; }
         .register-link a:hover { color: var(--primary); text-decoration: underline; }
@@ -117,6 +125,8 @@
     </style>
 </head>
 <body>
+
+    <div id="toast-container"></div>
 
     <div class="bg-overlay"></div>
     <a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Quay lại</a>
@@ -149,8 +159,8 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // CONFIG CHUẨN CỦA HOPPHIM
         const firebaseConfig = {
@@ -167,15 +177,33 @@
         const auth = getAuth(app);
         const REDIRECT_URL = "index.html"; 
 
-        // 1. Kiểm tra trạng thái đăng nhập
+        // HELPER: SHOW TOAST
+        window.showToast = (msg, type = 'success') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
+            
+            container.appendChild(toast);
+            
+            // Tự tắt sau 3s
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 1. Kiểm tra trạng thái (Nếu đã login trước đó -> Vào thẳng)
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Nếu đã đăng nhập, chuyển về trang chủ
-                window.location.href = REDIRECT_URL; 
+                // Không cần toast ở đây vì có thể là reload trang
+                // Chỉ redirect nếu đang ở trang login
+                // window.location.href = REDIRECT_URL; 
             }
         });
 
-        // 2. Xử lý Đăng nhập bằng Email/Password
+        // 2. Xử lý Đăng nhập Email
         document.getElementById("login-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             
@@ -183,26 +211,29 @@
             const password = document.getElementById("password").value;
             const btn = document.getElementById("btn-submit");
 
-            // Hiệu ứng Loading
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Đang xử lý...';
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // Nếu thành công, onAuthStateChanged sẽ tự chạy và chuyển trang
+                
+                // Thành công
+                window.showToast("Đăng nhập thành công!", "success");
+                setTimeout(() => {
+                    window.location.href = REDIRECT_URL;
+                }, 1500); // Đợi 1.5s để xem thông báo
+
             } catch (err) {
                 btn.disabled = false;
                 btn.innerText = "Đăng nhập";
                 
-                // Xử lý thông báo lỗi tiếng Việt
                 let msg = "Đăng nhập thất bại.";
-                if (err.code === 'auth/invalid-credential') msg = "Sai email hoặc mật khẩu.";
-                else if (err.code === 'auth/user-not-found') msg = "Tài khoản không tồn tại.";
-                else if (err.code === 'auth/wrong-password') msg = "Sai mật khẩu.";
-                else if (err.code === 'auth/too-many-requests') msg = "Bạn thử quá nhiều lần. Vui lòng đợi chút.";
+                if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') 
+                    msg = "Email hoặc mật khẩu không đúng.";
+                else if (err.code === 'auth/invalid-email') msg = "Định dạng email không hợp lệ.";
+                else if (err.code === 'auth/too-many-requests') msg = "Thử lại sau ít phút.";
                 
-                alert(msg);
-                console.error(err);
+                window.showToast(msg, "error");
             }
         });
 
@@ -211,8 +242,10 @@
             const provider = new GoogleAuthProvider();
             try {
                 await signInWithPopup(auth, provider);
+                window.showToast("Đăng nhập Google thành công!", "success");
+                setTimeout(() => { window.location.href = REDIRECT_URL; }, 1500);
             } catch (err) {
-                alert("Lỗi Google: " + err.message);
+                window.showToast("Lỗi Google: " + err.message, "error");
             }
         });
     </script>
