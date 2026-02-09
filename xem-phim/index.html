@@ -343,13 +343,27 @@
             <i class="fas fa-user-circle"></i> <span id="mobileMemberText">Đăng nhập / Đăng ký</span>
         </button>
         <div class="mobile-menu-grid">
-            <a href="/" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Trang chủ</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-tv"></i> Phim Bộ</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-film"></i> Phim Lẻ</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-globe-asia"></i> Hàn Quốc</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-torii-gate"></i> Trung Quốc</a>
-            <a href="/profile.html" class="mobile-menu-link" id="mobileAccountLink" style="display: none;" onclick="closeMobileMenu()"><i class="fas fa-user-cog"></i> Quản lý tài khoản</a>
-        </div>
+            <a href="/" class="mobile-menu-link" onclick="closeMobileMenu(); loadHome()">
+                <i class="fas fa-home"></i> Trang chủ
+            </a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('phim-bo', 'Phim Bộ')">
+                <i class="fas fa-tv"></i> Phim Bộ
+            </a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('phim-le', 'Phim Lẻ')">
+                <i class="fas fa-film"></i> Phim Lẻ
+            </a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCountry('han-quoc', 'Hàn Quốc')">
+                <i class="fas fa-globe-asia"></i> Hàn Quốc
+            </a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCountry('trung-quoc', 'Trung Quốc')">
+                <i class="fas fa-torii-gate"></i> Trung Quốc
+            </a>
+            <a href="hopteam.html" class="mobile-menu-link" onclick="closeMobileMenu()">
+                <i class="fas fa-users"></i> Về HopTeam
+            </a>
+            <a href="/profile.html" class="mobile-menu-link" id="mobileAccountLink" style="display: none;" onclick="closeMobileMenu()">
+                <i class="fas fa-user-cog"></i> Quản lý tài khoản
+            </a>
     </div>
 
     <div id="mobileSearchOverlay" class="mobile-overlay">
@@ -372,11 +386,12 @@
             </div>
         </div>
         <ul class="nav-links" id="navLinks">
-            <li><a href="/">Trang chủ</a></li>
-            <li><a href="#">Phim Bộ</a></li>
-            <li><a href="#">Phim Lẻ</a></li>
-            <li><a href="#">Hàn Quốc</a></li>
-            <li><a href="#">Trung Quốc</a></li>
+            <li><a href="/" onclick="loadHome()">Trang chủ</a></li>
+            <li><a href="#" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ</a></li>
+            <li><a href="#" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Lẻ</a></li>
+            <li><a href="#" onclick="loadCountry('han-quoc', 'Hàn Quốc')">Hàn Quốc</a></li>
+            <li><a href="#" onclick="loadCountry('trung-quoc', 'Trung Quốc')">Trung Quốc</a></li>
+            <li><a href="hopteam.html">Về HopTeam</a></li>
         </ul>
         <div class="right-elements">
             <div class="mobile-search-trigger" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
@@ -486,35 +501,37 @@
                     <img src="/logo.webp" alt="HopPhim">
                     <span class="logo-text">HOPPHIM</span>
                 </div>
-                <p style="color: #a0a0a0; line-height: 1.6; margin-top: 15px;">Trang xem phim trực tuyến miễn phí chất lượng cao.</p>
+                <p style="color: #a0a0a0; line-height: 1.6; margin-top: 15px;">
+                    Trang xem phim trực tuyến miễn phí chất lượng cao.
+                </p>
             </div>
             <div class="footer-col">
                 <h3>Danh mục</h3>
                 <ul>
-                    <li><a href="#">Phim Mới Cập Nhật</a></li>
-                    <li><a href="#">Phim Chiếu Rạp</a></li>
-                    <li><a href="#">Phim Bộ Độc Quyền</a></li>
+                    <li><a href="#" onclick="loadCategory('Phim Mới Cập Nhật')">Phim Mới Cập Nhật</a></li>
+                    <li><a href="#" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Chiếu Rạp</a></li>
+                    <li><a href="#" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ Độc Quyền</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>Quốc gia</h3>
                 <ul>
-                    <li><a href="#">Hàn Quốc</a></li>
-                    <li><a href="#">Trung Quốc</a></li>
-                    <li><a href="#">Âu Mỹ</a></li>
+                    <li><a href="#" onclick="loadCountry('han-quoc', 'Hàn Quốc')">Hàn Quốc</a></li>
+                    <li><a href="#" onclick="loadCountry('trung-quoc', 'Trung Quốc')">Trung Quốc</a></li>
+                    <li><a href="#" onclick="loadCountry('au-my', 'Âu Mỹ')">Âu Mỹ</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>Hỗ trợ</h3>
                 <ul>
-                    <li><a href="#">Hỏi đáp (FAQ)</a></li>
                     <li><a href="#">Liên hệ quảng cáo</a></li>
                     <li><a href="#">Báo lỗi</a></li>
+                    <li><a href="hopteam.html">Về HopTeam</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 HopPhim. Design by HopTeam.</p>
+            <p>&copy; 2026 HopPhim. All Rights Reserved By HopTeam.</p>
         </div>
     </footer>
 
