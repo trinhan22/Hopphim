@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đang xem phim - HopPhim</title>
-    <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
+    <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
+    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao." />
+    <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
+    <meta property="og:url" content="https://hopphim.netlify.app" />
+    <meta property="og:type" content="article" />
 
+    <link rel="icon" type="image/webp" href="LOGO.WEBP" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -41,20 +46,19 @@
             transform: scale(1); transition: transform 0.5s ease;
         }
 
-        /* Hiệu ứng viền tối */
         #ad-container::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.5); 
             border-radius: 12px; pointer-events: none; z-index: 900; 
         }
 
-        /* THAY ĐỔI: Style cho ảnh GIF thay vì Iframe */
+        /* Ảnh GIF */
         #ad-image { 
             width: 100%; height: 100%; 
-            object-fit: cover; /* Giúp ảnh full khung không bị méo */
+            object-fit: cover; 
             display: block; 
             z-index: 10; 
-            cursor: pointer; /* Cho biết ảnh có thể click */
+            cursor: pointer;
         }
 
         /* Nút điều khiển Ads */
@@ -378,7 +382,7 @@
             <div class="mobile-search-trigger" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
             <div class="search-box">
                 <i class="fas fa-search" style="color: #a0a0a0"></i>
-                <input type="text" placeholder="Tìm kiếm phim...">
+                <input type="text" placeholder="Tìm phim...">
             </div>
             <div class="desktop-auth" style="position: relative;">
                 <button id="btnLogin" class="btn-login" onclick="window.location.href='/login.html'">Đăng nhập</button>
@@ -432,13 +436,13 @@
                 <div class="comment-section">
                     <div class="comment-header-title">
                         <i class="fas fa-comments" style="color: var(--primary-color);"></i> 
-                        Bình luận
+                        Bình luận phim
                     </div>
                     
                     <div class="comment-input-box">
                         <img src="/Guest.webp" id="cmtMyAvatar" class="current-user-avatar">
                         <div class="comment-form">
-                            <textarea id="cmtInput" class="comment-input" placeholder="Viết bình luận"></textarea>
+                            <textarea id="cmtInput" class="comment-input" placeholder="Viết bình luận của bạn về phim này..."></textarea>
                             <div class="form-actions">
                                 <span style="font-size: 0.8rem; color: #666;">Tôn trọng lẫn nhau nhé!</span>
                                 <button class="btn-send-cmt" onclick="sendComment()">
@@ -450,7 +454,8 @@
 
                     <div class="comment-list" id="commentList">
                         <div class="empty-comment">
-                            Chưa có bình luận nào
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Đang tải bình luận...
                         </div>
                     </div>
                 </div>
@@ -712,7 +717,40 @@
             document.getElementById('breadCrumbTitle').innerText = movie.name;
             document.getElementById('mName').innerText = movie.name;
             document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
-            document.getElementById('mContent').innerHTML = movie.content;
+            
+            // XỬ LÝ RÚT GỌN NỘI DUNG (36 TỪ)
+            const contentBox = document.getElementById('mContent');
+            const fullContent = movie.content || "Đang cập nhật...";
+            
+            // Lấy text thuần để đếm từ
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = fullContent;
+            const plainText = tempDiv.innerText || "";
+            const words = plainText.split(/\s+/);
+            
+            if (words.length > 36) {
+                const shortContent = words.slice(0, 36).join(" ") + "...";
+                
+                contentBox.innerHTML = `
+                    <span id="descContent">${shortContent}</span>
+                    <span id="toggleDescBtn" style="color: var(--primary-color); cursor: pointer; font-weight: bold; margin-left: 8px;">Xem thêm</span>
+                `;
+                
+                const toggleBtn = document.getElementById('toggleDescBtn');
+                const descSpan = document.getElementById('descContent');
+                
+                toggleBtn.onclick = () => {
+                    if (toggleBtn.innerText === "Xem thêm") {
+                        descSpan.innerHTML = fullContent; // Hiện full HTML
+                        toggleBtn.innerText = "Thu gọn";
+                    } else {
+                        descSpan.innerText = shortContent; // Hiện ngắn
+                        toggleBtn.innerText = "Xem thêm";
+                    }
+                };
+            } else {
+                contentBox.innerHTML = fullContent;
+            }
 
             let bgImg = movie.poster_url || movie.thumb_url;
             if (!bgImg.startsWith('http')) bgImg = `https://img.ophim1.com/uploads/movies/${bgImg}`;
@@ -827,9 +865,9 @@
     <script>
         // CẤU HÌNH QUẢNG CÁO
         const adConfig = {
-            gifUrl: "https://hopvan.netlify.app/IMG/hero-video.gif", // Thay link GIF của bạn vào đây
-            targetUrl: "https://hopvan.netlify.app/", // Trang web đích khi bấm vào quảng cáo
-            skipTime: 5 // Thời gian đếm ngược (giây)
+            gifUrl: "https://hopvan.netlify.app/IMG/hero-video.gif", // Link ảnh GIF cục bộ
+            targetUrl: "https://hopvan.netlify.app/", // Trang web đích
+            skipTime: 5 // Thời gian đếm ngược
         };
 
         const adOverlay = document.getElementById('ad-overlay');
