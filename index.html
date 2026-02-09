@@ -67,49 +67,46 @@
         .btn-ok:hover { transform: translateY(-2px); }
 
         /* --- NEW LOADING SCREEN STYLE --- */
+/* --- CẬP NHẬT LOADING SCREEN STYLE --- */
         #loadingScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
             background: var(--bg-body); z-index: 9999;
             display: flex; justify-content: center; align-items: center;
-            /* Không dùng flex-direction column nữa để ảnh tự do */
         }
         
         .loading-img {
-            width: 500px; /* Kích thước ảnh, chỉnh tùy ý */
+            width: 600px; /* Đã chỉnh width lên 600px theo ý ông */
             height: auto;
             object-fit: contain;
             
             /* Animation gộp: 
-               1. zoomIn: Chạy 0.8s đầu tiên, vào nảy nhẹ (cubic-bezier).
-               2. floatIdle: Chạy vô hạn, bắt đầu sau 0.8s (sau khi zoomIn xong).
+               1. zoomIn: 0.8s đầu, từ to (scale 3) thu về giữa.
+               2. floatIdle: Chạy vô hạn sau 0.8s, hiệu ứng thu nhỏ chậm rãi.
             */
             animation: 
                 zoomIn 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards,
-                floatIdle 2.5s ease-in-out infinite 0.8s; 
+                floatIdle 4s ease-in-out infinite 0.8s; 
         }
 
-        /* Class để kích hoạt Zoom Out khi tải xong */
+        /* Class kích hoạt Zoom Out khi tải xong */
         .loading-img.zoom-out {
             animation: zoomOut 0.5s cubic-bezier(0.6, -0.28, 0.74, 0.05) forwards !important;
         }
 
-        /* Sửa lại Keyframes zoomIn: Từ TO -> NHỎ */
+        /* 1. Zoom In: Từ ngoài (rất to) bay vào giữa */
         @keyframes zoomIn {
-            0% {
-                transform: scale(3); /* Bắt đầu to gấp 3 lần (ở ngoài khung hình) */
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1); /* Thu về kích thước chuẩn ở giữa */
-                opacity: 1;
-            }
+            0% { transform: scale(3); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
+        /* 2. Idle: Trong lúc đợi thì ảnh thu nhỏ lại dần dần (chậm rãi) */
         @keyframes floatIdle {
-            0%, 100% { transform: scale(1) translateY(0); }
-            50% { transform: scale(1.05) translateY(-5px); } /* Phóng to nhẹ và bay lên */
+            0% { transform: scale(1); }
+            50% { transform: scale(0.85); } /* Thu nhỏ xuống 85% */
+            100% { transform: scale(1); }
         }
 
+        /* 3. Zoom Out: Thu nhỏ biến mất với tốc độ tương đương Zoom In */
         @keyframes zoomOut {
             from { transform: scale(1); opacity: 1; }
             to { transform: scale(0); opacity: 0; }
