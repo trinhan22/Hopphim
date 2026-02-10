@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên Hệ Quảng Cáo - HopPhim</title>
+    
+    <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
+    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao." />
+    <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
+    <meta property="og:url" content="https://hopphim.netlify.app" />
+    <meta property="og:type" content="article" />
+
+    <link rel="icon" type="image/webp" href="LOGO.WEBP" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #0f111a;
+            --primary: #FF5E62;
+            --gradient: linear-gradient(135deg, #FF8F50, #FF5E62);
+            --text: #fff;
+            --text-sub: #a0a0a0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-dark);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            z-index: -1;
+            animation: float 10s infinite alternate;
+        }
+        .blob-1 { top: 10%; left: 20%; width: 300px; height: 300px; background: #FF5E62; animation-delay: 0s; }
+        .blob-2 { bottom: 10%; right: 20%; width: 250px; height: 250px; background: #FF8F50; animation-delay: -5s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.1); }
+        }
+
+        /* Main Card - Compact Style */
+        .donate-card {
+            width: 90%;
+            max-width: 380px; /* Nhỏ gọn hơn */
+            background: rgba(30, 32, 40, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            animation: zoomIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Top Line Decoration */
+        .donate-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--gradient);
+        }
+
+        .icon-header {
+            width: 60px; height: 60px;
+            background: rgba(255, 94, 98, 0.15);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px;
+            color: var(--primary);
+            font-size: 1.5rem;
+            border: 1px solid rgba(255, 94, 98, 0.3);
+        }
+
+        h1 { color: var(--text); font-size: 1.4rem; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Funny Message Box */
+        .msg-box {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px dashed rgba(255,255,255,0.15);
+        }
+        .msg-text {
+            font-size: 0.85rem; color: #ccc; line-height: 1.5; font-style: italic;
+        }
+        .msg-highlight { color: var(--primary); font-weight: 700; }
+
+        /* QR Code Area */
+        .qr-area {
+            background: #fff;
+            padding: 10px;
+            border-radius: 16px;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .qr-area img { width: 100%; height: 100%; object-fit: contain; }
+        
+        /* Scan Effect */
+        .scan-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            animation: scan 2s linear infinite;
+            opacity: 0.6;
+        }
+        @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+
+        /* Bank Info Row */
+        .bank-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.3);
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 20px;
+        }
+        .bank-left { text-align: left; }
+        .bank-name { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+        .bank-num { font-size: 1.1rem; color: #fff; font-weight: 700; font-family: monospace; letter-spacing: 1px; }
+        
+        .copy-btn {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .copy-btn:hover { background: var(--primary); transform: scale(1.1); }
+        .copy-btn:active { transform: scale(0.9); }
+
+        /* Back Button */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--text-sub); text-decoration: none;
+            font-size: 0.85rem; font-weight: 600;
+            transition: 0.3s; padding: 8px 15px;
+            border-radius: 50px;
+        }
+        .back-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+
+        /* Toast */
+        #toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(50px);
+            background: #23252f; color: #fff; padding: 12px 25px; border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--primary);
+            font-size: 0.9rem; font-weight: 600; opacity: 0; pointer-events: none; transition: 0.4s;
+            display: flex; align-items: center; gap: 10px; z-index: 2000;
+        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="donate-card">
+        <div class="icon-header">
+            <i class="fas fa-heart"></i>
+        </div>
+        
+        <h1>Góc Hảo Tâm</h1>
+
+        <div class="msg-box">
+            <p class="msg-text">
+                "HIỆN TẠI AD VẪN ĐỦ TIỀN GỒNG GÁNH CÁI WEB NÀY, NÊN CHƯA ĐẶT ADS VỘI. NHƯNG NẾU BẠN CÓ <span class="msg-highlight">LÒNG HẢO TÂM</span> THÌ VUI LÒNG BỐ THÍ TẠI ĐÂY." 
+                <i class="fas fa-grin-squint-tears" style="color: #FF8F50; margin-left: 5px;"></i>
+            </p>
+        </div>
+
+        <div class="qr-area">
+            <div class="scan-line"></div>
+            <img src="BIDV.webp" alt="QR Code">
+        </div>
+
+        <div class="bank-info">
+            <div class="bank-left">
+                <div class="bank-name">BIDV</div>
+                <div class="bank-num" id="bankNumber">8816291999</div>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 2px;">Chủ TK: NGUYEN TRI NHAN</div>
+            </div>
+            <button class="copy-btn" onclick="copyText()" title="Sao chép">
+                <i class="far fa-copy"></i>
+            </button>
+        </div>
+
+        <a href="/" class="back-link">
+            <i class="fas fa-arrow-left"></i> Quay lại trang chủ
+        </a>
+    </div>
+
+    <div id="toast">
+        <i class="fas fa-check-circle" style="color: #2ecc71;"></i> Đã sao chép số tài khoản!
+    </div>
+
+    <script>
+        function copyText() {
+            const num = document.getElementById('bankNumber').innerText.replace(/\s/g, '');
+            navigator.clipboard.writeText(num).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                
+                // Đổi icon nút copy tạm thời
+                const btn = document.querySelector('.copy-btn i');
+                btn.className = 'fas fa-check';
+                
+                setTimeout(() => { 
+                    toast.classList.remove('show'); 
+                    btn.className = 'far fa-copy';
+                }, 2500);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Lỗi - HopPhim</title>
+    
+    <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
+    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao." />
+    <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
+    <meta property="og:url" content="https://hopphim.netlify.app" />
+    <meta property="og:type" content="article" />
+
+    <link rel="icon" type="image/webp" href="LOGO.WEBP" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #0f111a;
+            --primary: #FF5E62;
+            --gradient: linear-gradient(135deg, #FF8F50, #FF5E62);
+            --text: #fff;
+            --text-sub: #a0a0a0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            z-index: -1;
+            animation: float 10s infinite alternate;
+        }
+        .blob-1 { top: 5%; left: 10%; width: 300px; height: 300px; background: #FF5E62; animation-delay: 0s; }
+        .blob-2 { bottom: 5%; right: 10%; width: 250px; height: 250px; background: #FF8F50; animation-delay: -5s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.1); }
+        }
+
+        /* Main Card */
+        .report-card {
+            width: 90%;
+            max-width: 420px;
+            background: rgba(30, 32, 40, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Top Line Decoration */
+        .report-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--gradient);
+        }
+
+        .icon-header {
+            width: 60px; height: 60px;
+            background: rgba(255, 94, 98, 0.15);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--primary);
+            font-size: 1.8rem;
+            border: 1px solid rgba(255, 94, 98, 0.3);
+            box-shadow: 0 0 20px rgba(255, 94, 98, 0.2);
+        }
+
+        h1 { color: var(--text); font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; }
+        p { color: var(--text-sub); font-size: 0.9rem; margin-bottom: 30px; line-height: 1.5; }
+
+        /* Form Styles */
+        .form-group { margin-bottom: 15px; text-align: left; }
+        
+        .form-label {
+            font-size: 0.8rem; color: #ccc; font-weight: 600; margin-bottom: 5px; display: block;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(255, 94, 98, 0.2);
+        }
+
+        .form-textarea { resize: vertical; min-height: 100px; font-family: 'Inter', sans-serif; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: var(--gradient);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 94, 98, 0.4);
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 94, 98, 0.6); }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--text-sub); text-decoration: none;
+            font-size: 0.85rem; font-weight: 600;
+            transition: 0.3s; margin-top: 20px;
+            padding: 8px 15px; border-radius: 50px;
+        }
+        .back-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .report-card { width: 95%; padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="report-card">
+        <div class="icon-header">
+            <i class="fas fa-bug"></i>
+        </div>
+        
+        <h1>Báo Lỗi</h1>
+        <p>Phát hiện lỗi phim hay giao diện? Hãy báo ngay cho HopTeam để tụi mình fix nhé!</p>
+
+        <form action="https://formspree.io/f/xnjbjqlq" method="POST">
+            
+            <div class="form-group">
+                <label class="form-label">Tên của bạn</label>
+                <input type="text" name="name" class="form-input" placeholder="Nhập tên..." required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email (Để tụi mình phản hồi)</label>
+                <input type="email" name="email" class="form-input" placeholder="Nhập email..." required>
+            </div>
+
+            <input type="hidden" name="error_url" id="errorUrl">
+
+            <div class="form-group">
+                <label class="form-label">Mô tả lỗi</label>
+                <textarea name="message" class="form-textarea" placeholder="Ví dụ: Phim không xem được, Lệch sub,..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Gửi Báo Cáo <i class="fas fa-paper-plane"></i>
+            </button>
+
+        </form>
+
+        <a href="/" class="back-link">
+            <i class="fas fa-arrow-left"></i> Quay lại trang chủ
+        </a>
+    </div>
+
+    <script>
+        // Tự động lấy URL trang trước đó (nếu có) để biết lỗi ở đâu
+        document.addEventListener("DOMContentLoaded", function() {
+            // Lấy URL trang người dùng vừa ghé qua (Referrer) hoặc trang hiện tại
+            var currentUrl = document.referrer || window.location.href;
+            document.getElementById('errorUrl').value = currentUrl;
+        });
+    </script>
+
+</body>
+</html>
