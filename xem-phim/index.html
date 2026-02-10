@@ -759,27 +759,53 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+// --- CẤU HÌNH DANH SÁCH ĐỀ XUẤT (SIDEBAR) ---
+        // Bạn điền slug phim muốn hiển thị vào đây
+        const MANUAL_RELATED = [
+            "dia-nguc-doc-than-5",
+            "tieng-yeu-nay-anh-dich-duoc-khong",
+            "con-say-mua-xuan",
+            "kho-do-danh",
+            "nu-hoang-nuoc-mat"
+        ];
+
         async function loadRelated() {
             try {
-                const res = await fetch(`https://ophim1.com/v1/api/danh-sach/phim-le?page=1`);
-                const data = await res.json();
-                if (data?.data?.items) {
+                // Lấy thông tin từng phim trong danh sách MANUAL_RELATED
+                const promises = MANUAL_RELATED.map(slug => fetch(`${API_BASE}/${slug}`));
+                const results = await Promise.all(promises);
+                
+                // Chuyển đổi sang JSON
+                const jsonResults = await Promise.all(results.map(res => res.json()));
+
+                // Lọc ra những phim lấy dữ liệu thành công
+                const validMovies = jsonResults
+                    .filter(data => data.status && data.data && data.data.item)
+                    .map(data => data.data.item);
+
+                if (validMovies.length > 0) {
                     let html = '';
-                    data.data.items.slice(0,5).forEach(m => {
-                        const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+                    validMovies.forEach(m => {
+                        // Xử lý ảnh thumb
+                        let img = m.thumb_url;
+                        if (!img.startsWith('http')) img = `https://img.ophim1.com/uploads/movies/${img}`;
+
+                        // Tạo HTML
                         html += `
                             <div class="sidebar-card" onclick="window.location.href='/xem-phim/${m.slug}'">
-                                <div class="sb-thumb"><img src="${img}"></div>
+                                <div class="sb-thumb"><img src="${img}" loading="lazy"></div>
                                 <div class="sb-info">
                                     <div class="sb-title">${m.name}</div>
-                                    <div class="sb-meta">${m.origin_name}</div>
+                                    <div class="sb-meta">${m.origin_name} (${m.year})</div>
                                     <div class="sb-views"><i class="fas fa-eye"></i> ${Math.floor(Math.random()*10000)}</div>
                                 </div>
                             </div>`;
                     });
                     document.getElementById('relatedList').innerHTML = html;
                 }
-            } catch(e) {}
+            } catch(e) {
+                console.error("Lỗi tải đề xuất:", e);
+            }
         }
 
         async function saveToHistory(movie) {
