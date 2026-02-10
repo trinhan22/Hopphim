@@ -71,7 +71,7 @@
         .toast.success { border-left-color: #2ecc71; } .toast.error { border-left-color: #ff4757; }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* --- CONFIRM POPUP (Đã sửa lỗi trùng lặp) --- */
+        /* --- CONFIRM POPUP --- */
         .custom-confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10001; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.3s; backdrop-filter: blur(5px); }
         .custom-confirm-overlay.active { display: flex; opacity: 1; }
         .confirm-box { background: #1f222e; width: 90%; max-width: 400px; padding: 30px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1); transform: scale(0.9); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
@@ -84,13 +84,13 @@
         .btn-cancel { background: transparent; color: #ccc; border: 1px solid rgba(255,255,255,0.2); } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
         .btn-ok { background: var(--gradient-main); color: #fff; box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3); } .btn-ok:hover { transform: translateY(-2px); }
 
-        /* --- MODAL POPUP (Đã bổ sung CSS bị thiếu) --- */
+        /* --- MODAL POPUP --- */
         .modal { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(15, 17, 26, 0.95); padding: 40px; overflow-y: auto; }
         .modal.active { display: block; }
         .modal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
         .modal-grid .movie-card { width: 100%; height: 280px; }
 
-        /* --- HEADER PC (MENU DROPDOWN) --- */
+        /* --- HEADER PC --- */
         header { position: fixed; top: 0; width: 100%; height: 70px; padding: 0 4%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: var(--bg-dark); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
         .header-left-group { display: flex; align-items: center; gap: 30px; height: 100%; }
         .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
@@ -103,27 +103,18 @@
         .nav-item:hover .nav-link { color: #fff; }
         .nav-link i { font-size: 0.8rem; margin-top: -2px; }
 
-        /* Dropdown Styles */
-        .dropdown-menu {
-            display: none; position: absolute; top: 70px; left: 0;
-            background: rgba(15, 17, 26, 0.95); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1); border-top: 2px solid var(--primary-color);
-            padding: 20px; border-radius: 0 0 12px 12px; width: 500px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: fadeIn 0.2s ease-out;
-        }
+        .dropdown-menu { display: none; position: absolute; top: 70px; left: 0; background: rgba(15, 17, 26, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-top: 2px solid var(--primary-color); padding: 20px; border-radius: 0 0 12px 12px; width: 500px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: fadeIn 0.2s ease-out; }
         .nav-item:hover .dropdown-menu { display: block; }
         .dropdown-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .dropdown-item-link { color: #a0a0a0; text-decoration: none; font-size: 0.9rem; padding: 5px 8px; border-radius: 6px; transition: 0.2s; }
         .dropdown-item-link:hover { color: #fff; background: rgba(255,255,255,0.1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Right Header Elements */
         .right-elements { display: flex; align-items: center; gap: 15px; }
         .search-box { display: flex; align-items: center; background: #23252f; padding: 8px 16px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.05); }
         .search-box input { background: transparent; border: none; color: #fff; margin-left: 10px; font-family: var(--font-main); font-size: 14px; width: 150px; }
         .menu-toggle, .mobile-search-trigger { display: none; font-size: 1.5rem; color: #fff; cursor: pointer; }
         
-        /* Auth Buttons */
         .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary-color); cursor: pointer; display: none; object-fit: cover; }
         .user-dropdown { position: absolute; top: 100%; right: 0; width: 200px; margin-top: 15px; background: #23252f; border-radius: 8px; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); }
