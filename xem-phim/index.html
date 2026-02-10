@@ -4,194 +4,133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đang xem phim - HopPhim</title>
+    
     <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
     <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao." />
     <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
     <meta property="og:url" content="https://hopphim.netlify.app" />
     <meta property="og:type" content="article" />
 
-    <link rel="icon" type="image/webp" href="LOGO.WEBP" />
+    <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- CSS GLOBAL --- */
+        /* --- CSS GLOBAL (Đồng bộ trang chủ) --- */
         :root {
-            --bg-body: #191b24; --bg-dark: #0f111a; --text-main: #ffffff; --text-sub: #a0a0a0; --bg-card: #23252f;
-            --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62); --primary-color: #FF5E62;
-            --font-main: 'Inter', sans-serif; --radius: 12px;
-            --mobile-menu-bg: #15171e; --mobile-border: rgba(255,255,255,0.05);
+            --bg-body: #191b24; 
+            --bg-dark: #0f111a; 
+            --text-main: #ffffff; 
+            --text-sub: #a0a0a0; 
+            --bg-card: #23252f;
+            --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62); 
+            --primary-color: #FF5E62;
+            --radius: 12px;
+            --font-main: 'Inter', sans-serif;
+            --mobile-menu-bg: #15171e; 
+            --mobile-border: rgba(255,255,255,0.05);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
         body { font-family: var(--font-main); background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
         .text-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
 
-        /* --- CSS QUẢNG CÁO (ADS) --- */
+        /* --- QUẢNG CÁO (ADS) --- */
         #ad-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.85); 
             display: flex; justify-content: center; align-items: center;
-            z-index: 99999; 
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            z-index: 99999; transition: opacity 0.5s ease, visibility 0.5s ease;
         }
-
         #ad-container {
-            width: 90%; height: 90%;
-            max-width: 900px; max-height: 506px; /* Tỉ lệ 16:9 */
-            background-color: #000; border-radius: 12px; 
-            overflow: hidden; position: relative; 
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); 
-            transform: scale(1); transition: transform 0.5s ease;
+            width: 90%; height: 90%; max-width: 900px; max-height: 506px;
+            background-color: #000; border-radius: 12px; overflow: hidden; position: relative; 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); transform: scale(1); transition: transform 0.5s ease;
         }
-
-        #ad-container::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.5); 
-            border-radius: 12px; pointer-events: none; z-index: 900; 
-        }
-
-        /* Ảnh GIF */
-        #ad-image { 
-            width: 100%; height: 100%; 
-            object-fit: cover; 
-            display: block; 
-            z-index: 10; 
-            cursor: pointer;
-        }
-
-        /* Nút điều khiển Ads */
+        #ad-image { width: 100%; height: 100%; object-fit: cover; display: block; z-index: 10; cursor: pointer; }
         #skip-button, #go-to-website-button {
-            position: absolute; top: 0; margin-top: 10px;
-            padding: 8px 12px; background-color: rgba(0, 0, 0, 0.85); 
-            color: white; border: none; border-radius: 4px; 
-            font-weight: 600; font-size: 14px; cursor: pointer; z-index: 1000; 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); transition: all 0.2s ease;
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+            position: absolute; top: 10px; padding: 8px 12px; background-color: rgba(0, 0, 0, 0.85); 
+            color: white; border: none; border-radius: 4px; font-weight: 600; font-size: 14px; 
+            cursor: pointer; z-index: 1000; transition: all 0.2s ease;
         }
-
-        #skip-button:hover, #go-to-website-button:hover {
-            background-color: rgba(0, 0, 0, 0.95); transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-        }
-
         #go-to-website-button { left: 10px; }
         #skip-button { right: 10px; cursor: not-allowed; }
-        #skip-button.enabled { background-color: #FF8F50; cursor: pointer; font-weight: 700; }
-        #skip-button.enabled:hover { background-color: #FF5E62; transform: translateY(-1px); }
-        /* --- END CSS ADS --- */
+        #skip-button.enabled { background-color: #FF8F50; cursor: pointer; }
+        
+        /* --- LOADING & TOAST --- */
+        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg-body); z-index: 9990; display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 15px; }
+        .loading-img { width: 300px; max-width: 80vw; height: auto; object-fit: contain; animation: zoomIn 0.8s forwards, floatIdle 4s infinite 0.8s; }
+        .loading-img.zoom-out { animation: zoomOut 0.5s forwards !important; }
+        @keyframes zoomIn { 0% { transform: scale(3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes zoomOut { to { transform: scale(0); opacity: 0; } }
+        @keyframes floatIdle { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.9); } }
 
-
-        /* LOADING */
-        #loadingScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-            background: var(--bg-body); z-index: 9990;
-            display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 15px;
-        }
-        .loader-spinner {
-            width: 50px; height: 50px; border-radius: 50%;
-            border: 4px solid rgba(255, 94, 98, 0.1); border-top-color: #FF5E62; border-right-color: #FF8F50;
-            animation: spin 0.8s linear infinite; box-shadow: 0 0 15px rgba(255, 94, 98, 0.3);
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* --- TOAST NOTIFICATION --- */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast {
-            background: #23252f; color: #fff; padding: 15px 25px; border-radius: 12px;
-            display: flex; align-items: center; gap: 12px; min-width: 300px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary-color);
-            animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto;
-        }
-        .toast.success { border-left-color: #2ecc71; }
-        .toast.error { border-left-color: #ff4757; }
-        .toast i { font-size: 1.2rem; }
+        .toast { background: #23252f; color: #fff; padding: 15px 25px; border-radius: 12px; display: flex; align-items: center; gap: 12px; min-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary-color); animation: slideInRight 0.3s ease; pointer-events: auto; }
+        .toast.success { border-left-color: #2ecc71; } .toast.error { border-left-color: #ff4757; }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* --- CUSTOM CONFIRM MODAL --- */
-        .custom-confirm-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10001;
-            display: none; justify-content: center; align-items: center;
-            opacity: 0; transition: 0.3s; backdrop-filter: blur(5px);
-        }
-        .custom-confirm-overlay.active { display: flex; opacity: 1; }
-        .confirm-box {
-            background: #23252f; width: 90%; max-width: 400px; padding: 30px;
-            border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
-            transform: scale(0.9); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-        }
-        .custom-confirm-overlay.active .confirm-box { transform: scale(1); }
-        .confirm-icon { font-size: 3rem; margin-bottom: 15px; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .confirm-title { font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
-        .confirm-desc { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 25px; line-height: 1.5; }
-        .confirm-actions { display: flex; gap: 15px; justify-content: center; }
-        .btn-confirm { padding: 12px 30px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; font-size: 0.95rem; }
-        .btn-cancel { background: transparent; color: #ccc; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .btn-ok { background: var(--gradient-main); color: #fff; box-shadow: 0 5px 15px rgba(255, 94, 98, 0.3); }
-        .btn-ok:hover { transform: translateY(-2px); }
-
-        /* HEADER PC */
+        /* --- HEADER PC (MENU DROPDOWN) --- */
         header { position: fixed; top: 0; width: 100%; height: 70px; padding: 0 4%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: var(--bg-dark); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
-        .header-left-group { display: flex; align-items: center; gap: 20px; }
-        .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; z-index: 1002; }
+        .header-left-group { display: flex; align-items: center; gap: 30px; height: 100%; }
+        .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .logo img { height: 40px; object-fit: contain; }
-        .logo-text { font-size: 1.5rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .nav-links { display: flex; gap: 30px; list-style: none; }
-        .nav-links li a { color: #ccc; text-decoration: none; font-size: 14px; font-weight: 600; text-transform: uppercase; transition: 0.3s; position: relative; }
-        .nav-links li a:hover { color: #fff; }
-        .nav-links li a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0%; height: 2px; background: var(--gradient-main); transition: 0.3s; }
-        .nav-links li a:hover::after { width: 100%; }
+        .logo-text { font-size: 1.5rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .nav-links { display: flex; gap: 15px; list-style: none; height: 100%; align-items: center; }
+        .nav-item { position: relative; height: 100%; display: flex; align-items: center; padding: 0 5px; cursor: pointer; }
+        .nav-link { color: #ccc; text-decoration: none; font-size: 14px; font-weight: 600; text-transform: uppercase; transition: 0.3s; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+        .nav-item:hover .nav-link { color: #fff; }
+        
+        /* Dropdown Styles */
+        .dropdown-menu {
+            display: none; position: absolute; top: 70px; left: 0;
+            background: rgba(15, 17, 26, 0.95); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1); border-top: 2px solid var(--primary-color);
+            padding: 20px; border-radius: 0 0 12px 12px; width: 500px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: fadeIn 0.2s ease-out;
+        }
+        .nav-item:hover .dropdown-menu { display: block; }
+        .dropdown-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .dropdown-item-link { color: #a0a0a0; text-decoration: none; font-size: 0.9rem; padding: 5px 8px; border-radius: 6px; transition: 0.2s; }
+        .dropdown-item-link:hover { color: #fff; background: rgba(255,255,255,0.1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Right Header Elements */
         .right-elements { display: flex; align-items: center; gap: 15px; }
         .search-box { display: flex; align-items: center; background: #23252f; padding: 8px 16px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.05); }
         .search-box input { background: transparent; border: none; color: #fff; margin-left: 10px; font-family: var(--font-main); font-size: 14px; width: 150px; }
         .menu-toggle, .mobile-search-trigger { display: none; font-size: 1.5rem; color: #fff; cursor: pointer; }
         
-        /* User Login PC */
-        .desktop-auth { position: relative; }
-        .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; white-space: nowrap; }
-        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 94, 98, 0.4); }
+        /* Auth Buttons */
+        .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary-color); cursor: pointer; display: none; object-fit: cover; }
         .user-dropdown { position: absolute; top: 100%; right: 0; width: 200px; margin-top: 15px; background: #23252f; border-radius: 8px; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); }
         .user-dropdown.active { display: flex; }
         .user-info-item { padding: 12px; color: #fff; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .dropdown-item { background: transparent; border: none; color: #ccc; text-align: left; padding: 10px; cursor: pointer; transition: 0.2s; border-radius: 4px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
+        .dropdown-item { background: transparent; border: none; color: #ccc; text-align: left; padding: 10px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
         .dropdown-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
-        /* OVERLAYS (MOBILE) */
+        /* --- MOBILE OVERLAYS --- */
         .mobile-overlay { display: none; position: fixed; inset: 0; z-index: 3000; transition: 0.3s ease-in-out; }
         .mobile-overlay.active { transform: translateX(0) !important; opacity: 1 !important; }
         .close-btn-overlay { position: absolute; font-size: 1.8rem; color: #fff; cursor: pointer; z-index: 10; }
         
         #mobileMenuOverlay { display: block; background: var(--mobile-menu-bg); transform: translateX(-100%); padding: 25px; width: 300px; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
         .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .menu-logo { display: flex; align-items: center; gap: 10px; }
-        .menu-logo img { height: 35px; }
-        .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .menu-logo { display: flex; align-items: center; gap: 10px; } .menu-logo img { height: 35px; } .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         #mobileMenuOverlay .close-btn-overlay { position: static; color: #fff; opacity: 0.7; }
-        .member-btn-large { width: 100%; padding: 12px; background: linear-gradient(90deg, #FF8F50, #FF5E62); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
-        .mobile-menu-grid { display: flex; flex-direction: column; gap: 5px; }
+        .member-btn-large { width: 100%; padding: 12px; background: linear-gradient(90deg, #FF8F50, #FF5E62); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; cursor: pointer; }
+        .mobile-menu-grid { display: flex; flex-direction: column; gap: 5px; max-height: 80vh; overflow-y: auto; }
         .mobile-menu-link { color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem; padding: 12px 0; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--mobile-border); }
         .mobile-menu-link i { width: 25px; color: var(--primary-color); text-align: center; }
-        
+
         #mobileSearchOverlay { display: block; background: #1f212d; transform: translateY(-100%); opacity: 0; }
         #mobileSearchOverlay.active { transform: translateY(0) !important; opacity: 1 !important; }
         .search-header-mobile { display: flex; align-items: center; padding: 15px 20px; background: #2a2d3a; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; font-family: var(--font-main); margin-right: 15px; }
         #mobileSearchOverlay .close-btn-overlay { position: static; color: #fff; }
-        .search-content-mobile { padding: 20px; overflow-y: auto; height: calc(100vh - 70px); }
-        
-        /* CARD STYLE FOR SEARCH */
-        .sidebar-card { display: flex; gap: 15px; margin-bottom: 15px; padding: 10px; background: var(--bg-card); border-radius: 8px; transition: 0.2s; cursor: pointer; border: 1px solid transparent; }
-        .sidebar-card:hover { background: #2a2d3a; border-color: rgba(255, 94, 98, 0.3); transform: translateX(-5px); }
-        .sb-thumb { width: 70px; height: 100px; flex-shrink: 0; border-radius: 6px; overflow: hidden; }
-        .sb-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .sb-info { display: flex; flex-direction: column; justify-content: center; }
-        .sb-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: #fff; }
-        .sb-meta { font-size: 0.8rem; color: var(--text-sub); }
-        .sb-views { font-size: 0.75rem; color: #FF8F50; margin-top: 5px; display: flex; align-items: center; gap: 5px;}
 
         /* --- XEM PHIM LAYOUT --- */
         .container { max-width: 1400px; margin: 0 auto; padding: 0 4%; }
@@ -201,28 +140,17 @@
         .aspect-ratio-16-9 { width: 100%; padding-top: 56.25%; position: relative; }
         .aspect-ratio-16-9 iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-        /* --- MOVIE INFO BLOCK (CINEMATIC) --- */
-        .movie-info-block {
-            position: relative; background: #161823; padding: 30px; border-radius: 16px;
-            margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05);
-            overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-        .movie-info-bg {
-            position: absolute; inset: 0; background-size: cover; background-position: center;
-            opacity: 0.20; filter: blur(10px) saturate(150%); z-index: 0; pointer-events: none;
-        }
+        /* Movie Info Block */
+        .movie-info-block { position: relative; background: #161823; padding: 30px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
+        .movie-info-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.20; filter: blur(10px) saturate(150%); pointer-events: none; }
         .movie-info-content { position: relative; z-index: 1; }
-        
         .movie-breadcrumbs { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 15px; display: flex; gap: 8px; align-items: center; }
         .movie-breadcrumbs a { color: #ccc; text-decoration: none; } .movie-breadcrumbs a:hover { color: var(--primary-color); }
-        
         .movie-title-large { font-size: 2.4rem; font-weight: 900; margin-bottom: 5px; line-height: 1.2; text-transform: uppercase; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .movie-origin-name { font-size: 1.1rem; color: #a0a0a0; margin-bottom: 20px; font-weight: 600; }
-        
         .movie-tags { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; align-items: center; }
         .tag-item { padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 700; color: #ccc; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.05); }
         .tag-highlight { background: var(--gradient-main); color: #fff; border: none; }
-        
         .movie-description { color: #d1d5db; line-height: 1.7; font-size: 1rem; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border-left: 3px solid var(--primary-color); }
 
         .episode-block { background: var(--bg-card); padding: 25px; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
@@ -231,29 +159,33 @@
         .ep-btn { background: #191b24; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 10px 0; text-align: center; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
         .ep-btn:hover, .ep-btn.active { background: var(--gradient-main); border-color: transparent; }
 
-        /* --- COMMENT SECTION (MODERN) --- */
-        .comment-section { background: #161823; padding: 30px; border-radius: 16px; margin-top: 30px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        /* Comment Section */
+        .comment-section { background: #161823; padding: 30px; border-radius: 16px; margin-top: 30px; border: 1px solid rgba(255,255,255,0.05); }
         .comment-header-title { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--primary-color); padding-left: 15px; }
-        
         .comment-input-box { display: flex; gap: 20px; margin-bottom: 40px; align-items: flex-start; }
         .current-user-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
-        .comment-form { flex: 1; background: #1f222e; border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); position: relative; }
+        .comment-form { flex: 1; background: #1f222e; border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); }
         .comment-input { width: 100%; background: transparent; border: none; color: #fff; font-family: var(--font-main); font-size: 0.95rem; resize: none; min-height: 60px; outline: none; }
         .form-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
         .btn-send-cmt { background: var(--gradient-main); color: #fff; border: none; padding: 8px 24px; border-radius: 20px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-
         .comment-list { display: flex; flex-direction: column; gap: 25px; }
         .comment-item { display: flex; gap: 15px; animation: fadeIn 0.5s ease; }
         .comment-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
         .comment-body { flex: 1; }
         .comment-meta { display: flex; align-items: baseline; gap: 10px; margin-bottom: 5px; }
         .comment-author { font-weight: 700; font-size: 0.95rem; color: #fff; }
-        .comment-time { font-size: 0.75rem; color: #777; }
         .comment-text { color: #ccc; font-size: 0.95rem; line-height: 1.5; background: rgba(255,255,255,0.03); padding: 12px 15px; border-radius: 0 12px 12px 12px; display: inline-block; }
-        .empty-comment { text-align: center; padding: 40px; color: #555; font-style: italic; }
-
-        .sidebar-right { position: sticky; top: 90px; height: fit-content; }
         
+        /* Sidebar Card */
+        .sidebar-right { position: sticky; top: 90px; height: fit-content; }
+        .sidebar-card { display: flex; gap: 15px; margin-bottom: 15px; padding: 10px; background: var(--bg-card); border-radius: 8px; transition: 0.2s; cursor: pointer; border: 1px solid transparent; }
+        .sidebar-card:hover { background: #2a2d3a; border-color: rgba(255, 94, 98, 0.3); transform: translateX(-5px); }
+        .sb-thumb { width: 70px; height: 100px; flex-shrink: 0; border-radius: 6px; overflow: hidden; }
+        .sb-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .sb-info { display: flex; flex-direction: column; justify-content: center; }
+        .sb-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: #fff; }
+        .sb-meta { font-size: 0.8rem; color: var(--text-sub); }
+
         footer { background: var(--bg-dark); padding: 60px 4% 20px; margin-top: 50px; border-top: 1px solid #23252f; font-size: 0.9rem; }
         .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-bottom: 40px; }
         .footer-col h3 { font-size: 1.1rem; color: #fff; margin-bottom: 20px; font-weight: 700; }
@@ -262,41 +194,32 @@
         .footer-col ul { list-style: none; } .footer-col ul li { margin-bottom: 12px; }
         .footer-col ul li a { color: var(--text-sub); text-decoration: none; transition: 0.3s; } .footer-col ul li a:hover { color: var(--primary-color); }
         .footer-bottom { border-top: 1px solid #23252f; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.8rem; }
-
-        /* ================= MOBILE OPTIMIZATION ================= */
+        .custom-confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10001; display: none; justify-content: center; align-items: center; }
+        .custom-confirm-overlay.active { display: flex; }
+        .confirm-box { background: #23252f; width: 90%; max-width: 400px; padding: 30px; border-radius: 16px; text-align: center; }
+        
         @media (max-width: 900px) {
             header { height: 60px; padding: 0 4%; justify-content: space-between; }
             .header-left-group { gap: 25px; order: 1; }
             .menu-toggle { display: block; font-size: 1.5rem; }
-            .logo { order: 2; margin: 0; }
-            .logo img { height: 32px; }
-            .logo-text { display: block; font-size: 1.2rem; }
+            .logo { order: 2; margin: 0; } .logo img { height: 32px; } .logo-text { display: block; font-size: 1.2rem; }
             .right-elements { order: 3; gap: 15px; }
             .mobile-search-trigger { display: block; font-size: 1.2rem; }
             .nav-links, .search-box, .desktop-auth { display: none !important; }
-            
             #mobileMenuOverlay, #mobileSearchOverlay { display: block; }
-            
             .watch-wrapper { grid-template-columns: 1fr; padding-top: 80px; gap: 20px; }
             .movie-title-large { font-size: 1.8rem; }
             .movie-info-block { padding: 20px; }
-            
-            /* Order Mobile */
-            .main-content { display: flex; flex-direction: column; }
             .player-box { order: 1; }
             .episode-block-mobile { order: 2; display: block !important; margin-bottom: 20px; }
             .comment-section { order: 4; }
             .sidebar-right { order: 5; position: static; }
-
             .episode-block-desktop { display: none; }
-            
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
             .footer-col:first-child { grid-column: span 2; text-align: center; }
             .footer-brand { justify-content: center; }
         }
-        @media (min-width: 901px) {
-            .episode-block-mobile { display: none; } 
-        }
+        @media (min-width: 901px) { .episode-block-mobile { display: none; } }
     </style>
 </head>
 <body>
@@ -305,15 +228,12 @@
         <div id="ad-container">
             <button id="go-to-website-button">Go to website</button>
             <button id="skip-button" disabled>Skip ad (<span>3</span>)</button>
-            
-            <img id="ad-image" 
-                 alt="Quảng cáo"
-                 title="Nhấn để xem chi tiết">
+            <img id="ad-image" alt="Quảng cáo" title="Nhấn để xem chi tiết">
         </div>
     </div>
 
     <div id="loadingScreen">
-        <div class="loader-spinner"></div>
+        <img src="/LOGO.WEBP" class="loading-img" alt="HopPhim">
     </div>
 
     <div id="toast-container"></div>
@@ -332,10 +252,7 @@
 
     <div id="mobileMenuOverlay" class="mobile-overlay">
         <div class="menu-header">
-            <div class="menu-logo">
-                <img src="/LOGO.WEBP" alt="HopPhim">
-                <span>HOPPHIM</span>
-            </div>
+            <div class="menu-logo"><img src="/LOGO.WEBP" alt="HopPhim"><span>HOPPHIM</span></div>
              <i class="fas fa-times close-btn-overlay" onclick="closeMobileMenu()"></i>
         </div>
         <button class="member-btn-large" id="mobileMemberBtn" onclick="window.location.href='/login.html'">
@@ -343,13 +260,21 @@
         </button>
         <div class="mobile-menu-grid">
             <a href="/" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Trang chủ</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-tv"></i> Phim Bộ</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-film"></i> Phim Lẻ</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-globe-asia"></i> Hàn Quốc</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-torii-gate"></i> Trung Quốc</a>
-            <a href="../hopteam.html" class="mobile-menu-link" onclick="closeMobileMenu()">
-                <i class="fas fa-users"></i> Về HopTeam
-            </a>
+            
+            <a href="/" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-tv"></i> Phim Bộ</a>
+            <a href="/" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-film"></i> Phim Lẻ</a>
+
+            <div style="border-bottom: 1px solid var(--mobile-border); padding: 10px 0; color:#666; font-size:0.9rem; font-weight:700; text-transform:uppercase;">Thể Loại</div>
+            <a href="/" class="mobile-menu-link"><i class="fas fa-fist-raised"></i> Hành Động</a>
+            <a href="/" class="mobile-menu-link"><i class="fas fa-heart"></i> Tình Cảm</a>
+            <a href="/" class="mobile-menu-link"><i class="fas fa-ghost"></i> Kinh Dị</a>
+
+            <div style="border-bottom: 1px solid var(--mobile-border); padding: 10px 0; color:#666; font-size:0.9rem; font-weight:700; text-transform:uppercase; margin-top:10px;">Quốc Gia</div>
+            <a href="/" class="mobile-menu-link"><i class="fas fa-globe-asia"></i> Hàn Quốc</a>
+            <a href="/" class="mobile-menu-link"><i class="fas fa-torii-gate"></i> Trung Quốc</a>
+            <a href="/" class="mobile-menu-link"><i class="fas fa-globe-americas"></i> Âu Mỹ</a>
+
+            <a href="../hopteam.html" class="mobile-menu-link" onclick="closeMobileMenu()" style="margin-top:15px; border-top:1px solid var(--mobile-border);"><i class="fas fa-users"></i> Về HopTeam</a>
             <a href="/profile.html" class="mobile-menu-link" id="mobileAccountLink" style="display: none;" onclick="closeMobileMenu()"><i class="fas fa-user-cog"></i> Quản lý tài khoản</a>
         </div>
     </div>
@@ -360,32 +285,72 @@
             <input type="text" id="mobileSearchInput" class="search-input-mobile" placeholder="Nhập tên phim...">
             <i class="fas fa-times close-btn-overlay" onclick="closeMobileSearch()"></i>
         </div>
-        <div class="search-content-mobile">
-            <div id="mobileSearchResults"></div>
-        </div>
+        <div class="search-content-mobile"><div id="mobileSearchResults"></div></div>
     </div>
 
     <header id="header">
         <div class="header-left-group">
             <div class="menu-toggle" onclick="openMobileMenu()"><i class="fas fa-bars"></i></div>
             <div class="logo" onclick="window.location.href='/'">
-                <img src="/LOGO.WEBP" alt="HopPhim">
-                <span class="logo-text">HOPPHIM</span>
+                <img src="/LOGO.WEBP" alt="HopPhim"><span class="logo-text">HOPPHIM</span>
             </div>
+            
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item"><a href="/" class="nav-link">Trang chủ</a></li>
+                
+                <li class="nav-item">
+                    <div class="nav-link">Thể loại <i class="fas fa-caret-down"></i></div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-grid">
+                            <a href="/" class="dropdown-item-link">Hành Động</a>
+                            <a href="/" class="dropdown-item-link">Tình Cảm</a>
+                            <a href="/" class="dropdown-item-link">Hài Hước</a>
+                            <a href="/" class="dropdown-item-link">Cổ Trang</a>
+                            <a href="/" class="dropdown-item-link">Tâm Lý</a>
+                            <a href="/" class="dropdown-item-link">Hình Sự</a>
+                            <a href="/" class="dropdown-item-link">Chiến Tranh</a>
+                            <a href="/" class="dropdown-item-link">Thể Thao</a>
+                            <a href="/" class="dropdown-item-link">Võ Thuật</a>
+                            <a href="/" class="dropdown-item-link">Viễn Tưởng</a>
+                            <a href="/" class="dropdown-item-link">Phiêu Lưu</a>
+                            <a href="/" class="dropdown-item-link">Khoa Học</a>
+                            <a href="/" class="dropdown-item-link">Kinh Dị</a>
+                            <a href="/" class="dropdown-item-link">Âm Nhạc</a>
+                            <a href="/" class="dropdown-item-link">Thần Thoại</a>
+                            <a href="/" class="dropdown-item-link">Tài Liệu</a>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="nav-item"><a href="/" class="nav-link">Phim Lẻ</a></li>
+                <li class="nav-item"><a href="/" class="nav-link">Phim Bộ</a></li>
+                <li class="nav-item"><a href="/" class="nav-link">Hoạt Hình</a></li>
+
+                <li class="nav-item">
+                    <div class="nav-link">Quốc gia <i class="fas fa-caret-down"></i></div>
+                    <div class="dropdown-menu" style="width: 400px;">
+                        <div class="dropdown-grid" style="grid-template-columns: repeat(3, 1fr);">
+                            <a href="/" class="dropdown-item-link">Trung Quốc</a>
+                            <a href="/" class="dropdown-item-link">Hàn Quốc</a>
+                            <a href="/" class="dropdown-item-link">Nhật Bản</a>
+                            <a href="/" class="dropdown-item-link">Thái Lan</a>
+                            <a href="/" class="dropdown-item-link">Âu Mỹ</a>
+                            <a href="/" class="dropdown-item-link">Đài Loan</a>
+                            <a href="/" class="dropdown-item-link">Hồng Kông</a>
+                            <a href="/" class="dropdown-item-link">Ấn Độ</a>
+                            <a href="/" class="dropdown-item-link">Việt Nam</a>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="nav-item"><a href="../hopteam.html" class="nav-link">Về HopTeam</a></li>
+            </ul>
         </div>
-        <ul class="nav-links" id="navLinks">
-            <li><a href="/">Trang chủ</a></li>
-            <li><a href="#">Phim Bộ</a></li>
-            <li><a href="#">Phim Lẻ</a></li>
-            <li><a href="#">Hàn Quốc</a></li>
-            <li><a href="#">Trung Quốc</a></li>
-            <li><a href="../hopteam.html">Về HopTeam</a></li>
-        </ul>
         <div class="right-elements">
             <div class="mobile-search-trigger" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
             <div class="search-box">
                 <i class="fas fa-search" style="color: #a0a0a0"></i>
-                <input type="text" placeholder="Tìm kiếm phim...">
+                <input type="text" placeholder="Tìm kiếm phim..." onclick="alert('Vui lòng tìm kiếm tại Trang chủ')">
             </div>
             <div class="desktop-auth" style="position: relative;">
                 <button id="btnLogin" class="btn-login" onclick="window.location.href='/login.html'">Đăng nhập</button>
@@ -485,10 +450,7 @@
     <footer>
         <div class="footer-grid">
             <div class="footer-col">
-                <div class="footer-brand">
-                    <img src="/logo.webp" alt="HopPhim">
-                    <span class="logo-text">HOPPHIM</span>
-                </div>
+                <div class="footer-brand"><img src="/logo.webp" alt="HopPhim"><span class="logo-text">HOPPHIM</span></div>
                 <p style="color: #a0a0a0; line-height: 1.6; margin-top: 15px;">
                     Trang xem phim trực tuyến miễn phí chất lượng cao.
                 </p>
@@ -496,17 +458,17 @@
             <div class="footer-col">
                 <h3>Danh mục</h3>
                 <ul>
-                    <li><a href="../" onclick="loadCategory('phim-moi', 'Phim Mới Cập Nhật')">Phim Mới Cập Nhật</a></li>
-                    <li><a href="../" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Chiếu Rạp</a></li>
-                    <li><a href="../" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ Độc Quyền</a></li>
+                    <li><a href="/">Phim Mới Cập Nhật</a></li>
+                    <li><a href="/">Phim Chiếu Rạp</a></li>
+                    <li><a href="/">Phim Bộ Độc Quyền</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>Quốc gia</h3>
                 <ul>
-                    <li><a href="../" onclick="loadCountry('han-quoc', 'Hàn Quốc')">Hàn Quốc</a></li>
-                    <li><a href="../" onclick="loadCountry('trung-quoc', 'Trung Quốc')">Trung Quốc</a></li>
-                    <li><a href="../" onclick="loadCountry('au-my', 'Âu Mỹ')">Âu Mỹ</a></li>
+                    <li><a href="/">Hàn Quốc</a></li>
+                    <li><a href="/">Trung Quốc</a></li>
+                    <li><a href="/">Âu Mỹ</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -518,9 +480,7 @@
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 HopPhim. All Rights Reserved By HopTeam.</p>
-        </div>
+        <div class="footer-bottom"><p>&copy; 2026 HopPhim. All Rights Reserved By HopTeam.</p></div>
     </footer>
 
     <script type="module">
@@ -563,7 +523,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         let movieSlug = urlParams.get('slug');
 
-        // Logic Hybrid: Nếu không có ?slug=, lấy từ đường dẫn (Clean URL)
         if (!movieSlug) {
             const path = window.location.pathname;
             const parts = path.split('/').filter(part => part !== '');
@@ -573,7 +532,6 @@
             }
         }
 
-        // Nếu vẫn không có slug, quay về trang chủ
         if (!movieSlug) {
             alert('Không tìm thấy phim!');
             window.location.href = '/'; 
@@ -610,7 +568,7 @@
             }
         });
 
-        // 5. GLOBAL FUNCTIONS (EXPOSE TO WINDOW)
+        // 5. GLOBAL FUNCTIONS
         window.logout = async () => {
             const ok = await window.customConfirm("Bạn có chắc chắn muốn đăng xuất?");
             if(ok) {
@@ -652,9 +610,8 @@
             if(!text) return;
 
             try {
-                // ADD COMMENT TO FIRESTORE
                 await addDoc(collection(db, "comments"), {
-                    movieId: movieSlug, // Uses the correctly calculated slug
+                    movieId: movieSlug, 
                     userId: currentUser.uid,
                     userName: currentUser.displayName || "Thành viên",
                     userAvatar: currentUser.photoURL || "/Guest.webp",
@@ -669,7 +626,6 @@
             }
         }
 
-        // Realtime Listener
         if(movieSlug) {
             const q = query(collection(db, "comments"), where("movieId", "==", movieSlug), orderBy("timestamp", "desc"));
             onSnapshot(q, (snapshot) => {
@@ -713,7 +669,11 @@
                     loadRelated();
                 } else { window.showToast('Lỗi tải phim', 'error'); }
             } catch (e) { console.error(e); } finally { 
-                if(loadingScreen) loadingScreen.style.display = 'none'; 
+                if(loadingScreen) {
+                    const img = loadingScreen.querySelector('.loading-img');
+                    if(img) img.classList.add('zoom-out');
+                    setTimeout(() => { loadingScreen.style.display = 'none'; }, 500);
+                }
             }
         }
 
@@ -723,11 +683,8 @@
             document.getElementById('mName').innerText = movie.name;
             document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
             
-            // XỬ LÝ RÚT GỌN NỘI DUNG (36 TỪ)
             const contentBox = document.getElementById('mContent');
             const fullContent = movie.content || "Đang cập nhật...";
-            
-            // Lấy text thuần để đếm từ
             const tempDiv = document.createElement("div");
             tempDiv.innerHTML = fullContent;
             const plainText = tempDiv.innerText || "";
@@ -735,21 +692,15 @@
             
             if (words.length > 36) {
                 const shortContent = words.slice(0, 36).join(" ") + "...";
-                
-                contentBox.innerHTML = `
-                    <span id="descContent">${shortContent}</span>
-                    <span id="toggleDescBtn" style="color: var(--primary-color); cursor: pointer; font-weight: bold; margin-left: 8px;">Xem thêm</span>
-                `;
-                
+                contentBox.innerHTML = `<span id="descContent">${shortContent}</span><span id="toggleDescBtn" style="color: var(--primary-color); cursor: pointer; font-weight: bold; margin-left: 8px;">Xem thêm</span>`;
                 const toggleBtn = document.getElementById('toggleDescBtn');
                 const descSpan = document.getElementById('descContent');
-                
                 toggleBtn.onclick = () => {
                     if (toggleBtn.innerText === "Xem thêm") {
-                        descSpan.innerHTML = fullContent; // Hiện full HTML
+                        descSpan.innerHTML = fullContent;
                         toggleBtn.innerText = "Thu gọn";
                     } else {
-                        descSpan.innerText = shortContent; // Hiện ngắn
+                        descSpan.innerText = shortContent;
                         toggleBtn.innerText = "Xem thêm";
                     }
                 };
@@ -769,8 +720,6 @@
             if (movie.country && movie.country[0]) tagsHtml += `<span class="tag-item"><i class="fas fa-globe"></i> ${movie.country[0].name}</span>`;
 
             document.getElementById('mTags').innerHTML = tagsHtml;
-            
-            // Save history after loading
             setTimeout(() => { if (currentUser) saveToHistory(movie); }, 3000);
         }
 
@@ -805,7 +754,6 @@
                     let html = '';
                     data.data.items.slice(0,5).forEach(m => {
                         const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-                        // Correct Clean URL Link
                         html += `
                             <div class="sidebar-card" onclick="window.location.href='/xem-phim/${m.slug}'">
                                 <div class="sb-thumb"><img src="${img}"></div>
@@ -821,7 +769,6 @@
             } catch(e) {}
         }
 
-        // HISTORY SAVING
         async function saveToHistory(movie) {
             if (!currentUser) return; 
             const movieData = {
@@ -851,7 +798,6 @@
             return Math.floor(hours / 24) + " ngày trước";
         }
 
-        // --- MOBILE UI HELPERS ---
         const menuOverlay = document.getElementById('mobileMenuOverlay');
         const searchOverlay = document.getElementById('mobileSearchOverlay');
         const mobileSearchInput = document.getElementById('mobileSearchInput');
@@ -864,15 +810,14 @@
 
         // Start App
         loadMovie();
-
     </script>
     
     <script>
         // CẤU HÌNH QUẢNG CÁO
         const adConfig = {
-            gifUrl: "https://hopvan.netlify.app/IMG/hero-video.gif", // Link ảnh GIF cục bộ
-            targetUrl: "https://hopvan.netlify.app/", // Trang web đích
-            skipTime: 3 // Thời gian đếm ngược
+            gifUrl: "https://hopvan.netlify.app/IMG/hero-video.gif",
+            targetUrl: "https://hopvan.netlify.app/",
+            skipTime: 3 
         };
 
         const adOverlay = document.getElementById('ad-overlay');
@@ -881,10 +826,8 @@
         const goToWebsiteButton = document.getElementById('go-to-website-button'); 
 
         if (adOverlay && skipButton && goToWebsiteButton && adImage) { 
-            // 1. Áp dụng URL ảnh GIF
             adImage.src = adConfig.gifUrl;
             
-            // 2. Logic Đếm ngược
             const countdownSpan = skipButton.querySelector('span');
             let timeLeft = adConfig.skipTime; 
             if (countdownSpan) countdownSpan.textContent = timeLeft;
@@ -902,21 +845,16 @@
                 }
             }, 1000); 
 
-            // 3. Sự kiện Click nút Bỏ qua
             skipButton.addEventListener('click', (e) => {
-                e.stopPropagation(); // Ngăn click lan ra ngoài
-                if (skipButton.classList.contains('enabled')) {
-                    closeAd();
-                }
+                e.stopPropagation();
+                if (skipButton.classList.contains('enabled')) closeAd();
             });
 
-            // 4. Sự kiện Click nút "Go to website"
             goToWebsiteButton.addEventListener('click', (e) => {
                 e.stopPropagation();
                 openTarget();
             });
 
-            // 5. Sự kiện Click vào chính ảnh quảng cáo (cũng mở link)
             adImage.addEventListener('click', () => {
                 openTarget();
             });
