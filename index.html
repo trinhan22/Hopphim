@@ -1014,6 +1014,29 @@
             } catch (e) { window.showToast("Lỗi lưu phim: " + e.message, "error"); }
         };
 
+// HÀM LƯU LỊCH SỬ XEM PHIM
+window.saveToHistory = async (slug, name, thumb) => {
+    if (!window.currentUser) return; // Không đăng nhập thì không lưu
+    const userRef = doc(db, "users", window.currentUser.uid);
+    try {
+        const docSnap = await getDoc(userRef);
+        let history = docSnap.exists() ? (docSnap.data().watchHistory || []) : [];
+        
+        // Loại bỏ nếu phim đã tồn tại trong lịch sử để đưa lên đầu
+        history = history.filter(m => m.slug !== slug);
+        
+        // Thêm phim mới vào cuối mảng (sẽ reverse khi load để hiện lên đầu)
+        history.push({ slug, name, thumb_url: thumb, timestamp: Date.now() });
+        
+        // Giới hạn lưu khoảng 20 phim gần nhất cho nhẹ data
+        if (history.length > 20) history.shift();
+
+        if(docSnap.exists()) await updateDoc(userRef, { watchHistory: history });
+        else await setDoc(userRef, { email: window.currentUser.email, watchHistory: history });
+        
+    } catch (e) { console.error("Lỗi lưu lịch sử:", e); }
+};
+
         // LOAD HISTORY
         async function loadHistory(uid) {
             try {
@@ -1097,9 +1120,9 @@
                         const shortDesc = `Bộ phim ${m.name} (${m.origin_name}) ra mắt năm ${m.year} là một siêu phẩm điện ảnh không thể bỏ qua tại HopPhim.`;
                         
                         html += `
-                        <div class="n-card">
-                            <img src="${img}" class="n-poster" loading="lazy">
-                            <div class="n-hover-detail" onclick="window.location.href='/xem-phim/${m.slug}'">
+<div class="n-card">
+    <img src="${img}" class="n-poster" loading="lazy">
+    <div class="n-hover-detail" onclick="saveToHistory('${m.slug}', '${m.name.replace(/'/g, "\\'")}','${m.thumb_url}'); window.location.href='/xem-phim/${m.slug}'">
                                 <img src="${img}" class="n-hover-img">
                                 <div class="n-popup-body">
                                     <div class="n-actions">
