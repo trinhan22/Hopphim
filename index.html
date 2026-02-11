@@ -5,35 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HopPhim - Phim Hay Trong Tầm Tay</title>
     
-    <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
-    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao." />
+    <meta property="og:title" content="HopPhim" />
     <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
-    <meta property="og:url" content="https://hopphim.netlify.app" />
-    <meta property="og:type" content="article" />
-
-    <link rel="icon" type="image/webp" href="LOGO.WEBP" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* ==========================================================================
+           1. CSS CORE & VARIABLES (DESIGN SYSTEM)
+           ========================================================================== 
+        */
         :root {
             --bg-body: #191b24; 
             --bg-dark: #0f111a; 
+            --bg-panel: #23252f; 
             --text-main: #ffffff; 
             --text-sub: #a0a0a0;
             --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62); 
             --primary-color: #FF5E62;
-            --badge-bg: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%);
+            --gold-color: linear-gradient(90deg, #FF8F50, #FF5E62);
             --font-main: 'Inter', sans-serif; 
             --card-radius: 12px;
             --mobile-menu-bg: #15171e; 
             --mobile-border: rgba(255,255,255,0.05);
+            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --z-header: 5000;
+            --z-modal: 10000;
+            --z-hover-detail: 99999;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { font-family: var(--font-main); background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
-        .text-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
+
+        /* Basic Resets */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            outline: none; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        body { 
+            font-family: var(--font-main); 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            overflow-x: hidden; 
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a { text-decoration: none; color: inherit; transition: var(--transition-smooth); }
+        ul { list-style: none; }
+        button { border: none; cursor: pointer; font-family: var(--font-main); }
+
+        /* Custom Scroller cho toàn trang */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+        /* ==========================================================================
+           2. UTILITY CLASSES & KEYFRAMES
+           ========================================================================== 
+        */
+        .text-gradient { 
+            background: var(--gradient-main); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            display: inline-block; 
+            font-weight: 800;
+        }
+
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+        .flex-between { display: flex; align-items: center; justify-content: space-between; }
+
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn { from { transform: scale(1.1); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes floatIdle { 0% { transform: scale(1); } 50% { transform: scale(0.9); } 100% { transform: scale(1); } }
 
         /* --- TOAST & CONFIRM (Giữ nguyên) --- */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
@@ -62,6 +112,9 @@
         @keyframes floatIdle { 0% { transform: scale(1); } 50% { transform: scale(0.85); } 100% { transform: scale(1); } }
         @keyframes zoomOut { from { transform: scale(1); opacity: 1; } to { transform: scale(2.2); opacity: 0; } }
 
+        /* ==========================================================================
+           5. HEADER (MOBILE REMASTER: BURGER-LOGO-SEARCH)
+           ========================================================================== 
         /* ======================== HEADER PC (MENU MỚI) ======================== */
         header { 
             position: fixed; top: 0; width: 100%; height: 70px; padding: 0 4%; 
@@ -143,159 +196,333 @@
         .dropdown-item { background: transparent; border: none; color: #ccc; text-align: left; padding: 10px; cursor: pointer; transition: 0.2s; border-radius: 4px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
         .dropdown-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
-        /* --- HERO SECTION --- */
+
+        /* --- MOBILE HEADER REMASTER (3-PART ARCHITECTURE) --- */
+        @media (max-width: 900px) {
+            header { height: 60px; padding: 0 15px; display: flex; justify-content: center; align-items: center; position: fixed; }
+            .header-left-group, .nav-links, .search-box, .desktop-auth { display: none !important; }
+            
+            /* Hamburger Trái Tuyệt Đối */
+            .menu-toggle { 
+                display: block !important; position: absolute; left: 15px; 
+                font-size: 1.5rem; color: #fff; cursor: pointer; z-index: 5005;
+            }
+            /* Logo Giữa Tuyệt Đối */
+            .logo { 
+                position: absolute; left: 50%; top: 50%; 
+                transform: translate(-50%, -50%); margin: 0; 
+                display: flex !important; z-index: 5000;
+            }
+            .logo img { height: 32px; }
+            .logo-text { font-size: 1.1rem; }
+            /* Search Phải Tuyệt Đối */
+            .mobile-search-trigger { 
+                display: block !important; position: absolute; right: 15px; 
+                font-size: 1.3rem; color: #fff; cursor: pointer; z-index: 5005;
+            }
+        }
+
+        /* ==========================================================================
+           6. HERO & TOPICS (COMPACT)
+           ========================================================================== 
+        */
         .hero { 
-            height: 70vh; 
-            display: flex; align-items: center; justify-content: center; 
-            position: relative; 
-            background-image: url('home-background.jpg'); 
-            background-size: cover; background-position: center center; background-repeat: no-repeat; 
+            height: 70vh; display: flex; align-items: center; justify-content: center; 
+            position: relative; background: url('home-background.jpg') center/cover no-repeat;
         }
+        .hero::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.3); }
         .hero::after { 
-            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; 
-            height: 250px; 
-            /* Gradient làm mờ chân Hero vào nền web */
-            background: linear-gradient(to bottom, transparent 0%, var(--bg-body) 100%); 
-            z-index: 1; pointer-events: none; 
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 250px; 
+            background: linear-gradient(to bottom, transparent, var(--bg-body)); 
         }
-        .hero-content { z-index: 10; text-align: center; max-width: 900px; padding: 20px; animation: fadeUp 1s ease-out; }
-        .hero-title { font-size: 4rem; font-weight: 900; margin-bottom: 15px; letter-spacing: -2px; background: var(--gradient-main); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3)); }
-        .hero-desc { font-size: 1.2rem; color: #fff; font-weight: 500; max-width: 700px; margin: 0 auto; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .hero-content { position: relative; z-index: 10; text-align: center; max-width: 900px; padding: 20px; }
+        .hero-title { font-size: 4.5rem; font-weight: 900; line-height: 1.1; letter-spacing: -3px; }
+        .hero-desc { font-size: 1.25rem; color: #eee; font-weight: 600; margin-top: 15px; }
 
-        main { position: relative; z-index: 20; padding-bottom: 50px; }
-        .category-section { padding: 0 4% 40px; }
-        .category-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-left: 4px solid var(--primary-color); padding-left: 15px; }
-        .category-title { font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; }
-        .see-all-link { color: var(--text-sub); font-size: 0.9rem; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
-        .see-all-link:hover { color: var(--primary-color); }
+        .topics-section { padding: 0 4%; margin-top: -60px; position: relative; z-index: 20; margin-bottom: 60px; }
+        .section-label { font-size: 1.3rem; font-weight: 800; margin-bottom: 25px; color: #fff; letter-spacing: -0.5px; }
 
-        /* --- SLIDER (Regular Movies) --- */
-        .slider-container { position: relative; }
-        .movie-row { display: flex; gap: 15px; overflow-x: auto; scroll-behavior: smooth; padding: 10px 0; scrollbar-width: none; }
-        .movie-row::-webkit-scrollbar { display: none; }
-        .slider-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 50; width: 45px; height: 45px; border-radius: 50%; background: rgba(15,17,26, 0.8); color: #fff; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; opacity: 0; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
-        .slider-container:hover .slider-arrow { opacity: 1; } .slider-arrow:hover { background: var(--primary-color); border-color: var(--primary-color); }
-        .arrow-left { left: -20px; } .arrow-right { right: -20px; }
+        .topic-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
 
-        /* --- MOVIE CARD (Regular) --- */
-        .movie-card { flex: 0 0 200px; height: 300px; position: relative; border-radius: var(--card-radius); overflow: hidden; cursor: pointer; background: #23252f; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.3s ease; }
-        .movie-poster { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 30%, transparent 60%); z-index: 2; pointer-events: none; }
-        .card-info { position: absolute; bottom: 0; left: 0; width: 100%; padding: 12px; z-index: 5; transition: transform 0.3s ease; }
-        .movie-name { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 6px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        .movie-meta { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: #e0e0e0; font-weight: 500; }
-        .badge-hd { background: var(--badge-bg); color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-        .dot { width: 4px; height: 4px; background: #FF5E62; border-radius: 50%; }
-        .hover-actions { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; gap: 10px; z-index: 6; opacity: 0; transition: all 0.3s ease; }
-        .btn-hover-play, .btn-hover-delete { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); border: 2px solid #fff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; cursor: pointer; }
-        .btn-hover-delete { background: rgba(255, 71, 87, 0.8); }
-        .btn-hover-play:hover { background: var(--primary-color); border-color: var(--primary-color); transform: scale(1.1); }
-        .btn-hover-delete:hover { background: #ff4757; transform: scale(1.1); border-color: #ff4757; }
-        .movie-card:hover { transform: scale(1.05); z-index: 10; box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
-        .movie-card:hover .movie-poster { filter: brightness(0.6); }
-        .movie-card:hover .hover-actions { opacity: 1; }
-
-        /* ======================== TOP 5 SECTION (STYLE ẢNH 2: POSTER TRÊN, SỐ NGOÀI) ======================== */
-        .top-10-wrapper {
-            position: relative;
-            z-index: 20; 
-            margin-top: 50px; 
-            padding-bottom: 20px;
+        .topic-card { 
+            height: 115px; border-radius: 20px; padding: 22px; 
+            display: flex; flex-direction: column; justify-content: space-between; 
+            cursor: pointer; position: relative; overflow: hidden; 
+            transition: var(--transition-smooth);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
         }
 
-        .top-10-header {
-            padding: 0 4% 10px;
-            display: flex; align-items: center; gap: 15px;
-        }
-        
-        .top-10-header h2 {
-            font-size: 2.2rem; font-weight: 900; font-style: italic; text-transform: uppercase; color: #fff; 
-            text-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px;
-        }
-
-        /* GRID LAYOUT CHO TOP 5 PC */
-        .top-5-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr); /* 5 Cột đều nhau */
-            gap: 20px;
-            padding: 20px 4%;
-        }
-
-        /* CARD TOP MỚI */
-        .top-card-style2 {
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-        
-        .top-card-style2:hover {
+        .topic-card:hover {
             transform: translateY(-10px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         }
 
-        /* Khung Poster */
-        .top-poster-style2 {
-            width: 100%;
-            aspect-ratio: 2/3; /* Tỷ lệ poster chuẩn */
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
+        /* Decorative Blur Elements behind card */
+        .topic-card::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 120px; height: 120px; border-radius: 50%;
+            transform: translate(-50%, -50%);
+            filter: blur(35px); opacity: 0.4; z-index: 1;
+            transition: 0.6s ease;
+        }
+
+        .topic-card:hover::before { width: 160px; height: 160px; opacity: 0.7; }
+
+        /* Icon mờ đặc trưng */
+        .topic-card i.floating-icon {
+            position: absolute; bottom: -10px; right: -5px;
+            font-size: 4rem; color: rgba(255, 255, 255, 0.05);
+            transform: rotate(-15deg); transition: 0.5s; z-index: 1;
+        }
+        .topic-card:hover i.floating-icon { color: rgba(255, 255, 255, 0.1); transform: rotate(0deg) scale(1.1); }
+
+        .topic-name { font-size: 1.3rem; font-weight: 900; z-index: 2; position: relative; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .topic-link { font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 6px; z-index: 2; position: relative; color: rgba(255,255,255,0.7); }
+        .topic-card:hover .topic-link { color: #fff; }
+
+        /* Beautiful Color Palettes */
+        .bg-marvel::before { background: #ed1d24; }
+        .bg-sitcom::before { background: #00d2ff; }
+        .bg-voice::before { background: #a8ff78; }
+        .bg-trans::before { background: #8e44ad; }
+        .bg-ancient::before { background: #f1c40f; }
+        .bg-4k::before { background: #ffffff; }
+
+        /* ==========================================================================
+           7. MERGED COUNTRY BLOCK (KỸ THUẬT NỔI HOÀN TOÀN - PORTAL STYLE)
+           ========================================================================== 
+        */
+.merged-block { 
+    background: var(--bg-panel); 
+    border-radius: 16px; 
+    margin: 0 4% 40px; 
+    padding: 20px 25px !important; /* Thu nhỏ padding khối lớn */
+    border: 1px solid rgba(255,255,255,0.05); 
+    box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+    overflow: visible !important; 
+    isolation: isolate; 
+}
+
+.country-section { 
+    margin-bottom: 20px; 
+    position: relative; 
+    overflow: visible !important; 
+}
+        .country-section:last-child { margin-bottom: 0; }
+        .country-section:not(:last-child) { border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 20px; }
+
+.country-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-end; 
+    margin-bottom: 20px; 
+}
+.ch-title { font-size: 1.6rem !important; font-weight: 900; }
+        .ch-link { font-size: 0.9rem; color: var(--text-sub); display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 700; }
+        .ch-link:hover { color: #fff; }
+
+        .grid-wrapper { position: relative; width: 100%; overflow: visible !important; }
+        
+        .nav-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 45px; height: 45px; background: rgba(0,0,0,0.85);
+            border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            border-radius: 50%; cursor: pointer; z-index: 1002;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: var(--transition-smooth); backdrop-filter: blur(5px);
+        }
+        .grid-wrapper:hover .nav-arrow { opacity: 1; }
+        .arrow-prev { left: -22px; }
+        .arrow-next { right: -22px; }
+
+        /* FIXED: Padding-Compensation để bung lụa ra ngoài container */
+.country-grid { 
+    display: flex; 
+    flex-wrap: nowrap; 
+    gap: 20px; 
+    overflow-x: auto !important; 
+    scroll-behavior: smooth; 
+    scrollbar-width: none;
+    /* Tạo vùng đệm 100px để Card Detail thoải mái "lú" ra */
+    padding: 100px 0 !important; 
+    margin: -100px 0 !important; 
+}
+.country-grid::-webkit-scrollbar { display: none; }
+
+        /* Card System (PC: 4 Phim/Hàng) */
+.n-card {
+    flex: 0 0 calc(25% - 15px);
+    position: relative; 
+    aspect-ratio: 16/9; 
+    border-radius: 10px; 
+    cursor: pointer;
+    transition: transform 0.4s ease; 
+    background: #1a1c24;
+    z-index: 10;
+}
+.n-poster { 
+    width: 100%; height: 100%; 
+    object-fit: cover; 
+    border-radius: 10px; 
+    display: block; 
+}
+        
+        /* ======================== 
+           REFINED MICRO HOVER DETAIL 
+           ======================== */
+.n-hover-detail {
+    position: absolute; 
+    top: -55%; /* Căn giữa card detail so với card gốc */
+    left: -3%; 
+    width: 106%; /* FIXED: Thu nhỏ chiều rộng tối đa */
+    
+    /* Hiệu ứng Kính lỏng cao cấp */
+    background: rgba(20, 21, 26, 0.8) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 40px 100px rgba(0,0,0,1);
+    
+    opacity: 0; 
+    visibility: hidden; 
+    pointer-events: none;
+    transform: scale(0.9); 
+    transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+    z-index: 99999 !important; /* Luôn trên cùng */
+    overflow: hidden;
+}
+.n-hover-detail::before {
+    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255, 94, 98, 0.12) 0%, transparent 70%);
+    animation: rotateBlur 12s linear infinite;
+    z-index: -1;
+}
+.n-card:hover { z-index: 99998; }
+.n-card:hover .n-hover-detail { 
+    opacity: 1; 
+    visibility: visible; 
+    transform: scale(1.03); /* Phóng to rất nhẹ nhàng */
+    pointer-events: auto;
+}
+        .c-info { padding: 10px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); position: absolute; bottom: 0; left: 0; width: 100%; border-radius: 0 0 10px 10px; }
+        .n-card:hover .c-info { opacity: 0; }
+        .c-title { font-weight: 800; font-size: 0.9rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .n-hover-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+.n-popup-body { 
+    padding: 12px 15px !important; /* Thu nhỏ không gian bên trong */
+    background: linear-gradient(to bottom, transparent, rgba(15, 17, 26, 0.8));
+}
+.n-actions { display: flex; gap: 8px; margin-bottom: 10px; }     
+        /* FIXED: Micro Buttons */
+.btn-play-now {
+    flex: 1; 
+    background: var(--gradient-main); 
+    color: #fff; 
+    padding: 6px !important; 
+    border-radius: 6px;
+    font-weight: 800; 
+    font-size: 0.75rem !important; /* Chữ siêu nhỏ gọn */
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.btn-icon-round {
+    width: 28px !important; 
+    height: 28px !important; 
+    border-radius: 50%; 
+    border: 1.5px solid rgba(255,255,255,0.2) !important;
+    background: rgba(255,255,255,0.05);
+    font-size: 0.8rem !important;
+}
+        
+        /* FIXED: Compact Typography */
+.n-title { 
+    font-weight: 900; 
+    font-size: 0.95rem !important; /* Tiêu đề nhỏ lại */
+    margin-bottom: 4px; 
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.n-desc { 
+    font-size: 0.7rem !important; /* Mô tả nhỏ và mờ tinh tế */
+    color: rgba(255, 255, 255, 0.5) !important;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; 
+    overflow: hidden; line-height: 1.4; 
+}
+.n-meta-row { 
+    display: flex; align-items: center; gap: 10px; 
+    font-size: 0.7rem !important; /* Meta row nhỏ lại */
+    color: #46d369; font-weight: 800; margin-bottom: 10px; 
+}
+.badge-hd { 
+    border: 1px solid #555; padding: 0px 4px; border-radius: 2px; 
+    color: #fff; font-size: 0.55rem !important; 
+}
+
+        /* ==========================================================================
+           8. TOP 5 TRENDING (BALANCED SIZE)
+           ========================================================================== 
+        */
+        .top-10-wrapper { position: relative; z-index: 20; padding: 0 4% 80px; }
+        .top-10-header { display: flex; align-items: center; gap: 18px; margin-bottom: 40px; }
+        .top-10-header h2 { font-size: 2.5rem; font-weight: 900; font-style: italic; letter-spacing: -1px; }
+        .top-5-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+
+        .top-card-style2 { position: relative; cursor: pointer; transition: 0.4s ease; width: 100%; }
+        .top-card-style2:hover { transform: translateY(-12px); }
+        .top-poster-style2 { 
+            width: 100%; aspect-ratio: 2/3; border-radius: 15px; overflow: hidden; position: relative; 
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.06); 
         }
         .top-poster-style2 img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .top-info-row { display: flex; align-items: flex-start; margin-top: 22px; }
+        
+        /* Rank numbers: THU NHỎ LẠI THEO YÊU CẦU */
+.top-rank-style2 { 
+    font-size: 3.5rem !important; /* Thu nhỏ con số rank */
+    line-height: 0.8; 
+    font-family: 'Impact', sans-serif; 
+    font-style: italic; 
+    font-weight: 900; 
+    color: #eebb5d; 
+    margin-right: 12px; 
+    text-shadow: 2px 2px 0px #000; 
+    flex-shrink: 0; 
+}
+        .top-text-style2 { flex: 1; padding-top: 5px; }
+        .top-title-style2 { font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
+        .top-meta-style2 { font-size: 0.85rem; color: #666; font-weight: 600; }
 
-        /* INFO ROW: Hàng ngang chứa Số + Text */
-        .top-info-row {
-            display: flex;
-            align-items: flex-start; /* Căn hàng trên */
-            margin-top: 15px; /* Cách poster ra */
+        /* ==========================================================================
+           9. MODAL (PC: FIXED 5 GRID)
+           ========================================================================== 
+        */
+        .modal { 
+            display: none; position: fixed; inset: 0; z-index: var(--z-modal); 
+            background: rgba(10, 11, 16, 0.98); padding: 80px 4%; overflow-y: auto; 
+            backdrop-filter: blur(20px); 
         }
-
-        /* SỐ HẠNG: Nằm bên trái, to, màu vàng */
-        .top-rank-style2 {
-            font-size: 4rem; 
-            line-height: 0.9;
-            font-family: 'Impact', sans-serif;
-            font-style: italic;
-            font-weight: 900;
-            color: #eebb5d; /* Màu vàng kem */
-            margin-right: 15px; 
-            text-shadow: 2px 2px 0px #000;
-            flex-shrink: 0; /* Không bị co lại */
+        .modal.active { display: block; animation: fadeIn 0.4s ease; }
+        .modal-grid { 
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 25px; 
+            max-width: 1300px; margin: 0 auto; padding-bottom: 50px;
         }
-
-        /* Khối chữ: Bên phải */
-        .top-text-style2 {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding-top: 2px;
+        .modal-card { 
+            border-radius: 12px; overflow: hidden; background: #23252f; 
+            transition: 0.3s; cursor: pointer; aspect-ratio: 2/3; position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
+        .modal-card img { width: 100%; height: 100%; object-fit: cover; }
+        .card-info-modal { position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px; background: linear-gradient(to top, #000, transparent); }
 
-        .top-title-style2 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.4;
-            margin-bottom: 4px;
-            
-            /* Cắt chữ nếu quá dài (2 dòng) */
-            display: -webkit-box;
-            -webkit-line-clamp: 2; 
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .top-meta-style2 {
-            font-size: 0.8rem;
-            color: #888;
-        }
-
-        /* ======================== FOOTER & MODAL ======================== */
+        /* ==========================================================================
+           10. FOOTER (MOBILE REMASTER: CENTERED ALL)
+           ========================================================================== 
+        */
         footer { background: var(--bg-dark); padding: 60px 4% 20px; margin-top: 80px; border-top: 1px solid #23252f; font-size: 0.9rem; }
         .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-bottom: 40px; }
         .footer-col h3 { font-size: 1.1rem; color: #fff; margin-bottom: 20px; font-weight: 700; }
@@ -304,72 +531,99 @@
         .footer-col ul { list-style: none; } .footer-col ul li { margin-bottom: 12px; }
         .footer-col ul li a { color: var(--text-sub); text-decoration: none; transition: 0.3s; } .footer-col ul li a:hover { color: var(--primary-color); padding-left: 5px; }
         .footer-bottom { border-top: 1px solid #23252f; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.8rem; }
-        .modal { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(15, 17, 26, 0.95); padding: 40px; overflow-y: auto; }
-        .modal.active { display: block; }
-        .modal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .modal-grid .movie-card { width: 100%; height: 280px; }
 
-        /* --- MOBILE OVERLAYS & RESPONSIVE --- */
-        .mobile-overlay { display: none; position: fixed; inset: 0; z-index: 3000; transition: 0.3s ease-in-out; }
-        .mobile-overlay.active { transform: translateX(0) !important; opacity: 1 !important; }
-        .close-btn-overlay { position: absolute; font-size: 1.8rem; color: #fff; cursor: pointer; z-index: 10; }
+@media (max-width: 900px) {
+    footer .footer-grid { 
+        grid-template-columns: 1fr !important; 
+        text-align: center !important; 
+        gap: 30px; 
+    }
+    footer .footer-col ul { display: flex; flex-direction: column; align-items: center; }
+    footer .footer-brand { justify-content: center; }
+
+
+            .hero-title { font-size: 2.8rem; }
+            .topic-grid { display: flex; overflow-x: auto; scrollbar-width: none; gap: 12px; padding-bottom: 10px; }
+            .topic-card { flex: 0 0 150px; height: 90px; }
+            
+            .merged-block { padding: 25px 15px; border-radius: 0; margin: 0 0 40px; border: none; }
+            .country-grid { gap: 12px; padding: 10px 0; margin: -10px 0; }
+            .n-card { flex: 0 0 240px; }
+            .nav-arrow { display: none; } 
+            
+            .top-rank-style2 { font-size: 3rem; }
+            .modal-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        }
+
+        /* ==========================================================================
+           11. MOBILE MENU DRAWER
+           ========================================================================== 
+        */
+        .mobile-overlay { position: fixed; inset: 0; z-index: 10000; transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1); }
+        #mobileMenuOverlay { background: var(--mobile-menu-bg); transform: translateX(-100%); padding: 30px; width: 310px; box-shadow: 20px 0 60px rgba(0,0,0,0.8); }
+        #mobileMenuOverlay.active { transform: translateX(0); }
+        
+        .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .menu-logo { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 900; }
+        
+        .member-btn-large { 
+            width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; 
+            border: 1px solid rgba(255,255,255,0.08); color: #fff; font-weight: 800; 
+            display: flex; align-items: center; gap: 12px; margin-bottom: 30px; cursor: pointer; font-size: 0.95rem;
+        }
+
+        .mobile-menu-link { padding: 16px 0; font-size: 1rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; align-items: center; gap: 15px; color: #999; }
+        .mobile-menu-link i { color: var(--primary-color); width: 22px; text-align: center; }
+
+        #mobileSearchOverlay { background: #0f111a; transform: translateY(-100%); opacity: 0; padding: 15px; transition: 0.4s; }
+        #mobileSearchOverlay.active { transform: translateY(0); opacity: 1; }
+        .search-header-mobile { display: flex; align-items: center; background: #23252f; padding: 12px 18px; border-radius: 12px; }
+        .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; margin-left: 10px; }
+
         @media (max-width: 900px) {
-            header { height: 60px; padding: 0 4%; justify-content: space-between; }
-            .header-left-group { gap: 25px; order: 1; }
-            .menu-toggle { display: block; font-size: 1.5rem; }
-            .logo { order: 2; margin: 0; } .logo img { height: 32px; } .logo-text { display: block; font-size: 1.2rem; }
-            .right-elements { order: 3; gap: 15px; }
-            .mobile-search-trigger { display: block; font-size: 1.2rem; }
-            .nav-links, .search-box, .desktop-auth { display: none !important; }
-            #mobileMenuOverlay { display: block; background: var(--mobile-menu-bg); transform: translateX(-100%); padding: 25px; width: 300px; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
-            .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-            .menu-logo { display: flex; align-items: center; gap: 10px; } .menu-logo img { height: 35px; } .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-            #mobileMenuOverlay .close-btn-overlay { position: static; color: #fff; opacity: 0.7; }
-            .member-btn-large { width: 100%; padding: 12px; background: linear-gradient(90deg, #FF8F50, #FF5E62); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
-            .mobile-menu-grid { display: flex; flex-direction: column; gap: 5px; }
-            .mobile-menu-link { color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem; padding: 12px 0; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--mobile-border); }
-            .mobile-menu-link i { width: 25px; color: var(--primary-color); text-align: center; } .mobile-menu-link:hover { color: #fff; padding-left: 5px; transition: 0.2s; }
-            #mobileSearchOverlay { display: block; background: #1f212d; transform: translateY(-100%); opacity: 0; }
-            #mobileSearchOverlay.active { transform: translateY(0) !important; opacity: 1 !important; }
-            .search-header-mobile { display: flex; align-items: center; padding: 15px 20px; background: #2a2d3a; border-bottom: 1px solid rgba(255,255,255,0.1); }
-            .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; font-family: var(--font-main); margin-right: 15px; }
-            #mobileSearchOverlay .close-btn-overlay { position: static; color: #fff; }
-            .search-content-mobile { padding: 20px; overflow-y: auto; height: calc(100vh - 70px); }
-            
-            /* Responsive cho Top 5 (Mobile: Trượt ngang) */
+            /* Ép khung Top 5 thành hàng ngang và cho phép trượt */
             .top-5-grid {
-                display: flex; gap: 15px; overflow-x: auto; padding: 10px 4% 20px;
-                scroll-behavior: smooth; scrollbar-width: none;
+                display: flex !important; /* Chuyển từ Grid sang Flex để nằm trên 1 hàng */
+                flex-wrap: nowrap !important; 
+                overflow-x: auto !important; 
+                gap: 15px;
+                padding-bottom: 20px;
+                scrollbar-width: none; /* Ẩn scrollbar cho Firefox */
+                -webkit-overflow-scrolling: touch; /* Trượt mượt hơn trên iPhone */
             }
-            .top-5-grid::-webkit-scrollbar { display: none; }
-            .top-card-style2 { flex: 0 0 160px; /* Chiều rộng card trên mobile */ }
-            .top-rank-style2 { font-size: 3rem; margin-right: 10px; }
-            .top-title-style2 { font-size: 0.9rem; }
-            
-            .hero { height: 50vh; } .hero-title { font-size: 2.2rem; } .hero-desc { font-size: 0.9rem; }
-            .movie-card { flex: 0 0 140px; height: 210px; }
-            .slider-arrow { display: none; }
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
-            .footer-col:first-child { grid-column: span 2; text-align: center; }
-            .footer-brand { justify-content: center; }
-            .hover-actions { display: none; }
+
+            /* Ẩn thanh cuộn cho Chrome/Safari */
+            .top-5-grid::-webkit-scrollbar { 
+                display: none; 
+            }
+
+            /* Định hình kích thước từng Card để nó lú ra ngoài và trượt được */
+            .top-card-style2 {
+                flex: 0 0 150px; /* Cố định độ rộng mỗi card là 150px, không cho nó co lại */
+            }
+
+            /* Thu nhỏ con số rank một chút cho cân đối trên mobile */
+            .top-rank-style2 {
+                font-size: 3rem !important;
+                margin-right: 8px !important;
+            }
         }
     </style>
 </head>
 <body>
 
     <div id="loadingScreen">
-        <img src="/Loading.png" class="loading-img" alt="Loading...">
+        <img src="/Loading.png" class="loading-img" alt="HopPhim">
     </div>
 
     <div id="toast-container"></div>
 
     <div id="confirmModal" class="custom-confirm-overlay">
         <div class="confirm-box">
-            <div class="confirm-icon"><i class="fas fa-exclamation-circle"></i></div>
-            <h3 class="confirm-title">Xác nhận</h3>
-            <p class="confirm-desc" id="confirmMsg">Bạn có chắc chắn muốn thực hiện hành động này?</p>
-            <div class="confirm-actions">
+            <div class="confirm-icon"><i class="fas fa-question-circle"></i></div>
+            <h3 style="color:#fff; font-size:1.5rem; margin-bottom:10px;">Xác nhận</h3>
+            <p id="confirmMsg" style="color:#888; font-size:1rem;">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+            <div class="confirm-actions" style="margin-top:25px;">
                 <button class="btn-confirm btn-cancel" id="btnConfirmNo">Hủy bỏ</button>
                 <button class="btn-confirm btn-ok" id="btnConfirmYes">Đồng ý</button>
             </div>
@@ -378,48 +632,40 @@
 
     <div id="mobileMenuOverlay" class="mobile-overlay">
         <div class="menu-header">
-            <div class="menu-logo"><img src="/LOGO.WEBP" alt="HopPhim"><span>HOPPHIM</span></div>
-             <i class="fas fa-times close-btn-overlay" onclick="closeMobileMenu()"></i>
+            <div class="menu-logo"><img src="/LOGO.WEBP" style="height:35px;"><span class="logo-text text-gradient">HOPPHIM</span></div>
+            <i class="fas fa-times" onclick="closeMobileMenu()" style="font-size:1.6rem; color:#fff; cursor:pointer;"></i>
         </div>
         <button class="member-btn-large" id="mobileMemberBtn" onclick="window.location.href='/login.html'">
-            <i class="fas fa-user-circle"></i> <span id="mobileMemberText">Đăng nhập / Đăng ký</span>
+            <i class="fas fa-user-circle" style="font-size:1.6rem; color:var(--primary-color)"></i> 
+            <span id="mobileMemberText">Đăng nhập / Đăng ký</span>
         </button>
-        <div class="mobile-menu-grid">
-            <a href="/" class="mobile-menu-link" onclick="closeMobileMenu(); loadHome()"><i class="fas fa-home"></i> Trang chủ</a>
-            
+        <div class="mobile-menu-list">
+            <a href="/" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Trang chủ</a>
+            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('phim-moi', 'Phim Mới')"><i class="fas fa-bolt"></i> Phim Mới</a>
             <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('phim-bo', 'Phim Bộ')"><i class="fas fa-tv"></i> Phim Bộ</a>
             <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('phim-le', 'Phim Lẻ')"><i class="fas fa-film"></i> Phim Lẻ</a>
-
-            <div style="border-bottom: 1px solid var(--mobile-border); padding: 10px 0; color:#666; font-size:0.9rem; font-weight:700; text-transform:uppercase;">Thể Loại</div>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('hanh-dong', 'Hành Động')"><i class="fas fa-fist-raised"></i> Hành Động</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('tinh-cam', 'Tình Cảm')"><i class="fas fa-heart"></i> Tình Cảm</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('kinh-di', 'Kinh Dị')"><i class="fas fa-ghost"></i> Kinh Dị</a>
-
-            <div style="border-bottom: 1px solid var(--mobile-border); padding: 10px 0; color:#666; font-size:0.9rem; font-weight:700; text-transform:uppercase; margin-top:10px;">Quốc Gia</div>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCountry('han-quoc', 'Hàn Quốc')"><i class="fas fa-globe-asia"></i> Hàn Quốc</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCountry('trung-quoc', 'Trung Quốc')"><i class="fas fa-torii-gate"></i> Trung Quốc</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCountry('au-my', 'Âu Mỹ')"><i class="fas fa-globe-americas"></i> Âu Mỹ</a>
-
-            <div style="border-bottom: 1px solid var(--mobile-border); padding: 10px 0; color:#666; font-size:0.9rem; font-weight:700; text-transform:uppercase; margin-top:10px;">Quản Lý</div>
-            <a href="hopteam.html" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-users"></i> Về HopTeam</a>
-            <a href="/profile.html" class="mobile-menu-link" id="mobileAccountLink" style="display: none;" onclick="closeMobileMenu()"><i class="fas fa-user-cog"></i> Quản lý tài khoản</a>
+            <div style="margin:20px 0 8px; color:#444; font-size:0.75rem; font-weight:900; text-transform:uppercase; letter-spacing:1px;">Quản Lý Tài Khoản</div>
+            <a href="/hopteam" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-users"></i> Về HopTeam</a>
+            <div id="mobileLogoutBtn" style="display:none;" class="mobile-menu-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</div>
         </div>
     </div>
 
     <div id="mobileSearchOverlay" class="mobile-overlay">
         <div class="search-header-mobile">
-            <i class="fas fa-search" style="color: #a0a0a0; margin-right: 10px;"></i>
-            <input type="text" id="mobileSearchInput" class="search-input-mobile" placeholder="Nhập tên phim...">
-            <i class="fas fa-times close-btn-overlay" onclick="closeMobileSearch()"></i>
+            <i class="fas fa-search" style="color: #666;"></i>
+            <input type="text" id="mobileSearchInput" class="search-input-mobile" placeholder="Tìm phim, diễn viên...">
+            <i class="fas fa-times" onclick="closeMobileSearch()" style="color:#fff; cursor:pointer; margin-left: 12px;"></i>
         </div>
-        <div class="search-content-mobile"><div id="mobileSearchResults"></div></div>
+        <div id="mobileSearchResults" style="margin-top:20px;"></div>
     </div>
 
-    <header id="header">
+    <header id="siteHeader">
+        <i class="fas fa-bars menu-toggle" style="display:none;" onclick="openMobileMenu()"></i>
+        
         <div class="header-left-group">
-            <div class="menu-toggle" onclick="openMobileMenu()"><i class="fas fa-bars"></i></div>
-            <div class="logo" onclick="loadHome()"><img src="/LOGO.WEBP" alt="HopPhim"><span class="logo-text">HOPPHIM</span></div>
-            
+            <div class="logo" onclick="loadHome()">
+                <img src="/LOGO.WEBP" alt="Logo"><span class="logo-text text-gradient">HOPPHIM</span>
+            </div>
             <ul class="nav-links" id="navLinks">
                 <li class="nav-item">
                     <a href="/" class="nav-link" onclick="loadHome()">Trang chủ</a>
@@ -472,44 +718,105 @@
                     </div>
                 </li>
 
-                <li class="nav-item"><a href="hopteam.html" class="nav-link">Về HopTeam</a></li>
+                <li class="nav-item"><a class='nav-link' href='/hopteam'>Về HopTeam</a></li>
             </ul>
         </div>
         
         <div class="right-elements">
-            <div class="mobile-search-trigger" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
-            <div class="search-box"><i class="fas fa-search" style="color: #a0a0a0"></i><input type="text" id="searchInput" placeholder="Tìm kiếm phim..."></div>
+            <div class="mobile-search-trigger" style="display:none;" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
+            
+            <div class="search-box">
+                <i class="fas fa-search" style="color: #666"></i>
+                <input type="text" id="searchInput" placeholder="Tìm kiếm phim...">
+            </div>
+
             <div class="desktop-auth" style="position: relative;">
                 <button id="btnLogin" class="btn-login" onclick="window.location.href='/login.html'">Đăng nhập</button>
                 <img id="userAvatar" class="user-avatar" src="" alt="User" onclick="toggleUserDropdown()">
                 <div id="userMenu" class="user-dropdown">
-                    <div id="userNameDisplay" class="user-info-item">User</div>
-                    <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
+                    <div id="userNameDisplay" class="user-info-item">Tài khoản</div>
+                    <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-circle"></i> Trang cá nhân</button>
                     <button class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
                 </div>
             </div>
         </div>
     </header>
 
-    <section id="hero" class="hero">
+    <section class="hero">
         <div class="hero-content">
-            <h1 class="hero-title">HopPhim - Phim Hay<br>Trong Tầm Tay</h1>
-            <p class="hero-desc">Kho phim miễn phí chất lượng cao, cập nhật liên tục 24/7. Trải nghiệm điện ảnh đỉnh cao ngay tại nhà.</p>
+            <h1 class="hero-title"><span class="text-gradient">HopPhim - Phim Hay<br>Trong Tầm Tay</span></h1>
+            <p class="hero-desc">Xem phim chuẩn 4K Vietsub, cập nhật liên tục mỗi giờ tại HopPhim.</p>
         </div>
     </section>
 
+    <div class="topics-section">
+        <div class="section-label">Gợi ý cho bạn</div>
+        <div class="topic-grid">
+            <div class="topic-card bg-marvel" onclick="loadCategory('hanh-dong', 'Marvel Studios')"><div class="topic-name">Marvel</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-sitcom" onclick="loadCategory('hai-huoc', 'Sitcom Hài Hước')"><div class="topic-name">Sitcom</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-voice" onclick="loadCategory('hoat-hinh', 'Anime Nhật Bản')"><div class="topic-name">Anime</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-trans" onclick="loadCategory('vien-tuong', 'Viễn Tưởng')"><div class="topic-name">Viễn Tưởng</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-ancient" onclick="loadCategory('co-trang', 'Cổ Trang')"><div class="topic-name">Cổ Trang</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-4k" onclick="loadCategory('kinh-di', 'Kinh Dị')"><div class="topic-name">Kinh Dị</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+        </div>
+    </div>
+
+    <main id="main-content">
+        <div class="merged-block">
+            <div class="country-section">
+                <div class="country-header">
+                    <div class="ch-title">Phim <span class="text-gradient">Hàn Quốc</span></div>
+                    <div class="ch-link" onclick="openModal('han-quoc', 'Phim Hàn Quốc')">Xem tất cả <i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="grid-wrapper">
+                    <button class="nav-arrow arrow-prev" onclick="scrollGrid('koreaList', -1)"><i class="fas fa-chevron-left"></i></button>
+                    <div class="country-grid" id="koreaList"></div>
+                    <button class="nav-arrow arrow-next" onclick="scrollGrid('koreaList', 1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="country-section">
+                <div class="country-header">
+                    <div class="ch-title">Phim <span class="text-gradient">Trung Quốc</span></div>
+                    <div class="ch-link" onclick="openModal('trung-quoc', 'Phim Trung Quốc')">Xem tất cả <i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="grid-wrapper">
+                    <button class="nav-arrow arrow-prev" onclick="scrollGrid('chinaList', -1)"><i class="fas fa-chevron-left"></i></button>
+                    <div class="country-grid" id="chinaList"></div>
+                    <button class="nav-arrow arrow-next" onclick="scrollGrid('chinaList', 1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="country-section">
+                <div class="country-header">
+                    <div class="ch-title">Phim <span class="text-gradient">Thái Lan</span></div>
+                    <div class="ch-link" onclick="openModal('thai-lan', 'Phim Thái Lan')">Xem tất cả <i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="grid-wrapper">
+                    <button class="nav-arrow arrow-prev" onclick="scrollGrid('thaiList', -1)"><i class="fas fa-chevron-left"></i></button>
+                    <div class="country-grid" id="thaiList"></div>
+                    <button class="nav-arrow arrow-next" onclick="scrollGrid('thaiList', 1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <div id="history-container"></div>
 
-    <main id="main-content"></main>
+    <section class="top-10-wrapper">
+        <div class="top-10-header">
+            <i class="fas fa-fire" style="color:var(--primary-color); font-size: 2.5rem;"></i>
+            <h2>TOP 5 THỊNH HÀNH</h2>
+        </div>
+        <div class="top-5-grid" id="top5List"></div>
+    </section>
 
     <div id="modalPopup" class="modal">
-        <div style="max-width: 1200px; margin: 0 auto;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px; color:#fff; align-items:center;">
-                <h2 id="modalTitle" class="text-gradient" style="font-size: 1.5rem; font-weight:800">Danh sách</h2>
-                <span onclick="closeModal()" style="font-size:2rem; cursor:pointer; padding:5px;">&times;</span>
-            </div>
-            <div id="modalContent" class="modal-grid"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:45px; border-bottom:1px solid #222; padding-bottom:20px;">
+            <h2 id="modalTitle" class="text-gradient" style="font-size: 2.2rem;">Danh sách phim</h2>
+            <i class="fas fa-times" onclick="closeModal()" style="font-size:2.8rem; color:#fff; cursor:pointer;"></i>
         </div>
+        <div id="modalContent" class="modal-grid"></div>
     </div>
 
     <footer>
@@ -537,9 +844,9 @@
             <div class="footer-col">
                 <h3>Hỗ trợ</h3>
                 <ul>
-                    <li><a href="lienhequangcao.html">Liên hệ quảng cáo</a></li>
-                    <li><a href="baoloi.html">Báo lỗi</a></li>
-                    <li><a href="hopteam.html">Về HopTeam</a></li>
+                    <li><a href='/lienhequangcao'>Liên hệ quảng cáo</a></li>
+                    <li><a href='/baoloi'>Báo lỗi</a></li>
+                    <li><a href='/hopteam'>Về HopTeam</a></li>
                 </ul>
             </div>
         </div>
@@ -741,291 +1048,165 @@
     </script>
 
     <script>
-        // --- NEW LOADING LOGIC ---
-        function hideLoading() {
-            const screen = document.getElementById('loadingScreen');
-            const img = document.querySelector('.loading-img');
-            if(screen && img) {
-                img.classList.add('zoom-out');
-                setTimeout(() => {
-                    screen.style.display = 'none';
-                }, 500); 
-            }
-        }
-        setTimeout(() => { hideLoading(); }, 2500);
-
-        // --- TIME HELPER ---
-        function timeSince(date) {
-            if (!date) return "Gần đây";
-            const seconds = Math.floor((Date.now() - date) / 1000);
-            if (seconds < 60) return "Vừa xong";
-            const minutes = Math.floor(seconds / 60);
-            if (minutes < 60) return minutes + " phút trước";
-            const hours = Math.floor(minutes / 60);
-            if (hours < 24) return hours + " giờ trước";
-            return Math.floor(hours / 24) + " ngày trước";
-        }
-
-        // --- MOBILE OVERLAY FUNCTIONS ---
-        const menuOverlay = document.getElementById('mobileMenuOverlay');
-        const searchOverlay = document.getElementById('mobileSearchOverlay');
-        const mobileSearchInput = document.getElementById('mobileSearchInput');
-        const mobileSearchResults = document.getElementById('mobileSearchResults');
-
-        function openMobileMenu() { menuOverlay.classList.add('active'); }
-        function closeMobileMenu() { menuOverlay.classList.remove('active'); }
-
-        async function openMobileSearch() {
-            searchOverlay.classList.add('active');
-            mobileSearchInput.focus();
-            if(!mobileSearchResults.hasChildNodes()) {
-                 const data = await fetchAPI('/danh-sach/phim-le?page=1');
-                 if(data?.data?.items) {
-                      mobileSearchResults.innerHTML = '';
-                      mobileSearchResults.appendChild(createMovieRow('Phim Đề Xuất', data.data.items));
-                 }
-            }
-        }
-        function closeMobileSearch() {
-            searchOverlay.classList.remove('active');
-            mobileSearchInput.value = '';
-        }
-        
-        let mobileSearchTimeout = null;
-        mobileSearchInput.addEventListener('keyup', (e) => {
-            clearTimeout(mobileSearchTimeout);
-            mobileSearchTimeout = setTimeout(() => {
-                const keyword = e.target.value;
-                if(keyword.length > 2) {
-                      mobileSearchResults.innerHTML = '<div class="loader-spinner" style="margin: 20px auto;"></div>';
-                      fetchAPI(`/tim-kiem?keyword=${keyword}`).then(data => {
-                        mobileSearchResults.innerHTML = '';
-                        if(data?.data?.items) {
-                            mobileSearchResults.appendChild(createMovieRow(`Kết quả: ${keyword}`, data.data.items));
-                        } else {
-                             mobileSearchResults.innerHTML = '<div style="color:#ccc;text-align:center;padding:20px;">Không tìm thấy</div>';
-                        }
-                    });
-                }
-            }, 500);
-        });
-
-        // --- CORE LOGIC ---
-        const navLinks = document.getElementById('navLinks');
-        const searchInput = document.getElementById('searchInput');
-        const mainContent = document.getElementById('main-content');
-        const header = document.getElementById('header');
-        const modalPopup = document.getElementById('modalPopup');
-
-        function toggleMenu() { navLinks.classList.toggle('active'); }
-        function closeMenu() { navLinks.classList.remove('active'); }
-
-        window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 20));
-
         const API_BASE = 'https://ophim1.com/v1/api';
         const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
 
-        async function fetchAPI(endpoint) {
-            try { return await (await fetch('https://ophim1.com/v1/api' + endpoint)).json(); } catch { return null; }
-        }
-
-        // --- CẤU HÌNH TOP 5 THỦ CÔNG ---
-        const MANUAL_TOP_5 = [
-            "dia-nguc-doc-than-phan-5",
-            "yet-hi",            
-            "tieng-yeu-nay-anh-dich-duoc-khong",
-            "con-say-mua-xuan",
-            "kho-do-danh"
-        ];
-
-        // 1. TẠO HTML TOP 5 (GIAO DIỆN CHUẨN POSTER TRÊN - THÔNG TIN DƯỚI)
-        window.createTop10HTML = function(movie, index) {
-            let displayImg = movie.poster_url; 
-            if (!displayImg || displayImg === "") displayImg = movie.thumb_url;
-            if (!displayImg.startsWith('http')) displayImg = `${IMG_BASE}${displayImg}`;
-            
-            const playLink = `/xem-phim/${movie.slug}`;
-            const rank = index + 1; 
-
-            return `
-                <div class="top-card-style2" onclick="window.location.href='${playLink}'">
-                    <div class="top-poster-style2">
-                        <img src="${displayImg}" loading="lazy" alt="${movie.name}">
-                        <div style="position:absolute; top:10px; right:10px; background:var(--primary-color); color:#fff; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:4px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            ${movie.quality || 'HD'}
-                        </div>
-                    </div>
-                    
-                    <div class="top-info-row">
-                        <div class="top-rank-style2">${rank}</div>
-                        <div class="top-text-style2">
-                            <div class="top-title-style2">${movie.name}</div>
-                            <div class="top-meta-style2">${movie.origin_name} (${movie.year})</div>
-                        </div>
-                    </div>
-                </div>`;
-        }
-
-        // HÀM TẢI TOP 10
-        async function loadManualTop10() {
-            const promises = MANUAL_TOP_5.map(slug => fetchAPI(`/phim/${slug}`));
-            const results = await Promise.all(promises);
-            const validMovies = results
-                .filter(res => res && res.status && res.data && res.data.item)
-                .map(res => res.data.item);
-
-            if (validMovies.length > 0) {
-                const section = document.createElement('section');
-                section.className = 'top-10-wrapper';
-                const rowId = 'row-top-10';
-
-                section.innerHTML = `
-                    <div class="top-10-header">
-                        <i class="fas fa-fire" style="color: #FF5E62; font-size: 2rem;"></i>
-                        <h2>TOP 5 THỊNH HÀNH</h2>
-                    </div>
-                    
-                    <div class="top-5-grid">
-                        ${validMovies.map((m, i) => window.createTop10HTML(m, i)).join('')}
-                    </div>
-                `;
-                mainContent.prepend(section);
+        // --- TOP 5 Logic (Smaller numbers) ---
+        const MANUAL_TOP_5 = ["con-ra-the-thong-gi-nua", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "con-say-mua-xuan", "kho-do-danh"];
+        
+        async function loadTop5() {
+            const container = document.getElementById('top5List');
+            let html = '';
+            for (let i = 0; i < MANUAL_TOP_5.length; i++) {
+                try {
+                    const res = await fetch(`${API_BASE}/phim/${MANUAL_TOP_5[i]}`);
+                    const data = await res.json();
+                    if(data.status) {
+                        const m = data.data.item;
+                        const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.poster_url;
+                        html += `
+                        <div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'">
+                            <div class="top-poster-style2">
+                                <img src="${img}" loading="lazy">
+                                <div style="position:absolute; top:12px; right:12px; background:var(--primary-color); color:#fff; font-size:0.7rem; font-weight:900; padding:3px 8px; border-radius:6px;">${m.quality || 'HD'}</div>
+                            </div>
+                            <div class="top-info-row">
+                                <div class="top-rank-style2">${i+1}</div>
+                                <div class="top-text-style2">
+                                    <div class="top-title-style2">${m.name}</div>
+                                    <div class="top-meta-style2">${m.origin_name}</div>
+                                </div>
+                            </div>
+                        </div>`;
+                    }
+                } catch(e) {}
             }
+            container.innerHTML = html;
         }
 
-        // 2. TẠO HTML CHO CARD THƯỜNG
-        window.createCardHTML = function(movie) {
-            let imgUrl = movie.thumb_url;
-            if (!imgUrl.startsWith('http')) imgUrl = `${IMG_BASE}${movie.thumb_url}`;
-            const playLink = `/xem-phim/${movie.slug}`;
-
-            return `
-                <div class="movie-card" onclick="window.location.href='${playLink}'">
-                    <img src="${imgUrl}" alt="${movie.name}" class="movie-poster" loading="lazy">
-                    <div class="card-overlay"></div>
-                    <div class="card-info">
-                        <div class="movie-name">${movie.name}</div>
-                        <div class="movie-meta">
-                            <span class="badge-hd">${movie.quality || 'HD'}</span>
-                            <span>${movie.year}</span>
-                            <span class="dot"></span>
-                            <span>${movie.lang || 'Vietsub'}</span>
-                        </div>
-                    </div>
-                    <div class="hover-actions">
-                        <button class="btn-hover-play"><i class="fas fa-play"></i></button>
-                        <button class="btn-hover-play" onclick="event.stopPropagation(); addToMyList('${movie.slug}', '${movie.name}', '${movie.thumb_url}')">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                </div>`;
-        }
-
-        window.createHistoryCardHTML = function(movie, timeLabel) {
-            let imgUrl = movie.thumb_url;
-            if (!imgUrl.startsWith('http')) imgUrl = `${IMG_BASE}${movie.thumb_url}`;
-            const playLink = `/xem-phim/${movie.slug}`;
-            const safeTime = timeSince(movie.timestamp);
-
-            return `
-                <div class="movie-card" onclick="window.location.href='${playLink}'">
-                    <img src="${imgUrl}" alt="${movie.name}" class="movie-poster" loading="lazy">
-                    <div class="card-overlay"></div>
-                    <div class="card-info">
-                        <div class="movie-name">${movie.name}</div>
-                        <div class="movie-meta">
-                            <i class="fas fa-clock" style="color:var(--primary-color); margin-right:5px"></i>
-                            <span style="color: #ddd; font-weight: 500;">${safeTime}</span>
-                        </div>
-                    </div>
-                    <div class="hover-actions">
-                        <button class="btn-hover-play"><i class="fas fa-play"></i></button>
-                        <button class="btn-hover-delete" onclick="event.stopPropagation(); removeFromHistory('${movie.slug}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>`;
-        }
-
-        window.slide = function(id, dir) {
-            const row = document.getElementById(id);
-            row.scrollBy({ left: dir * row.clientWidth * 0.8, behavior: 'smooth' });
-        }
-
-        function createMovieRow(title, movies, slugForSeeAll) {
-            const section = document.createElement('section');
-            section.className = 'category-section';
-            const rowId = 'row-' + Math.random().toString(36).substr(2, 9);
-            section.innerHTML = `
-                <div class="category-header">
-                    <h2 class="category-title text-gradient">${title}</h2>
-                    ${slugForSeeAll ? `<a class="see-all-link" onclick="openModal('${slugForSeeAll}', '${title}')">Xem tất cả <i class="fas fa-chevron-right"></i></a>` : ''}
-                </div>
-                <div class="slider-container">
-                    <button class="slider-arrow arrow-left" onclick="window.slide('${rowId}', -1)"><i class="fas fa-chevron-left"></i></button>
-                    <div class="movie-row" id="${rowId}">${movies.map(window.createCardHTML).join('')}</div>
-                    <button class="slider-arrow arrow-right" onclick="window.slide('${rowId}', 1)"><i class="fas fa-chevron-right"></i></button>
-                </div>`;
-            return section;
-        }
-
-        async function loadHome() {
+        // --- MERGED BLOCK LOADER ---
+        async function loadCountrySection(slug, elementId) {
             try {
-                mainContent.innerHTML = ''; 
-                await loadManualTop10(); // Tải Top 10 trước
-
-                const [home, bo, han, hoat] = await Promise.all([
-                    fetchAPI('/home'), 
-                    fetchAPI('/danh-sach/phim-bo'),
-                    fetchAPI('/quoc-gia/han-quoc'), 
-                    fetchAPI('/danh-sach/hoat-hinh')
-                ]);
-                
-                if(home?.data?.items) mainContent.appendChild(createMovieRow('Phim Mới Cập Nhật', home.data.items));
-                if(bo?.data?.items) mainContent.appendChild(createMovieRow('Phim Bộ Tuyển Chọn', bo.data.items, '/danh-sach/phim-bo'));
-                if(han?.data?.items) mainContent.appendChild(createMovieRow('K-Drama', han.data.items, '/quoc-gia/han-quoc'));
-                if(hoat?.data?.items) mainContent.appendChild(createMovieRow('Anime', hoat.data.items, '/danh-sach/hoat-hinh'));
-
-            } catch(e) { console.log(e); } 
-            finally { hideLoading(); }
-        }
-
-        async function loadCategory(slug, title) {
-            // Xử lý API cho thể loại (the-loai) và quốc gia (quoc-gia)
-            // API mẫu: /the-loai/hanh-dong, /quoc-gia/han-quoc
-            let prefix = 'danh-sach'; 
-            if(['han-quoc','trung-quoc','au-my','nhat-ban','thai-lan','dai-loan','hong-kong','an-do','viet-nam'].includes(slug)) prefix = 'quoc-gia';
-            else if(['hanh-dong','tinh-cam','hai-huoc','co-trang','tam-ly','hinh-su','chien-tranh','the-thao','vo-thuat','vien-tuong','phieu-luu','khoa-hoc','kinh-di','am-nhac','than-thoai','tai-lieu','gia-dinh','hoc-duong'].includes(slug)) prefix = 'the-loai';
-            
-            const data = await fetchAPI(`/${prefix}/${slug}`);
-            mainContent.innerHTML = '';
-            if(data?.data?.items) mainContent.appendChild(createMovieRow(title, data.data.items));
-        }
-        async function loadCountry(slug, title) { loadCategory(slug, title); }
-
-        async function openModal(slug, title) {
-            document.getElementById('modalTitle').innerText = title;
-            modalPopup.classList.add('active');
-            const data = await fetchAPI(slug + '?page=1');
-            const container = document.getElementById('modalContent');
-            container.innerHTML = data?.data?.items ? data.data.items.map(window.createCardHTML).join('') : 'Trống';
-        }
-        function closeModal() { modalPopup.classList.remove('active'); }
-
-        let timeout = null;
-        searchInput.addEventListener('keyup', (e) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                if(e.target.value.length > 2) {
-                    fetchAPI(`/tim-kiem?keyword=${e.target.value}`).then(data => {
-                        mainContent.innerHTML = '';
-                        if(data?.data?.items) mainContent.appendChild(createMovieRow(`Kết quả: ${e.target.value}`, data.data.items));
+                const res = await fetch(`${API_BASE}/quoc-gia/${slug}?page=1`);
+                const data = await res.json();
+                if(data.data) {
+                    let html = '';
+                    // Fetch up to 16 but show 4 per row
+                    data.data.items.slice(0, 16).forEach(m => {
+                        const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+                        const shortDesc = `Bộ phim ${m.name} (${m.origin_name}) ra mắt năm ${m.year} là một siêu phẩm điện ảnh không thể bỏ qua tại HopPhim.`;
+                        
+                        html += `
+                        <div class="n-card">
+                            <img src="${img}" class="n-poster" loading="lazy">
+                            <div class="n-hover-detail" onclick="window.location.href='/xem-phim/${m.slug}'">
+                                <img src="${img}" class="n-hover-img">
+                                <div class="n-popup-body">
+                                    <div class="n-actions">
+                                        <button class="btn-play-now"><i class="fas fa-play"></i> PHÁT NGAY</button>
+                                        <button class="btn-icon-round" onclick="event.stopPropagation(); addToMyList('${m.slug}', '${m.name}', '${m.thumb_url}')"><i class="fas fa-plus"></i></button>
+                                        <button class="btn-icon-round"><i class="fas fa-thumbs-up"></i></button>
+                                    </div>
+                                    <div class="n-title">${m.name}</div>
+                                    <div class="n-meta-row">
+                                        <span class="match-score">98% Phù hợp</span>
+                                        <span class="badge-hd">${m.quality || 'HD'}</span>
+                                        <span>${m.year}</span>
+                                    </div>
+                                    <div class="n-desc">${shortDesc}</div>
+                                </div>
+                            </div>
+                            <div class="c-info"><div class="c-title">${m.name}</div></div>
+                        </div>`;
                     });
-                } else if(e.target.value.length === 0) loadHome();
-            }, 500);
+                    document.getElementById(elementId).innerHTML = html;
+                }
+            } catch(e) {}
+        }
+
+        // Slider Control
+        window.scrollGrid = (id, direction) => {
+            const el = document.getElementById(id);
+            const step = el.clientWidth; 
+            el.scrollBy({ left: direction * step, behavior: 'smooth' });
+        };
+
+        // Modal Catalog
+        window.openModal = async (slug, title) => {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalPopup').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            const res = await fetch(`${API_BASE}/quoc-gia/${slug}?page=1`);
+            const data = await res.json();
+            const container = document.getElementById('modalContent');
+            let html = '';
+            if(data.data) {
+                data.data.items.forEach(m => {
+                    const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+                    html += `
+                    <div class="modal-card" onclick="window.location.href='/xem-phim/${m.slug}'">
+                        <img src="${img}" loading="lazy">
+                        <div class="card-info-modal">
+                            <div style="font-weight:700; font-size:0.9rem;">${m.name}</div>
+                        </div>
+                    </div>`;
+                });
+            }
+            container.innerHTML = html;
+        }
+
+        window.closeModal = () => { document.getElementById('modalPopup').classList.remove('active'); document.body.style.overflow = 'auto'; }
+        window.openMobileMenu = () => document.getElementById('mobileMenuOverlay').classList.add('active');
+        window.closeMobileMenu = () => document.getElementById('mobileMenuOverlay').classList.remove('active');
+        window.openMobileSearch = () => { document.getElementById('mobileSearchOverlay').classList.add('active'); document.getElementById('mobileSearchInput').focus(); };
+        window.closeMobileSearch = () => document.getElementById('mobileSearchOverlay').classList.remove('active');
+        window.loadHome = () => window.location.href = '/';
+
+        window.renderHistoryRow = (movies) => {
+            const container = document.getElementById('history-container');
+            if(!movies || movies.length === 0) return;
+            let html = `<div class="top-10-wrapper" style="margin-top:0; padding-bottom:40px;"><div class="top-10-header"><i class="fas fa-history" style="color:var(--primary-color); font-size:1.8rem;"></i><h2 style="font-size:2rem;">XEM TIẾP</h2></div><div class="top-5-grid">`;
+            movies.forEach(m => {
+                const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+                html += `<div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'"><div class="top-poster-style2" style="aspect-ratio:16/9;"><img src="${img}"></div><div class="top-info-row" style="margin-top:10px;"><div class="top-text-style2"><div class="top-title-style2" style="font-size:1rem;">${m.name}</div></div></div></div>`;
+            });
+            html += `</div></div>`;
+            container.innerHTML = html;
+        }
+
+        window.showToast = (msg, type='success') => {
+            const t = document.createElement('div'); t.className=`toast ${type}`; 
+            const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
+            t.innerHTML=`<i class="fas fa-${icon}"></i><span>${msg}</span>`;
+            document.getElementById('toast-container').appendChild(t); setTimeout(()=>t.remove(), 3500);
+        }
+
+        window.customConfirm = (msg) => {
+            return new Promise(r => {
+                document.getElementById('confirmMsg').innerText=msg;
+                document.getElementById('confirmModal').classList.add('active');
+                document.getElementById('btnConfirmYes').onclick=()=>{document.getElementById('confirmModal').classList.remove('active');r(true)};
+                document.getElementById('btnConfirmNo').onclick=()=>{document.getElementById('confirmModal').classList.remove('active');r(false)};
+            })
+        }
+
+        // Init App Lifecycle
+        window.addEventListener('scroll', () => {
+            document.getElementById('siteHeader').classList.toggle('scrolled', window.scrollY > 60);
         });
 
-        loadHome();
+        window.addEventListener('load', () => {
+            loadTop5();
+            loadCountrySection('han-quoc', 'koreaList');
+            loadCountrySection('trung-quoc', 'chinaList');
+            loadCountrySection('thai-lan', 'thaiList');
+            setTimeout(() => {
+                const ls = document.getElementById('loadingScreen');
+                ls.style.opacity = '0';
+                setTimeout(() => ls.style.display = 'none', 600);
+            }, 1200);
+        });
     </script>
 </body>
 </html>
