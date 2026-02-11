@@ -269,43 +269,99 @@
         .topics-section { padding: 0 4%; margin-top: -60px; position: relative; z-index: 20; margin-bottom: 60px; }
         .section-label { font-size: 1.4rem; font-weight: 800; margin-bottom: 25px; color: #fff; }
 
+/* ==========================================================================
+           TOPICS SECTION - GENTLE HOVER & LIQUID ELEMENTS (REFINED)
+           ========================================================================== */
+        .topics-section { padding: 0 4%; margin-top: -60px; position: relative; z-index: 20; margin-bottom: 60px; }
+        .section-label { font-size: 1.4rem; font-weight: 800; margin-bottom: 25px; color: #fff; letter-spacing: -0.5px; }
+
         .topic-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
 
         .topic-card { 
             height: 115px; border-radius: 20px; padding: 22px; 
             display: flex; flex-direction: column; justify-content: space-between; 
             cursor: pointer; position: relative; overflow: hidden; 
-            transition: var(--transition-smooth);
-            background: rgba(255, 255, 255, 0.03);
+            /* FIXED: Hover nhẹ nhàng hơn với transition 0.5s và bezier mượt */
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
+            isolation: isolate; /* Đảm bảo elements ẩn không đè lên chữ */
         }
 
-        .topic-card:hover { transform: translateY(-10px); border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); }
+        /* Hover nhích nhẹ 8px và tăng độ sáng viền */
+        .topic-card:hover { 
+            transform: translateY(-8px); 
+            border-color: rgba(255, 255, 255, 0.2); 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
+        }
 
+        /* Element 1: Quầng sáng chính (::before) */
         .topic-card::before {
             content: ''; position: absolute; top: 50%; left: 50%;
             width: 120px; height: 120px; border-radius: 50%;
             transform: translate(-50%, -50%);
-            filter: blur(35px); opacity: 0.4; z-index: 1; transition: 0.6s ease;
+            filter: blur(40px); opacity: 0.3; z-index: -2; 
+            transition: all 0.6s ease;
         }
-        .topic-card:hover::before { width: 160px; height: 160px; opacity: 0.7; }
+        .topic-card:hover::before { width: 160px; height: 160px; opacity: 0.6; }
 
-        .topic-card i.floating-icon {
-            position: absolute; bottom: -10px; right: -5px;
-            font-size: 4rem; color: rgba(255, 255, 255, 0.05);
-            transform: rotate(-15deg); transition: 0.5s; z-index: 1;
+        /* Element 2: Luồng sáng phụ tạo hiệu ứng Liquid (::after) */
+        .topic-card::after {
+            content: ''; position: absolute; bottom: -20%; right: -10%;
+            width: 80px; height: 80px; border-radius: 50%;
+            filter: blur(30px); opacity: 0; z-index: -1;
+            transition: all 0.6s ease;
         }
-        .topic-card:hover i.floating-icon { color: rgba(255, 255, 255, 0.1); transform: rotate(0deg) scale(1.1); }
+        .topic-card:hover::after { opacity: 0.4; transform: translate(-10px, -10px); }
+
+        /* Icon mờ ẩn ở góc */
+        .topic-card i.floating-icon {
+            position: absolute; bottom: -8px; right: -5px;
+            font-size: 3.8rem; color: rgba(255, 255, 255, 0.05);
+            transform: rotate(-15deg); transition: 0.5s; z-index: -1;
+        }
+        .topic-card:hover i.floating-icon { 
+            color: rgba(255, 255, 255, 0.12); 
+            transform: rotate(0deg) scale(1.1); 
+        }
 
         .topic-name { font-size: 1.3rem; font-weight: 900; z-index: 2; position: relative; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .topic-link { font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 6px; z-index: 2; position: relative; color: rgba(255,255,255,0.7); }
+        .topic-link { 
+            font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 6px; 
+            z-index: 2; position: relative; color: rgba(255,255,255,0.6); transition: 0.3s;
+        }
+        .topic-card:hover .topic-link { color: #fff; gap: 10px; }
+
+        /* --- BẢNG MÀU ELEMENTS (MIXED) --- */
+        
+        /* Marvel: Đỏ + Cam */
         .bg-marvel::before { background: #ed1d24; }
+        .bg-marvel::after { background: #ff8e0d; }
+
+        /* Sitcom: Xanh dương + Aqua */
         .bg-sitcom::before { background: #00d2ff; }
-        .bg-voice::before { background: #a8ff78; }
+        .bg-sitcom::after { background: #3a7bd5; }
+
+        /* ANIME RIÊNG BIỆT: Hồng Sakura + Tím nhạt + Sparkles Element */
+        .bg-voice::before { background: #ff75c3; } /* Hồng Sakura chính */
+        .bg-voice::after { 
+            background: radial-gradient(circle, #ff75c3 0%, #74ebd5 100%); 
+            opacity: 0.1; /* Hiện nhẹ element anime */
+        }
+        .bg-voice:hover::after { opacity: 0.5; }
+
+        /* Viễn tưởng: Tím + Neon Pink */
         .bg-trans::before { background: #8e44ad; }
+        .bg-trans::after { background: #ff00cc; }
+
+        /* Cổ trang: Vàng Gold + Hổ phách */
         .bg-ancient::before { background: #f1c40f; }
+        .bg-ancient::after { background: #e67e22; }
+
+        /* 4K/Kinh dị: Trắng + Xám khói */
         .bg-4k::before { background: #ffffff; }
+        .bg-4k::after { background: #2c3e50; }
 
         /* ==========================================================================
            7. MERGED COUNTRY BLOCK (KỸ THUẬT LÚ HOÀN TOÀN - PORTAL STYLE)
