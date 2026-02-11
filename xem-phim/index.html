@@ -241,6 +241,58 @@
             .footer-brand { justify-content: center; }
         }
         @media (min-width: 901px) { .episode-block-mobile { display: none; } }
+
+/* CSS cho kết quả tìm kiếm */
+.search-result-item {
+    display: flex;
+    gap: 15px;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    transition: 0.2s;
+}
+.search-result-item:hover {
+    background: rgba(255,255,255,0.05);
+}
+.search-result-item img {
+    width: 50px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.search-result-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.search-result-title {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+.search-result-meta {
+    color: #a0a0a0;
+    font-size: 0.8rem;
+}
+
+/* Container kết quả Desktop (Thêm cái này để Desktop cũng hiện kết quả) */
+#desktopSearchResults {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 350px;
+    background: #1f212d;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    max-height: 400px;
+    overflow-y: auto;
+    display: none; /* Mặc định ẩn */
+    z-index: 10002;
+    margin-top: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+#desktopSearchResults.active { display: block; }
     </style>
 </head>
 <body>
@@ -283,16 +335,6 @@
             
             <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-tv"></i> Phim Bộ</a>
             <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-film"></i> Phim Lẻ</a>
-
-            <div style="border-bottom: 1px solid var(--mobile-border); padding: 10px 0; color:#666; font-size:0.9rem; font-weight:700; text-transform:uppercase;">Thể Loại</div>
-            <a href="/" class="mobile-menu-link"><i class="fas fa-fist-raised"></i> Hành Động</a>
-            <a href="/" class="mobile-menu-link"><i class="fas fa-heart"></i> Tình Cảm</a>
-            <a href="/" class="mobile-menu-link"><i class="fas fa-ghost"></i> Kinh Dị</a>
-
-            <div style="border-bottom: 1px solid var(--mobile-border); padding: 10px 0; color:#666; font-size:0.9rem; font-weight:700; text-transform:uppercase; margin-top:10px;">Quốc Gia</div>
-            <a href="/" class="mobile-menu-link"><i class="fas fa-globe-asia"></i> Hàn Quốc</a>
-            <a href="/" class="mobile-menu-link"><i class="fas fa-torii-gate"></i> Trung Quốc</a>
-            <a href="/" class="mobile-menu-link"><i class="fas fa-globe-americas"></i> Âu Mỹ</a>
 
             <div style="border-bottom: 1px solid var(--mobile-border); padding: 10px 0; color:#666; font-size:0.9rem; font-weight:700; text-transform:uppercase; margin-top:10px;">Quản Lý</div>
             <a href="hopteam.html" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-users"></i> Về HopTeam</a>
@@ -373,10 +415,13 @@
         </div>
         <div class="right-elements">
             <div class="mobile-search-trigger" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
-            <div class="search-box">
-                <i class="fas fa-search" style="color: #a0a0a0"></i>
-                <input type="text" placeholder="Tìm kiếm phim..." onclick="alert('Vui lòng tìm kiếm tại Trang chủ')">
+            
+            <div class="search-box desktop-auth" style="position: relative;"> <i class="fas fa-search" style="color: #a0a0a0"></i>
+                <input type="text" id="searchInput" placeholder="Tìm kiếm phim..." autocomplete="off">
+                
+                <div id="desktopSearchResults"></div> 
             </div>
+
             <div class="desktop-auth" style="position: relative;">
                 <button id="btnLogin" class="btn-login" onclick="window.location.href='/login.html'">Đăng nhập</button>
                 <img id="userAvatar" class="user-avatar" src="" alt="User" onclick="toggleUserDropdown()">
@@ -861,6 +906,84 @@
 
         // Start App
         loadMovie();
+
+
+// ==========================================
+        // TÍNH NĂNG TÌM KIẾM (SEARCH LOGIC) - FIX
+        // ==========================================
+        
+        let searchTimeout;
+
+        // Hàm gọi API tìm kiếm
+        async function performSearch(keyword, containerId) {
+            const container = document.getElementById(containerId);
+            
+            if (!keyword || keyword.length < 2) {
+                container.innerHTML = '';
+                container.classList.remove('active');
+                return;
+            }
+
+            container.classList.add('active');
+            container.innerHTML = '<div style="color:#ccc; padding:15px; text-align:center;">Đang tìm kiếm...</div>';
+
+            // Debounce: Đợi người dùng ngừng gõ 0.5s mới gọi API (tránh lag)
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async () => {
+                try {
+                    // Gọi API Tìm kiếm của OPhim
+                    const res = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${keyword}`);
+                    const data = await res.json();
+
+                    if (data.data && data.data.items && data.data.items.length > 0) {
+                        let html = '';
+                        data.data.items.forEach(m => {
+                            const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+                            html += `
+                                <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
+                                    <img src="${img}" loading="lazy">
+                                    <div class="search-result-info">
+                                        <div class="search-result-title">${m.name}</div>
+                                        <div class="search-result-meta">${m.origin_name} (${m.year})</div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div style="color:#aaa; padding:15px; text-align:center;">Không tìm thấy phim nào.</div>';
+                    }
+                } catch (e) {
+                    console.error(e);
+                    container.innerHTML = '<div style="color:#ff4757; padding:15px; text-align:center;">Lỗi kết nối server!</div>';
+                }
+            }, 500);
+        }
+
+        // Gán sự kiện cho ô tìm kiếm Mobile
+        const mobileInput = document.getElementById('mobileSearchInput');
+        if(mobileInput) {
+            mobileInput.addEventListener('input', (e) => {
+                performSearch(e.target.value, 'mobileSearchResults');
+            });
+        }
+
+        // Gán sự kiện cho ô tìm kiếm Desktop
+        const desktopInput = document.getElementById('searchInput');
+        if(desktopInput) {
+            desktopInput.addEventListener('input', (e) => {
+                performSearch(e.target.value, 'desktopSearchResults');
+            });
+            
+            // Ẩn kết quả khi click ra ngoài (Desktop)
+            document.addEventListener('click', (e) => {
+                const searchBox = document.querySelector('.search-box');
+                const results = document.getElementById('desktopSearchResults');
+                if (searchBox && !searchBox.contains(e.target)) {
+                    results.classList.remove('active');
+                }
+            });
+        }
     </script>
     
     <script>
