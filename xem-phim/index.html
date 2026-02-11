@@ -211,14 +211,14 @@
         .sb-meta { font-size: 0.8rem; color: var(--text-sub); }
 
         footer { background: var(--bg-dark); padding: 60px 4% 20px; margin-top: 50px; border-top: 1px solid #23252f; font-size: 0.9rem; }
-        .footer-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-bottom: 40px; }
         .footer-col h3 { font-size: 1.1rem; color: #fff; margin-bottom: 20px; font-weight: 700; }
-        .footer-brand { justify-content: center; }
+        .footer-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
         .footer-brand img { height: 50px; object-fit: contain; }
-        .footer-col ul { display: flex; flex-direction: column; align-items: center; }
+        .footer-col ul { list-style: none; } .footer-col ul li { margin-bottom: 12px; }
         .footer-col ul li a { color: var(--text-sub); text-decoration: none; transition: 0.3s; } .footer-col ul li a:hover { color: var(--primary-color); }
         .footer-bottom { border-top: 1px solid #23252f; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.8rem; }
-
+        
         @media (max-width: 900px) {
             header { height: 60px; padding: 0 4%; justify-content: space-between; }
             .header-left-group { gap: 25px; order: 1; }
@@ -236,8 +236,8 @@
             .comment-section { order: 4; }
             .sidebar-right { order: 5; position: static; }
             .episode-block-desktop { display: none; }
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
-            .footer-col:first-child { grid-column: span 2; text-align: center; }
+            .footer-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+            .footer-col ul { display: flex; flex-direction: column; align-items: center; }
             .footer-brand { justify-content: center; }
         }
         @media (min-width: 901px) { .episode-block-mobile { display: none; } }
