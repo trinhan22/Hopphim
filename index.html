@@ -23,7 +23,7 @@
             --bg-panel: #23252f; 
             --text-main: #ffffff; 
             --text-sub: #a0a0a0;
-            --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62); 
+            --gradient-main: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%); 
             --primary-color: #FF5E62;
             --gold-color: linear-gradient(90deg, #FF8F50, #FF5E62);
             --font-main: 'Inter', sans-serif; 
@@ -76,34 +76,45 @@
             font-weight: 800;
         }
 
-        .flex-center { display: flex; align-items: center; justify-content: center; }
-        .flex-between { display: flex; align-items: center; justify-content: space-between; }
-
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes zoomIn { from { transform: scale(1.1); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes floatIdle { 0% { transform: scale(1); } 50% { transform: scale(0.9); } 100% { transform: scale(1); } }
+        @keyframes rotateBlur { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* --- TOAST & CONFIRM (Giữ nguyên) --- */
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { background: #23252f; color: #fff; padding: 15px 25px; border-radius: 12px; display: flex; align-items: center; gap: 12px; min-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary-color); animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto; }
-        .toast.success { border-left-color: #2ecc71; } .toast.error { border-left-color: #ff4757; } .toast i { font-size: 1.2rem; }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        /* ==========================================================================
+           3. TOAST & CONFIRM COMPONENTS
+           ========================================================================== 
+        */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 20000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { 
+            background: #23252f; color: #fff; padding: 12px 22px; border-radius: 12px; 
+            display: flex; align-items: center; gap: 12px; min-width: 280px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary-color); 
+            animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto; 
+        }
+        .toast.success { border-left-color: #2ecc71; }
+        .toast.error { border-left-color: #ff4757; }
 
-        .custom-confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10001; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.3s; backdrop-filter: blur(5px); }
+        .custom-confirm-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
+            z-index: 20001; display: none; justify-content: center; align-items: center; 
+            opacity: 0; transition: 0.3s; backdrop-filter: blur(8px); 
+        }
         .custom-confirm-overlay.active { display: flex; opacity: 1; }
-        .confirm-box { background: #1f222e; width: 90%; max-width: 400px; padding: 30px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1); transform: scale(0.9); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-        .custom-confirm-overlay.active .confirm-box { transform: scale(1); }
+        .confirm-box { 
+            background: #1f222e; width: 90%; max-width: 400px; padding: 35px; 
+            border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); 
+            transform: scale(0.9); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+        }
         .confirm-icon { font-size: 3rem; margin-bottom: 15px; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .confirm-title { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
-        .confirm-desc { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 25px; line-height: 1.5; }
-        .confirm-actions { display: flex; gap: 15px; justify-content: center; }
-        .btn-confirm { padding: 10px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; font-size: 0.95rem; }
-        .btn-cancel { background: transparent; color: #ccc; border: 1px solid rgba(255,255,255,0.2); } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .btn-ok { background: var(--gradient-main); color: #fff; box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3); } .btn-ok:hover { transform: translateY(-2px); }
 
-        /* --- LOADING SCREEN --- */
+        /* ==========================================================================
+           4. LOADING SCREEN
+           ========================================================================== 
+        */
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg-body); z-index: 9999; display: flex; justify-content: center; align-items: center; }
         .loading-img { width: 800px; max-width: 80vw; height: auto; object-fit: contain; animation: zoomIn 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards, floatIdle 4s ease-in-out infinite 0.8s; }
         .loading-img.zoom-out { animation: zoomOut 0.5s cubic-bezier(0.6, -0.28, 0.74, 0.05) forwards !important; }
@@ -113,9 +124,9 @@
         @keyframes zoomOut { from { transform: scale(1); opacity: 1; } to { transform: scale(2.2); opacity: 0; } }
 
         /* ==========================================================================
-           5. HEADER (MOBILE REMASTER: BURGER-LOGO-SEARCH)
+           5. HEADER (REMOBILE MASTER: 3-BAR - LOGO - SEARCH)
            ========================================================================== 
-        /* ======================== HEADER PC (MENU MỚI) ======================== */
+        */
         header { 
             position: fixed; top: 0; width: 100%; height: 70px; padding: 0 4%; 
             display: flex; justify-content: space-between; align-items: center; 
@@ -182,30 +193,28 @@
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Right Elements */
         .right-elements { display: flex; align-items: center; gap: 15px; }
         .search-box { display: flex; align-items: center; background: #23252f; padding: 8px 16px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.05); }
         .search-box input { background: transparent; border: none; color: #fff; margin-left: 10px; font-family: var(--font-main); font-size: 14px; width: 150px; }
         .menu-toggle, .mobile-search-trigger { display: none; font-size: 1.5rem; color: #fff; cursor: pointer; }
-        .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; white-space: nowrap; }
-        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 94, 98, 0.4); }
+        
+        .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary-color); cursor: pointer; display: none; object-fit: cover; }
         .user-dropdown { position: absolute; top: 100%; right: 0; width: 200px; margin-top: 15px; background: #23252f; border-radius: 8px; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); }
         .user-dropdown.active { display: flex; }
         .user-info-item { padding: 12px; color: #fff; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .dropdown-item { background: transparent; border: none; color: #ccc; text-align: left; padding: 10px; cursor: pointer; transition: 0.2s; border-radius: 4px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
+        .dropdown-item { background: transparent; border: none; color: #ccc; text-align: left; padding: 10px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
         .dropdown-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
-
-
+        
         /* --- MOBILE HEADER REMASTER (3-PART ARCHITECTURE) --- */
         @media (max-width: 900px) {
-            header { height: 60px; padding: 0 15px; display: flex; justify-content: center; align-items: center; position: fixed; }
+            header { height: 65px; padding: 0 15px; justify-content: center; position: fixed; width: 100%; display: flex; align-items: center; background: var(--bg-dark); }
             .header-left-group, .nav-links, .search-box, .desktop-auth { display: none !important; }
             
             /* Hamburger Trái Tuyệt Đối */
             .menu-toggle { 
                 display: block !important; position: absolute; left: 15px; 
-                font-size: 1.5rem; color: #fff; cursor: pointer; z-index: 5005;
+                font-size: 1.6rem; color: #fff; cursor: pointer; z-index: 5005;
             }
             /* Logo Giữa Tuyệt Đối */
             .logo { 
@@ -218,29 +227,47 @@
             /* Search Phải Tuyệt Đối */
             .mobile-search-trigger { 
                 display: block !important; position: absolute; right: 15px; 
-                font-size: 1.3rem; color: #fff; cursor: pointer; z-index: 5005;
+                font-size: 1.4rem; color: #fff; cursor: pointer; z-index: 5005;
             }
         }
 
+        .right-elements { display: flex; align-items: center; gap: 20px; }
+        .search-box { 
+            display: flex; align-items: center; background: rgba(255,255,255,0.08); 
+            padding: 8px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.05); 
+        }
+        .search-box input { background: transparent; border: none; color: #fff; margin-left: 10px; width: 160px; font-weight: 500; }
+        
+        .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 10px 25px; border-radius: 50px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 94, 98, 0.4); }
+        .user-avatar { width: 42px; height: 42px; border-radius: 50%; border: 2.5px solid var(--primary-color); cursor: pointer; display: none; object-fit: cover; }
+        
+        .user-dropdown { 
+            position: absolute; top: 110%; right: 0; width: 220px; background: #23252f; 
+            border-radius: 15px; padding: 10px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); 
+            display: none; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); 
+        }
+        .user-dropdown.active { display: flex; }
+
         /* ==========================================================================
-           6. HERO & TOPICS (COMPACT)
+           6. HERO SECTION & TOPICS (GLASS REDESIGN)
            ========================================================================== 
         */
         .hero { 
-            height: 70vh; display: flex; align-items: center; justify-content: center; 
+            height: 75vh; display: flex; align-items: center; justify-content: center; 
             position: relative; background: url('home-background.jpg') center/cover no-repeat;
         }
         .hero::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.3); }
         .hero::after { 
-            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 250px; 
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 300px; 
             background: linear-gradient(to bottom, transparent, var(--bg-body)); 
         }
-        .hero-content { position: relative; z-index: 10; text-align: center; max-width: 900px; padding: 20px; }
-        .hero-title { font-size: 4.5rem; font-weight: 900; line-height: 1.1; letter-spacing: -3px; }
-        .hero-desc { font-size: 1.25rem; color: #eee; font-weight: 600; margin-top: 15px; }
+        .hero-content { position: relative; z-index: 10; text-align: center; max-width: 1000px; padding: 20px; }
+        .hero-title { font-size: 5rem; font-weight: 900; line-height: 1.1; letter-spacing: -3px; }
+        .hero-desc { font-size: 1.4rem; color: #eee; font-weight: 600; margin-top: 20px; }
 
         .topics-section { padding: 0 4%; margin-top: -60px; position: relative; z-index: 20; margin-bottom: 60px; }
-        .section-label { font-size: 1.3rem; font-weight: 800; margin-bottom: 25px; color: #fff; letter-spacing: -0.5px; }
+        .section-label { font-size: 1.4rem; font-weight: 800; margin-bottom: 25px; color: #fff; }
 
         .topic-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
 
@@ -254,24 +281,16 @@
             backdrop-filter: blur(10px);
         }
 
-        .topic-card:hover {
-            transform: translateY(-10px);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-        }
+        .topic-card:hover { transform: translateY(-10px); border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); }
 
-        /* Decorative Blur Elements behind card */
         .topic-card::before {
             content: ''; position: absolute; top: 50%; left: 50%;
             width: 120px; height: 120px; border-radius: 50%;
             transform: translate(-50%, -50%);
-            filter: blur(35px); opacity: 0.4; z-index: 1;
-            transition: 0.6s ease;
+            filter: blur(35px); opacity: 0.4; z-index: 1; transition: 0.6s ease;
         }
-
         .topic-card:hover::before { width: 160px; height: 160px; opacity: 0.7; }
 
-        /* Icon mờ đặc trưng */
         .topic-card i.floating-icon {
             position: absolute; bottom: -10px; right: -5px;
             font-size: 4rem; color: rgba(255, 255, 255, 0.05);
@@ -281,9 +300,6 @@
 
         .topic-name { font-size: 1.3rem; font-weight: 900; z-index: 2; position: relative; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
         .topic-link { font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 6px; z-index: 2; position: relative; color: rgba(255,255,255,0.7); }
-        .topic-card:hover .topic-link { color: #fff; }
-
-        /* Beautiful Color Palettes */
         .bg-marvel::before { background: #ed1d24; }
         .bg-sitcom::before { background: #00d2ff; }
         .bg-voice::before { background: #a8ff78; }
@@ -292,53 +308,43 @@
         .bg-4k::before { background: #ffffff; }
 
         /* ==========================================================================
-           7. MERGED COUNTRY BLOCK (KỸ THUẬT NỔI HOÀN TOÀN - PORTAL STYLE)
+           7. MERGED COUNTRY BLOCK (KỸ THUẬT LÚ HOÀN TOÀN - PORTAL STYLE)
            ========================================================================== 
         */
-.merged-block { 
-    background: var(--bg-panel); 
-    border-radius: 16px; 
-    margin: 0 4% 40px; 
-    padding: 20px 25px !important; /* Thu nhỏ padding khối lớn */
-    border: 1px solid rgba(255,255,255,0.05); 
-    box-shadow: 0 15px 50px rgba(0,0,0,0.2);
-    overflow: visible !important; 
-    isolation: isolate; 
-}
+        .merged-block { 
+            background: var(--bg-panel); border-radius: 24px; margin: 0 4% 60px; 
+            padding: 30px 45px; border: 1px solid rgba(255,255,255,0.05); 
+            box-shadow: 0 25px 70px rgba(0,0,0,0.3);
+            overflow: visible !important; 
+            isolation: isolate;
+        }
 
-.country-section { 
-    margin-bottom: 20px; 
-    position: relative; 
-    overflow: visible !important; 
-}
+        .country-section { margin-bottom: 40px; position: relative; overflow: visible !important; }
         .country-section:last-child { margin-bottom: 0; }
         .country-section:not(:last-child) { border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 20px; }
 
-.country-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: flex-end; 
-    margin-bottom: 20px; 
-}
-.ch-title { font-size: 1.6rem !important; font-weight: 900; }
-        .ch-link { font-size: 0.9rem; color: var(--text-sub); display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 700; }
-        .ch-link:hover { color: #fff; }
+        .country-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
+        .ch-title { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; }
+        .ch-link { font-size: 1rem; color: var(--text-sub); display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 700; }
 
         .grid-wrapper { position: relative; width: 100%; overflow: visible !important; }
         
         .nav-arrow {
             position: absolute; top: 50%; transform: translateY(-50%);
-            width: 45px; height: 45px; background: rgba(0,0,0,0.85);
-            border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            width: 50px; height: 50px; background: rgba(0,0,0,0.85);
+            border: 1px solid rgba(255,255,255,0.15); color: #fff;
             border-radius: 50%; cursor: pointer; z-index: 1002;
             display: flex; align-items: center; justify-content: center;
             opacity: 0; transition: var(--transition-smooth); backdrop-filter: blur(5px);
         }
         .grid-wrapper:hover .nav-arrow { opacity: 1; }
-        .arrow-prev { left: -22px; }
-        .arrow-next { right: -22px; }
+        .arrow-prev { left: -25px; }
+        .arrow-next { right: -25px; }
+        .nav-arrow:hover { background: var(--primary-color); border-color: transparent; transform: translateY(-50%) scale(1.1); }
 
+        /* FIXED: Kỹ thuật Buffer-Padding giúp Card lú ra không bị khuyết */
         /* FIXED: Padding-Compensation để bung lụa ra ngoài container */
+
 .country-grid { 
     display: flex; 
     flex-wrap: nowrap; 
@@ -352,7 +358,9 @@
 }
 .country-grid::-webkit-scrollbar { display: none; }
 
+
         /* Card System (PC: 4 Phim/Hàng) */
+
 .n-card {
     flex: 0 0 calc(25% - 15px);
     position: relative; 
@@ -363,13 +371,14 @@
     background: #1a1c24;
     z-index: 10;
 }
+
 .n-poster { 
     width: 100%; height: 100%; 
     object-fit: cover; 
     border-radius: 10px; 
     display: block; 
 }
-        
+
         /* ======================== 
            REFINED MICRO HOVER DETAIL 
            ======================== */
@@ -379,14 +388,17 @@
     left: -3%; 
     width: 106%; /* FIXED: Thu nhỏ chiều rộng tối đa */
     
+
     /* Hiệu ứng Kính lỏng cao cấp */
     background: rgba(20, 21, 26, 0.8) !important;
     backdrop-filter: blur(25px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
-    
+
+
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     box-shadow: 0 40px 100px rgba(0,0,0,1);
+
     
     opacity: 0; 
     visibility: hidden; 
@@ -396,6 +408,7 @@
     z-index: 99999 !important; /* Luôn trên cùng */
     overflow: hidden;
 }
+
 .n-hover-detail::before {
     content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
     background: radial-gradient(circle, rgba(255, 94, 98, 0.12) 0%, transparent 70%);
@@ -403,6 +416,7 @@
     z-index: -1;
 }
 .n-card:hover { z-index: 99998; }
+
 .n-card:hover .n-hover-detail { 
     opacity: 1; 
     visibility: visible; 
@@ -412,7 +426,6 @@
         .c-info { padding: 10px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); position: absolute; bottom: 0; left: 0; width: 100%; border-radius: 0 0 10px 10px; }
         .n-card:hover .c-info { opacity: 0; }
         .c-title { font-weight: 800; font-size: 0.9rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
         .n-hover-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
 .n-popup-body { 
     padding: 12px 15px !important; /* Thu nhỏ không gian bên trong */
@@ -438,7 +451,7 @@
     background: rgba(255,255,255,0.05);
     font-size: 0.8rem !important;
 }
-        
+
         /* FIXED: Compact Typography */
 .n-title { 
     font-weight: 900; 
@@ -461,68 +474,38 @@
     border: 1px solid #555; padding: 0px 4px; border-radius: 2px; 
     color: #fff; font-size: 0.55rem !important; 
 }
-
         /* ==========================================================================
-           8. TOP 5 TRENDING (BALANCED SIZE)
+           8. TOP 5 TRENDING (BALANCED RANK NUMBERS)
            ========================================================================== 
         */
         .top-10-wrapper { position: relative; z-index: 20; padding: 0 4% 80px; }
-        .top-10-header { display: flex; align-items: center; gap: 18px; margin-bottom: 40px; }
-        .top-10-header h2 { font-size: 2.5rem; font-weight: 900; font-style: italic; letter-spacing: -1px; }
-        .top-5-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+        .top-10-header { display: flex; align-items: center; gap: 20px; margin-bottom: 45px; }
+        .top-10-header h2 { font-size: 2.8rem; font-weight: 900; font-style: italic; letter-spacing: -1px; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .top-5-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 25px; }
 
         .top-card-style2 { position: relative; cursor: pointer; transition: 0.4s ease; width: 100%; }
-        .top-card-style2:hover { transform: translateY(-12px); }
+        .top-card-style2:hover { transform: translateY(-15px); }
         .top-poster-style2 { 
-            width: 100%; aspect-ratio: 2/3; border-radius: 15px; overflow: hidden; position: relative; 
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.06); 
+            width: 100%; aspect-ratio: 2/3; border-radius: 18px; overflow: hidden; position: relative; 
+            box-shadow: 0 15px 45px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); 
         }
         .top-poster-style2 img { width: 100%; height: 100%; object-fit: cover; }
         
-        .top-info-row { display: flex; align-items: flex-start; margin-top: 22px; }
+        .top-info-row { display: flex; align-items: flex-start; margin-top: 25px; }
         
-        /* Rank numbers: THU NHỎ LẠI THEO YÊU CẦU */
-.top-rank-style2 { 
-    font-size: 3.5rem !important; /* Thu nhỏ con số rank */
-    line-height: 0.8; 
-    font-family: 'Impact', sans-serif; 
-    font-style: italic; 
-    font-weight: 900; 
-    color: #eebb5d; 
-    margin-right: 12px; 
-    text-shadow: 2px 2px 0px #000; 
-    flex-shrink: 0; 
-}
+        /* Rank numbers: 3.8rem */
+        .top-rank-style2 { 
+            font-size: 3.8rem; 
+            line-height: 0.8; font-family: 'Impact', sans-serif; font-style: italic; font-weight: 900; 
+            color: #eebb5d; margin-right: 15px; text-shadow: 3px 3px 0px #000; flex-shrink: 0; 
+        }
         .top-text-style2 { flex: 1; padding-top: 5px; }
-        .top-title-style2 { font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
-        .top-meta-style2 { font-size: 0.85rem; color: #666; font-weight: 600; }
+        .top-title-style2 { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
+        .top-meta-style2 { font-size: 0.95rem; color: #777; font-weight: 600; }
 
         /* ==========================================================================
-           9. MODAL (PC: FIXED 5 GRID)
-           ========================================================================== 
-        */
-        .modal { 
-            display: none; position: fixed; inset: 0; z-index: var(--z-modal); 
-            background: rgba(10, 11, 16, 0.98); padding: 80px 4%; overflow-y: auto; 
-            backdrop-filter: blur(20px); 
-        }
-        .modal.active { display: block; animation: fadeIn 0.4s ease; }
-        .modal-grid { 
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 25px; 
-            max-width: 1300px; margin: 0 auto; padding-bottom: 50px;
-        }
-        .modal-card { 
-            border-radius: 12px; overflow: hidden; background: #23252f; 
-            transition: 0.3s; cursor: pointer; aspect-ratio: 2/3; position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .modal-card img { width: 100%; height: 100%; object-fit: cover; }
-        .card-info-modal { position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px; background: linear-gradient(to top, #000, transparent); }
-
-        /* ==========================================================================
-           10. FOOTER (MOBILE REMASTER: CENTERED ALL)
-           ========================================================================== 
-        */
+           9. MODAL & FOOTER (CENTERED MOBILE)
+           ========================================================================== */
         footer { background: var(--bg-dark); padding: 60px 4% 20px; margin-top: 80px; border-top: 1px solid #23252f; font-size: 0.9rem; }
         .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-bottom: 40px; }
         .footer-col h3 { font-size: 1.1rem; color: #fff; margin-bottom: 20px; font-weight: 700; }
@@ -531,83 +514,65 @@
         .footer-col ul { list-style: none; } .footer-col ul li { margin-bottom: 12px; }
         .footer-col ul li a { color: var(--text-sub); text-decoration: none; transition: 0.3s; } .footer-col ul li a:hover { color: var(--primary-color); padding-left: 5px; }
         .footer-bottom { border-top: 1px solid #23252f; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.8rem; }
+        .modal { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(15, 17, 26, 0.95); padding: 40px; overflow-y: auto; }
+        .modal.active { display: block; }
+        .modal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .modal-grid .movie-card { width: 100%; height: 280px; }
 
-@media (max-width: 900px) {
-    footer .footer-grid { 
-        grid-template-columns: 1fr !important; 
-        text-align: center !important; 
-        gap: 30px; 
-    }
-    footer .footer-col ul { display: flex; flex-direction: column; align-items: center; }
-    footer .footer-brand { justify-content: center; }
+        @media (max-width: 900px) {
+            /* FIXED: Footer căn giữa mobile hoàn toàn */
+            .footer-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+            .footer-col ul { display: flex; flex-direction: column; align-items: center; }
+            .footer-brand { justify-content: center; }
 
-
-            .hero-title { font-size: 2.8rem; }
-            .topic-grid { display: flex; overflow-x: auto; scrollbar-width: none; gap: 12px; padding-bottom: 10px; }
-            .topic-card { flex: 0 0 150px; height: 90px; }
+            .hero-title { font-size: 3rem; }
+            .topic-grid { display: flex; overflow-x: auto; scrollbar-width: none; }
+            .topic-card { flex: 0 0 160px; height: 95px; }
             
-            .merged-block { padding: 25px 15px; border-radius: 0; margin: 0 0 40px; border: none; }
-            .country-grid { gap: 12px; padding: 10px 0; margin: -10px 0; }
-            .n-card { flex: 0 0 240px; }
+            .merged-block { padding: 35px 20px; border-radius: 0; margin: 0 0 40px; }
+            .country-grid { gap: 15px; padding: 5px 0; }
+            .n-card { flex: 0 0 260px; }
             .nav-arrow { display: none; } 
-            
-            .top-rank-style2 { font-size: 3rem; }
+
+            .top-10-header h2 { font-size: 2rem; }
+            .top-5-grid { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; gap: 15px; padding-bottom: 20px; scrollbar-width: none; }
+            .top-card-style2 { flex: 0 0 160px; }
+            .top-rank-style2 { font-size: 3.2rem !important; }
+
             .modal-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
         }
 
-        /* ==========================================================================
-           11. MOBILE MENU DRAWER
-           ========================================================================== 
-        */
+        /* Mobile Drawer */
         .mobile-overlay { position: fixed; inset: 0; z-index: 10000; transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1); }
-        #mobileMenuOverlay { background: var(--mobile-menu-bg); transform: translateX(-100%); padding: 30px; width: 310px; box-shadow: 20px 0 60px rgba(0,0,0,0.8); }
+        #mobileMenuOverlay { background: var(--mobile-menu-bg); transform: translateX(-100%); padding: 30px; width: 320px; box-shadow: 20px 0 60px rgba(0,0,0,0.8); }
         #mobileMenuOverlay.active { transform: translateX(0); }
-        
-        .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .menu-logo { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 900; }
-        
-        .member-btn-large { 
-            width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; 
-            border: 1px solid rgba(255,255,255,0.08); color: #fff; font-weight: 800; 
-            display: flex; align-items: center; gap: 12px; margin-bottom: 30px; cursor: pointer; font-size: 0.95rem;
-        }
 
-        .mobile-menu-link { padding: 16px 0; font-size: 1rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; align-items: center; gap: 15px; color: #999; }
-        .mobile-menu-link i { color: var(--primary-color); width: 22px; text-align: center; }
 
-        #mobileSearchOverlay { background: #0f111a; transform: translateY(-100%); opacity: 0; padding: 15px; transition: 0.4s; }
-        #mobileSearchOverlay.active { transform: translateY(0); opacity: 1; }
-        .search-header-mobile { display: flex; align-items: center; background: #23252f; padding: 12px 18px; border-radius: 12px; }
-        .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; margin-left: 10px; }
+/* Nút xoá lịch sử đặt bên trong Detail Card */
+.btn-remove-history {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px; /* Micro size */
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100; /* Luôn trên cùng của card detail */
+    transition: 0.3s;
+    font-size: 0.8rem;
+}
 
-        @media (max-width: 900px) {
-            /* Ép khung Top 5 thành hàng ngang và cho phép trượt */
-            .top-5-grid {
-                display: flex !important; /* Chuyển từ Grid sang Flex để nằm trên 1 hàng */
-                flex-wrap: nowrap !important; 
-                overflow-x: auto !important; 
-                gap: 15px;
-                padding-bottom: 20px;
-                scrollbar-width: none; /* Ẩn scrollbar cho Firefox */
-                -webkit-overflow-scrolling: touch; /* Trượt mượt hơn trên iPhone */
-            }
-
-            /* Ẩn thanh cuộn cho Chrome/Safari */
-            .top-5-grid::-webkit-scrollbar { 
-                display: none; 
-            }
-
-            /* Định hình kích thước từng Card để nó lú ra ngoài và trượt được */
-            .top-card-style2 {
-                flex: 0 0 150px; /* Cố định độ rộng mỗi card là 150px, không cho nó co lại */
-            }
-
-            /* Thu nhỏ con số rank một chút cho cân đối trên mobile */
-            .top-rank-style2 {
-                font-size: 3rem !important;
-                margin-right: 8px !important;
-            }
-        }
+.btn-remove-history:hover {
+    background: #ff4757;
+    border-color: transparent;
+    transform: scale(1.1);
+}
     </style>
 </head>
 <body>
@@ -621,8 +586,8 @@
     <div id="confirmModal" class="custom-confirm-overlay">
         <div class="confirm-box">
             <div class="confirm-icon"><i class="fas fa-question-circle"></i></div>
-            <h3 style="color:#fff; font-size:1.5rem; margin-bottom:10px;">Xác nhận</h3>
-            <p id="confirmMsg" style="color:#888; font-size:1rem;">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+            <h3 style="color:#fff; font-size:1.6rem; margin-bottom:12px;">Xác nhận</h3>
+            <p id="confirmMsg" style="color:#888; font-size:1.05rem;">Bạn có chắc chắn muốn thực hiện hành động này?</p>
             <div class="confirm-actions" style="margin-top:25px;">
                 <button class="btn-confirm btn-cancel" id="btnConfirmNo">Hủy bỏ</button>
                 <button class="btn-confirm btn-ok" id="btnConfirmYes">Đồng ý</button>
@@ -631,37 +596,36 @@
     </div>
 
     <div id="mobileMenuOverlay" class="mobile-overlay">
-        <div class="menu-header">
-            <div class="menu-logo"><img src="/LOGO.WEBP" style="height:35px;"><span class="logo-text text-gradient">HOPPHIM</span></div>
-            <i class="fas fa-times" onclick="closeMobileMenu()" style="font-size:1.6rem; color:#fff; cursor:pointer;"></i>
+        <div class="menu-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
+            <div class="menu-logo" style="display:flex; align-items:center; gap:10px; font-weight:900;"><img src="/LOGO.WEBP" style="height:35px;"><span class="logo-text text-gradient">HOPPHIM</span></div>
+            <i class="fas fa-times" onclick="closeMobileMenu()" style="font-size:1.8rem; color:#fff; cursor:pointer;"></i>
         </div>
-        <button class="member-btn-large" id="mobileMemberBtn" onclick="window.location.href='/login.html'">
-            <i class="fas fa-user-circle" style="font-size:1.6rem; color:var(--primary-color)"></i> 
+        <button class="member-btn-large" id="mobileMemberBtn" onclick="window.location.href='/login.html'" style="width:100%; padding:18px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1); color:#fff; font-weight:800; display:flex; align-items:center; gap:15px; margin-bottom:30px; cursor:pointer;">
+            <i class="fas fa-user-circle" style="font-size:1.8rem; color:var(--primary-color)"></i> 
             <span id="mobileMemberText">Đăng nhập / Đăng ký</span>
         </button>
         <div class="mobile-menu-list">
-            <a href="/" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Trang chủ</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('phim-moi', 'Phim Mới')"><i class="fas fa-bolt"></i> Phim Mới</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('phim-bo', 'Phim Bộ')"><i class="fas fa-tv"></i> Phim Bộ</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu(); loadCategory('phim-le', 'Phim Lẻ')"><i class="fas fa-film"></i> Phim Lẻ</a>
-            <div style="margin:20px 0 8px; color:#444; font-size:0.75rem; font-weight:900; text-transform:uppercase; letter-spacing:1px;">Quản Lý Tài Khoản</div>
-            <a href="/hopteam" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-users"></i> Về HopTeam</a>
-            <div id="mobileLogoutBtn" style="display:none;" class="mobile-menu-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</div>
+            <a href="/" class="mobile-menu-link" style="padding:15px 0; display:block; font-weight:700; color:#bbb;"><i class="fas fa-home" style="margin-right:15px; color:var(--primary-color)"></i> Trang chủ</a>
+            <a href="#" onclick="loadCategory('phim-moi', 'Phim Mới')" class="mobile-menu-link" style="padding:15px 0; display:block; font-weight:700; color:#bbb;"><i class="fas fa-bolt" style="margin-right:15px; color:var(--primary-color)"></i> Phim Mới</a>
+            <a href="#" onclick="loadCategory('phim-bo', 'Phim Bộ')" class="mobile-menu-link" style="padding:15px 0; display:block; font-weight:700; color:#bbb;"><i class="fas fa-tv" style="margin-right:15px; color:var(--primary-color)"></i> Phim Bộ</a>
+            <a href="#" onclick="loadCategory('phim-le', 'Phim Lẻ')" class="mobile-menu-link" style="padding:15px 0; display:block; font-weight:700; color:#bbb;"><i class="fas fa-film" style="margin-right:15px; color:var(--primary-color)"></i> Phim Lẻ</a>
+            <div style="margin:20px 0 8px; color:#444; font-size:0.75rem; font-weight:900; text-transform:uppercase; letter-spacing:1px;">Quản Lý</div>
+            <a href="/hopteam" class="mobile-menu-link" style="padding:15px 0; display:block; font-weight:700; color:#bbb;"><i class="fas fa-users" style="margin-right:15px; color:var(--primary-color)"></i> Về HopTeam</a>
+            <div id="mobileLogoutBtn" style="display:none; padding:15px 0; font-weight:700; color:#ff4757;" onclick="logout()"><i class="fas fa-sign-out-alt" style="margin-right:15px;"></i> Đăng xuất</div>
         </div>
     </div>
 
-    <div id="mobileSearchOverlay" class="mobile-overlay">
-        <div class="search-header-mobile">
+    <div id="mobileSearchOverlay" style="position:fixed; inset:0; z-index:10000; background:#0f111a; transform:translateY(-100%); opacity:0; padding:20px; transition:0.4s;">
+        <div style="display:flex; align-items:center; background:#23252f; padding:15px 20px; border-radius:15px;">
             <i class="fas fa-search" style="color: #666;"></i>
-            <input type="text" id="mobileSearchInput" class="search-input-mobile" placeholder="Tìm phim, diễn viên...">
-            <i class="fas fa-times" onclick="closeMobileSearch()" style="color:#fff; cursor:pointer; margin-left: 12px;"></i>
+            <input type="text" id="mobileSearchInput" style="flex:1; background:transparent; border:none; color:#fff; font-size:1.1rem; margin-left:10px;" placeholder="Tìm phim...">
+            <i class="fas fa-times" onclick="closeMobileSearch()" style="color:#fff; cursor:pointer; margin-left: 15px;"></i>
         </div>
         <div id="mobileSearchResults" style="margin-top:20px;"></div>
     </div>
 
     <header id="siteHeader">
         <i class="fas fa-bars menu-toggle" style="display:none;" onclick="openMobileMenu()"></i>
-        
         <div class="header-left-group">
             <div class="logo" onclick="loadHome()">
                 <img src="/LOGO.WEBP" alt="Logo"><span class="logo-text text-gradient">HOPPHIM</span>
@@ -721,21 +685,15 @@
                 <li class="nav-item"><a class='nav-link' href='/hopteam'>Về HopTeam</a></li>
             </ul>
         </div>
-        
         <div class="right-elements">
-            <div class="mobile-search-trigger" style="display:none;" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
-            
-            <div class="search-box">
-                <i class="fas fa-search" style="color: #666"></i>
-                <input type="text" id="searchInput" placeholder="Tìm kiếm phim...">
-            </div>
-
+            <div class="mobile-search-trigger" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
+            <div class="search-box"><i class="fas fa-search" style="color: #a0a0a0"></i><input type="text" id="searchInput" placeholder="Tìm kiếm phim..."></div>
             <div class="desktop-auth" style="position: relative;">
                 <button id="btnLogin" class="btn-login" onclick="window.location.href='/login.html'">Đăng nhập</button>
                 <img id="userAvatar" class="user-avatar" src="" alt="User" onclick="toggleUserDropdown()">
                 <div id="userMenu" class="user-dropdown">
-                    <div id="userNameDisplay" class="user-info-item">Tài khoản</div>
-                    <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-circle"></i> Trang cá nhân</button>
+                    <div id="userNameDisplay" class="user-info-item">User</div>
+                    <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
                     <button class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
                 </div>
             </div>
@@ -744,54 +702,45 @@
 
     <section class="hero">
         <div class="hero-content">
-            <h1 class="hero-title"><span class="text-gradient">HopPhim - Phim Hay<br>Trong Tầm Tay</span></h1>
-            <p class="hero-desc">Xem phim chuẩn 4K Vietsub, cập nhật liên tục mỗi giờ tại HopPhim.</p>
+            <h1 class="hero-title"><span class="text-gradient">HopPhim - Phim Hay<BR>Trong Tầm Tay</span></h1>
+            <p class="hero-desc">Xem phim chuẩn FHD Vietsub, cập nhật liên tục tại HopPhim.</p>
         </div>
     </section>
 
     <div class="topics-section">
-        <div class="section-label">Gợi ý cho bạn</div>
+        <div class="section-label">Gợi ý chủ đề</div>
         <div class="topic-grid">
-            <div class="topic-card bg-marvel" onclick="loadCategory('hanh-dong', 'Marvel Studios')"><div class="topic-name">Marvel</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
-            <div class="topic-card bg-sitcom" onclick="loadCategory('hai-huoc', 'Sitcom Hài Hước')"><div class="topic-name">Sitcom</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
-            <div class="topic-card bg-voice" onclick="loadCategory('hoat-hinh', 'Anime Nhật Bản')"><div class="topic-name">Anime</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
-            <div class="topic-card bg-trans" onclick="loadCategory('vien-tuong', 'Viễn Tưởng')"><div class="topic-name">Viễn Tưởng</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
-            <div class="topic-card bg-ancient" onclick="loadCategory('co-trang', 'Cổ Trang')"><div class="topic-name">Cổ Trang</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
-            <div class="topic-card bg-4k" onclick="loadCategory('kinh-di', 'Kinh Dị')"><div class="topic-name">Kinh Dị</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-marvel" onclick="loadCategory('hanh-dong', 'Marvel')"><i class="fab fa-quinscape floating-icon"></i><div class="topic-name">Marvel</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-sitcom" onclick="loadCategory('hai-huoc', 'Sitcom')"><i class="fas fa-laugh-squint floating-icon"></i><div class="topic-name">Sitcom</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-voice" onclick="loadCategory('hoat-hinh', 'Anime')"><i class="fas fa-shinto--gate floating-icon"></i><div class="topic-name">Anime</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-trans" onclick="loadCategory('vien-tuong', 'Viễn Tưởng')"><i class="fas fa-rocket floating-icon"></i><div class="topic-name">Viễn Tưởng</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-ancient" onclick="loadCategory('co-trang', 'Cổ Trang')"><i class="fas fa-dragon floating-icon"></i><div class="topic-name">Cổ Trang</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-4k" onclick="loadCategory('kinh-di', 'Kinh Dị')"><i class="fas fa-ghost floating-icon"></i><div class="topic-name">Kinh Dị</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
         </div>
     </div>
+
+    <div id="history-container"></div>
 
     <main id="main-content">
         <div class="merged-block">
             <div class="country-section">
-                <div class="country-header">
-                    <div class="ch-title">Phim <span class="text-gradient">Hàn Quốc</span></div>
-                    <div class="ch-link" onclick="openModal('han-quoc', 'Phim Hàn Quốc')">Xem tất cả <i class="fas fa-chevron-right"></i></div>
-                </div>
+                <div class="country-header"><div class="ch-title">Phim <span class="text-gradient">Hàn Quốc</span></div><div class="ch-link" onclick="openModal('han-quoc', 'Phim Hàn Quốc')">Xem tất cả <i class="fas fa-chevron-right"></i></div></div>
                 <div class="grid-wrapper">
                     <button class="nav-arrow arrow-prev" onclick="scrollGrid('koreaList', -1)"><i class="fas fa-chevron-left"></i></button>
                     <div class="country-grid" id="koreaList"></div>
                     <button class="nav-arrow arrow-next" onclick="scrollGrid('koreaList', 1)"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
-
             <div class="country-section">
-                <div class="country-header">
-                    <div class="ch-title">Phim <span class="text-gradient">Trung Quốc</span></div>
-                    <div class="ch-link" onclick="openModal('trung-quoc', 'Phim Trung Quốc')">Xem tất cả <i class="fas fa-chevron-right"></i></div>
-                </div>
+                <div class="country-header"><div class="ch-title">Phim <span class="text-gradient">Trung Quốc</span></div><div class="ch-link" onclick="openModal('trung-quoc', 'Phim Trung Quốc')">Xem tất cả <i class="fas fa-chevron-right"></i></div></div>
                 <div class="grid-wrapper">
                     <button class="nav-arrow arrow-prev" onclick="scrollGrid('chinaList', -1)"><i class="fas fa-chevron-left"></i></button>
                     <div class="country-grid" id="chinaList"></div>
                     <button class="nav-arrow arrow-next" onclick="scrollGrid('chinaList', 1)"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
-
             <div class="country-section">
-                <div class="country-header">
-                    <div class="ch-title">Phim <span class="text-gradient">Thái Lan</span></div>
-                    <div class="ch-link" onclick="openModal('thai-lan', 'Phim Thái Lan')">Xem tất cả <i class="fas fa-chevron-right"></i></div>
-                </div>
+                <div class="country-header"><div class="ch-title">Phim <span class="text-gradient">Thái Lan</span></div><div class="ch-link" onclick="openModal('thai-lan', 'Phim Thái Lan')">Xem tất cả <i class="fas fa-chevron-right"></i></div></div>
                 <div class="grid-wrapper">
                     <button class="nav-arrow arrow-prev" onclick="scrollGrid('thaiList', -1)"><i class="fas fa-chevron-left"></i></button>
                     <div class="country-grid" id="thaiList"></div>
@@ -801,20 +750,15 @@
         </div>
     </main>
 
-    <div id="history-container"></div>
-
     <section class="top-10-wrapper">
-        <div class="top-10-header">
-            <i class="fas fa-fire" style="color:var(--primary-color); font-size: 2.5rem;"></i>
-            <h2>TOP 5 THỊNH HÀNH</h2>
-        </div>
+        <div class="top-10-header"><i class="fas fa-fire" style="color:var(--primary-color); font-size: 2.5rem;"></i><h2>TOP 5 THỊNH HÀNH</h2></div>
         <div class="top-5-grid" id="top5List"></div>
     </section>
 
     <div id="modalPopup" class="modal">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:45px; border-bottom:1px solid #222; padding-bottom:20px;">
-            <h2 id="modalTitle" class="text-gradient" style="font-size: 2.2rem;">Danh sách phim</h2>
-            <i class="fas fa-times" onclick="closeModal()" style="font-size:2.8rem; color:#fff; cursor:pointer;"></i>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px; border-bottom:1px solid #222; padding-bottom:20px;">
+            <h2 id="modalTitle" class="text-gradient" style="font-size: 2rem;">Danh sách phim</h2>
+            <i class="fas fa-times" onclick="closeModal()" style="font-size:2.5rem; color:#fff; cursor:pointer;"></i>
         </div>
         <div id="modalContent" class="modal-grid"></div>
     </div>
@@ -858,31 +802,34 @@
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // FIREBASE CONFIG
-        const firebaseConfig = {
-            apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc",
-            authDomain: "hopphim-29e1c.firebaseapp.com",
-            projectId: "hopphim-29e1c",
-            storageBucket: "hopphim-29e1c.firebasestorage.app",
-            messagingSenderId: "1076044580405",
-            appId: "1:1076044580405:web:a3485f8533604f305e537c",
-            measurementId: "G-6RT4CX2NR0"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc", authDomain: "hopphim-29e1c.firebaseapp.com", projectId: "hopphim-29e1c", storageBucket: "hopphim-29e1c.firebasestorage.app", messagingSenderId: "1076044580405", appId: "1:1076044580405:web:a3485f8533604f305e537c", measurementId: "G-6RT4CX2NR0" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // UI Elements
-        const btnLogin = document.getElementById('btnLogin');
-        const userAvatar = document.getElementById('userAvatar');
-        const userMenu = document.getElementById('userMenu');
-        const mobileMemberBtn = document.getElementById('mobileMemberBtn');
-        const mobileMemberText = document.getElementById('mobileMemberText');
-        const mobileAccountLink = document.getElementById('mobileAccountLink');
-        const historyContainer = document.getElementById('history-container');
+        // SPA Auth Logic
+        onAuthStateChanged(auth, async (user) => {
+            const btn = document.getElementById('btnLogin');
+            const ava = document.getElementById('userAvatar');
+            const mobileLogout = document.getElementById('mobileLogoutBtn');
+            const mobileMemberText = document.getElementById('mobileMemberText');
 
-        let currentUser = null;
+            if (user) {
+                window.currentUser = user;
+                if(btn) btn.style.display = 'none';
+                if(ava) { ava.style.display = 'block'; ava.src = user.photoURL || '/Guest.webp'; }
+                document.getElementById('userNameDisplay').innerText = user.displayName;
+                if(mobileMemberText) mobileMemberText.innerText = user.displayName;
+                if(mobileLogout) mobileLogout.style.display = 'block';
+                loadHistory(user.uid);
+            } else {
+                window.currentUser = null;
+                if(btn) btn.style.display = 'block';
+                if(ava) ava.style.display = 'none';
+                if(mobileLogout) mobileLogout.style.display = 'none';
+                document.getElementById('history-container').innerHTML = '';
+            }
+        });
 
         // AUTH FUNCTIONS
         window.logout = async () => {
@@ -896,188 +843,118 @@
         }
         window.toggleUserDropdown = () => userMenu.classList.toggle('active');
 
-        // AUTH STATE OBSERVER
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                const photo = user.photoURL || '/Guest.webp';
-                const name = user.displayName || 'Thành viên';
-
-                btnLogin.style.display = 'none';
-                userAvatar.style.display = 'block';
-                userAvatar.src = photo;
-                document.getElementById('userNameDisplay').innerText = name;
-
-                mobileMemberText.innerText = name;
-                mobileMemberBtn.innerHTML = `<img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid var(--primary-color)"> <span>${name}</span>`;
-                mobileMemberBtn.onclick = () => window.location.href = '/profile.html';
-                mobileAccountLink.style.display = 'flex';
-
-                loadHistory(user.uid);
-            } else {
-                currentUser = null;
-                btnLogin.style.display = 'block';
-                userAvatar.style.display = 'none';
-                userMenu.classList.remove('active');
-
-                mobileMemberText.innerText = "Đăng nhập / Đăng ký";
-                mobileMemberBtn.innerHTML = `<i class="fas fa-user-circle"></i> <span>Đăng nhập / Đăng ký</span>`;
-                mobileMemberBtn.onclick = () => window.location.href='/login.html';
-                mobileAccountLink.style.display = 'none';
-
-                historyContainer.innerHTML = '';
-            }
-        });
-
-        // 1. HELPER: SHOW TOAST
-        window.showToast = (msg, type = 'success') => {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-            toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
-            
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // 2. HELPER: CUSTOM CONFIRM
-        window.customConfirm = (message) => {
-            return new Promise((resolve) => {
-                const overlay = document.getElementById('confirmModal');
-                const msgEl = document.getElementById('confirmMsg');
-                const btnYes = document.getElementById('btnConfirmYes');
-                const btnNo = document.getElementById('btnConfirmNo');
-
-                msgEl.innerText = message;
-                overlay.classList.add('active');
-
-                btnYes.onclick = () => { overlay.classList.remove('active'); resolve(true); };
-                btnNo.onclick = () => { overlay.classList.remove('active'); resolve(false); };
-            });
-        }
-
-        // 3. XÓA KHỎI LỊCH SỬ
-        window.removeFromHistory = async (slug) => {
-            if(!currentUser) return;
-            const confirm = await window.customConfirm("Bạn có chắc muốn xóa phim này khỏi lịch sử?");
-            if(!confirm) return;
-
-            const userRef = doc(db, "users", currentUser.uid);
+        // --- WATCH HISTORY ENGINE ---
+        window.saveToHistory = async (slug, name, thumb) => {
+            if (!window.currentUser) return;
+            const ref = doc(db, "users", window.currentUser.uid);
             try {
-                const docSnap = await getDoc(userRef);
-                if(!docSnap.exists()) return;
-
-                let history = docSnap.data().watchHistory || [];
-                const newHistory = history.filter(m => m.slug !== slug);
-                
-                await updateDoc(userRef, { watchHistory: newHistory });
-                
-                if (newHistory.length === 0) {
-                    historyContainer.innerHTML = ''; 
-                } else {
-                    renderHistoryRow(newHistory.slice().reverse()); 
-                }
-                window.showToast("Đã xóa khỏi lịch sử!");
-            } catch(e) { 
-                console.error(e);
-                window.showToast("Lỗi khi xóa phim!", "error");
-            }
-        }
-
-        // 4. THÊM VÀO DANH SÁCH
-        window.addToMyList = async (movieSlug, movieName, thumbUrl) => {
-            if (!currentUser) {
-                window.showToast("Vui lòng đăng nhập để lưu!", "error");
-                return setTimeout(() => window.location.href = '/login.html', 1500);
-            }
-
-            const userRef = doc(db, "users", currentUser.uid);
-            try {
-                const docSnap = await getDoc(userRef);
-                let list = docSnap.exists() ? (docSnap.data().myList || []) : [];
-                
-                if (list.some(m => m.slug === movieSlug)) {
-                    window.showToast("Phim đã có trong danh sách!", "error");
-                    return;
-                }
-                
-                list.push({ slug: movieSlug, name: movieName, thumb_url: thumbUrl, timestamp: Date.now() });
-                
-                if(docSnap.exists()) await updateDoc(userRef, { myList: list });
-                else await setDoc(userRef, { email: currentUser.email, myList: list });
-
-                window.showToast("Đã thêm vào danh sách yêu thích!");
-            } catch (e) { window.showToast("Lỗi lưu phim: " + e.message, "error"); }
+                const snap = await getDoc(ref);
+                let history = snap.exists() ? (snap.data().watchHistory || []) : [];
+                history = history.filter(m => m.slug !== slug);
+                history.push({ slug, name, thumb_url: thumb, timestamp: Date.now() });
+                if (history.length > 15) history.shift();
+                if(snap.exists()) await updateDoc(ref, { watchHistory: history });
+                else await setDoc(ref, { email: window.currentUser.email, watchHistory: history });
+                loadHistory(window.currentUser.uid);
+            } catch (e) { console.error(e); }
         };
 
-// HÀM LƯU LỊCH SỬ XEM PHIM
-window.saveToHistory = async (slug, name, thumb) => {
-    if (!window.currentUser) return; // Không đăng nhập thì không lưu
-    const userRef = doc(db, "users", window.currentUser.uid);
-    try {
-        const docSnap = await getDoc(userRef);
-        let history = docSnap.exists() ? (docSnap.data().watchHistory || []) : [];
-        
-        // Loại bỏ nếu phim đã tồn tại trong lịch sử để đưa lên đầu
-        history = history.filter(m => m.slug !== slug);
-        
-        // Thêm phim mới vào cuối mảng (sẽ reverse khi load để hiện lên đầu)
-        history.push({ slug, name, thumb_url: thumb, timestamp: Date.now() });
-        
-        // Giới hạn lưu khoảng 20 phim gần nhất cho nhẹ data
-        if (history.length > 20) history.shift();
-
-        if(docSnap.exists()) await updateDoc(userRef, { watchHistory: history });
-        else await setDoc(userRef, { email: window.currentUser.email, watchHistory: history });
-        
-    } catch (e) { console.error("Lỗi lưu lịch sử:", e); }
-};
-
-        // LOAD HISTORY
         async function loadHistory(uid) {
             try {
-                const docSnap = await getDoc(doc(db, "users", uid));
-                if(docSnap.exists() && docSnap.data().watchHistory && docSnap.data().watchHistory.length > 0) {
-                    const history = docSnap.data().watchHistory.reverse();
-                    renderHistoryRow(history);
-                } else {
-                    historyContainer.innerHTML = ''; 
+                const snap = await getDoc(doc(db, "users", uid));
+                if(snap.exists() && snap.data().watchHistory && snap.data().watchHistory.length > 0) {
+                    window.renderHistoryRow(snap.data().watchHistory.reverse().slice(0, 8));
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
 
-        function renderHistoryRow(movies) {
-            const section = document.createElement('section');
-            section.className = 'category-section';
-            const rowId = 'history-row';
-            const html = movies.map(m => window.createHistoryCardHTML(m)).join('');
-            
-            section.innerHTML = `
-                <div class="category-header">
-                    <h2 class="category-title text-gradient"><i class="fas fa-history"></i> Xem tiếp</h2>
-                </div>
-                <div class="slider-container">
-                    <button class="slider-arrow arrow-left" onclick="window.slide('${rowId}', -1)"><i class="fas fa-chevron-left"></i></button>
-                    <div class="movie-row" id="${rowId}">${html}</div>
-                    <button class="slider-arrow arrow-right" onclick="window.slide('${rowId}', 1)"><i class="fas fa-chevron-right"></i></button>
-                </div>`;
-            historyContainer.innerHTML = '';
-            historyContainer.appendChild(section);
-        }
+        window.addToMyList = async (slug, name, thumb) => {
+            if (!window.currentUser) { window.showToast("Đăng nhập để lưu!", "error"); return; }
+            const ref = doc(db, "users", window.currentUser.uid);
+            const snap = await getDoc(ref);
+            let list = snap.exists() ? (snap.data().myList || []) : [];
+            if (list.some(m => m.slug === slug)) { window.showToast("Đã có!", "error"); return; }
+            list.push({ slug, name, thumb_url: thumb, timestamp: Date.now() });
+            if(snap.exists()) await updateDoc(ref, { myList: list }); else await setDoc(ref, { email: window.currentUser.email, myList: list });
+            window.showToast(`Đã lưu: ${name}`);
+        };
+
+        window.toggleUserDropdown = () => document.getElementById('userMenu').classList.toggle('active');
     </script>
 
     <script>
         const API_BASE = 'https://ophim1.com/v1/api';
         const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
 
-        // --- TOP 5 Logic (Smaller numbers) ---
-        const MANUAL_TOP_5 = ["con-ra-the-thong-gi-nua", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "con-say-mua-xuan", "kho-do-danh"];
-        
+        // Unified Card Generator (Liquid Glass Integrated)
+        window.createMovieCardHTML = (m, isHistory = false) => {
+            const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+            const nameFixed = m.name.replace(/'/g, "\\'");
+            return `
+            <div class="n-card">
+                <img src="${img}" class="n-poster" loading="lazy">
+                <div class="n-hover-detail" onclick="saveToHistory('${m.slug}', '${nameFixed}','${m.thumb_url}'); window.location.href='/xem-phim/${m.slug}'">
+                    <img src="${img}" class="n-hover-img">
+                    <div class="n-popup-body">
+                        <div class="n-actions">
+                            <button class="btn-play-now"><i class="fas fa-play"></i> ${isHistory ? 'XEM TIẾP' : 'PHÁT NGAY'}</button>
+                            <button class="btn-icon-round" onclick="event.stopPropagation(); addToMyList('${m.slug}', '${nameFixed}', '${m.thumb_url}')"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="n-title">${m.name}</div>
+                        <div class="n-meta-row"><span class="match-score">98% phù hợp</span><span class="badge-hd">HD</span><span>${m.year || '2026'}</span></div>
+                    </div>
+                </div>
+                <div class="c-info"><div class="c-title">${m.name}</div></div>
+            </div>`;
+        };
+
+        // Render SPA History
+window.renderHistoryRow = (movies) => {
+    const container = document.getElementById('history-container');
+    if(!movies || movies.length === 0) { container.innerHTML = ''; return; }
+    
+    let cards = '';
+    movies.forEach(m => {
+        const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+        cards += `
+        <div class="n-card">
+            <img src="${img}" class="n-poster">
+            
+            <div class="n-hover-detail">
+                <button class="btn-remove-history" title="Xoá khỏi lịch sử" 
+                        onclick="event.stopPropagation(); removeFromHistory('${m.slug}')">
+                    <i class="fas fa-times"></i>
+                </button>
+
+                <img src="${img}" class="n-hover-img" onclick="window.location.href='/xem-phim/${m.slug}'">
+                <div class="n-popup-body">
+                    <div class="n-actions">
+                        <button class="btn-play-now" onclick="window.location.href='/xem-phim/${m.slug}'">
+                            <i class="fas fa-play"></i> XEM TIẾP
+                        </button>
+                    </div>
+                    <div class="n-title">${m.name}</div>
+                </div>
+            </div>
+            <div class="c-info"><div class="c-title">${m.name}</div></div>
+        </div>`;
+    });
+    
+    container.innerHTML = `
+        <div class="merged-block" style="margin-top:0; padding-bottom:30px;">
+            <div class="country-section" style="border:none;">
+                <div class="country-header">
+                    <div class="ch-title"><i class="fas fa-history" style="color:var(--primary-color)"></i> XEM TIẾP</div>
+                </div>
+                <div class="grid-wrapper">
+                    <div class="country-grid">${cards}</div>
+                </div>
+            </div>
+        </div>`;
+}
+
         async function loadTop5() {
+            const MANUAL_TOP_5 = ["con-ra-the-thong-gi-nua", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "con-say-mua-xuan", "kho-do-danh"];
             const container = document.getElementById('top5List');
             let html = '';
             for (let i = 0; i < MANUAL_TOP_5.length; i++) {
@@ -1087,79 +964,33 @@ window.saveToHistory = async (slug, name, thumb) => {
                     if(data.status) {
                         const m = data.data.item;
                         const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.poster_url;
-                        html += `
-                        <div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'">
-                            <div class="top-poster-style2">
-                                <img src="${img}" loading="lazy">
-                                <div style="position:absolute; top:12px; right:12px; background:var(--primary-color); color:#fff; font-size:0.7rem; font-weight:900; padding:3px 8px; border-radius:6px;">${m.quality || 'HD'}</div>
-                            </div>
-                            <div class="top-info-row">
-                                <div class="top-rank-style2">${i+1}</div>
-                                <div class="top-text-style2">
-                                    <div class="top-title-style2">${m.name}</div>
-                                    <div class="top-meta-style2">${m.origin_name}</div>
-                                </div>
-                            </div>
-                        </div>`;
+                        html += `<div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'"><div class="top-poster-style2"><img src="${img}"></div><div class="top-info-row"><div class="top-rank-style2">${i+1}</div><div class="top-text-style2"><div class="top-title-style2">${m.name}</div></div></div></div>`;
                     }
                 } catch(e) {}
             }
             container.innerHTML = html;
         }
 
-        // --- MERGED BLOCK LOADER ---
         async function loadCountrySection(slug, elementId) {
             try {
                 const res = await fetch(`${API_BASE}/quoc-gia/${slug}?page=1`);
                 const data = await res.json();
                 if(data.data) {
                     let html = '';
-                    // Fetch up to 16 but show 4 per row
-                    data.data.items.slice(0, 16).forEach(m => {
-                        const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-                        const shortDesc = `Bộ phim ${m.name} (${m.origin_name}) ra mắt năm ${m.year} là một siêu phẩm điện ảnh không thể bỏ qua tại HopPhim.`;
-                        
-                        html += `
-<div class="n-card">
-    <img src="${img}" class="n-poster" loading="lazy">
-    <div class="n-hover-detail" onclick="saveToHistory('${m.slug}', '${m.name.replace(/'/g, "\\'")}','${m.thumb_url}'); window.location.href='/xem-phim/${m.slug}'">
-                                <img src="${img}" class="n-hover-img">
-                                <div class="n-popup-body">
-                                    <div class="n-actions">
-                                        <button class="btn-play-now"><i class="fas fa-play"></i> PHÁT NGAY</button>
-                                        <button class="btn-icon-round" onclick="event.stopPropagation(); addToMyList('${m.slug}', '${m.name}', '${m.thumb_url}')"><i class="fas fa-plus"></i></button>
-                                        <button class="btn-icon-round"><i class="fas fa-thumbs-up"></i></button>
-                                    </div>
-                                    <div class="n-title">${m.name}</div>
-                                    <div class="n-meta-row">
-                                        <span class="match-score">98% Phù hợp</span>
-                                        <span class="badge-hd">${m.quality || 'HD'}</span>
-                                        <span>${m.year}</span>
-                                    </div>
-                                    <div class="n-desc">${shortDesc}</div>
-                                </div>
-                            </div>
-                            <div class="c-info"><div class="c-title">${m.name}</div></div>
-                        </div>`;
-                    });
+                    data.data.items.slice(0, 16).forEach(m => html += window.createMovieCardHTML(m));
                     document.getElementById(elementId).innerHTML = html;
                 }
             } catch(e) {}
         }
 
-        // Slider Control
         window.scrollGrid = (id, direction) => {
             const el = document.getElementById(id);
-            const step = el.clientWidth; 
-            el.scrollBy({ left: direction * step, behavior: 'smooth' });
+            el.scrollBy({ left: direction * el.clientWidth, behavior: 'smooth' });
         };
 
-        // Modal Catalog
         window.openModal = async (slug, title) => {
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalPopup').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
             const res = await fetch(`${API_BASE}/quoc-gia/${slug}?page=1`);
             const data = await res.json();
             const container = document.getElementById('modalContent');
@@ -1167,68 +998,29 @@ window.saveToHistory = async (slug, name, thumb) => {
             if(data.data) {
                 data.data.items.forEach(m => {
                     const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-                    html += `
-                    <div class="modal-card" onclick="window.location.href='/xem-phim/${m.slug}'">
-                        <img src="${img}" loading="lazy">
-                        <div class="card-info-modal">
-                            <div style="font-weight:700; font-size:0.9rem;">${m.name}</div>
-                        </div>
-                    </div>`;
+                    html += `<div class="modal-card" onclick="window.location.href='/xem-phim/${m.slug}'"><img src="${img}"><div style="padding:15px; font-weight:700; font-size:0.9rem;">${m.name}</div></div>`;
                 });
             }
             container.innerHTML = html;
         }
 
-        window.closeModal = () => { document.getElementById('modalPopup').classList.remove('active'); document.body.style.overflow = 'auto'; }
-        window.openMobileMenu = () => document.getElementById('mobileMenuOverlay').classList.add('active');
-        window.closeMobileMenu = () => document.getElementById('mobileMenuOverlay').classList.remove('active');
-        window.openMobileSearch = () => { document.getElementById('mobileSearchOverlay').classList.add('active'); document.getElementById('mobileSearchInput').focus(); };
-        window.closeMobileSearch = () => document.getElementById('mobileSearchOverlay').classList.remove('active');
+        window.closeModal = () => document.getElementById('modalPopup').classList.remove('active');
+        window.openMobileMenu = () => { document.getElementById('mobileMenuOverlay').classList.add('active'); }
+        window.closeMobileMenu = () => { document.getElementById('mobileMenuOverlay').classList.remove('active'); }
+        window.openMobileSearch = () => { document.getElementById('mobileSearchOverlay').classList.add('active'); }
+        window.closeMobileSearch = () => { document.getElementById('mobileSearchOverlay').classList.remove('active'); }
         window.loadHome = () => window.location.href = '/';
-
-        window.renderHistoryRow = (movies) => {
-            const container = document.getElementById('history-container');
-            if(!movies || movies.length === 0) return;
-            let html = `<div class="top-10-wrapper" style="margin-top:0; padding-bottom:40px;"><div class="top-10-header"><i class="fas fa-history" style="color:var(--primary-color); font-size:1.8rem;"></i><h2 style="font-size:2rem;">XEM TIẾP</h2></div><div class="top-5-grid">`;
-            movies.forEach(m => {
-                const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-                html += `<div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'"><div class="top-poster-style2" style="aspect-ratio:16/9;"><img src="${img}"></div><div class="top-info-row" style="margin-top:10px;"><div class="top-text-style2"><div class="top-title-style2" style="font-size:1rem;">${m.name}</div></div></div></div>`;
-            });
-            html += `</div></div>`;
-            container.innerHTML = html;
-        }
-
-        window.showToast = (msg, type='success') => {
-            const t = document.createElement('div'); t.className=`toast ${type}`; 
-            const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
-            t.innerHTML=`<i class="fas fa-${icon}"></i><span>${msg}</span>`;
-            document.getElementById('toast-container').appendChild(t); setTimeout(()=>t.remove(), 3500);
-        }
-
-        window.customConfirm = (msg) => {
-            return new Promise(r => {
-                document.getElementById('confirmMsg').innerText=msg;
-                document.getElementById('confirmModal').classList.add('active');
-                document.getElementById('btnConfirmYes').onclick=()=>{document.getElementById('confirmModal').classList.remove('active');r(true)};
-                document.getElementById('btnConfirmNo').onclick=()=>{document.getElementById('confirmModal').classList.remove('active');r(false)};
-            })
-        }
-
-        // Init App Lifecycle
-        window.addEventListener('scroll', () => {
-            document.getElementById('siteHeader').classList.toggle('scrolled', window.scrollY > 60);
-        });
 
         window.addEventListener('load', () => {
             loadTop5();
             loadCountrySection('han-quoc', 'koreaList');
             loadCountrySection('trung-quoc', 'chinaList');
             loadCountrySection('thai-lan', 'thaiList');
-            setTimeout(() => {
-                const ls = document.getElementById('loadingScreen');
-                ls.style.opacity = '0';
-                setTimeout(() => ls.style.display = 'none', 600);
-            }, 1200);
+            setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 1000);
+        });
+
+        window.addEventListener('scroll', () => {
+            document.getElementById('siteHeader').classList.toggle('scrolled', window.scrollY > 50);
         });
     </script>
 </body>
