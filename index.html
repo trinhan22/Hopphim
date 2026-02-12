@@ -1017,6 +1017,18 @@
             /* Đảm bảo khung card trên mobile là tỉ lệ dọc 2/3 */
             .n-card { flex: 0 0 160px; aspect-ratio: 2/3; }
         }
+
+        /* Đảm bảo ảnh trong phần Xem tiếp tuân thủ đúng tỉ lệ */
+        #history-container .n-card {
+            aspect-ratio: 16/9; /* Mặc định PC là ngang */
+        }
+
+        @media (max-width: 900px) {
+            #history-container .n-card {
+                flex: 0 0 160px;
+                aspect-ratio: 2/3; /* Mobile tự chuyển sang dọc */
+            }
+        }
     </style>
 </head>
 <body>
@@ -1406,21 +1418,29 @@
         // --- 5. LOGIC DỮ LIỆU (LỊCH SỬ & DANH SÁCH) ---
         
         // Lưu lịch sử
-        window.saveToHistory = async (slug, name, thumb) => {
+        window.saveToHistory = async (slug, name, thumb, poster) => { // Thêm biến poster vào đây
             if (!window.currentUser) return;
             const ref = doc(db, "users", window.currentUser.uid);
             try {
                 const snap = await getDoc(ref);
                 let history = snap.exists() ? (snap.data().watchHistory || []) : [];
                 history = history.filter(m => m.slug !== slug);
-                history.push({ slug, name, thumb_url: thumb, timestamp: Date.now() });
-                if (history.length > 15) history.shift();
                 
+                // Lưu cả thumb_url (dọc) và poster_url (ngang)
+                history.push({ 
+                    slug, 
+                    name, 
+                    thumb_url: thumb, 
+                    poster_url: poster, // Lưu thêm cái này
+                    timestamp: Date.now() 
+                });
+                
+                if (history.length > 15) history.shift();
                 if(snap.exists()) await updateDoc(ref, { watchHistory: history });
                 else await setDoc(ref, { email: window.currentUser.email, watchHistory: history });
                 
                 loadHistory(window.currentUser.uid);
-            } catch (e) {}
+            } catch (e) { console.error("Lỗi lưu lịch sử:", e); }
         };
 
         // Load lịch sử
