@@ -1058,50 +1058,60 @@ async function loadMovie() {
         }
 
         // Các hàm render phụ trợ (Giữ nguyên của OPhim)
-function renderInfo(movie) {
-    document.title = `${movie.name} - HopPhim`;
-    document.getElementById('breadCrumbTitle').innerText = movie.name;
-    document.getElementById('mName').innerText = movie.name;
-    document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
-    
-    // --- XỬ LÝ NỘI DUNG RÚT GỌN ---
-    const contentBox = document.getElementById('mContent');
-    const rawContent = movie.content || "Đang cập nhật nội dung...";
-    
-    // Loại bỏ các thẻ HTML thừa nếu có để đếm chữ cho chuẩn
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = rawContent;
-    const plainText = tempDiv.innerText || tempDiv.textContent;
-    const words = plainText.trim().split(/\s+/);
+        function renderInfo(movie) {
+            document.title = `${movie.name} - HopPhim`;
+            document.getElementById('breadCrumbTitle').innerText = movie.name;
+            document.getElementById('mName').innerText = movie.name;
+            document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
+            
+            // --- 1. XỬ LÝ RÚT GỌN NỘI DUNG (36 TỪ) ---
+            const contentBox = document.getElementById('mContent');
+            const rawContent = movie.content || "Đang cập nhật nội dung...";
+            
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = rawContent;
+            const plainText = tempDiv.innerText || tempDiv.textContent;
+            const words = plainText.trim().split(/\s+/);
 
-    if (words.length > 36) {
-        const shortContent = words.slice(0, 36).join(' ') + '...';
-        // ÉP BUỘC: fullText phải có style="display:none;" ngay từ đầu
-        contentBox.innerHTML = `
-            <span id="shortText">${shortContent}</span>
-            <span id="fullText" style="display: none;">${rawContent}</span>
-            <a href="javascript:void(0)" id="toggleBtn" onclick="window.toggleContent()" 
-               style="color: var(--primary-color); font-weight: 700; text-decoration: none; margin-left: 5px; cursor: pointer; display: inline-block;">
-               <i class="fas fa-angle-down"></i> Xem thêm
-            </a>
-        `;
-    } else {
-        contentBox.innerHTML = rawContent;
-    }
+            if (words.length > 36) {
+                const shortContent = words.slice(0, 36).join(' ') + '...';
+                contentBox.innerHTML = `
+                    <span id="shortText">${shortContent}</span>
+                    <span id="fullText" style="display: none;">${rawContent}</span>
+                    <a href="javascript:void(0)" id="toggleBtn" onclick="window.toggleContent()" 
+                    style="color: var(--primary-color); font-weight: 700; text-decoration: none; margin-left: 5px; cursor: pointer;">
+                    <i class="fas fa-angle-down"></i> Xem thêm
+                    </a>
+                `;
+            } else {
+                contentBox.innerHTML = rawContent;
+            }
 
-    // Phần hình nền và tags giữ nguyên như cũ của bạn
-    let bgImg = movie.poster_url || movie.thumb_url;
-    if (!bgImg.startsWith('http')) bgImg = `https://img.ophim1.com/uploads/movies/${bgImg}`;
-    document.getElementById('movieInfoBg').style.backgroundImage = `url('${bgImg}')`;
+            // --- 2. HÌNH NỀN ---
+            let bgImg = movie.poster_url || movie.thumb_url;
+            if (!bgImg.startsWith('http')) bgImg = `https://img.ophim1.com/uploads/movies/${bgImg}`;
+            document.getElementById('movieInfoBg').style.backgroundImage = `url('${bgImg}')`;
 
-    let tagsHtml = `<span class="tag-item tag-highlight">${movie.quality || 'HD'}</span>`;
-    tagsHtml += `<span class="tag-item">${movie.lang || 'Vietsub'}</span>`;
-    tagsHtml += `<span class="tag-item">${movie.year}</span>`;
-    if (movie.category) movie.category.forEach(cat => { tagsHtml += `<span class="tag-item">${cat.name}</span>`; });
-    document.getElementById('mTags').innerHTML = tagsHtml;
-    
-    setTimeout(() => { if (currentUser) saveToHistory(movie, currentEpName, Math.floor(player?.currentTime || 0)); }, 3000);
-}
+            // --- 3. HIỂN THỊ TAGS (CHẤT LƯỢNG, NĂM, THỂ LOẠI, QUỐC GIA) ---
+            let tagsHtml = `<span class="tag-item tag-highlight">${movie.quality || 'HD'}</span>`;
+            tagsHtml += `<span class="tag-item">${movie.lang || 'Vietsub'}</span>`;
+            tagsHtml += `<span class="tag-item">${movie.year}</span>`;
+            
+            // Hiện Thể loại
+            if (movie.category) {
+                movie.category.forEach(cat => { tagsHtml += `<span class="tag-item">${cat.name}</span>`; });
+            }
+            
+            // HIỆN QUỐC GIA (Dòng này mình đã thêm lại nè!)
+            if (movie.country && movie.country[0]) {
+                tagsHtml += `<span class="tag-item"><i class="fas fa-globe"></i> ${movie.country[0].name}</span>`;
+            }
+            
+            document.getElementById('mTags').innerHTML = tagsHtml;
+            
+            // Lưu lịch sử
+            setTimeout(() => { if (currentUser) saveToHistory(movie, currentEpName, Math.floor(player?.currentTime || 0)); }, 3000);
+        }
 
         function renderEpisodes(episodes) {
             if (!episodes || episodes.length === 0) return;
