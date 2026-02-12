@@ -1219,22 +1219,26 @@ async function loadMovie() {
                 const snap = await getDoc(ref);
                 let history = snap.exists() ? (snap.data().watchHistory || []) : [];
                 
-                // Xóa phim này nếu đã có trong lịch sử để đưa lên đầu trang chủ
-                history = history.filter(m => m.slug !== movie.slug);
+                // Chuẩn hóa Slug trước khi lưu/lọc
+                const currentSlug = decodeURIComponent(movie.slug);
                 
+                // Loại bỏ bản ghi cũ của phim này
+                history = history.filter(m => decodeURIComponent(m.slug) !== currentSlug);
+                
+                // Thêm bản mới lên đầu
                 history.push({ 
                     slug: movie.slug, 
                     name: movie.name, 
                     thumb_url: movie.thumb_url,   
                     poster_url: movie.poster_url || movie.thumb_url, 
-                    epName: epName,        // LƯU Tên tập
-                    duration: duration,    // LƯU Số giây đã xem
+                    epName: epName,
+                    duration: duration,
                     timestamp: Date.now() 
                 });
                 
                 if (history.length > 20) history.shift();
                 await setDoc(ref, { watchHistory: history }, { merge: true });
-                console.log("Lưu tiến trình thành công!");
+                console.log("Đã lưu tiến trình!");
             } catch (e) { console.error("Lỗi lưu:", e); }
         };
 

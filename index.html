@@ -1428,40 +1428,49 @@
 
         // Xoá phim khỏi lịch sử (Đã Fix: Tìm Card Chính Xác + Toast Ngay)
         window.removeFromHistory = async (slug, btnElement) => {
-            if (!window.currentUser) { window.showToast("Bạn chưa đăng nhập!", "error"); return; }
+            if (!window.currentUser) { 
+                window.showToast("Bạn chưa đăng nhập!", "error"); 
+                return; 
+            }
 
-            // A. XỬ LÝ GIAO DIỆN (UI)
-            let card = document.querySelector(`.history-card-${slug}`);
-            if (!card && btnElement) card = btnElement.closest('.n-card');
-
+            // 1. Xác định Card phim để xóa ngay trên giao diện cho nhanh
+            const card = btnElement.closest('.n-card');
             if (card) {
                 card.style.transition = 'all 0.3s ease';
                 card.style.opacity = '0';
-                card.style.transform = 'scale(0.8)';
-                setTimeout(() => {
-                    card.remove();
-                    // Nếu xoá hết thì ẩn khung chứa
-                    const container = document.getElementById('historyList');
-                    if(container && container.children.length === 0) {
-                        document.getElementById('history-container').innerHTML = '';
-                    }
-                }, 300);
-                // Hiện thông báo NGAY LẬP TỨC
-                window.showToast("Đã xoá phim khỏi lịch sử", "success");
+                card.style.transform = 'scale(0.5)';
+                setTimeout(() => card.remove(), 300);
             }
 
-            // B. XỬ LÝ DATABASE (FIREBASE)
+            // 2. Xử lý trên Firebase
             const ref = doc(db, "users", window.currentUser.uid);
             try {
                 const snap = await getDoc(ref);
                 if (snap.exists()) {
                     let history = snap.data().watchHistory || [];
-                    const newHistory = history.filter(m => m.slug !== slug);
+                    
+                    // GIẢI MÃ SLUG ĐỂ SO SÁNH CHÍNH XÁC (Tránh lỗi YouTube slug)
+                    const targetSlug = decodeURIComponent(slug);
+                    
+                    const newHistory = history.filter(m => {
+                        const currentSlug = decodeURIComponent(m.slug);
+                        return currentSlug !== targetSlug;
+                    });
+
+                    // Ghi đè lại danh sách mới
                     await updateDoc(ref, { watchHistory: newHistory });
+                    
+                    window.showToast("Đã xóa khỏi danh sách xem tiếp", "success");
+
+                    // Nếu xóa hết sạch phim thì ẩn luôn khung "Xem tiếp"
+                    const historyList = document.getElementById('historyList');
+                    if (historyList && historyList.children.length <= 1) {
+                        document.getElementById('history-container').innerHTML = '';
+                    }
                 }
             } catch (e) { 
-                console.error(e); 
-                window.showToast("Lỗi kết nối database!", "error"); 
+                console.error("Lỗi xóa:", e);
+                window.showToast("Không thể xóa lúc này, vui lòng thử lại!", "error");
             }
         };
 
