@@ -739,19 +739,31 @@
         .top-card-style2:hover { transform: translateY(-15px) scale(1.02); }
         
         .top-poster-style2 { 
-            width: 100%; aspect-ratio: 2/3; border-radius: 18px; overflow: hidden; position: relative; 
-            border: 2px solid transparent; /* Viền chờ */
+            width: 100%; 
+            /* Ép tỉ lệ dọc 2:3 */
+            aspect-ratio: 2/3; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            position: relative; 
+            border: 2px solid rgba(255,255,255,0.05);
             transition: 0.4s;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         /* Khi hover: Viền sáng + Bóng đổ màu cam rực rỡ */
         .top-card-style2:hover .top-poster-style2 {
-            border-color: #ff8f50;
-            box-shadow: 0 0 30px rgba(255, 143, 80, 0.6), 0 0 10px rgba(255, 255, 255, 0.5) inset;
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 94, 98, 0.4);
         }
 
-        .top-poster-style2 img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .top-poster-style2 img { 
+            width: 100%; 
+            height: 100%; 
+            /* Đảm bảo ảnh phủ kín không bị méo */
+            object-fit: cover; 
+            transition: 0.5s; 
+        }
         
         .top-info-row { display: flex; align-items: flex-start; margin-top: 20px; }
         
@@ -985,6 +997,26 @@
             .ad-img-728 { height: auto; aspect-ratio: 728/90; }
         }
         @media (min-width: 901px) { .episode-block-mobile { display: none; } }
+
+        /* --- SMART POSTER SYSTEM --- */
+        .n-poster-wide { display: block; width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
+        .n-poster-portrait { display: none; width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
+
+        /* Khi hover vào card, cả 2 loại ảnh đều zoom */
+        .n-card:hover .n-poster-wide, 
+        .n-card:hover .n-poster-portrait {
+            filter: brightness(0.6);
+            transform: scale(1.1); 
+        }
+
+        @media (max-width: 900px) {
+            /* Trên Mobile: Hiện ảnh dọc, ẩn ảnh ngang */
+            .n-poster-wide { display: none; }
+            .n-poster-portrait { display: block; }
+            
+            /* Đảm bảo khung card trên mobile là tỉ lệ dọc 2/3 */
+            .n-card { flex: 0 0 160px; aspect-ratio: 2/3; }
+        }
     </style>
 </head>
 <body>
@@ -1601,8 +1633,15 @@
         }
 
         // --- RENDER CARD ---
-        window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
-            const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
+            // Xử lý link ảnh ngang (poster_url)
+            const imgWide = m.poster_url 
+                ? (m.poster_url.startsWith('http') ? m.poster_url : IMG_BASE + m.poster_url) 
+                : (m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url);
+
+            // Xử lý link ảnh dọc (thumb_url)
+            const imgPortrait = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+
             const nameFixed = m.name.replace(/'/g, "\\'");
             const historyClass = isHistory ? `history-card-${m.slug}` : '';
 
@@ -1616,7 +1655,9 @@
 
             return `
             <div class="n-card ${historyClass}" onclick="window.location.href='/xem-phim/${m.slug}'">
-                <img src="${img}" class="n-poster" loading="lazy">
+                <img src="${imgWide}" class="n-poster-wide" loading="lazy">
+                <img src="${imgPortrait}" class="n-poster-portrait" loading="lazy">
+                
                 <div class="n-info-layer">
                     <div class="n-title-in">${m.name}</div>
                     <div class="n-meta-in">
@@ -1704,20 +1745,26 @@
         }
 
         // --- RENDER TOP 5 ---
-        async function loadTop5() {
+async function loadTop5() {
             const MANUAL_TOP_5 = ["con-ra-the-thong-gi-nua", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "con-say-mua-xuan", "duong-cung-ky-an-thanh-vu-phong-minh"];
             const container = document.getElementById('top5List');
             let html = '';
+            
             for (let i = 0; i < MANUAL_TOP_5.length; i++) {
                 try {
                     const res = await fetch(`${API_BASE}/phim/${MANUAL_TOP_5[i]}`);
                     const data = await res.json();
                     if(data.status) {
                         const m = data.data.item;
-                        const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.poster_url;
+                        
+                        // ÉP LẤY ẢNH DỌC (thumb_url)
+                        const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+                        
                         html += `
                         <div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'">
-                            <div class="top-poster-style2"><img src="${img}"></div>
+                            <div class="top-poster-style2">
+                                <img src="${img}" loading="lazy">
+                            </div>
                             <div class="top-info-row">
                                 <div class="top-rank-style2">${i+1}</div>
                                 <div class="top-text-style2">
@@ -1725,13 +1772,12 @@
                                     <div class="top-meta-style2">
                                         <span class="top-meta-badge">${m.quality || 'HD'}</span>
                                         <span>${m.year}</span>
-                                        <span>• ${m.time || 'N/A'}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>`;
                     }
-                } catch(e){}
+                } catch(e){ console.error("Lỗi Top 5:", e); }
             }
             container.innerHTML = html;
         }
