@@ -621,7 +621,7 @@
                         <div class="comment-form">
                             <textarea id="cmtInput" class="comment-input" placeholder="Viết bình luận của bạn về phim này..."></textarea>
                             <div class="form-actions">
-                                <span style="font-size: 0.8rem; color: #666;">Nói tầm bậy tao BAN gáng chịu.</span>
+                                <span style="font-size: 0.8rem; color: #666;">Dù gái hay trai, chỉ hai là đủ.</span>
                                 <button class="btn-send-cmt" onclick="sendComment()">
                                     Gửi <i class="fas fa-paper-plane"></i>
                                 </button>
@@ -1053,13 +1053,15 @@ async function loadMovie() {
             document.getElementById('mName').innerText = movie.name;
             document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
             
-            // --- LOGIC RÚT GỌN NỘI DUNG (36 TỪ) ---
+            // --- PHẦN XỬ LÝ RÚT GỌN 36 TỪ ---
             const contentBox = document.getElementById('mContent');
-            const fullContent = movie.content || "Đang cập nhật...";
-            const words = fullContent.split(/\s+/); // Tách chuỗi theo khoảng trắng
+            const fullContent = movie.content || "Đang cập nhật nội dung...";
+            const words = fullContent.split(/\s+/); // Tách văn bản thành các từ
 
             if (words.length > 36) {
+                // Cắt lấy 36 từ đầu tiên
                 const shortContent = words.slice(0, 36).join(' ') + '...';
+                
                 contentBox.innerHTML = `
                     <span id="shortText">${shortContent}</span>
                     <span id="fullText" style="display:none;">${fullContent}</span>
@@ -1069,9 +1071,10 @@ async function loadMovie() {
                     </a>
                 `;
             } else {
+                // Nếu nội dung ngắn (dưới 36 từ) thì hiện full luôn, không cần nút
                 contentBox.innerHTML = fullContent;
             }
-            // --------------------------------------
+            // --------------------------------
 
             let bgImg = movie.poster_url || movie.thumb_url;
             if (!bgImg.startsWith('http')) bgImg = `https://img.ophim1.com/uploads/movies/${bgImg}`;
@@ -1081,10 +1084,10 @@ async function loadMovie() {
             tagsHtml += `<span class="tag-item">${movie.lang || 'Vietsub'}</span>`;
             tagsHtml += `<span class="tag-item">${movie.year}</span>`;
             if (movie.category) movie.category.forEach(cat => { tagsHtml += `<span class="tag-item">${cat.name}</span>`; });
-            if (movie.country && movie.country[0]) tagsHtml += `<span class="tag-item"><i class="fas fa-globe"></i> ${movie.country[0].name}</span>`;
             document.getElementById('mTags').innerHTML = tagsHtml;
             
-            setTimeout(() => { if (currentUser) saveToHistory(movie, currentEpName, Math.floor(player?.currentTime || 0)); }, 3000);
+            // Lưu lịch sử
+            setTimeout(() => { if (currentUser) window.saveToHistory(movie, currentEpName, Math.floor(player?.currentTime || 0)); }, 3000);
         }
 
         function renderEpisodes(episodes) {
