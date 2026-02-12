@@ -1654,36 +1654,34 @@
 
         // --- RENDER CARD ---
 window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
-    // 1. Xử lý ảnh ngang (Hiện trên PC): Ưu tiên poster_url, nếu không có lấy đỡ thumb_url
+    // 1. Link ảnh ngang (Cho PC)
     const imgWide = m.poster_url 
         ? (m.poster_url.startsWith('http') ? m.poster_url : IMG_BASE + m.poster_url) 
         : (m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url);
 
-    // 2. Xử lý ảnh dọc (Hiện trên Mobile): Dùng thumb_url
+    // 2. Link ảnh dọc (Cho Mobile)
     const imgPortrait = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
 
-    const nameFixed = m.name.replace(/'/g, "\\'");
     const historyClass = isHistory ? `history-card-${m.slug}` : '';
-
-    const actionBtn = isHistory 
-        ? `<button class="btn-mini-remove" title="Xoá" onclick="event.stopPropagation(); removeFromHistory('${m.slug}', this)"><i class="fas fa-minus"></i></button>`
-        : `<button class="btn-mini-add" title="Lưu" onclick="event.stopPropagation(); addToMyList('${m.slug}', '${nameFixed}', '${m.thumb_url}')"><i class="fas fa-plus"></i></button>`;
-
-    const metaInfo = isHistory 
-        ? `<span style="color:#aaa; font-size:0.75rem;"><i class="fas fa-history"></i> ${timeString}</span>`
-        : `<span style="color:#46d369; font-weight:800;">${m.year || 2024}</span> <span class="badge-hd">HD</span>`;
+    
+    // Logic link: Nếu là phim Youtube thì link khác, phim OPhim link khác
+    const finalLink = isHistory && m.slug.includes('custom=youtube') 
+        ? `/xem-phim/${m.slug}` 
+        : `/xem-phim/${m.slug}`;
 
     return `
-    <div class="n-card ${historyClass}" onclick="window.location.href='/xem-phim/${m.slug}'">
+    <div class="n-card ${historyClass}" onclick="window.location.href='${finalLink}'">
         <img src="${imgWide}" class="n-poster-wide" loading="lazy">
         <img src="${imgPortrait}" class="n-poster-portrait" loading="lazy">
         
         <div class="n-info-layer">
             <div class="n-title-in">${m.name}</div>
-            <div class="n-meta-in">${metaInfo}</div>
+            <div class="n-meta-in">
+                ${isHistory ? `<span style="color:#aaa;"><i class="fas fa-history"></i> ${timeString}</span>` : `<span style="color:#46d369;">${m.year}</span> <span class="badge-hd">HD</span>`}
+            </div>
             <div class="n-actions-in">
-                <button class="btn-mini-play"><i class="fas fa-play"></i> ${isHistory?'TIẾP TỤC':'XEM NGAY'}</button>
-                ${actionBtn}
+                <button class="btn-mini-play"><i class="fas fa-play"></i> ${isHistory ? 'TIẾP TỤC' : 'XEM'}</button>
+                ${isHistory ? `<button class="btn-mini-remove" onclick="event.stopPropagation(); removeFromHistory('${m.slug}', this)"><i class="fas fa-minus"></i></button>` : ''}
             </div>
         </div>
     </div>`;

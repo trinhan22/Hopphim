@@ -919,66 +919,70 @@
 
         // 6. MAIN LOAD MOVIE LOGIC (ĐÃ TÁCH RA 2 TRƯỜNG HỢP)
 async function loadMovie() {
-        // CASE A: YOUTUBE TỪ TRANG CHỦ
-        if (isCustomYoutube && ytId) {
-            // Tắt loading
-            setTimeout(() => {
-                 const img = document.querySelector('.loading-img');
-                 if(img) img.classList.add('zoom-out');
-                 setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 480);
-            }, 500);
+    const player = document.getElementById('videoPlayer');
 
-            // Chạy Player Youtube Xịn
-            const posterUrl = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
-            initPlayer('youtube', ytId, posterUrl);
+    // CASE A: PHIM YOUTUBE TỪ TRANG CHỦ
+    if (isCustomYoutube && ytId) {
+        setTimeout(() => {
+             const img = document.querySelector('.loading-img');
+             if(img) img.classList.add('zoom-out');
+             setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 480);
+        }, 500);
 
-            // Điền thông tin
-            const finalName = customName ? decodeURIComponent(customName) : "Phim Đặc Sắc";
-            document.title = `${finalName} - HopPhim`;
-            document.getElementById('mName').innerText = finalName;
-            document.getElementById('mOrigin').innerText = "Phim Độc Quyền HopPhim";
-            document.getElementById('breadCrumbTitle').innerText = finalName;
-            document.getElementById('mContent').innerText = "Phim được phát độc quyền trên hệ thống HopPhim.";
-            
-            document.getElementById('mTags').innerHTML = `<span class="tag-item tag-highlight">FHD</span><span class="tag-item">KN Production</span><span class="tag-item">2025</span><span class="tag-item">Tâm Lý Học Đường</span><span class="tag-item">Chính kịch</span><span class="tag-item"><i class="fas fa-globe"></i> Việt Nam</span>`;
-            document.getElementById('movieInfoBg').style.backgroundImage = `url('${posterUrl}')`;
-            
-            // Ẩn list tập
-            document.querySelectorAll('.episode-block').forEach(el => el.style.display = 'none');
-            loadRelated();
-            return;
+        const posterUrl = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+        initPlayer('youtube', ytId, posterUrl);
+
+        const finalName = customName ? decodeURIComponent(customName) : "Phim Đặc Sắc";
+        document.title = `${finalName} - HopPhim`;
+        document.getElementById('mName').innerText = finalName;
+        document.getElementById('mOrigin').innerText = "Phim Độc Quyền HopPhim";
+        document.getElementById('breadCrumbTitle').innerText = finalName;
+        document.getElementById('mContent').innerText = "Phim được phát độc quyền trên hệ thống HopPhim.";
+        
+        document.getElementById('mTags').innerHTML = `<span class="tag-item tag-highlight">FHD</span><span class="tag-item">Youtube</span>`;
+        document.getElementById('movieInfoBg').style.backgroundImage = `url('${posterUrl}')`;
+        
+        document.querySelectorAll('.episode-block').forEach(el => el.style.display = 'none');
+        loadRelated();
+
+        // 🔥 THÊM DÒNG NÀY: Lưu phim Youtube vào lịch sử
+        if (currentUser) {
+            saveToHistory({
+                slug: `?custom=youtube&id=${ytId}&name=${encodeURIComponent(finalName)}`,
+                name: finalName,
+                thumb_url: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`, // Ảnh dọc fake
+                poster_url: `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` // Ảnh ngang chuẩn
+            });
         }
-
-        // CASE B: OPHIM (GIỮ NGUYÊN LOGIC CŨ NHƯNG GỌI HÀM PHÁT MỚI)
-        if (!movieSlug) return;
-        try {
-            const res = await fetch(`${API_BASE}/${movieSlug}`);
-            const data = await res.json();
-            if (data.status) {
-                const movie = data.data.item;
-                renderInfo(movie);
-                renderEpisodes(movie.episodes);
-                loadRelated();
-                
-                // Phát tập 1
-                if(movie.episodes.length > 0 && movie.episodes[0].server_data.length > 0) {
-                    const firstEp = movie.episodes[0].server_data[0];
-                    // Ưu tiên link m3u8 để dùng Player đẹp. Không có thì dùng iframe
-                    const link = firstEp.link_m3u8 || firstEp.link_embed;
-                    const type = firstEp.link_m3u8 ? 'hls' : 'iframe';
-                    
-                    // Gọi hàm đổi tập để phát
-                    window.changeEp(link, type, null);
-                }
-            } else { window.showToast('Lỗi tải phim', 'error'); }
-        } catch (e) { console.error(e); } finally { 
-             setTimeout(() => {
-                 const img = document.querySelector('.loading-img');
-                 if(img) img.classList.add('zoom-out');
-                 setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 480);
-            }, 500);
-        }
+        return;
     }
+
+    // CASE B: PHIM OPHIM (BÌNH THƯỜNG)
+    if (!movieSlug) return;
+    try {
+        const res = await fetch(`${API_BASE}/${movieSlug}`);
+        const data = await res.json();
+        if (data.status) {
+            const movie = data.data.item;
+            renderInfo(movie);
+            renderEpisodes(movie.episodes);
+            loadRelated();
+            
+            if(movie.episodes.length > 0 && movie.episodes[0].server_data.length > 0) {
+                const firstEp = movie.episodes[0].server_data[0];
+                const link = firstEp.link_m3u8 || firstEp.link_embed;
+                const type = firstEp.link_m3u8 ? 'hls' : 'iframe';
+                window.changeEp(link, type, null);
+            }
+        }
+    } catch (e) { console.error(e); } finally { 
+         setTimeout(() => {
+             const img = document.querySelector('.loading-img');
+             if(img) img.classList.add('zoom-out');
+             setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 480);
+        }, 500);
+    }
+}
 
         // Các hàm render phụ trợ (Giữ nguyên của OPhim)
         function renderInfo(movie) {
@@ -1068,28 +1072,26 @@ async function loadMovie() {
         }
 
         // Thêm tham số poster vào hàm
-        window.saveToHistory = async (slug, name, thumb, poster) => { 
-            if (!window.currentUser) return;
-            const ref = doc(db, "users", window.currentUser.uid);
-            try {
-                const snap = await getDoc(ref);
-                let history = snap.exists() ? (snap.data().watchHistory || []) : [];
-                history = history.filter(m => m.slug !== slug);
-                
-                // LƯU CẢ 2 LOẠI ẢNH VÀO FIREBASE
-                history.push({ 
-                    slug, 
-                    name, 
-                    thumb_url: thumb,   // Ảnh dọc
-                    poster_url: poster, // Ảnh ngang (Cái này quan trọng cho PC)
-                    timestamp: Date.now() 
-                });
-                
-                if (history.length > 15) history.shift();
-                if(snap.exists()) await updateDoc(ref, { watchHistory: history });
-                else await setDoc(ref, { email: window.currentUser.email, watchHistory: history });
-            } catch (e) { console.error("Lỗi lưu lịch sử:", e); }
-        };
+window.saveToHistory = async (movie) => { 
+    if (!window.currentUser) return;
+    const ref = doc(db, "users", window.currentUser.uid);
+    try {
+        const snap = await getDoc(ref);
+        let history = snap.exists() ? (snap.data().watchHistory || []) : [];
+        history = history.filter(m => m.slug !== movie.slug);
+        
+        history.push({ 
+            slug: movie.slug, 
+            name: movie.name, 
+            thumb_url: movie.thumb_url,   // Ảnh dọc
+            poster_url: movie.poster_url, // ẢNH NGANG (Bắt buộc phải có dòng này)
+            timestamp: Date.now() 
+        });
+        
+        if (history.length > 15) history.shift();
+        await setDoc(ref, { watchHistory: history }, { merge: true });
+    } catch (e) { console.error("Lỗi lưu:", e); }
+};
 
         function loadHistory(uid) { /* Logic load history nếu cần hiển thị ở đâu đó */ }
         
