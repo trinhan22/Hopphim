@@ -934,7 +934,7 @@ async function loadMovie() {
 
             // Điền thông tin
             const finalName = customName ? decodeURIComponent(customName) : "Phim Đặc Sắc";
-            document.title = `Xem phim ${finalName} - HopPhim`;
+            document.title = `${finalName} - HopPhim`;
             document.getElementById('mName').innerText = finalName;
             document.getElementById('mOrigin').innerText = "Phim Độc Quyền HopPhim";
             document.getElementById('breadCrumbTitle').innerText = finalName;
@@ -982,7 +982,7 @@ async function loadMovie() {
 
         // Các hàm render phụ trợ (Giữ nguyên của OPhim)
         function renderInfo(movie) {
-            document.title = `Xem phim ${movie.name} - HopPhim`;
+            document.title = `${movie.name} - HopPhim`;
             document.getElementById('breadCrumbTitle').innerText = movie.name;
             document.getElementById('mName').innerText = movie.name;
             document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
