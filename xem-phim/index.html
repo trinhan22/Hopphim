@@ -293,6 +293,12 @@
     border: 1px solid rgba(255,255,255,0.1);
 }
 #desktopSearchResults.active { display: block; }
+
+        /* Custom Scroller */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
     </style>
 </head>
 <body>
@@ -481,7 +487,7 @@
                         <div class="comment-form">
                             <textarea id="cmtInput" class="comment-input" placeholder="Viết bình luận của bạn về phim này..."></textarea>
                             <div class="form-actions">
-                                <span style="font-size: 0.8rem; color: #666;">Nói tầm xàm, ba láp tao BAN gáng chịu.</span>
+                                <span style="font-size: 0.8rem; color: #666;">Văn minh lên bạn êy.</span>
                                 <button class="btn-send-cmt" onclick="sendComment()">
                                     Gửi <i class="fas fa-paper-plane"></i>
                                 </button>
