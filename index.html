@@ -289,12 +289,12 @@
             pointer-events: none;
             
             /* Tạo khói 2 bên và ở trên bằng shadow cực lớn */
-            box-shadow: inset 0 0 130px 80px (var(--bg-body));
+            box-shadow: inset 0 0 150px 100px (var(--bg-body));
             
             /* Hoặc dùng Gradient phức tạp hơn để tạo độ loang lổ tự nhiên */
             background: 
                 /* Khói bên trên */
-                linear-gradient(to bottom, var(--bg-body) 0%, transparent 18%);
+                linear-gradient(to bottom, var(--bg-body) 0%, transparent 20%);
         }
 
         .hero-wrapper::after {
@@ -739,31 +739,19 @@
         .top-card-style2:hover { transform: translateY(-15px) scale(1.02); }
         
         .top-poster-style2 { 
-            width: 100%; 
-            /* Ép tỉ lệ dọc 2:3 */
-            aspect-ratio: 2/3; 
-            border-radius: 15px; 
-            overflow: hidden; 
-            position: relative; 
-            border: 2px solid rgba(255,255,255,0.05);
+            width: 100%; aspect-ratio: 2/3; border-radius: 18px; overflow: hidden; position: relative; 
+            border: 2px solid transparent; /* Viền chờ */
             transition: 0.4s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 45px rgba(0,0,0,0.6);
         }
 
         /* Khi hover: Viền sáng + Bóng đổ màu cam rực rỡ */
         .top-card-style2:hover .top-poster-style2 {
-            border-color: var(--primary-color);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(255, 94, 98, 0.4);
+            border-color: #ff8f50;
+            box-shadow: 0 0 30px rgba(255, 143, 80, 0.6), 0 0 10px rgba(255, 255, 255, 0.5) inset;
         }
 
-        .top-poster-style2 img { 
-            width: 100%; 
-            height: 100%; 
-            /* Đảm bảo ảnh phủ kín không bị méo */
-            object-fit: cover; 
-            transition: 0.5s; 
-        }
+        .top-poster-style2 img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         
         .top-info-row { display: flex; align-items: flex-start; margin-top: 20px; }
         
@@ -998,37 +986,31 @@
         }
         @media (min-width: 901px) { .episode-block-mobile { display: none; } }
 
-        /* --- SMART POSTER SYSTEM --- */
-        .n-poster-wide { display: block; width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
-        .n-poster-portrait { display: none; width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
+        /* --- 1. QUY TẮC CHUNG CHO CARD PHIM (Standard & History) --- */
+.n-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
 
-        /* Khi hover vào card, cả 2 loại ảnh đều zoom */
-        .n-card:hover .n-poster-wide, 
-        .n-card:hover .n-poster-portrait {
-            filter: brightness(0.6);
-            transform: scale(1.1); 
-        }
+/* PC: Card bình thường và Xem tiếp đều hiện ảnh NGANG */
+.n-poster-wide { display: block !important; }
+.n-poster-portrait { display: none !important; }
 
-        @media (max-width: 900px) {
-            /* Trên Mobile: Hiện ảnh dọc, ẩn ảnh ngang */
-            .n-poster-wide { display: none; }
-            .n-poster-portrait { display: block; }
-            
-            /* Đảm bảo khung card trên mobile là tỉ lệ dọc 2/3 */
-            .n-card { flex: 0 0 160px; aspect-ratio: 2/3; }
-        }
+/* --- 2. QUY TẮC RIÊNG CHO TOP 5 (LUÔN LÀ ẢNH DỌC) --- */
+.top-poster-style2 img {
+    display: block !important;
+    aspect-ratio: 2/3; /* Ép tỉ lệ dọc chuẩn */
+    object-fit: cover;
+}
 
-        /* --- FIX HISTORY PC & MOBILE --- */
-        #history-container .n-card {
-            aspect-ratio: 16/9; /* PC: Giữ khung ngang */
-        }
-
-        @media (max-width: 900px) {
-            #history-container .n-card {
-                flex: 0 0 160px;    /* Mobile: Card nhỏ lại */
-                aspect-ratio: 2/3;  /* Mobile: Chuyển sang khung dọc */
-            }
-        }
+/* --- 3. ĐIỀU CHỈNH KHI XUỐNG MOBILE --- */
+@media (max-width: 900px) {
+    /* Tất cả card (Bình thường + Xem tiếp) chuyển sang ảnh DỌC */
+    .n-poster-wide { display: none !important; }
+    .n-poster-portrait { display: block !important; }
+    
+    .n-card {
+        flex: 0 0 160px;
+        aspect-ratio: 2/3 !important; /* Ép khung dọc trên mobile */
+    }
+}
     </style>
 </head>
 <body>
@@ -1198,7 +1180,7 @@
 
     <div class="ad-panel-wrapper">
         <a href="https://hopvan.netlify.app" target="_blank" class="ad-link">
-            <img src="https://ax.mpcdn.top/motchill/uploads/5a78df669da7d12e44fbc89e3f05c8d2.gif" alt="Quảng cáo" class="ad-img-728">
+            <img src="https://ax.mpcdn.top/motchill/uploads/5a78df669da7d12e44fbc89e3f05c8d2.gif" alt="Quảng cáo" class="ad-img-727">
         </a>
     </div>
 
@@ -1254,7 +1236,7 @@
 
     <div class="ad-panel-wrapper">
         <a href="https://hopvan.netlify.app" target="_blank" class="ad-link">
-            <img src="https://ax.mpcdn.top/motchill/uploads/5de1033eb5666a06823992f4a72b06ed.gif" alt="Quảng cáo" class="ad-img-728">
+            <img src="https://ax.mpcdn.top/motchill/uploads/5de1033eb5666a06823992f4a72b06ed.gif" alt="Quảng cáo" class="ad-img-729">
         </a>
     </div>
 
@@ -1418,29 +1400,21 @@
         // --- 5. LOGIC DỮ LIỆU (LỊCH SỬ & DANH SÁCH) ---
         
         // Lưu lịch sử
-        window.saveToHistory = async (slug, name, thumb, poster) => { // Thêm biến poster vào đây
+        window.saveToHistory = async (slug, name, thumb) => {
             if (!window.currentUser) return;
             const ref = doc(db, "users", window.currentUser.uid);
             try {
                 const snap = await getDoc(ref);
                 let history = snap.exists() ? (snap.data().watchHistory || []) : [];
                 history = history.filter(m => m.slug !== slug);
-                
-                // Lưu cả thumb_url (dọc) và poster_url (ngang)
-                history.push({ 
-                    slug, 
-                    name, 
-                    thumb_url: thumb, 
-                    poster_url: poster, // Lưu thêm cái này
-                    timestamp: Date.now() 
-                });
-                
+                history.push({ slug, name, thumb_url: thumb, timestamp: Date.now() });
                 if (history.length > 15) history.shift();
+                
                 if(snap.exists()) await updateDoc(ref, { watchHistory: history });
                 else await setDoc(ref, { email: window.currentUser.email, watchHistory: history });
                 
                 loadHistory(window.currentUser.uid);
-            } catch (e) { console.error("Lỗi lưu lịch sử:", e); }
+            } catch (e) {}
         };
 
         // Load lịch sử
@@ -1566,7 +1540,7 @@
                         <div class="hero-title-main">${movie.title}</div>
                         <div class="hero-meta">
                             <span class="imdb-badge">IMDb ${movie.imdb}</span>
-                            <span class="quality-badge">HD</span>
+                            <span class="quality-badge">4K</span>
                             <span>${movie.year}</span>
                             <span>${movie.episodes}</span>
                         </div>
@@ -1654,30 +1628,34 @@
 
         // --- RENDER CARD ---
 window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
-    // 1. Link ảnh ngang (Cho PC)
+    // Lấy link ảnh ngang (poster_url)
     const imgWide = m.poster_url 
         ? (m.poster_url.startsWith('http') ? m.poster_url : IMG_BASE + m.poster_url) 
         : (m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url);
 
-    // 2. Link ảnh dọc (Cho Mobile)
+    // Lấy link ảnh dọc (thumb_url)
     const imgPortrait = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
 
+    const nameFixed = m.name.replace(/'/g, "\\'");
     const historyClass = isHistory ? `history-card-${m.slug}` : '';
     
-    // Logic link: Nếu là phim Youtube thì link khác, phim OPhim link khác
-    const finalLink = isHistory && m.slug.includes('custom=youtube') 
-        ? `/xem-phim/${m.slug}` 
-        : `/xem-phim/${m.slug}`;
+    // Badge hiện tập phim cho phần Xem tiếp
+    const epBadge = (isHistory && m.epName) 
+        ? `<div style="position:absolute; top:10px; left:10px; background:var(--primary-color); color:#fff; padding:3px 8px; border-radius:5px; font-size:10px; font-weight:800; z-index:5; box-shadow:0 4px 10px rgba(0,0,0,0.5);">${m.epName.toUpperCase()}</div>` 
+        : '';
 
     return `
-    <div class="n-card ${historyClass}" onclick="window.location.href='${finalLink}'">
+    <div class="n-card ${historyClass}" onclick="window.location.href='/xem-phim/${m.slug}'">
+        ${epBadge}
         <img src="${imgWide}" class="n-poster-wide" loading="lazy">
         <img src="${imgPortrait}" class="n-poster-portrait" loading="lazy">
         
         <div class="n-info-layer">
             <div class="n-title-in">${m.name}</div>
             <div class="n-meta-in">
-                ${isHistory ? `<span style="color:#aaa;"><i class="fas fa-history"></i> ${timeString}</span>` : `<span style="color:#46d369;">${m.year}</span> <span class="badge-hd">HD</span>`}
+                ${isHistory 
+                    ? `<span style="color:#aaa;"><i class="fas fa-history"></i> Xem ${timeString}</span>` 
+                    : `<span style="color:#46d369;">${m.year}</span> <span class="badge-hd">HD</span>`}
             </div>
             <div class="n-actions-in">
                 <button class="btn-mini-play"><i class="fas fa-play"></i> ${isHistory ? 'TIẾP TỤC' : 'XEM'}</button>
@@ -1762,42 +1740,40 @@ window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
 
         // --- RENDER TOP 5 ---
 async function loadTop5() {
-            const MANUAL_TOP_5 = ["con-ra-the-thong-gi-nua", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "con-say-mua-xuan", "duong-cung-ky-an-thanh-vu-phong-minh"];
-            const container = document.getElementById('top5List');
-            let html = '';
-            
-            for (let i = 0; i < MANUAL_TOP_5.length; i++) {
-                try {
-                    const res = await fetch(`${API_BASE}/phim/${MANUAL_TOP_5[i]}`);
-                    const data = await res.json();
-                    if(data.status) {
-                        const m = data.data.item;
-                        
-                        // ÉP LẤY ẢNH DỌC (thumb_url)
-                        const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-                        
-                        html += `
-                        <div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'">
-                            <div class="top-poster-style2">
-                                <img src="${img}" loading="lazy">
+    const MANUAL_TOP_5 = ["con-ra-the-thong-gi-nua", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "con-say-mua-xuan", "duong-cung-ky-an-thanh-vu-phong-minh"];
+    const container = document.getElementById('top5List');
+    let html = '';
+    
+    for (let i = 0; i < MANUAL_TOP_5.length; i++) {
+        try {
+            const res = await fetch(`${API_BASE}/phim/${MANUAL_TOP_5[i]}`);
+            const data = await res.json();
+            if(data.status) {
+                const m = data.data.item;
+                // CHỈ LẤY ẢNH DỌC CHO TOP 5
+                const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+                
+                html += `
+                <div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'">
+                    <div class="top-poster-style2">
+                        <img src="${img}" loading="lazy">
+                    </div>
+                    <div class="top-info-row">
+                        <div class="top-rank-style2">${i+1}</div>
+                        <div class="top-text-style2">
+                            <div class="top-title-style2">${m.name}</div>
+                            <div class="top-meta-style2">
+                                <span class="top-meta-badge">${m.quality || 'HD'}</span>
+                                <span>${m.year}</span>
                             </div>
-                            <div class="top-info-row">
-                                <div class="top-rank-style2">${i+1}</div>
-                                <div class="top-text-style2">
-                                    <div class="top-title-style2">${m.name}</div>
-                                    <div class="top-meta-style2">
-                                        <span class="top-meta-badge">${m.quality || 'HD'}</span>
-                                        <span>${m.year}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-                    }
-                } catch(e){ console.error("Lỗi Top 5:", e); }
+                        </div>
+                    </div>
+                </div>`;
             }
-            container.innerHTML = html;
-        }
-
+        } catch(e){}
+    }
+    container.innerHTML = html;
+}
         // --- OTHER LOAD FUNCTIONS ---
         async function loadCountrySection(slug, elementId) {
             try {
