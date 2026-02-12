@@ -682,6 +682,42 @@
     border: 1px solid rgba(255,255,255,0.1);
 }
 #desktopSearchResults.active { display: block; }
+
+/* --- PANEL QUẢNG CÁO 728x90 (Dọc & Tĩnh) --- */
+        .ad-panel-wrapper {
+            display: flex;
+            flex-direction: column; /* Xếp các quảng cáo theo hàng dọc */
+            align-items: center;    /* Căn giữa theo chiều ngang */
+            gap: 0px;              /* Khoảng cách giữa các banner */
+            margin: 0 auto 40px;    /* Canh giữa trang, cách dưới 40px */
+            padding: 0 4%;
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .ad-link {
+            display: block;
+            width: 100%;
+            max-width: 728px; /* Kích thước tối đa chuẩn */
+            /* Đã xoá transition và hover transform */
+        }
+
+        .ad-img-728 {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: block;
+        }
+
+        /* Mobile: Tự thu nhỏ */
+        @media (max-width: 768px) {
+            .ad-img-728 {
+                height: auto;
+                aspect-ratio: 728/90;
+            }
+        }
     </style>
 </head>
 <body>
@@ -850,6 +886,15 @@
         </div>
     </div>
 
+    <div class="ad-panel-wrapper">
+        <a href="https://hopvan.netlify.app" target="_blank" class="ad-link">
+            <img src="https://ax.mpcdn.top/motchill/uploads/5a78df669da7d12e44fbc89e3f05c8d2.gif" alt="Quảng cáo" class="ad-img-728">
+        </a>
+        <a href="https://hopvan.netlify.app" target="_blank" class="ad-link">
+            <img src="https://ax.mpcdn.top/motchill/uploads/8284c7302b169dafdb531bcdab46d1e0.gif" alt="Quảng cáo" class="ad-img-729">
+        </a>
+    </div>
+
     <div id="history-container"></div>
 
     <main id="main-content">
@@ -880,6 +925,15 @@
             </div>
         </div>
     </main>
+
+    <div class="ad-panel-wrapper">
+        <a href="https://hopvan.netlify.app" target="_blank" class="ad-link">
+            <img src="https://ax.mpcdn.top/motchill/uploads/d482b9059085ad01e631948e6b6d6041.gif" alt="Quảng cáo" class="ad-img-728">
+        </a>
+        <a href="https://hopvan.netlify.app" target="_blank" class="ad-link">
+            <img src="https://ax.mpcdn.top/motchill/uploads/5de1033eb5666a06823992f4a72b06ed.gif" alt="Quảng cáo" class="ad-img-729">
+        </a>
+    </div>
 
     <section class="top-10-wrapper">
         <div class="top-10-header"><i class="fas fa-fire" style="color:var(--primary-color); font-size: 2.5rem;"></i><h2>Top 5 thịnh hành</h2></div>
