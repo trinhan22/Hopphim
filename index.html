@@ -269,44 +269,229 @@
         .ms-input-group { display: flex; align-items: center; gap: 10px; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
         .ms-input-group input { background: transparent; border: none; color: #fff; font-size: 1.2rem; width: 100%; outline: none; }
 
-        /* ==========================================================================
-           6. HERO SECTION & TOPICS (GLASS REDESIGN)
-           ========================================================================== 
-        */
-        .hero { 
-            height: 77vh; display: flex; align-items: center; justify-content: center; 
-            position: relative; background: url('home-background.jpg') center/cover no-repeat;
+        /* =========================================
+           HERO SLIDER - PHONG CÁCH NETFLIX (FIXED)
+           ========================================= */
+        .hero-wrapper {
+            position: relative;
+            width: 100%;
+            height: 85vh;
+            overflow: hidden;
+            margin-bottom: 0;
+            background: #000;
         }
-        
-        /* FIX CHỖ NÀY: Xoá background đen mờ (Overlay) */
-        .hero::before { 
-            content: ''; position: absolute; inset: 0; 
-            background: transparent; 
-        }
-        
-        .hero::after { 
-            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 300px; 
-            background: linear-gradient(to bottom, transparent, var(--bg-body)); 
-        }
-        .hero-content { position: relative; z-index: 10; text-align: center; max-width: 1000px; padding: 20px; }
-        .hero-title { font-size: 5rem; font-weight: 900; line-height: 1.2; letter-spacing: -3px; }
-        .hero-desc { font-size: 1.4rem; color: #eee; font-weight: 600; margin-top: 20px; }
 
+        /* --- HIỆU ỨNG KHÓI/SƯƠNG MÙ (NEW) --- */
+        .hero-fog {
+            position: absolute;
+            inset: 0;
+            z-index: 2; /* Nằm trên overlay nền nhưng dưới chữ */
+            pointer-events: none;
+            
+            /* Tạo khói 2 bên và ở trên bằng shadow cực lớn */
+            box-shadow: inset 0 0 130px 80px (var(--bg-body));
+            
+            /* Hoặc dùng Gradient phức tạp hơn để tạo độ loang lổ tự nhiên */
+            background: 
+                /* Khói bên trên */
+                linear-gradient(to bottom, var(--bg-body) 0%, transparent 18%);
+        }
+
+        .hero-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 300px; /* Tăng độ cao lên chút cho mượt */
+            background: linear-gradient(to bottom, transparent 0%, var(--bg-body) 85%);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center center;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            display: flex;
+            align-items: center; /* Căn giữa dọc */
+        }
+
+        .hero-slide.active { opacity: 1; z-index: 1; }
+
+        /* Lớp phủ Gradient: Đen ở dưới và trái, trong suốt ở trên phải */
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 40%, transparent 100%),
+                        linear-gradient(to top, #191b24 5%, transparent 40%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: 50%;
+            padding-left: 5%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            animation: fadeUp 0.8s ease-out 0.3s forwards;
+            opacity: 0; transform: translateY(30px);
+        }
+
+        /* Tên gốc (Tiếng Anh/Trung...) - Màu vàng cho sang */
+        .hero-origin-name {
+            color: #FFD700;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        /* Tên chính - Màu TRẮNG + Bóng đổ đậm */
+        .hero-title-main {
+            font-size: 3.8rem;
+            font-weight: 900;
+            line-height: 1.1;
+            color: #ffffff; /* Trắng tinh */
+            text-shadow: 0 0 10px rgba(0,0,0,0.5), 2px 2px 4px rgba(0,0,0,0.8); /* Viền bóng giúp tách nền */
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .hero-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: #fff;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,1);
+        }
+
+        .imdb-badge {
+            background: #F5C518;
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 900;
+        }
+
+        .quality-badge {
+            border: 1px solid #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .hero-desc {
+            color: #ddd; /* Màu xám sáng */
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 90%;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            font-weight: 500;
+        }
+
+        /* Nút Play Tròn */
+        .hero-actions { display: flex; align-items: center; gap: 20px; }
+        
+        .btn-play-circle {
+            width: 70px; height: 70px;
+            background: var(--gradient-main); /* Dùng màu cam chủ đạo */
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 30px rgba(255, 94, 98, 0.4);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        .btn-play-circle i { font-size: 2rem; color: #fff; margin-left: 5px; }
+        .btn-play-circle:hover { transform: scale(1.1); box-shadow: 0 0 50px rgba(255, 94, 98, 0.6); }
+
+        .btn-action-icon {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; cursor: pointer; transition: 0.3s;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+        }
+        .btn-action-icon:hover { background: #fff; color: #000; border-color: #fff; }
+
+        /* Thumbnails List */
+        .hero-thumbnails {
+            position: absolute;
+            bottom: 130px; /* Tăng lên từ 40px -> 130px */
+            right: 4%;
+            z-index: 10;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .thumb-item {
+            width: 140px; height: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: 0.3s;
+            position: relative;
+        }
+        .thumb-item img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); transition: 0.3s; }
+        
+        .thumb-item.active { border-color: var(--primary-color); transform: scale(1.1); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .thumb-item.active img { filter: brightness(1); }
+        .thumb-item:hover img { filter: brightness(1); }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .hero-wrapper { height: 75vh; }
+            .hero-thumbnails { display: none; }
+            .hero-content { width: 100%; padding: 0 20px; align-items: center; text-align: center; bottom: 0; justify-content: center; height: 100%; }
+            .hero-overlay { background: linear-gradient(to top, #191b24 10%, rgba(0,0,0,0.6) 60%, rgba(0,0,0,0.4) 100%); }
+            .hero-title-main { font-size: 2.2rem; }
+            .hero-actions { justify-content: center; }
+        }
         /* ==========================================================================
            TOPICS SECTION
            ========================================================================== */
-        .topics-section { padding: 0 4%; margin-top: -60px; position: relative; z-index: 20; margin-bottom: 60px; }
+        .topics-section {
+            position: relative;
+            padding: 0 4%;
+            /* Kéo lên 100px để đè lên Hero */
+            margin-top: -100px; 
+            z-index: 20; /* Quan trọng: Phải cao hơn Hero để nổi lên trên */
+            margin-bottom: 60px;
+        }
         .section-label { font-size: 1.4rem; font-weight: 800; margin-bottom: 25px; color: #fff; letter-spacing: -0.5px; }
         .topic-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
         
-        .topic-card { 
+        .topic-card {
+            /* Thêm backdrop-filter mạnh hơn để tách biệt khỏi nền hero */
+            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(30, 32, 40, 0.6); /* Nền tối bán trong suốt */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            /* ... giữ nguyên các thuộc tính khác ... */
             height: 115px; border-radius: 20px; padding: 22px; 
             display: flex; flex-direction: column; justify-content: space-between; 
             cursor: pointer; position: relative; overflow: hidden; 
             transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px); isolation: isolate;
+            isolation: isolate;
         }
         .topic-card:hover { transform: translateY(-8px); border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
         .topic-card::before { content: ''; position: absolute; top: 50%; left: 50%; width: 120px; height: 120px; border-radius: 50%; transform: translate(-50%, -50%); filter: blur(40px); opacity: 0.3; z-index: -2; transition: all 0.6s ease; }
@@ -945,12 +1130,15 @@
         </div>
     </header>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title"><span class="text-gradient">HopPhim - Phim Hay<BR>Trong Tầm Tay</span></h1>
-            <p class="hero-desc">Xem phim chuẩn FHD Vietsub, cập nhật liên tục tại HopPhim.</p>
-        </div>
-    </section>
+    <div class="hero-wrapper" id="heroWrapper">
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-fog"></div>
+
+        <div id="heroSlidesContainer"></div>
+        
+        <div class="hero-thumbnails" id="heroThumbnails"></div>
+    </div>
 
     <div class="topics-section">
         <div class="section-label">Gợi ý chủ đề</div>
@@ -966,7 +1154,7 @@
 
     <div class="ad-panel-wrapper">
         <a href="https://hopvan.netlify.app" target="_blank" class="ad-link">
-            <img src="https://ax.mpcdn.top/motchill/uploads/5a78df669da7d12e44fbc89e3f05c8d2.gif" alt="Quảng cáo" class="ad-img-727">
+            <img src="https://ax.mpcdn.top/motchill/uploads/5a78df669da7d12e44fbc89e3f05c8d2.gif" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
 
@@ -1022,7 +1210,7 @@
 
     <div class="ad-panel-wrapper">
         <a href="https://hopvan.netlify.app" target="_blank" class="ad-link">
-            <img src="https://ax.mpcdn.top/motchill/uploads/5de1033eb5666a06823992f4a72b06ed.gif" alt="Quảng cáo" class="ad-img-729">
+            <img src="https://ax.mpcdn.top/motchill/uploads/5de1033eb5666a06823992f4a72b06ed.gif" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
 
@@ -1274,6 +1462,126 @@
         window.toggleUserDropdown = () => document.getElementById('userMenu').classList.toggle('active');
         window.handleUserClick = () => { window.location.href = window.currentUser ? '/profile.html' : '/login.html'; }
     </script>
+
+<script>
+    // --- CẤU HÌNH PHIM CỦA BẠN ---
+    const MY_MOVIES = [
+        {
+            title: "Hố Sâu Ảo Vọng",
+            origin: "THE ABYSS OF DELUSION",
+            desc: "Đây là lời cảnh tỉnh mạnh mẽ và sâu sắc gửi đến cộng đồng về hiểm họa khôn lường của Cá độ bóng đá trực tuyến...",
+            poster: "ho-sau-ao-vong/thumb.png",
+            thumb: "ho-sau-ao-vong/thumb.png",
+            ytId: "2x40K6FstAU", // Thay ID Youtube của bạn vào
+            year: "2025",
+            imdb: "3.6",
+            episodes: "Full"
+        },
+        {
+            title: "Áp Lực Học Đường",
+            origin: "SCHOOL PRESSURE",
+            desc: "Lần đầu bước vào một môi trường hoàn toàn xa lạ – nội trú, bạn mới, nếp sống mới – cô bé lớp 10...",
+            // Hãy thay bằng link ảnh thật của bạn (Up lên imgur hoặc host ảnh)
+            poster: "ap-luc-hoc-duong/thumb.png", 
+            thumb: "ap-luc-hoc-duong/thumb.png",
+            ytId: "i4RDEnNLbmw", // ID Youtube video
+            year: "2025",
+            imdb: "3.6",
+            episodes: "Full"
+        }
+    ];
+
+    let currentSlide = 0;
+    let slideInterval;
+
+    function renderHero() {
+        const slidesContainer = document.getElementById('heroSlidesContainer');
+        const thumbsContainer = document.getElementById('heroThumbnails');
+        
+        if(!slidesContainer) return;
+
+        let slidesHtml = '';
+        let thumbsHtml = '';
+
+        MY_MOVIES.forEach((movie, index) => {
+            const active = index === 0 ? 'active' : '';
+            
+            // Render Slide
+            slidesHtml += `
+                <div class="hero-slide ${active}" id="slide-${index}" style="background-image: url('${movie.poster}');">
+                    <div class="hero-content">
+                        <div class="hero-origin-name">${movie.origin}</div>
+                        <div class="hero-title-main">${movie.title}</div>
+                        <div class="hero-meta">
+                            <span class="imdb-badge">IMDb ${movie.imdb}</span>
+                            <span class="quality-badge">HD</span>
+                            <span>${movie.year}</span>
+                            <span>${movie.episodes}</span>
+                        </div>
+                        <div class="hero-desc">${movie.desc}</div>
+                        <div class="hero-actions">
+                            <div class="btn-play-circle" onclick="goToWatchPage('${movie.ytId}', '${movie.title}')">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <div class="btn-action-icon" title="Thêm vào danh sách"><i class="fas fa-plus"></i></div>
+                            <div class="btn-action-icon" title="Thông tin"><i class="fas fa-info"></i></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Render Thumbnail
+            thumbsHtml += `
+                <div class="thumb-item ${active}" onclick="changeHeroSlide(${index})">
+                    <img src="${movie.thumb}">
+                </div>
+            `;
+        });
+
+        slidesContainer.innerHTML = slidesHtml;
+        thumbsContainer.innerHTML = thumbsHtml;
+        
+        startSlideTimer();
+    }
+
+    // --- HÀM CHUYỂN HƯỚNG SANG TRANG XEM PHIM ---
+    function goToWatchPage(id, title) {
+        // Chuyển sang xem-phim.html với tham số đặc biệt
+        // custom=youtube: Đánh dấu đây là phim Youtube
+        // id: ID video Youtube
+        // name: Tên phim để hiển thị
+        const url = `/xem-phim/?custom=youtube&id=${id}&name=${encodeURIComponent(title)}`;
+        window.location.href = url;
+    }
+
+    function changeHeroSlide(index) {
+        clearInterval(slideInterval);
+        startSlideTimer();
+
+        document.querySelectorAll('.hero-slide').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.thumb-item').forEach(el => el.classList.remove('active'));
+
+        const slide = document.getElementById(`slide-${index}`);
+        if(slide) slide.classList.add('active');
+        
+        const thumb = document.querySelectorAll('.thumb-item')[index];
+        if(thumb) thumb.classList.add('active');
+        
+        currentSlide = index;
+    }
+
+    function startSlideTimer() {
+        slideInterval = setInterval(() => {
+            let next = (currentSlide + 1) % MY_MOVIES.length;
+            changeHeroSlide(next);
+        }, 6000); 
+    }
+
+    // Init
+    window.addEventListener('load', () => {
+        renderHero();
+    });
+</script>
 
 <script>
         const API_BASE = 'https://ophim1.com/v1/api';

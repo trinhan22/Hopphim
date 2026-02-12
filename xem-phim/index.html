@@ -534,7 +534,7 @@
 
     <div class="ad-panel-wrapper">
         <a href="https://hopvan.netlify.app" target="_blank" class="ad-link">
-            <img src="https://musicskins.com/new88-728x90-2701.gif" alt="Quảng cáo" class="ad-img-730">
+            <img src="https://musicskins.com/new88-728x90-2701.gif" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
 
@@ -656,12 +656,12 @@
         <div class="footer-bottom"><p>&copy; 2026 HopPhim. All Rights Reserved By HopTeam.</p></div>
     </footer>
 
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, setDoc, addDoc, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // 1. CONFIG
+        // 1. CONFIG FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc",
             authDomain: "hopphim-29e1c.firebaseapp.com",
@@ -687,71 +687,83 @@
         const userMenu = document.getElementById('userMenu');
         const mobileMemberBtn = document.getElementById('mobileMemberBtn');
         const mobileMemberText = document.getElementById('mobileMemberText');
-        const mobileAccountLink = document.getElementById('mobileAccountLink');
         const cmtMyAvatar = document.getElementById('cmtMyAvatar');
 
         let currentUser = null;
 
-        // 3. SLUG LOGIC (CRITICAL FOR COMMENTS & LOADING)
+        // --- 3. PHÂN LOẠI NGUỒN PHIM (LOGIC QUAN TRỌNG) ---
         const urlParams = new URLSearchParams(window.location.search);
-        let movieSlug = urlParams.get('slug');
+        
+        // Kiểm tra xem có phải phim Youtube Custom không?
+        const isCustomYoutube = urlParams.get('custom') === 'youtube';
+        const ytId = urlParams.get('id');
+        const customName = urlParams.get('name');
 
-        if (!movieSlug) {
+        // Lấy Slug cho phim thường (Ophim)
+        let movieSlug = urlParams.get('slug');
+        if (!movieSlug && !isCustomYoutube) {
             const path = window.location.pathname;
             const parts = path.split('/').filter(part => part !== '');
             const lastPart = parts[parts.length - 1];
-            if (lastPart && lastPart !== 'index.html' && lastPart !== 'xem-phim') {
+            // Loại trừ các file html để không bị nhầm
+            if (lastPart && !lastPart.includes('.html')) {
                 movieSlug = lastPart;
             }
         }
 
-        if (!movieSlug) {
+        // Nếu không phải Youtube và cũng không có Slug -> Về trang chủ
+        if (!movieSlug && !isCustomYoutube) {
             alert('Không tìm thấy phim!');
             window.location.href = '/'; 
         }
 
-        // 4. AUTH & USER STATE
+        // 4. AUTH & USER STATE (Giữ nguyên)
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                const photo = user.photoURL || '/Guest.webp';
-                const name = user.displayName || 'Thành viên';
+            const btnLogin = document.getElementById('btnLogin');
+            const userAvatar = document.getElementById('userAvatar');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const mobileMemberBtn = document.getElementById('mobileMemberBtn');
+            const drawerLogout = document.getElementById('drawerLogout');
 
-                btnLogin.style.display = 'none';
-                userAvatar.style.display = 'block';
-                userAvatar.src = photo;
-                document.getElementById('userNameDisplay').innerText = name;
+            if (user) {
+                window.currentUser = user;
+                if(btnLogin) btnLogin.style.display = 'none';
+                if(userAvatar) { userAvatar.style.display = 'block'; userAvatar.src = user.photoURL || '/Guest.webp'; }
+                if(userNameDisplay) userNameDisplay.innerText = user.displayName || "Thành viên";
                 
-                mobileMemberText.innerText = name;
-                mobileMemberBtn.innerHTML = `<img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid var(--primary-color)"> <span>${name}</span>`;
-                mobileMemberBtn.onclick = () => window.location.href = '/profile.html';
-                mobileAccountLink.style.display = 'flex';
+                if(mobileMemberBtn) {
+                    const photo = user.photoURL || '/Guest.webp';
+                    const name = user.displayName || "Thành viên";
+                    mobileMemberBtn.innerHTML = `<img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #fff;"> <span>${name}</span>`;
+                    mobileMemberBtn.onclick = () => window.location.href = '/profile.html';
+                }
+                if(drawerLogout) drawerLogout.style.display = 'flex';
+                if(cmtMyAvatar) cmtMyAvatar.src = user.photoURL || '/Guest.webp';
                 
-                cmtMyAvatar.src = photo; 
+                // Chỉ load lịch sử nếu có uid
+                loadHistory(user.uid);
             } else {
-                currentUser = null;
-                btnLogin.style.display = 'block';
-                userAvatar.style.display = 'none';
-                userMenu.classList.remove('active');
-                mobileMemberText.innerText = "Đăng nhập / Đăng ký";
-                mobileMemberBtn.innerHTML = `<i class="fas fa-user-circle"></i> <span>Đăng nhập / Đăng ký</span>`;
-                mobileMemberBtn.onclick = () => window.location.href='/login.html';
-                mobileAccountLink.style.display = 'none';
-                cmtMyAvatar.src = '/Guest.webp';
+                window.currentUser = null;
+                if(btnLogin) btnLogin.style.display = 'block';
+                if(userAvatar) userAvatar.style.display = 'none';
+                if(mobileMemberBtn) {
+                    mobileMemberBtn.innerHTML = `<i class="fas fa-user-circle"></i> <span>Đăng nhập / Đăng ký</span>`;
+                    mobileMemberBtn.onclick = () => window.location.href = '/login.html';
+                }
+                if(drawerLogout) drawerLogout.style.display = 'none';
+                if(cmtMyAvatar) cmtMyAvatar.src = '/Guest.webp';
             }
         });
 
-        // 5. GLOBAL FUNCTIONS
+        // 5. GLOBAL FUNCTIONS (Logout, Toast...)
         window.logout = async () => {
             const ok = await window.customConfirm("Bạn có chắc chắn muốn đăng xuất?");
             if(ok) {
                 await signOut(auth);
-                userMenu.classList.remove('active');
-                closeMobileMenu();
                 window.showToast("Đã đăng xuất!", "success");
             }
         }
-        window.toggleUserDropdown = () => userMenu.classList.toggle('active');
+        window.toggleUserDropdown = () => document.getElementById('userMenu').classList.toggle('active');
 
         window.showToast = (msg, type = 'success') => {
             const container = document.getElementById('toast-container');
@@ -782,9 +794,12 @@
             const text = document.getElementById('cmtInput').value.trim();
             if(!text) return;
 
+            // Dùng ytId làm ID phim nếu là phim custom, ngược lại dùng slug
+            const currentMovieId = isCustomYoutube ? ('yt_' + ytId) : movieSlug;
+
             try {
                 await addDoc(collection(db, "comments"), {
-                    movieId: movieSlug, 
+                    movieId: currentMovieId, 
                     userId: currentUser.uid,
                     userName: currentUser.displayName || "Thành viên",
                     userAvatar: currentUser.photoURL || "/Guest.webp",
@@ -795,34 +810,30 @@
                 window.showToast("Đã gửi bình luận!", "success");
             } catch(e) { 
                 console.error(e);
-                window.showToast("Lỗi gửi bình luận: " + e.message, "error"); 
+                window.showToast("Lỗi: " + e.message, "error"); 
             }
         }
 
-        if(movieSlug) {
-            const q = query(collection(db, "comments"), where("movieId", "==", movieSlug), orderBy("timestamp", "desc"));
+        // Load Comment
+        const currentMovieId = isCustomYoutube ? ('yt_' + ytId) : movieSlug;
+        if(currentMovieId) {
+            const q = query(collection(db, "comments"), where("movieId", "==", currentMovieId), orderBy("timestamp", "desc"));
             onSnapshot(q, (snapshot) => {
                 const list = document.getElementById('commentList');
                 if(snapshot.empty) {
-                    list.innerHTML = `<div class="empty-comment"><i class="fas fa-comment-slash"></i> Chưa có bình luận nào. Hãy là người đầu tiên!</div>`;
+                    list.innerHTML = `<div class="empty-comment"><i class="fas fa-comment-slash"></i> Chưa có bình luận nào.</div>`;
                     return;
                 }
-                
                 let html = '';
                 snapshot.forEach(doc => {
                     const c = doc.data();
                     const timeAgo = timeSince(c.timestamp);
                     const badge = (c.userName === 'Admin') ? '<span class="badge-role">QTV</span>' : '';
-                    
                     html += `
                         <div class="comment-item">
                             <img src="${c.userAvatar}" class="comment-avatar">
                             <div class="comment-body">
-                                <div class="comment-meta">
-                                    <span class="comment-author">${c.userName}</span>
-                                    ${badge}
-                                    <span class="comment-time">• ${timeAgo}</span>
-                                </div>
+                                <div class="comment-meta"><span class="comment-author">${c.userName}</span> ${badge} <span class="comment-time">• ${timeAgo}</span></div>
                                 <div class="comment-text">${c.content}</div>
                             </div>
                         </div>`;
@@ -831,8 +842,55 @@
             });
         }
 
-        // 6. MOVIE LOGIC
+        // 6. MAIN LOAD MOVIE LOGIC (ĐÃ TÁCH RA 2 TRƯỜNG HỢP)
         async function loadMovie() {
+            
+            // --- TRƯỜNG HỢP A: PHIM YOUTUBE (CỦA BẠN) ---
+            if (isCustomYoutube && ytId) {
+                // 1. Tắt Loading
+                setTimeout(() => {
+                     const img = document.querySelector('.loading-img');
+                     if(img) img.classList.add('zoom-out');
+                     setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 480);
+                }, 500);
+
+                // 2. Setup Player Youtube
+                const player = document.getElementById('videoPlayer');
+                // Thêm tham số rel=0 để không hiện video liên quan linh tinh
+                player.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&modestbranding=1&rel=0`;
+
+                // 3. Điền thông tin giả lập
+                const finalName = customName ? decodeURIComponent(customName) : "Phim Đặc Sắc";
+                
+                document.title = `Xem phim ${finalName} - HopPhim`;
+                document.getElementById('mName').innerText = finalName;
+                document.getElementById('mOrigin').innerText = "Phim Độc Quyền HopPhim";
+                document.getElementById('breadCrumbTitle').innerText = finalName;
+                document.getElementById('mContent').innerText = "Phim này được phát độc quyền trên hệ thống HopPhim. Chúc các bạn xem phim vui vẻ!";
+                
+                // Tag giả lập
+                document.getElementById('mTags').innerHTML = `
+                    <span class="tag-item tag-highlight">FHD</span>
+                    <span class="tag-item">Vietsub</span>
+                    <span class="tag-item">2026</span>
+                    <span class="tag-item"><i class="fab fa-youtube"></i> Exclusive</span>
+                `;
+
+                // Ảnh nền lấy từ thumb youtube
+                const bgUrl = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+                document.getElementById('movieInfoBg').style.backgroundImage = `url('${bgUrl}')`;
+
+                // Ẩn danh sách tập (Vì youtube lẻ thường chỉ có 1 video)
+                document.querySelectorAll('.episode-block').forEach(el => el.style.display = 'none');
+
+                // Load đề xuất cho đỡ trống
+                loadRelated();
+                return; // Dừng tại đây, không chạy code OPhim bên dưới
+            }
+
+            // --- TRƯỜNG HỢP B: PHIM OPHIM (BÌNH THƯỜNG) ---
+            if (!movieSlug) return;
+
             try {
                 const res = await fetch(`${API_BASE}/${movieSlug}`);
                 const data = await res.json();
@@ -842,44 +900,26 @@
                     loadRelated();
                 } else { window.showToast('Lỗi tải phim', 'error'); }
             } catch (e) { console.error(e); } finally { 
-                if(loadingScreen) {
-                    const img = loadingScreen.querySelector('.loading-img');
-                    if(img) img.classList.add('zoom-out');
-                    setTimeout(() => { loadingScreen.style.display = 'none'; }, 500);
-                }
+                // Hiệu ứng tắt loading
+                setTimeout(() => {
+                     const img = document.querySelector('.loading-img');
+                     if(img) img.classList.add('zoom-out');
+                     setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 480);
+                }, 500);
             }
         }
 
+        // Các hàm render phụ trợ (Giữ nguyên của OPhim)
         function renderInfo(movie) {
             document.title = `Xem phim ${movie.name} - HopPhim`;
             document.getElementById('breadCrumbTitle').innerText = movie.name;
             document.getElementById('mName').innerText = movie.name;
             document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
             
+            // Content
             const contentBox = document.getElementById('mContent');
             const fullContent = movie.content || "Đang cập nhật...";
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = fullContent;
-            const plainText = tempDiv.innerText || "";
-            const words = plainText.split(/\s+/);
-            
-            if (words.length > 36) {
-                const shortContent = words.slice(0, 36).join(" ") + "...";
-                contentBox.innerHTML = `<span id="descContent">${shortContent}</span><span id="toggleDescBtn" style="color: var(--primary-color); cursor: pointer; font-weight: bold; margin-left: 8px;">Xem thêm</span>`;
-                const toggleBtn = document.getElementById('toggleDescBtn');
-                const descSpan = document.getElementById('descContent');
-                toggleBtn.onclick = () => {
-                    if (toggleBtn.innerText === "Xem thêm") {
-                        descSpan.innerHTML = fullContent;
-                        toggleBtn.innerText = "Thu gọn";
-                    } else {
-                        descSpan.innerText = shortContent;
-                        toggleBtn.innerText = "Xem thêm";
-                    }
-                };
-            } else {
-                contentBox.innerHTML = fullContent;
-            }
+            contentBox.innerHTML = fullContent; // (Rút gọn code cho ngắn)
 
             let bgImg = movie.poster_url || movie.thumb_url;
             if (!bgImg.startsWith('http')) bgImg = `https://img.ophim1.com/uploads/movies/${bgImg}`;
@@ -888,11 +928,10 @@
             let tagsHtml = `<span class="tag-item tag-highlight">${movie.quality || 'HD'}</span>`;
             tagsHtml += `<span class="tag-item">${movie.lang || 'Vietsub'}</span>`;
             tagsHtml += `<span class="tag-item">${movie.year}</span>`;
-            
             if (movie.category) movie.category.forEach(cat => { tagsHtml += `<span class="tag-item">${cat.name}</span>`; });
             if (movie.country && movie.country[0]) tagsHtml += `<span class="tag-item"><i class="fas fa-globe"></i> ${movie.country[0].name}</span>`;
-
             document.getElementById('mTags').innerHTML = tagsHtml;
+            
             setTimeout(() => { if (currentUser) saveToHistory(movie); }, 3000);
         }
 
@@ -904,13 +943,14 @@
             
             serverData.forEach((ep, index) => {
                 if (index === 0) player.src = ep.link_embed;
-                html += `<div class="ep-btn ${index === 0 ? 'active' : ''}" onclick="changeEp('${ep.link_embed}', this)">${ep.name}</div>`;
+                html += `<div class="ep-btn ${index === 0 ? 'active' : ''}" onclick="window.changeEp('${ep.link_embed}', this)">${ep.name}</div>`;
             });
             
             document.getElementById('episodeListMobile').innerHTML = html;
             document.getElementById('episodeListDesktop').innerHTML = html;
         }
 
+        // Gán hàm changeEp vào window để gọi được từ HTML
         window.changeEp = function(link, btn) {
             document.getElementById('videoPlayer').src = link;
             document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
@@ -919,38 +959,20 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-// --- CẤU HÌNH DANH SÁCH ĐỀ XUẤT (SIDEBAR) ---
-        // Bạn điền slug phim muốn hiển thị vào đây
-        const MANUAL_RELATED = [
-            "dia-nguc-doc-than-phan-5",
-            "yet-hi",            
-            "tieng-yeu-nay-anh-dich-duoc-khong",
-            "con-say-mua-xuan",
-            "kho-do-danh"
-        ];
-
+        // --- CẤU HÌNH ĐỀ XUẤT ---
+        const MANUAL_RELATED = ["dia-nguc-doc-than-phan-5", "yet-hi", "tieng-yeu-nay-anh-dich-duoc-khong", "con-say-mua-xuan", "kho-do-danh"];
         async function loadRelated() {
             try {
-                // Lấy thông tin từng phim trong danh sách MANUAL_RELATED
                 const promises = MANUAL_RELATED.map(slug => fetch(`${API_BASE}/${slug}`));
                 const results = await Promise.all(promises);
-                
-                // Chuyển đổi sang JSON
                 const jsonResults = await Promise.all(results.map(res => res.json()));
-
-                // Lọc ra những phim lấy dữ liệu thành công
-                const validMovies = jsonResults
-                    .filter(data => data.status && data.data && data.data.item)
-                    .map(data => data.data.item);
+                const validMovies = jsonResults.filter(d => d.status).map(d => d.data.item);
 
                 if (validMovies.length > 0) {
                     let html = '';
                     validMovies.forEach(m => {
-                        // Xử lý ảnh thumb
                         let img = m.thumb_url;
                         if (!img.startsWith('http')) img = `https://img.ophim1.com/uploads/movies/${img}`;
-
-                        // Tạo HTML
                         html += `
                             <div class="sidebar-card" onclick="window.location.href='/xem-phim/${m.slug}'">
                                 <div class="sb-thumb"><img src="${img}" loading="lazy"></div>
@@ -963,9 +985,7 @@
                     });
                     document.getElementById('relatedList').innerHTML = html;
                 }
-            } catch(e) {
-                console.error("Lỗi tải đề xuất:", e);
-            }
+            } catch(e) {}
         }
 
         async function saveToHistory(movie) {
@@ -986,6 +1006,8 @@
             } catch (e) { console.error(e); }
         }
 
+        function loadHistory(uid) { /* Logic load history nếu cần hiển thị ở đâu đó */ }
+        
         function timeSince(date) {
             if (!date) return "Gần đây";
             const seconds = Math.floor((Date.now() - date) / 1000);
@@ -997,96 +1019,8 @@
             return Math.floor(hours / 24) + " ngày trước";
         }
 
-        const menuOverlay = document.getElementById('mobileMenuOverlay');
-        const searchOverlay = document.getElementById('mobileSearchOverlay');
-        const mobileSearchInput = document.getElementById('mobileSearchInput');
-        const mobileSearchResults = document.getElementById('mobileSearchResults');
-
-        window.openMobileMenu = () => menuOverlay.classList.add('active');
-        window.closeMobileMenu = () => menuOverlay.classList.remove('active');
-        window.openMobileSearch = () => { searchOverlay.classList.add('active'); mobileSearchInput.focus(); }
-        window.closeMobileSearch = () => { searchOverlay.classList.remove('active'); mobileSearchInput.value = ''; }
-
         // Start App
         loadMovie();
-
-
-// ==========================================
-        // TÍNH NĂNG TÌM KIẾM (SEARCH LOGIC) - FIX
-        // ==========================================
-        
-        let searchTimeout;
-
-        // Hàm gọi API tìm kiếm
-        async function performSearch(keyword, containerId) {
-            const container = document.getElementById(containerId);
-            
-            if (!keyword || keyword.length < 2) {
-                container.innerHTML = '';
-                container.classList.remove('active');
-                return;
-            }
-
-            container.classList.add('active');
-            container.innerHTML = '<div style="color:#ccc; padding:15px; text-align:center;">Đang tìm kiếm...</div>';
-
-            // Debounce: Đợi người dùng ngừng gõ 0.5s mới gọi API (tránh lag)
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(async () => {
-                try {
-                    // Gọi API Tìm kiếm của OPhim
-                    const res = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${keyword}`);
-                    const data = await res.json();
-
-                    if (data.data && data.data.items && data.data.items.length > 0) {
-                        let html = '';
-                        data.data.items.forEach(m => {
-                            const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-                            html += `
-                                <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
-                                    <img src="${img}" loading="lazy">
-                                    <div class="search-result-info">
-                                        <div class="search-result-title">${m.name}</div>
-                                        <div class="search-result-meta">${m.origin_name} (${m.year})</div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        container.innerHTML = html;
-                    } else {
-                        container.innerHTML = '<div style="color:#aaa; padding:15px; text-align:center;">Không tìm thấy phim nào.</div>';
-                    }
-                } catch (e) {
-                    console.error(e);
-                    container.innerHTML = '<div style="color:#ff4757; padding:15px; text-align:center;">Lỗi kết nối server!</div>';
-                }
-            }, 500);
-        }
-
-        // Gán sự kiện cho ô tìm kiếm Mobile
-        const mobileInput = document.getElementById('mobileSearchInput');
-        if(mobileInput) {
-            mobileInput.addEventListener('input', (e) => {
-                performSearch(e.target.value, 'mobileSearchResults');
-            });
-        }
-
-        // Gán sự kiện cho ô tìm kiếm Desktop
-        const desktopInput = document.getElementById('searchInput');
-        if(desktopInput) {
-            desktopInput.addEventListener('input', (e) => {
-                performSearch(e.target.value, 'desktopSearchResults');
-            });
-            
-            // Ẩn kết quả khi click ra ngoài (Desktop)
-            document.addEventListener('click', (e) => {
-                const searchBox = document.querySelector('.search-box');
-                const results = document.getElementById('desktopSearchResults');
-                if (searchBox && !searchBox.contains(e.target)) {
-                    results.classList.remove('active');
-                }
-            });
-        }
     </script>
     
     <script>
