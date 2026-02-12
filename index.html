@@ -132,15 +132,29 @@
             background: var(--bg-body); z-index: 9999; display: flex; 
             justify-content: center; align-items: center; 
         }
+        
         .loading-img { 
-            width: 800px; max-width: 80vw; height: auto; object-fit: contain; 
-            animation: zoomIn 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards, floatIdle 4s ease-in-out infinite 0.8s; 
+            width: 800px; /* Chỉnh lại kích thước cho vừa vặn */
+            max-width: 60vw; height: auto; object-fit: contain; 
+            /* Animation mặc định: Hiện ra -> Bay lơ lửng */
+            animation: zoomIn 0.8s ease-out forwards, floatIdle 3s ease-in-out infinite 0.8s; 
         }
-        .loading-img.zoom-out { animation: zoomOut 0.5s cubic-bezier(0.6, -0.28, 0.74, 0.05) forwards !important; }
-        @media (max-width: 900px) { .loading-img { width: 500px; } }
-        @keyframes zoomIn { 0% { transform: scale(2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes floatIdle { 0% { transform: scale(1); } 50% { transform: scale(0.85); } 100% { transform: scale(1); } }
-        @keyframes zoomOut { from { transform: scale(1); opacity: 1; } to { transform: scale(2); opacity: 0; } }
+        
+        /* Class này sẽ được JS thêm vào khi tải xong */
+        .loading-img.zoom-out { 
+            /* Dùng ease-in để tạo cảm giác hút nhanh vào trong */
+            animation: zoomOut 0.5s ease-in forwards !important; 
+        }
+
+        /* Hiệu ứng lúc mới vào trang */
+        @keyframes zoomIn { 0% { transform: scale(1.36); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes floatIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        
+        /* --- 🔥 SỬA ĐOẠN NÀY: HÚT VÀO TRONG --- */
+        @keyframes zoomOut { 
+            36% { transform: scale(1); opacity: 1; } 
+            100% { transform: scale(0.36); opacity: 0; } /* scale(0) là thu nhỏ biến mất */
+        }
 
         /* ==========================================================================
            5. HEADER (MOBILE REMASTERED)
@@ -209,17 +223,21 @@
         .mobile-overlay { position: fixed; inset: 0; z-index: 10000; transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1); visibility: hidden; }
         .mobile-overlay.active { visibility: visible; }
         
-        #mobileMenuOverlay { 
-            background: var(--mobile-menu-bg); 
-            transform: translateX(-100%); 
-            width: 300px; /* Độ rộng drawer */
-            height: 100%; 
-            box-shadow: 20px 0 60px rgba(0,0,0,0.8);
-            position: absolute; top: 0; left: 0;
-            display: flex; flex-direction: column;
-            transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-        }
-        #mobileMenuOverlay.active { transform: translateX(0); }
+            #mobileMenuOverlay { 
+                display: flex; 
+                flex-direction: column;
+                position: fixed; /* QUAN TRỌNG: Ghim menu vào màn hình */
+                top: 0; 
+                left: 0; 
+                width: 300px; 
+                height: 100vh; /* QUAN TRỌNG: Chiều cao bằng đúng màn hình thiết bị */
+                background: var(--mobile-menu-bg); 
+                box-shadow: 20px 0 60px rgba(0,0,0,0.8); 
+                transform: translateX(-100%); 
+                transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1); 
+                z-index: 10001; /* Đảm bảo nằm trên cùng */
+            }
+            #mobileMenuOverlay.active { transform: translateX(0); }
 
         .drawer-header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .drawer-content { flex: 1; overflow-y: auto; padding: 10px 0; }
@@ -242,13 +260,11 @@
         .mobile-overlay.active .backdrop { opacity: 1; }
 
         /* --- MOBILE SEARCH OVERLAY (SLIDE DOWN) --- */
-        #mobileSearchOverlay {
-            position: fixed; inset: 0; z-index: 10001; background: #1f212d;
-            transform: translateY(-100%); opacity: 0; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            padding: 20px; display: flex; flex-direction: column;
-        }
-        #mobileSearchOverlay.active { transform: translateY(0); opacity: 1; }
-        
+        #mobileSearchOverlay { display: block; background: #1f212d; transform: translateY(-100%); opacity: 0; }
+        #mobileSearchOverlay.active { transform: translateY(0) !important; opacity: 1 !important; }
+
+        #mobileSearchOverlay .close-btn-overlay { position: static; color: #fff; }
+
         .ms-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
         .ms-input-group { display: flex; align-items: center; gap: 10px; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
         .ms-input-group input { background: transparent; border: none; color: #fff; font-size: 1.2rem; width: 100%; outline: none; }
@@ -718,6 +734,72 @@
                 aspect-ratio: 728/90;
             }
         }
+
+
+/* --- MEDIA QUERY: MAX 900PX (TABLET & MOBILE) --- */
+        @media (max-width: 900px) {
+            header { height: 65px; padding: 0 15px; justify-content: space-between; background: var(--bg-dark); }
+            /* Ẩn Desktop UI */
+            .header-left-group, .nav-links, .search-box, .desktop-auth { display: none !important; }
+            
+            /* Hiện Mobile UI */
+            .mobile-left-container { display: flex !important; }
+            .mobile-left-container .logo { position: static; transform: none; margin: 0; }
+            .mobile-left-container .logo img { height: 32px; }
+            .mobile-left-container .logo-text { font-size: 1.2rem; }
+            .mobile-search-trigger { display: block !important; }
+
+            /* --- MOBILE MENU STYLES (NEW) --- */
+            .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+            .menu-logo { display: flex; align-items: center; gap: 10px; } 
+            .menu-logo img { height: 35px; } 
+            .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            
+            /* Nút Thành viên To màu cam */
+            .member-btn-large { width: 100%; padding: 12px; background: var(--gradient-main); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 94, 98, 0.4); }
+            
+            /* Danh sách menu */
+            .mobile-menu-grid { display: flex; flex-direction: column; gap: 5px; max-height: 80vh; overflow-y: auto; }
+            .mobile-menu-link { color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem; padding: 12px 0; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--mobile-border); }
+            .mobile-menu-link i { width: 25px; color: var(--primary-color); text-align: center; }
+
+            /* --- MOBILE SEARCH OVERLAY STYLES (NEW) --- */
+            .search-header-mobile { display: flex; align-items: center; padding: 15px 20px; background: #2a2d3a; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; font-family: var(--font-main); margin-right: 15px; }
+            .search-content-mobile { padding: 10px; }
+            /* Định vị nút đóng */
+            .close-btn-overlay { position: static !important; } 
+
+            /* --- CONTENT ADJUSTMENTS --- */
+            .hero-title { font-size: 3rem; }
+            .topic-grid { display: flex; overflow-x: auto; scrollbar-width: none; }
+            .topic-card { flex: 0 0 160px; height: 95px; }
+            
+            .merged-block { padding: 35px 20px; border-radius: 0; margin: 0 0 40px; overflow: hidden !important; }
+            
+            /* Grid phim ngang */
+            .country-grid { padding: 40px 30px !important; margin: -30px -30px !important; gap: 15px; }
+            .n-card { flex: 0 0 160px; aspect-ratio: 2/3; }
+            .n-info-layer { transform: translateY(0); padding: 10px; }
+            .n-meta-in, .n-actions-in { display: none; }
+            .n-card:hover { transform: none; }
+            .nav-arrow { display: none; } 
+
+            .top-10-header h2 { font-size: 2rem; }
+            .top-5-grid { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; gap: 15px; padding-bottom: 20px; scrollbar-width: none; }
+            .top-card-style2 { flex: 0 0 160px; }
+            .top-rank-style2 { font-size: 3.2rem !important; }
+            
+            .modal-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+
+            .footer-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+            .footer-col ul { display: flex; flex-direction: column; align-items: center; }
+            .footer-brand { justify-content: center; }
+
+            /* Mobile Ad Panel */
+            .ad-img-728 { height: auto; aspect-ratio: 728/90; }
+        }
+        @media (min-width: 901px) { .episode-block-mobile { display: none; } }
     </style>
 </head>
 <body>
@@ -740,44 +822,40 @@
         </div>
     </div>
 
-    <div id="mobileMenuOverlay" class="mobile-overlay">
+<div id="mobileMenuOverlay" class="mobile-overlay">
         <div class="backdrop" onclick="closeMobileMenu()"></div>
-        <div id="mobileMenuContent" style="background: var(--mobile-menu-bg); width: 300px; height: 100%; display: flex; flex-direction: column; position: relative; z-index: 2; box-shadow: 20px 0 60px rgba(0,0,0,0.8);">
+        <div id="mobileMenuContent" style="background: var(--mobile-menu-bg); width: 300px; height: 100%; display: flex; flex-direction: column; position: relative; z-index: 2; box-shadow: 20px 0 60px rgba(0,0,0,0.8); padding: 25px;">
             
-            <div class="drawer-header">
-                <div style="display:flex; align-items:center; gap:10px;"><img src="/LOGO.WEBP" style="height:30px;"><span class="text-gradient" style="font-size:1.2rem;">HOPPHIM</span></div>
-                <i class="fas fa-times" onclick="closeMobileMenu()" style="color:#fff; font-size:1.5rem; cursor:pointer;"></i>
+            <div class="menu-header">
+                <div class="menu-logo"><img src="/LOGO.WEBP" alt="HopPhim"><span>HOPPHIM</span></div>
+                <i class="fas fa-times close-btn-overlay" onclick="closeMobileMenu()" style="font-size: 1.5rem; color: #fff; cursor: pointer;"></i>
             </div>
 
-            <div class="drawer-user-card">
-                <div class="drawer-user-btn" onclick="handleUserClick()">
-                    <img src="/Guest.webp" id="drawerAvatar" class="drawer-user-avatar">
-                    <span id="drawerUserName">Đăng nhập</span>
-                </div>
-            </div>
+            <button class="member-btn-large" id="mobileMemberBtn" onclick="window.location.href='/login.html'">
+                <i class="fas fa-user-circle"></i> <span id="mobileMemberText">Đăng nhập / Đăng ký</span>
+            </button>
 
-            <div class="drawer-content">
-                <a href="/" class="drawer-item"><i class="fas fa-home"></i> Trang chủ</a>
-                <a href="#" onclick="loadCategory('phim-bo', 'Phim Bộ'); closeMobileMenu()" class="drawer-item"><i class="fas fa-tv"></i> Phim Bộ</a>
-                <a href="#" onclick="loadCategory('phim-le', 'Phim Lẻ'); closeMobileMenu()" class="drawer-item"><i class="fas fa-film"></i> Phim Lẻ</a>
-
-                <div class="drawer-label">QUẢN LÝ</div>
-                <a href="/hopteam" class="drawer-item"><i class="fas fa-users"></i> Về HopTeam</a>
-                <div id="drawerLogout" class="drawer-item" style="color:#ff4757; display:none;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</div>
+            <div class="mobile-menu-grid">
+                <a href="/" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Trang chủ</a>
+                <a href="#" class="mobile-menu-link" onclick="loadCategory('phim-bo', 'Phim Bộ'); closeMobileMenu()"><i class="fas fa-tv"></i> Phim Bộ</a>
+                <a href="#" class="mobile-menu-link" onclick="loadCategory('phim-le', 'Phim Lẻ'); closeMobileMenu()"><i class="fas fa-film"></i> Phim Lẻ</a>
+                
+                <div style="border-bottom: 1px solid var(--mobile-border); padding: 10px 0; color:#666; font-size:0.9rem; font-weight:700; text-transform:uppercase; margin-top:10px;">Quản Lý</div>
+                <a href="hopteam.html" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-users"></i> Về HopTeam</a>
+                <div id="drawerLogout" class="mobile-menu-link" style="color:#ff4757; display:none; cursor: pointer;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</div>
             </div>
         </div>
     </div>
 
-    <div id="mobileSearchOverlay">
-        <div class="ms-header">
-            <div class="ms-input-group">
-                <i class="fas fa-search" style="color:#aaa;"></i>
-                <input type="text" id="mobileSearchInput" placeholder="Nhập tên phim..." autocomplete="off">
-            </div>
-            <i class="fas fa-times" onclick="closeMobileSearch()" style="color:#fff; font-size:1.5rem; cursor:pointer; padding-left: 15px;"></i>
+    <div id="mobileSearchOverlay" class="mobile-overlay">
+        <div class="search-header-mobile">
+            <i class="fas fa-search" style="color: #a0a0a0; margin-right: 10px;"></i>
+            <input type="text" id="mobileSearchInput" class="search-input-mobile" placeholder="Nhập tên phim..." autocomplete="off">
+            <i class="fas fa-times close-btn-overlay" onclick="closeMobileSearch()" style="font-size: 1.5rem; color: #fff; cursor: pointer;"></i>
         </div>
-        <div id="mobileSearchResults" style="flex:1; overflow-y:auto; margin-top:10px;">
-            </div>
+        <div class="search-content-mobile" style="padding: 10px; height: calc(100% - 60px); overflow-y: auto;">
+            <div id="mobileSearchResults"></div>
+        </div>
     </div>
 
     <header id="siteHeader">
@@ -992,35 +1070,56 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- 1. QUẢN LÝ ĐĂNG NHẬP (AUTH) ---
+// --- 1. QUẢN LÝ ĐĂNG NHẬP (AUTH - Đã cập nhật cho Mobile Header mới) ---
         onAuthStateChanged(auth, async (user) => {
+            // Các biến Desktop
+            const btnLogin = document.getElementById('btnLogin');
+            const userAvatar = document.getElementById('userAvatar');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            
+            // Các biến Mobile mới
+            const mobileMemberBtn = document.getElementById('mobileMemberBtn');
+            const drawerLogout = document.getElementById('drawerLogout');
+
             if (user) {
-                // Đã đăng nhập
+                // --- ĐÃ ĐĂNG NHẬP ---
                 window.currentUser = user;
-                document.getElementById('btnLogin').style.display = 'none';
-                document.getElementById('userAvatar').style.display = 'block';
-                document.getElementById('userAvatar').src = user.photoURL || '/Guest.webp';
                 
-                // Cập nhật Mobile Drawer
-                const drawerName = document.getElementById('drawerUserName');
-                if(drawerName) drawerName.innerText = user.displayName;
-                const drawerLogout = document.getElementById('drawerLogout');
-                if(drawerLogout) drawerLogout.style.display = 'flex';
+                // Desktop: Ẩn nút Login, hiện Avatar
+                if(btnLogin) btnLogin.style.display = 'none';
+                if(userAvatar) { userAvatar.style.display = 'block'; userAvatar.src = user.photoURL || '/Guest.webp'; }
+                if(userNameDisplay) userNameDisplay.innerText = user.displayName || "Thành viên";
                 
-                // Cập nhật Desktop Menu
-                document.getElementById('userNameDisplay').innerText = user.displayName;
+                // Mobile: Biến nút to thành nút Profile (Có Avatar + Tên)
+                if(mobileMemberBtn) {
+                    const photo = user.photoURL || '/Guest.webp';
+                    const name = user.displayName || "Thành viên";
+                    mobileMemberBtn.innerHTML = `<img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #fff;"> <span>${name}</span>`;
+                    mobileMemberBtn.onclick = () => window.location.href = '/profile.html';
+                }
                 
-                // Tải lịch sử
+                // Mobile: Hiện nút đăng xuất ở dưới cùng menu
+                if(drawerLogout) drawerLogout.style.display = 'flex'; 
+                
                 loadHistory(user.uid);
             } else {
-                // Chưa đăng nhập
+                // --- CHƯA ĐĂNG NHẬP ---
                 window.currentUser = null;
-                document.getElementById('btnLogin').style.display = 'block';
-                document.getElementById('userAvatar').style.display = 'none';
                 
-                document.getElementById('drawerUserName').innerText = "Đăng nhập";
-                document.getElementById('drawerLogout').style.display = 'none';
-                document.getElementById('history-container').innerHTML = '';
+                // Desktop
+                if(btnLogin) btnLogin.style.display = 'block';
+                if(userAvatar) userAvatar.style.display = 'none';
+                
+                // Mobile: Trả về nút Đăng nhập to màu cam
+                if(mobileMemberBtn) {
+                    mobileMemberBtn.innerHTML = `<i class="fas fa-user-circle"></i> <span>Đăng nhập / Đăng ký</span>`;
+                    mobileMemberBtn.onclick = () => window.location.href = '/login.html';
+                }
+
+                if(drawerLogout) drawerLogout.style.display = 'none'; // Ẩn nút đăng xuất
+                
+                const historyContainer = document.getElementById('history-container');
+                if(historyContainer) historyContainer.innerHTML = '';
             }
         });
 
@@ -1365,6 +1464,7 @@
 
         window.closeModal = () => document.getElementById('modalPopup').classList.remove('active');
         
+        // MOBILE HANDLERS
         window.openMobileMenu = () => { document.getElementById('mobileMenuOverlay').classList.add('active'); }
         window.closeMobileMenu = () => { document.getElementById('mobileMenuOverlay').classList.remove('active'); }
         
@@ -1378,14 +1478,32 @@
         window.loadHome = () => window.location.href = '/';
 
         // --- INIT & EVENT LISTENERS ---
-        window.addEventListener('load', () => {
+window.addEventListener('load', () => {
             loadTop5();
             loadCountrySection('han-quoc', 'koreaList');
             loadCountrySection('trung-quoc', 'chinaList');
             loadCountrySection('thai-lan', 'thaiList');
-            setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 1000);
+            
+            // --- 🔥 LOGIC ZOOM OUT (ĐÃ SỬA) ---
+            const screen = document.getElementById('loadingScreen');
+            const img = screen.querySelector('.loading-img');
 
-            // 🔥 GÁN SỰ KIỆN TÌM KIẾM (Mobile & Desktop)
+            setTimeout(() => {
+                if(img) {
+                    // 1. Thêm class để chạy animation scale(0) hút vào trong
+                    img.classList.add('zoom-out');
+                    
+                    // 2. Đợi 0.48s (gần bằng 0.5s của CSS) cho ảnh hút xong mới tắt màn hình
+                    setTimeout(() => {
+                        screen.style.display = 'none';
+                    }, 480); 
+                } else {
+                    // Nếu không tìm thấy ảnh thì tắt luôn cho nhanh
+                    screen.style.display = 'none';
+                }
+            }, 1000); // Thời gian chờ load giả lập (1 giây)
+
+            // --- 🔥 GÁN SỰ KIỆN TÌM KIẾM ---
             const mobileInput = document.getElementById('mobileSearchInput');
             if(mobileInput) {
                 mobileInput.addEventListener('input', (e) => performSearch(e.target.value, 'mobileSearchResults'));
