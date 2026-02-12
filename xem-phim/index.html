@@ -1067,23 +1067,29 @@ async function loadMovie() {
             } catch(e) {}
         }
 
-        async function saveToHistory(movie) {
-            if (!currentUser) return; 
-            const movieData = {
-                slug: movie.slug, name: movie.name, origin_name: movie.origin_name,
-                thumb_url: movie.thumb_url, quality: movie.quality, year: movie.year,
-                timestamp: Date.now() 
-            };
-            const userRef = doc(db, "users", currentUser.uid);
+        // Thêm tham số poster vào hàm
+        window.saveToHistory = async (slug, name, thumb, poster) => { 
+            if (!window.currentUser) return;
+            const ref = doc(db, "users", window.currentUser.uid);
             try {
-                const docSnap = await getDoc(userRef);
-                let history = docSnap.exists() ? (docSnap.data().watchHistory || []) : [];
-                history = history.filter(m => m.slug !== movie.slug);
-                history.push(movieData);
-                if (history.length > 20) history.shift();
-                await setDoc(userRef, { watchHistory: history }, { merge: true });
-            } catch (e) { console.error(e); }
-        }
+                const snap = await getDoc(ref);
+                let history = snap.exists() ? (snap.data().watchHistory || []) : [];
+                history = history.filter(m => m.slug !== slug);
+                
+                // LƯU CẢ 2 LOẠI ẢNH VÀO FIREBASE
+                history.push({ 
+                    slug, 
+                    name, 
+                    thumb_url: thumb,   // Ảnh dọc
+                    poster_url: poster, // Ảnh ngang (Cái này quan trọng cho PC)
+                    timestamp: Date.now() 
+                });
+                
+                if (history.length > 15) history.shift();
+                if(snap.exists()) await updateDoc(ref, { watchHistory: history });
+                else await setDoc(ref, { email: window.currentUser.email, watchHistory: history });
+            } catch (e) { console.error("Lỗi lưu lịch sử:", e); }
+        };
 
         function loadHistory(uid) { /* Logic load history nếu cần hiển thị ở đâu đó */ }
         
