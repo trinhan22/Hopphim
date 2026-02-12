@@ -17,8 +17,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
-    
+    <style>
+        :root { --plyr-color-main: #FF5E62; }
+        .plyr--full-ui input[type=range] { color: var(--plyr-color-main); }
+        .plyr__control--overlaid { background: var(--plyr-color-main); }
+        .plyr--video .plyr__control.plyr__tab-focus, 
+        .plyr--video .plyr__control:hover, 
+        .plyr--video .plyr__control[aria-expanded=true] {
+            background: var(--plyr-color-main);
+        }
+        /* Chỉnh lại khung chứa để không bị lỗi hiển thị */
+        .player-box {
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            width: 100%;
+            min-height: unset !important; /* Bỏ giới hạn chiều cao */
+        }
+        .plyr {
+            width: 100%;
+            height: auto;
+        }
+        .aspect-ratio-16-9 {
+            padding-top: 0 !important; /* Xóa bỏ padding gây dư thừa */
+            height: auto !important;
+        }
+        .plyr__video-embed iframe { top: -50%; height: 200%; }
+    </style>
+
     <style>
         /* --- CSS GLOBAL --- */
         :root {
@@ -544,8 +574,8 @@
 
             <div class="main-content">
                 <div class="player-box">
-                    <div class="aspect-ratio-16-9">
-                        <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+                    <div id="player-container" style="width: 100%;">
+                        <video id="player" playsinline controls data-poster=""></video>
                     </div>
                 </div>
 
@@ -692,6 +722,7 @@
         const cmtMyAvatar = document.getElementById('cmtMyAvatar');
 
         let currentUser = null;
+        let player; // Biến quản lý trình phát video
 
         // --- 3. PHÂN LOẠI NGUỒN PHIM (LOGIC QUAN TRỌNG) ---
         const urlParams = new URLSearchParams(window.location.search);
@@ -844,72 +875,110 @@
             });
         }
 
-        // 6. MAIN LOAD MOVIE LOGIC (ĐÃ TÁCH RA 2 TRƯỜNG HỢP)
-        async function loadMovie() {
-            
-            // --- TRƯỜNG HỢP A: PHIM YOUTUBE (CỦA BẠN) ---
-            if (isCustomYoutube && ytId) {
-                // 1. Tắt Loading
-                setTimeout(() => {
-                     const img = document.querySelector('.loading-img');
-                     if(img) img.classList.add('zoom-out');
-                     setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 480);
-                }, 500);
+        // --- HÀM KHỞI TẠO PLAYER (PLYR) ---
+// --- HÀM KHỞI TẠO PLAYER (FIXED) ---
+    function initPlayer(sourceType, sourceLink, poster = '') {
+        if (player) player.destroy(); // Hủy player cũ
 
-                // 2. Setup Player Youtube
-                const player = document.getElementById('videoPlayer');
-                // Thêm tham số rel=0 để không hiện video liên quan linh tinh
-                player.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&modestbranding=1&rel=0`;
+        const container = document.getElementById('player-container');
+        // Luôn làm sạch container và tạo thẻ video mới để tránh lỗi đen màn hình
+        container.innerHTML = `<video id="player" playsinline controls data-poster="${poster}" style="width:100%;"></video>`;
+        const videoElement = document.getElementById('player');
 
-                // 3. Điền thông tin giả lập
-                const finalName = customName ? decodeURIComponent(customName) : "Phim Đặc Sắc";
-                
-                document.title = `Xem phim ${finalName} - HopPhim`;
-                document.getElementById('mName').innerText = finalName;
-                document.getElementById('mOrigin').innerText = "Phim Độc Quyền HopPhim";
-                document.getElementById('breadCrumbTitle').innerText = finalName;
-                document.getElementById('mContent').innerText = "Phim này được phát độc quyền trên hệ thống HopPhim. Chúc các bạn xem phim vui vẻ!";
-                
-                // Tag giả lập
-                document.getElementById('mTags').innerHTML = `
-                    <span class="tag-item tag-highlight">FHD</span>
-                    <span class="tag-item">Vietsub</span>
-                    <span class="tag-item">2026</span>
-                    <span class="tag-item"><i class="fab fa-youtube"></i> Exclusive</span>
-                `;
-
-                // Ảnh nền lấy từ thumb youtube
-                const bgUrl = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
-                document.getElementById('movieInfoBg').style.backgroundImage = `url('${bgUrl}')`;
-
-                // Ẩn danh sách tập (Vì youtube lẻ thường chỉ có 1 video)
-                document.querySelectorAll('.episode-block').forEach(el => el.style.display = 'none');
-
-                // Load đề xuất cho đỡ trống
-                loadRelated();
-                return; // Dừng tại đây, không chạy code OPhim bên dưới
-            }
-
-            // --- TRƯỜNG HỢP B: PHIM OPHIM (BÌNH THƯỜNG) ---
-            if (!movieSlug) return;
-
-            try {
-                const res = await fetch(`${API_BASE}/${movieSlug}`);
-                const data = await res.json();
-                if (data.status) {
-                    renderInfo(data.data.item);
-                    renderEpisodes(data.data.item.episodes);
-                    loadRelated();
-                } else { window.showToast('Lỗi tải phim', 'error'); }
-            } catch (e) { console.error(e); } finally { 
-                // Hiệu ứng tắt loading
-                setTimeout(() => {
-                     const img = document.querySelector('.loading-img');
-                     if(img) img.classList.add('zoom-out');
-                     setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 480);
-                }, 500);
+        if (sourceType === 'youtube') {
+            player = new Plyr(videoElement, {
+                controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+                youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1 }
+            });
+            player.source = {
+                type: 'video',
+                sources: [{ src: sourceLink, provider: 'youtube' }],
+                poster: poster
+            };
+        } 
+        else if (sourceType === 'hls') {
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(sourceLink);
+                hls.attachMedia(videoElement);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    player = new Plyr(videoElement, {
+                        controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'pip', 'airplay', 'fullscreen']
+                    });
+                });
+            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                videoElement.src = sourceLink;
+                player = new Plyr(videoElement);
             }
         }
+        else {
+             // Fallback iframe nếu là link embed thường
+             container.innerHTML = `<div style="position:relative; padding-top:56.25%;"><iframe src="${sourceLink}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe></div>`;
+        }
+    }
+
+        // 6. MAIN LOAD MOVIE LOGIC (ĐÃ TÁCH RA 2 TRƯỜNG HỢP)
+async function loadMovie() {
+        // CASE A: YOUTUBE TỪ TRANG CHỦ
+        if (isCustomYoutube && ytId) {
+            // Tắt loading
+            setTimeout(() => {
+                 const img = document.querySelector('.loading-img');
+                 if(img) img.classList.add('zoom-out');
+                 setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 480);
+            }, 500);
+
+            // Chạy Player Youtube Xịn
+            const posterUrl = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+            initPlayer('youtube', ytId, posterUrl);
+
+            // Điền thông tin
+            const finalName = customName ? decodeURIComponent(customName) : "Phim Đặc Sắc";
+            document.title = `Xem phim ${finalName} - HopPhim`;
+            document.getElementById('mName').innerText = finalName;
+            document.getElementById('mOrigin').innerText = "Phim Độc Quyền HopPhim";
+            document.getElementById('breadCrumbTitle').innerText = finalName;
+            document.getElementById('mContent').innerText = "Phim được phát độc quyền trên hệ thống HopPhim với giao diện Player mới.";
+            
+            document.getElementById('mTags').innerHTML = `<span class="tag-item tag-highlight">FHD</span><span class="tag-item">Youtube</span>`;
+            document.getElementById('movieInfoBg').style.backgroundImage = `url('${posterUrl}')`;
+            
+            // Ẩn list tập
+            document.querySelectorAll('.episode-block').forEach(el => el.style.display = 'none');
+            loadRelated();
+            return;
+        }
+
+        // CASE B: OPHIM (GIỮ NGUYÊN LOGIC CŨ NHƯNG GỌI HÀM PHÁT MỚI)
+        if (!movieSlug) return;
+        try {
+            const res = await fetch(`${API_BASE}/${movieSlug}`);
+            const data = await res.json();
+            if (data.status) {
+                const movie = data.data.item;
+                renderInfo(movie);
+                renderEpisodes(movie.episodes);
+                loadRelated();
+                
+                // Phát tập 1
+                if(movie.episodes.length > 0 && movie.episodes[0].server_data.length > 0) {
+                    const firstEp = movie.episodes[0].server_data[0];
+                    // Ưu tiên link m3u8 để dùng Player đẹp. Không có thì dùng iframe
+                    const link = firstEp.link_m3u8 || firstEp.link_embed;
+                    const type = firstEp.link_m3u8 ? 'hls' : 'iframe';
+                    
+                    // Gọi hàm đổi tập để phát
+                    window.changeEp(link, type, null);
+                }
+            } else { window.showToast('Lỗi tải phim', 'error'); }
+        } catch (e) { console.error(e); } finally { 
+             setTimeout(() => {
+                 const img = document.querySelector('.loading-img');
+                 if(img) img.classList.add('zoom-out');
+                 setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 480);
+            }, 500);
+        }
+    }
 
         // Các hàm render phụ trợ (Giữ nguyên của OPhim)
         function renderInfo(movie) {
@@ -941,11 +1010,13 @@
             if (!episodes || episodes.length === 0) return;
             const serverData = episodes[0].server_data;
             let html = '';
-            const player = document.getElementById('videoPlayer');
             
             serverData.forEach((ep, index) => {
-                if (index === 0) player.src = ep.link_embed;
-                html += `<div class="ep-btn ${index === 0 ? 'active' : ''}" onclick="window.changeEp('${ep.link_embed}', this)">${ep.name}</div>`;
+                const link = ep.link_m3u8 || ep.link_embed;
+                const type = ep.link_m3u8 ? 'hls' : 'iframe';
+                const active = index === 0 ? 'active' : '';
+                // Truyền thêm biến 'type' vào hàm
+                html += `<div class="ep-btn ${active}" onclick="window.changeEp('${link}', '${type}', this)">${ep.name}</div>`;
             });
             
             document.getElementById('episodeListMobile').innerHTML = html;
@@ -953,12 +1024,18 @@
         }
 
         // Gán hàm changeEp vào window để gọi được từ HTML
-        window.changeEp = function(link, btn) {
-            document.getElementById('videoPlayer').src = link;
-            document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
-            const allBtns = document.querySelectorAll('.ep-btn');
-            for(let b of allBtns) { if(b.innerText === btn.innerText) b.classList.add('active'); }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.changeEp = function(link, type, btn) {
+            if(btn) {
+                document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
+                const allBtns = document.querySelectorAll('.ep-btn');
+                for(let b of allBtns) { if(b.innerText === btn.innerText) b.classList.add('active'); }
+            }
+            
+            const playerBox = document.querySelector('.player-box');
+            if(playerBox) playerBox.scrollIntoView({behavior: "smooth", block: "center"});
+
+            // Gọi hàm khởi tạo player
+            initPlayer(type, link);
         }
 
         // --- CẤU HÌNH ĐỀ XUẤT ---
