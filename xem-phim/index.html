@@ -200,6 +200,27 @@
         .comment-author { font-weight: 700; font-size: 0.95rem; color: #fff; }
         .comment-text { color: #ccc; font-size: 0.95rem; line-height: 1.5; background: rgba(255,255,255,0.03); padding: 12px 15px; border-radius: 0 12px 12px 12px; display: inline-block; }
         
+        /* --- CSS CĂN GIỮA THÔNG BÁO BÌNH LUẬN --- */
+        .empty-comment {
+            text-align: center;         /* Căn giữa chữ */
+            width: 100%;                /* Chiếm toàn bộ chiều rộng */
+            padding: 20px 0;           /* Thêm khoảng cách trên dưới cho thoáng */
+            color: #a0a0a0;             /* Màu chữ xám nhạt */
+            font-size: 0.95rem;         /* Kích thước chữ */
+            font-style: italic;         /* In nghiêng cho đẹp */
+            display: flex;              /* Dùng Flexbox để căn giữa icon và chữ */
+            flex-direction: column;     /* Xếp dọc (icon trên, chữ dưới) */
+            align-items: center;        /* Căn giữa theo trục ngang */
+            gap: 10px;                  /* Khoảng cách giữa icon và chữ */
+        }
+        
+        .empty-comment i {
+            font-size: 2rem;            /* Icon to lên một chút */
+            color: var(--primary-color); /* Icon màu chủ đạo */
+            opacity: 0.7;               /* Làm mờ icon một chút */
+            margin-bottom: 5px;
+        }
+
         /* Sidebar Card */
         .sidebar-right { position: sticky; top: 90px; height: fit-content; }
         .sidebar-card { display: flex; gap: 15px; margin-bottom: 15px; padding: 10px; background: var(--bg-card); border-radius: 8px; transition: 0.2s; cursor: pointer; border: 1px solid transparent; }
@@ -487,7 +508,7 @@
                         <div class="comment-form">
                             <textarea id="cmtInput" class="comment-input" placeholder="Viết bình luận của bạn về phim này..."></textarea>
                             <div class="form-actions">
-                                <span style="font-size: 0.8rem; color: #666;">Văn minh lên bạn êy.</span>
+                                <span style="font-size: 0.8rem; color: #666;">Lời nói chẳng mất tiền mua, lựa lời mà nói cho vừa lòng nhau</span>
                                 <button class="btn-send-cmt" onclick="sendComment()">
                                     Gửi <i class="fas fa-paper-plane"></i>
                                 </button>
