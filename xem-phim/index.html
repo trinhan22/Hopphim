@@ -336,55 +336,37 @@
 
 /* CSS cho kết quả tìm kiếm */
 .search-result-item {
-    display: flex;
-    gap: 15px;
-    padding: 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    cursor: pointer;
-    transition: 0.2s;
+    display: flex; gap: 15px; padding: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer; transition: 0.2s;
 }
-.search-result-item:hover {
-    background: rgba(255,255,255,0.05);
-}
-.search-result-item img {
-    width: 50px;
-    height: 75px;
-    object-fit: cover;
-    border-radius: 4px;
-}
-.search-result-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.search-result-title {
-    color: #fff;
-    font-weight: 700;
-    font-size: 0.95rem;
-    margin-bottom: 4px;
-}
-.search-result-meta {
-    color: #a0a0a0;
-    font-size: 0.8rem;
-}
+.search-result-item:hover { background: rgba(255,255,255,0.08); }
+.search-result-item img { width: 55px; height: 80px; object-fit: cover; border-radius: 6px; }
+
+.search-result-info { display: flex; flex-direction: column; justify-content: center; }
+.search-result-title { color: #fff; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+.search-result-meta { color: #888; font-size: 0.8rem; }
 
 /* Container kết quả Desktop (Thêm cái này để Desktop cũng hiện kết quả) */
 #desktopSearchResults {
     position: absolute;
-    top: 100%;
+    top: 110%;
     right: 0;
-    width: 350px;
-    background: #1f212d;
+    width: 380px;
+    background: rgba(31, 33, 45, 0.95);
+    backdrop-filter: blur(15px);
     border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    max-height: 400px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+    max-height: 450px;
     overflow-y: auto;
-    display: none; /* Mặc định ẩn */
+    display: none;
     z-index: 10002;
-    margin-top: 10px;
     border: 1px solid rgba(255,255,255,0.1);
 }
-#desktopSearchResults.active { display: block; }
+#desktopSearchResults.active { display: block; animation: fadeIn 0.2s ease; }
+
+#desktopSearchResults::-webkit-scrollbar { width: 5px; }
+#desktopSearchResults::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
 
         /* Custom Scroller */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -477,10 +459,12 @@
     <div id="mobileSearchOverlay" class="mobile-overlay">
         <div class="search-header-mobile">
             <i class="fas fa-search" style="color: #a0a0a0; margin-right: 10px;"></i>
-            <input type="text" id="mobileSearchInput" class="search-input-mobile" placeholder="Nhập tên phim...">
+            <input type="text" id="mobileSearchInput" class="search-input-mobile" placeholder="Nhập tên phim..." autocomplete="off">
             <i class="fas fa-times close-btn-overlay" onclick="closeMobileSearch()"></i>
         </div>
-        <div class="search-content-mobile"><div id="mobileSearchResults"></div></div>
+        <div class="search-content-mobile">
+            <div id="mobileSearchResults"></div>
+        </div>
     </div>
 
     <header id="header">
@@ -551,7 +535,7 @@
             <div class="search-box desktop-auth" style="position: relative;"> 
                 <i class="fas fa-search" style="color: #a0a0a0"></i>
                 <input type="text" id="searchInput" placeholder="Tìm kiếm phim..." autocomplete="off">
-                <div id="desktopSearchResults"></div>
+                <div id="desktopSearchResults"></div> 
             </div>
 
             <div class="desktop-auth" style="position: relative;">
@@ -947,52 +931,81 @@
         /* ==============================================
            🔥 FIX SEARCH LOGIC (TÌM KIẾM)
            ============================================== */
-        let searchTimeout;
-        
-        // Hàm gọi API tìm kiếm và hiển thị kết quả
-        async function performSearch(keyword, containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) return; // Bảo vệ nếu không tìm thấy container
+// --- LOGIC TÌM KIẾM ĐỒNG BỘ INDEX ---
+let searchTimeout;
+const IMG_BASE_URL = 'https://img.ophim1.com/uploads/movies/';
 
-            if (!keyword || keyword.length < 2) {
-                container.innerHTML = '';
-                container.classList.remove('active');
-                return;
+async function performSearch(keyword, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (!keyword || keyword.trim().length < 2) {
+        container.innerHTML = '';
+        container.classList.remove('active');
+        return;
+    }
+
+    container.classList.add('active');
+    container.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Đang tìm...</div>';
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        try {
+            const res = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`);
+            const data = await res.json();
+
+            if (data.data && data.data.items && data.data.items.length > 0) {
+                let html = '';
+                data.data.items.slice(0, 10).forEach(m => {
+                    const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE_URL + m.thumb_url;
+                    html += `
+                        <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
+                            <img src="${img}" alt="${m.name}" loading="lazy">
+                            <div class="search-result-info">
+                                <div class="search-result-title">${m.name}</div>
+                                <div class="search-result-meta">${m.year} • ${m.origin_name}</div>
+                            </div>
+                        </div>`;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<div style="color:#666; padding:20px; text-align:center;">Không tìm thấy phim nào...</div>';
             }
-
-            container.classList.add('active');
-            container.innerHTML = '<div style="color:#ccc; padding:15px; text-align:center;">Đang tìm kiếm...</div>';
-
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(async () => {
-                try {
-                    const res = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${keyword}`);
-                    const data = await res.json();
-
-                    if (data.data && data.data.items && data.data.items.length > 0) {
-                        let html = '';
-                        data.data.items.forEach(m => {
-                            const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-                            html += `
-                                <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
-                                    <img src="${img}" loading="lazy">
-                                    <div class="search-result-info">
-                                        <div class="search-result-title">${m.name}</div>
-                                        <div class="search-result-meta">${m.year || ''} • ${m.origin_name || ''}</div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        container.innerHTML = html;
-                    } else {
-                        container.innerHTML = '<div style="color:#aaa; padding:15px; text-align:center;">Không tìm thấy phim nào.</div>';
-                    }
-                } catch (e) {
-                    console.error(e);
-                    container.innerHTML = '<div style="color:#ff4757; padding:15px; text-align:center;">Lỗi kết nối server!</div>';
-                }
-            }, 500); // Debounce 500ms
+        } catch (e) {
+            container.innerHTML = '<div style="color:#ff4757; padding:20px; text-align:center;">Lỗi kết nối server!</div>';
         }
+    }, 500);
+}
+
+// Gán sự kiện cho Desktop
+const desktopSearch = document.getElementById('searchInput');
+if(desktopSearch) {
+    desktopSearch.addEventListener('input', (e) => performSearch(e.target.value, 'desktopSearchResults'));
+}
+
+// Gán sự kiện cho Mobile
+const mobileSearch = document.getElementById('mobileSearchInput');
+if(mobileSearch) {
+    mobileSearch.addEventListener('input', (e) => performSearch(e.target.value, 'mobileSearchResults'));
+}
+
+// Click ra ngoài để ẩn kết quả Desktop
+document.addEventListener('click', (e) => {
+    const box = document.querySelector('.search-box');
+    const res = document.getElementById('desktopSearchResults');
+    if (box && !box.contains(e.target) && res) {
+        res.classList.remove('active');
+    }
+});
+
+// Hàm mở/đóng search mobile (Dùng chung cho toàn web)
+window.openMobileSearch = () => {
+    document.getElementById('mobileSearchOverlay').classList.add('active');
+    setTimeout(() => document.getElementById('mobileSearchInput').focus(), 300);
+}
+window.closeMobileSearch = () => {
+    document.getElementById('mobileSearchOverlay').classList.remove('active');
+}
         
         // 6. MAIN LOAD MOVIE LOGIC (ĐÃ TÁCH RA 2 TRƯỜNG HỢP)
 async function loadMovie() {
