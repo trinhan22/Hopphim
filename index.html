@@ -884,6 +884,9 @@
 }
 #desktopSearchResults.active { display: block; }
 
+#desktopSearchResults::-webkit-scrollbar { width: 5px; }
+#desktopSearchResults::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+
 /* --- PANEL QUẢNG CÁO 728x90 (Dọc & Tĩnh) --- */
         .ad-panel-wrapper {
             display: flex;
@@ -1697,52 +1700,80 @@ window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
         /* ==============================================
            🔥 FIX SEARCH LOGIC (TÌM KIẾM)
            ============================================== */
-        let searchTimeout;
-        
-        // Hàm gọi API tìm kiếm và hiển thị kết quả
-        async function performSearch(keyword, containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) return; // Bảo vệ nếu không tìm thấy container
+let searchTimeout;
+const IMG_BASE_URL = 'https://img.ophim1.com/uploads/movies/';
 
-            if (!keyword || keyword.length < 2) {
-                container.innerHTML = '';
-                container.classList.remove('active');
-                return;
+async function performSearch(keyword, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (!keyword || keyword.trim().length < 2) {
+        container.innerHTML = '';
+        container.classList.remove('active');
+        return;
+    }
+
+    container.classList.add('active');
+    container.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;"><i class="fas fa-spinner fa-spin"></i></div>';
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        try {
+            const res = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`);
+            const data = await res.json();
+
+            if (data.data && data.data.items && data.data.items.length > 0) {
+                let html = '';
+                data.data.items.slice(0, 10).forEach(m => {
+                    const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE_URL + m.thumb_url;
+                    html += `
+                        <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
+                            <img src="${img}" alt="${m.name}" loading="lazy">
+                            <div class="search-result-info">
+                                <div class="search-result-title">${m.name}</div>
+                                <div class="search-result-meta">${m.year} • ${m.origin_name}</div>
+                            </div>
+                        </div>`;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<div style="color:#666; padding:20px; text-align:center;">Không tìm thấy phim nào...</div>';
             }
-
-            container.classList.add('active');
-            container.innerHTML = '<div style="color:#ccc; padding:15px; text-align:center;">Đang tìm kiếm...</div>';
-
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(async () => {
-                try {
-                    const res = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${keyword}`);
-                    const data = await res.json();
-
-                    if (data.data && data.data.items && data.data.items.length > 0) {
-                        let html = '';
-                        data.data.items.forEach(m => {
-                            const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-                            html += `
-                                <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
-                                    <img src="${img}" loading="lazy">
-                                    <div class="search-result-info">
-                                        <div class="search-result-title">${m.name}</div>
-                                        <div class="search-result-meta">${m.year || ''} • ${m.origin_name || ''}</div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        container.innerHTML = html;
-                    } else {
-                        container.innerHTML = '<div style="color:#aaa; padding:15px; text-align:center;">Không tìm thấy phim nào.</div>';
-                    }
-                } catch (e) {
-                    console.error(e);
-                    container.innerHTML = '<div style="color:#ff4757; padding:15px; text-align:center;">Lỗi kết nối server!</div>';
-                }
-            }, 500); // Debounce 500ms
+        } catch (e) {
+            container.innerHTML = '<div style="color:#ff4757; padding:20px; text-align:center;">Lỗi kết nối server!</div>';
         }
+    }, 500);
+}
+
+// Gán sự kiện cho Desktop
+const desktopSearch = document.getElementById('searchInput');
+if(desktopSearch) {
+    desktopSearch.addEventListener('input', (e) => performSearch(e.target.value, 'desktopSearchResults'));
+}
+
+// Gán sự kiện cho Mobile
+const mobileSearch = document.getElementById('mobileSearchInput');
+if(mobileSearch) {
+    mobileSearch.addEventListener('input', (e) => performSearch(e.target.value, 'mobileSearchResults'));
+}
+
+// Click ra ngoài để ẩn kết quả Desktop
+document.addEventListener('click', (e) => {
+    const box = document.querySelector('.search-box');
+    const res = document.getElementById('desktopSearchResults');
+    if (box && !box.contains(e.target) && res) {
+        res.classList.remove('active');
+    }
+});
+
+// Hàm mở/đóng search mobile (Dùng chung cho toàn web)
+window.openMobileSearch = () => {
+    document.getElementById('mobileSearchOverlay').classList.add('active');
+    setTimeout(() => document.getElementById('mobileSearchInput').focus(), 300);
+}
+window.closeMobileSearch = () => {
+    document.getElementById('mobileSearchOverlay').classList.remove('active');
+}
 
         // --- RENDER TOP 5 ---
 async function loadTop5() {
