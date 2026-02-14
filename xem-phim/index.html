@@ -548,10 +548,10 @@
         <div class="right-elements">
             <div class="mobile-search-trigger" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
             
-            <div class="search-box desktop-auth" style="position: relative;"> <i class="fas fa-search" style="color: #a0a0a0"></i>
+            <div class="search-box desktop-auth" style="position: relative;"> 
+                <i class="fas fa-search" style="color: #a0a0a0"></i>
                 <input type="text" id="searchInput" placeholder="Tìm kiếm phim..." autocomplete="off">
-                
-                <div id="desktopSearchResults"></div> 
+                <div id="desktopSearchResults"></div>
             </div>
 
             <div class="desktop-auth" style="position: relative;">
@@ -944,83 +944,56 @@
             }, 1000);
         }
 
-// --- LOGIC TÌM KIẾM (DESKTOP & MOBILE) ---
-const searchInput = document.getElementById('searchInput');
-const desktopResults = document.getElementById('desktopSearchResults');
-const mobileSearchInput = document.getElementById('mobileSearchInput');
-const mobileResults = document.getElementById('mobileSearchResults');
-
-// Hàm gọi API và hiển thị kết quả
-async function handleSearch(keyword, container) {
-    if (!keyword || keyword.length < 2) {
-        container.innerHTML = '';
-        container.classList.remove('active');
-        return;
-    }
-
-    try {
-        const res = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${keyword}&limit=10`);
-        const data = await res.json();
+        /* ==============================================
+           🔥 FIX SEARCH LOGIC (TÌM KIẾM)
+           ============================================== */
+        let searchTimeout;
         
-        if (data.status && data.data.items.length > 0) {
-            let html = '';
-            data.data.items.forEach(m => {
-                // Xử lý ảnh (nếu không có link tuyệt đối thì ghép link base)
-                const img = m.thumb_url.startsWith('http') ? m.thumb_url : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
-                
-                html += `
-                    <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
-                        <img src="${img}" alt="${m.name}">
-                        <div class="search-result-info">
-                            <div class="search-result-title">${m.name}</div>
-                            <div class="search-result-meta">${m.origin_name} (${m.year})</div>
-                        </div>
-                    </div>`;
-            });
-            container.innerHTML = html;
+        // Hàm gọi API tìm kiếm và hiển thị kết quả
+        async function performSearch(keyword, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return; // Bảo vệ nếu không tìm thấy container
+
+            if (!keyword || keyword.length < 2) {
+                container.innerHTML = '';
+                container.classList.remove('active');
+                return;
+            }
+
             container.classList.add('active');
-        } else {
-            container.innerHTML = '<div style="padding:15px; color:#666;">Không tìm thấy phim...</div>';
-            container.classList.add('active');
+            container.innerHTML = '<div style="color:#ccc; padding:15px; text-align:center;">Đang tìm kiếm...</div>';
+
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${keyword}`);
+                    const data = await res.json();
+
+                    if (data.data && data.data.items && data.data.items.length > 0) {
+                        let html = '';
+                        data.data.items.forEach(m => {
+                            const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+                            html += `
+                                <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
+                                    <img src="${img}" loading="lazy">
+                                    <div class="search-result-info">
+                                        <div class="search-result-title">${m.name}</div>
+                                        <div class="search-result-meta">${m.year || ''} • ${m.origin_name || ''}</div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div style="color:#aaa; padding:15px; text-align:center;">Không tìm thấy phim nào.</div>';
+                    }
+                } catch (e) {
+                    console.error(e);
+                    container.innerHTML = '<div style="color:#ff4757; padding:15px; text-align:center;">Lỗi kết nối server!</div>';
+                }
+            }, 500); // Debounce 500ms
         }
-    } catch (e) {
-        console.error("Lỗi tìm kiếm:", e);
-    }
-}
-
-// Lắng nghe sự kiện gõ phím trên Desktop
-searchInput.addEventListener('input', (e) => {
-    handleSearch(e.target.value.trim(), desktopResults);
-});
-
-// Lắng nghe sự kiện gõ phím trên Mobile
-mobileSearchInput.addEventListener('input', (e) => {
-    handleSearch(e.target.value.trim(), mobileResults);
-});
-
-// Đóng kết quả khi nhấn ra ngoài (Desktop)
-document.addEventListener('click', (e) => {
-    if (!searchInput.contains(e.target) && !desktopResults.contains(e.target)) {
-        desktopResults.classList.remove('active');
-    }
-});
-
-// Các hàm mở/đóng overlay Mobile đã có sẵn trong code của bạn, chỉ cần bổ sung logic reset
-window.openMobileSearch = () => {
-    document.getElementById('mobileSearchOverlay').classList.add('active');
-    setTimeout(() => mobileSearchInput.focus(), 300);
-};
-
-window.closeMobileSearch = () => {
-    document.getElementById('mobileSearchOverlay').classList.remove('active');
-    mobileSearchInput.value = '';
-    mobileResults.innerHTML = '';
-};
-
-window.openMobileMenu = () => document.getElementById('mobileMenuOverlay').classList.add('active');
-window.closeMobileMenu = () => document.getElementById('mobileMenuOverlay').classList.remove('active');
-
-
+        
         // 6. MAIN LOAD MOVIE LOGIC (ĐÃ TÁCH RA 2 TRƯỜNG HỢP)
 async function loadMovie() {
     // 0. Khai báo các tham số từ URL
