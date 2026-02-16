@@ -1761,7 +1761,7 @@ window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
             <div class="n-meta-in">
                 ${isHistory 
                     ? `<span style="color:#aaa;"><i class="fas fa-history"></i> ${timeString}</span>` 
-                    : `<span style="color:#46d369;">${m.year}</span> <span class="badge-hd">HD</span>`}
+                    : `<span style="color:#FF8F50;">${m.year}</span> <span class="badge-hd">HD</span><span>${m.lang}</span>`}
             </div>
             <div class="n-actions-in">
                 <button class="btn-mini-play"><i class="fas fa-play"></i> ${isHistory ? 'TIẾP TỤC' : 'XEM NGAY'}</button>
