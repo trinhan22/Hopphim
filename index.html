@@ -1775,7 +1775,7 @@ window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
             <div class="n-title-in">${m.name}</div>
             <div class="n-meta-in">
                 ${isHistory 
-                    ? `<span style="color:#FF8F50;"><i class="fas fa-history"></i> ${timeString}</span>` 
+                    ? `<span><i class="fas fa-history"></i> ${timeString}</span>` 
                     : `<span>${m.year}</span> <span class="badge-hd">HD</span><span>${m.lang}</span><span>${m.episode_current}</span>`}
             </div>
             <div class="n-actions-in">
