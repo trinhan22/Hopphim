@@ -674,18 +674,28 @@
         }
         .btn-mini-play:hover { filter: brightness(1.1); }
 
-        /* Nút Thêm nhỏ */
-        .btn-mini-add {
-            width: 32px;
-            height: 32px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: #fff;
-            border-radius: 6px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-        }
-        .btn-mini-add:hover { background: #fff; color: #000; }
+/* Nút thêm yêu thích nhỏ */
+.btn-mini-add {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 0.9rem;
+}
+
+.btn-mini-add:hover {
+    background: #fff;
+    color: #000; /* Hover vào chuyển nền trắng chữ đen */
+    border-color: #fff;
+    transform: scale(1.1);
+}
 
         /* Style riêng cho nút Xóa khỏi lịch sử */
         .btn-mini-remove {
@@ -1576,7 +1586,10 @@
 
         // Lưu phim yêu thích
         window.addToMyList = async (slug, name, thumb) => {
-            if (!window.currentUser) { window.showToast("Vui lòng đăng nhập!", "error"); return; }
+            if (!window.currentUser) { 
+                window.showToast("Vui lòng đăng nhập để lưu phim!", "error"); 
+                return; 
+            }
             const ref = doc(db, "users", window.currentUser.uid);
             const snap = await getDoc(ref);
             let list = snap.exists() ? (snap.data().myList || []) : [];
@@ -1587,7 +1600,7 @@
             if(snap.exists()) await updateDoc(ref, { myList: list }); 
             else await setDoc(ref, { email: window.currentUser.email, myList: list });
             
-            window.showToast(`Đã thêm: ${name}`);
+            window.showToast(`Đã thêm "${name}" vào danh sách!`, "success");
         };
         
         // Helper UI
@@ -1735,17 +1748,19 @@
         // --- RENDER CARD ---
 // Bước 2: Sửa hàm tạo Card phim (Gán vào index.html)
 window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
-    // 1. Xử lý link ảnh ngang (poster_url) và dọc (thumb_url)
+    // Xử lý link ảnh
     const imgWide = m.poster_url 
         ? (m.poster_url.startsWith('http') ? m.poster_url : IMG_BASE + m.poster_url) 
         : (m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url);
 
     const imgPortrait = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
 
+    // Xử lý tên phim để không bị lỗi khi đưa vào onclick (nếu tên có dấu nháy đơn)
     const nameFixed = m.name.replace(/'/g, "\\'");
+    
     const historyClass = isHistory ? `history-card-${m.slug}` : '';
     
-    // 2. Nhãn hiện số tập đang xem dở (Chỉ hiện trong mục Xem tiếp)
+    // Badge tập phim
     const epBadge = (isHistory && m.epName) 
         ? `<div style="position:absolute; top:10px; left:10px; background:var(--primary-color); color:#fff; padding:3px 8px; border-radius:5px; font-size:10px; font-weight:800; z-index:5; box-shadow:0 4px 10px rgba(0,0,0,0.5);">${m.epName.toUpperCase()}</div>` 
         : '';
@@ -1761,11 +1776,18 @@ window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
             <div class="n-meta-in">
                 ${isHistory 
                     ? `<span style="color:#FF8F50;"><i class="fas fa-history"></i> ${timeString}</span>` 
-                    : `<span style="color:#FF8F50;">${m.year}</span> <span class="badge-hd">HD</span><span>${m.lang}</span>`}
+                    : `<span>${m.year}</span> <span class="badge-hd">HD</span><span>${m.lang}</span><span>${m.episode_current}</span>`}
             </div>
             <div class="n-actions-in">
-                <button class="btn-mini-play"><i class="fas fa-play"></i> ${isHistory ? 'TIẾP TỤC' : 'XEM NGAY'}</button>
-                ${isHistory ? `<button class="btn-mini-remove" onclick="event.stopPropagation(); removeFromHistory('${m.slug}', this)"><i class="fas fa-minus"></i></button>` : ''}
+                <button class="btn-mini-play">
+                    <i class="fas fa-play"></i> ${isHistory ? 'TIẾP TỤC' : 'XEM NGAY'}
+                </button>
+                
+                <button class="btn-mini-add" title="Thêm vào yêu thích" onclick="event.stopPropagation(); addToMyList('${m.slug}', '${nameFixed}', '${imgPortrait}')">
+                    <i class="fas fa-plus"></i>
+                </button>
+
+                ${isHistory ? `<button class="btn-mini-remove" title="Xoá" onclick="event.stopPropagation(); removeFromHistory('${m.slug}', this)"><i class="fas fa-minus"></i></button>` : ''}
             </div>
         </div>
     </div>`;
