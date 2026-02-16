@@ -1143,7 +1143,7 @@ async function loadMovie() {
                     <span id="fullText" style="display: none;">${rawContent}</span>
                     <a href="javascript:void(0)" id="toggleBtn" onclick="window.toggleContent()" 
                     style="color: var(--primary-color); font-weight: 700; text-decoration: none; margin-left: 5px; cursor: pointer;">
-                    <i class="fas fa-angle-down"></i> Xem thêm
+                    Xem thêm
                     </a>
                 `;
             } else {
@@ -1264,13 +1264,13 @@ async function loadMovie() {
             if (fullText.style.display === 'none') {
                 fullText.style.display = 'inline';
                 shortText.style.display = 'none';
-                btn.innerHTML = '<i class="fas fa-angle-up"></i> Thu gọn';
+                btn.innerHTML = 'Thu gọn';
             } 
             // Ngược lại: HIỆN bản NGẮN, ẨN bản FULL
             else {
                 fullText.style.display = 'none';
                 shortText.style.display = 'inline';
-                btn.innerHTML = '<i class="fas fa-angle-down"></i> Xem thêm';
+                btn.innerHTML = 'Xem thêm';
             }
         };
 
