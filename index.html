@@ -344,14 +344,21 @@
             opacity: 0; transform: translateY(30px);
         }
 
-        /* Tên gốc (Tiếng Anh/Trung...) - Màu vàng cho sang */
+        /* Tên gốc (Tiếng Anh) - Style Mới: Mỏng & Nằm dưới */
         .hero-origin-name {
-            color: #FFD700;
+            color: #f1c40f; /* Màu vàng nghệ giống ảnh mẫu */
             font-size: 1.1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            font-weight: 300; /* Thin (Mỏng) */
+            font-family: 'Inter', sans-serif;
+            
+            /* Bỏ viết hoa toàn bộ để giống ảnh mẫu (Title Case) */
+            text-transform: none; 
+            letter-spacing: 0.5px;
+            
+            margin-top: -10px; /* Kéo lên gần Logo hơn */
+            margin-bottom: 0px;
+            
+            text-shadow: 1px 1px 2px rgba(0,0,0,1);
         }
 
         /* Tên chính - Màu TRẮNG + Bóng đổ đậm */
@@ -363,6 +370,33 @@
             text-shadow: 0 0 10px rgba(0,0,0,0.5), 2px 2px 4px rgba(0,0,0,0.8); /* Viền bóng giúp tách nền */
             margin-bottom: 10px;
             text-transform: uppercase;
+        }
+
+        /* Tinh chỉnh lại Logo */
+        .hero-title-image {
+            max-width: 300px;
+            height: auto;
+            max-height: 150px;
+            object-fit: contain;
+            
+            margin-bottom: -10px; 
+            
+            /* 👇 THÊM DÒNG NÀY: Kéo lùi về bên trái 10px */
+            margin-left: -10px; 
+            
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.6));
+            display: block;
+            animation: fadeUp 0.8s ease-out 0.4s forwards;
+            opacity: 0; transform: translateY(20px);
+        }
+
+        /* Mobile: Thu nhỏ logo lại */
+        @media (max-width: 900px) {
+            .hero-title-image {
+                max-width: 280px;
+                max-height: 120px;
+                margin: 0 auto 15px; /* Căn giữa trên mobile */
+            }
         }
 
         .hero-meta {
@@ -1634,7 +1668,8 @@
         const MY_MOVIES = [
             {
                 title: "Thỏ Ơi",
-                origin: "LITTLE RABBIT",
+                origin: "Little Rabbit",
+                titleImage: "tho-oi/logo.png",
                 desc: "Phim “Thỏ ơi!!” dự kiến công chiếu trong dịp Tết 2026, thuộc thể loại hài, tâm lý sở trường của Trấn Thành, mang màu sắc trẻ trung với dàn diễn viên mới...",
                 poster: "tho-oi/thumb.png",
                 thumb: "tho-oi/thumb.png",
@@ -1645,7 +1680,8 @@
             },
             {
                 title: "Hố Sâu Ảo Vọng",
-                origin: "THE ABYSS OF DELUSION",
+                origin: "The Abyss Of Delusion",
+                titleImage: "ho-sau-ao-vong/logo.png",
                 desc: "Đây là lời cảnh tỉnh mạnh mẽ và sâu sắc gửi đến cộng đồng về hiểm họa khôn lường của Cá độ bóng đá trực tuyến...",
                 poster: "ho-sau-ao-vong/thumb.png",
                 thumb: "ho-sau-ao-vong/thumb.png",
@@ -1656,7 +1692,8 @@
             },
             {
                 title: "Áp Lực Học Đường",
-                origin: "SCHOOL PRESSURE",
+                origin: "School Pressure",
+                titleImage: "ap-luc-hoc-duong/logo.png",
                 desc: "Lần đầu bước vào một môi trường hoàn toàn xa lạ – nội trú, bạn mới, nếp sống mới – cô bé lớp 10...",
                 // Hãy thay bằng link ảnh thật của bạn (Up lên imgur hoặc host ảnh)
                 poster: "ap-luc-hoc-duong/thumb.png", 
@@ -1672,54 +1709,65 @@
         let slideInterval;
 
         function renderHero() {
-            const slidesContainer = document.getElementById('heroSlidesContainer');
-            const thumbsContainer = document.getElementById('heroThumbnails');
+        const slidesContainer = document.getElementById('heroSlidesContainer');
+        const thumbsContainer = document.getElementById('heroThumbnails');
+        
+        if(!slidesContainer) return;
+
+        let slidesHtml = '';
+        let thumbsHtml = '';
+
+        MY_MOVIES.forEach((movie, index) => {
+            const active = index === 0 ? 'active' : '';
             
-            if(!slidesContainer) return;
+            // --- LOGIC KIỂM TRA LOGO ---
+            // Nếu có titleImage thì dùng thẻ <img>, ngược lại dùng thẻ <div> text cũ
+            const titleContent = movie.titleImage 
+                ? `<img src="${movie.titleImage}" class="hero-title-image" alt="${movie.title}">`
+                : `<div class="hero-title-main">${movie.title}</div>`;
 
-            let slidesHtml = '';
-            let thumbsHtml = '';
+            // Render Slide
+            slidesHtml += `
+                <div class="hero-slide ${active}" id="slide-${index}" style="background-image: url('${movie.poster}');">
+                    <div class="hero-content">
+                        
+                        ${titleContent}
 
-            MY_MOVIES.forEach((movie, index) => {
-                const active = index === 0 ? 'active' : '';
-                
-                // Render Slide
-                slidesHtml += `
-                    <div class="hero-slide ${active}" id="slide-${index}" style="background-image: url('${movie.poster}');">
-                        <div class="hero-content">
-                            <div class="hero-origin-name">${movie.origin}</div>
-                            <div class="hero-title-main">${movie.title}</div>
-                            <div class="hero-meta">
-                                <span class="imdb-badge">IMDb ${movie.imdb}</span>
-                                <span class="quality-badge">4K</span>
-                                <span>${movie.year}</span>
-                                <span>${movie.episodes}</span>
+                        <div class="hero-origin-name">${movie.origin}</div>
+
+                        <div class="hero-meta">
+                            <span class="imdb-badge">IMDb ${movie.imdb}</span>
+                            <span class="quality-badge">4K</span>
+                            <span>${movie.year}</span>
+                            <span>${movie.episodes}</span>
+                        </div>
+                        <div class="hero-desc">${movie.desc}</div>
+                        <div class="hero-actions">
+                            <div class="btn-play-circle" onclick="goToWatchPage('${movie.ytId}', '${movie.title}')">
+                                <i class="fas fa-play"></i>
                             </div>
-                            <div class="hero-desc">${movie.desc}</div>
-                            <div class="hero-actions">
-                                <div class="btn-play-circle" onclick="goToWatchPage('${movie.ytId}', '${movie.title}')">
-                                    <i class="fas fa-play"></i>
-                                </div>
-                                <div class="btn-action-icon" title="Thêm vào danh sách"><i class="fas fa-plus"></i></div>
-                                <div class="btn-action-icon" title="Thông tin"><i class="fas fa-info"></i></div>
-                            </div>
+                            <div class="btn-action-icon" title="Thêm vào danh sách"><i class="fas fa-plus"></i></div>
+                            <div class="btn-action-icon" title="Thông tin"><i class="fas fa-info"></i></div>
                         </div>
                     </div>
-                `;
+                </div>
+            `;
 
-                // Render Thumbnail
-                thumbsHtml += `
-                    <div class="thumb-item ${active}" onclick="changeHeroSlide(${index})">
-                        <img src="${movie.thumb}">
-                    </div>
-                `;
-            });
+            // Render Thumbnail (Giữ nguyên)
+            thumbsHtml += `
+                <div class="thumb-item ${active}" onclick="changeHeroSlide(${index})">
+                    <img src="${movie.thumb}">
+                </div>
+            `;
+        });
 
-            slidesContainer.innerHTML = slidesHtml;
-            thumbsContainer.innerHTML = thumbsHtml;
-            
-            startSlideTimer();
-        }
+        slidesContainer.innerHTML = slidesHtml;
+        thumbsContainer.innerHTML = thumbsHtml;
+        
+        // Reset timer để tránh lỗi chồng chéo khi render lại
+        clearInterval(slideInterval);
+        startSlideTimer();
+    }
 
         // --- HÀM CHUYỂN HƯỚNG SANG TRANG XEM PHIM ---
         function goToWatchPage(id, title) {
