@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đang xem phim - HopPhim</title>
+    <title>Đang xem phim - WibuPhim</title>
     
-    <meta property="og:title" content="HopPhim - Phim Hay Trong Tầm Tay" />
+    <meta property="og:title" content="WibuPhim - Phim Hay Trong Tầm Tay" />
     <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao." />
-    <meta property="og:image" content="https://hopphim.netlify.app/panel.webp" />
-    <meta property="og:url" content="https://hopphim.netlify.app" />
+    <meta property="og:image" content="https://wibuphim.netlify.app/panel.webp" />
+    <meta property="og:url" content="https://wibuphim.netlify.app" />
     <meta property="og:type" content="article" />
 
     <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
@@ -439,7 +439,7 @@
 
     <div id="mobileMenuOverlay" class="mobile-overlay">
         <div class="menu-header">
-            <div class="menu-logo"><img src="/LOGO.WEBP" alt="HopPhim"><span>HOPPHIM</span></div>
+            <div class="menu-logo"><img src="/LOGO.WEBP" alt="WibuPhim"><span>WIBUPHIM</span></div>
              <i class="fas fa-times close-btn-overlay" onclick="closeMobileMenu()"></i>
         </div>
         <button class="member-btn-large" id="mobileMemberBtn" onclick="window.location.href='/login.html'">
@@ -471,7 +471,7 @@
         <div class="header-left-group">
             <div class="menu-toggle" onclick="openMobileMenu()"><i class="fas fa-bars"></i></div>
             <div class="logo" onclick="window.location.href='/'">
-                <img src="/LOGO.WEBP" alt="HopPhim"><span class="logo-text">HOPPHIM</span>
+                <img src="/LOGO.WEBP" alt="WibuPhim"><span class="logo-text">WIBUPHIM</span>
             </div>
             
             <ul class="nav-links" id="navLinks">
@@ -643,7 +643,7 @@
     <footer>
         <div class="footer-grid">
             <div class="footer-col">
-                <div class="footer-brand"><img src="/logo.webp" alt="HopPhim"><span class="logo-text">HOPPHIM</span></div>
+                <div class="footer-brand"><img src="/logo.webp" alt="WibuPhim"><span class="logo-text">WIBUPHIM</span></div>
                 <p style="color: #a0a0a0; line-height: 1.6; margin-top: 15px;">
                     Trang xem phim trực tuyến miễn phí chất lượng cao.
                 </p>
@@ -673,7 +673,7 @@
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom"><p>&copy; 2026 HopPhim. All Rights Reserved By HopTeam.</p></div>
+        <div class="footer-bottom"><p>&copy; 2026 WibuPhim. All Rights Reserved By WibuTeam.</p></div>
     </footer>
 
 <script type="module">
@@ -1047,8 +1047,8 @@ async function loadMovie() {
         // 1. Tạo một đối tượng phim giả lập để tận dụng hàm renderInfo (có rút gọn chữ)
         const customMovie = {
             name: finalName,
-            origin_name: "Phim Độc Quyền HopPhim",
-            content: "Phim được phát độc quyền trên hệ thống HopPhim. Chúc bạn có những giây phút xem phim vui vẻ và thư giãn nhất cùng bạn bè và người thân.", 
+            origin_name: "Phim Độc Quyền WibuPhim",
+            content: "Phim được phát độc quyền trên hệ thống WibuPhim. Chúc bạn có những giây phút xem phim vui vẻ và thư giãn nhất cùng bạn bè và người thân.", 
             poster_url: posterUrl,
             thumb_url: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`,
             year: "2025",
@@ -1061,7 +1061,7 @@ async function loadMovie() {
         renderInfo(customMovie);
 
         // 3. Các cài đặt giao diện khác cho Youtube
-        document.title = `${finalName} - HopPhim`;
+        document.title = `${finalName} - WibuPhim`;
         document.getElementById('breadCrumbTitle').innerText = finalName;
         document.querySelectorAll('.episode-block').forEach(el => el.style.display = 'none');
 
@@ -1122,7 +1122,7 @@ async function loadMovie() {
 
         // Các hàm render phụ trợ (Giữ nguyên của OPhim)
         function renderInfo(movie) {
-            document.title = `${movie.name} - HopPhim`;
+            document.title = `${movie.name} - WibuPhim`;
             document.getElementById('breadCrumbTitle').innerText = movie.name;
             document.getElementById('mName').innerText = movie.name;
             document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
