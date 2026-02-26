@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - WibuPhim</title>
+    <title>WibuPhim - Đăng Nhập & Đăng Ký</title>
+    
     <meta property="og:title" content="WibuPhim - Phim Hay Trong Tầm Tay" />
     <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao." />
     <meta property="og:image" content="https://wibuphim.netlify.app/panel.webp" />
@@ -11,247 +12,373 @@
     <meta property="og:type" content="article" />
 
     <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         :root {
-            --bg-body: #0f111a;
-            --bg-card: rgba(35, 37, 47, 0.85);
-            --text-main: #ffffff;
-            --text-sub: #a0a0a0;
-            --primary: #FF5E62;
-            --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62);
-            --font-main: 'Inter', sans-serif;
+            /* Giữ nguyên màu CAM của WibuPad theo yêu cầu */
+            --primary-start: #FF9966;
+            --primary-end: #FF5E62;
+        }
+        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #0f0f0f; color: #fff; overflow-x: hidden; }
+
+        /* Background Blobs Animation */
+        .background-blobs { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: float 10s infinite alternate; }
+        .blob-1 { width: 500px; height: 500px; background: #FF5E62; top: -10%; left: -10%; }
+        .blob-2 { width: 400px; height: 400px; background: #FF9966; bottom: -10%; right: -10%; animation-delay: -5s; }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, 50px) scale(1.1); } }
+
+        /* Custom Input & Button */
+        .input-field {
+            background: #1a1a1a; border: 1px solid #333; color: #fff; transition: 0.3s;
+        }
+        .input-field:focus {
+            border-color: #FF5E62; box-shadow: 0 0 0 4px rgba(255, 94, 98, 0.15);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            transition: 0.3s;
+        }
+        .btn-gradient:hover {
+            transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 94, 98, 0.3);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-main); }
+        /* Tab Styles */
+        .tab-btn { position: relative; color: #666; transition: 0.3s; }
+        .tab-btn.active { color: #FF5E62; }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px;
+            background: #FF5E62; border-radius: 10px;
+        }
 
-        body {
-            background-color: var(--bg-body);
-            min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
+        /* Animations */
+        .animate-fade-up { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* Left Panel */
+        .left-panel {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
             position: relative; overflow: hidden;
         }
-
-        /* --- TOAST NOTIFICATION (NEW) --- */
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast {
-            background: #23252f; color: #fff; padding: 15px 25px; border-radius: 12px;
-            display: flex; align-items: center; gap: 12px; min-width: 300px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary);
-            animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto;
-        }
-        .toast.success { border-left-color: #2ecc71; }
-        .toast.error { border-left-color: #ff4757; }
-        .toast i { font-size: 1.2rem; }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-        /* Nền mờ */
-        .bg-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(15, 17, 26, 0.8), rgba(255, 94, 98, 0.1)), url('home-background.jpg');
-            background-size: cover; background-position: center;
-            filter: blur(15px); z-index: -1; transform: scale(1.1);
+        .left-pattern {
+            position: absolute; inset: 0; opacity: 0.05;
+            background-image: radial-gradient(#fff 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
-        .back-home {
-            position: absolute; top: 20px; left: 20px;
-            color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.9rem; font-weight: 600;
-            display: flex; align-items: center; gap: 8px; transition: 0.3s; z-index: 10;
-            background: rgba(0,0,0,0.3); padding: 8px 15px; border-radius: 30px;
+        /* Modal */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            z-index: 100; display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: 0.3s;
         }
-        .back-home:hover { color: #fff; background: var(--gradient-main); }
-
-        /* Login Card */
-        .login-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 30px 25px;
-            border-radius: 16px;
-            width: 90%; max-width: 360px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            text-align: center;
-            animation: fadeUp 0.5s ease-out;
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: #1a1a1a; border: 1px solid #333; padding: 30px; border-radius: 24px;
+            transform: scale(0.9); transition: 0.3s; width: 90%; max-width: 400px;
         }
-
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .logo-img { height: 50px; margin-bottom: 10px; object-fit: contain; }
-        
-        h2 { color: var(--text-main); font-size: 1.5rem; margin-bottom: 5px; font-weight: 800; }
-        .text-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
-        .subtitle { color: var(--text-sub); font-size: 0.85rem; margin-bottom: 20px; }
-
-        /* Form */
-        .input-group { margin-bottom: 12px; text-align: left; }
-        .input-field {
-            width: 100%; padding: 12px 15px;
-            border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3); color: #fff; font-size: 0.9rem;
-            transition: 0.3s; outline: none;
-        }
-        .input-field:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); box-shadow: 0 0 0 2px rgba(255, 94, 98, 0.2); }
-        .input-field::placeholder { color: rgba(255,255,255,0.3); font-size: 0.85rem; }
-
-        .btn-submit {
-            width: 100%; padding: 12px;
-            background: var(--gradient-main); color: white;
-            border: none; border-radius: 50px;
-            font-size: 0.95rem; font-weight: 700; cursor: pointer;
-            transition: 0.3s; margin-top: 10px;
-        }
-        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 94, 98, 0.4); }
-        .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-
-        .divider { margin: 25px 0; display: flex; align-items: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; }
-        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
-        .divider span { padding: 0 10px; }
-
-        .btn-google {
-            width: 100%; background: #fff; color: #1f1f1f;
-            padding: 12px; border-radius: 50px; border: none;
-            font-weight: 600; font-size: 0.9rem;
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-            cursor: pointer; transition: 0.3s;
-        }
-        .btn-google img { height: 20px; width: 20px; }
-        .btn-google:hover { background: #f0f0f0; transform: translateY(-2px); }
-
-        .register-link {
-            margin-top: 25px; font-size: 0.85rem; color: var(--text-sub);
-        }
-        .register-link a { color: #fff; font-weight: 700; text-decoration: none; transition: 0.2s; }
-        .register-link a:hover { color: var(--primary); text-decoration: underline; }
-
+        .modal-overlay.show .modal-content { transform: scale(1); }
     </style>
 </head>
-<body>
+<body class="flex items-center justify-center min-h-screen p-4">
 
-    <div id="toast-container"></div>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
 
-    <div class="bg-overlay"></div>
-    <a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Quay lại</a>
-
-    <div class="login-card">
-        <img src="LOGO.WEBP" alt="WibuPhim" class="logo-img">
-        <h2>Xin chào!</h2>
-        <p class="subtitle">Đăng nhập để đồng bộ <span class="text-gradient">WibuPhim</span></p>
-
-        <form id="login-form">
-            <div class="input-group">
-                <input type="email" id="email" class="input-field" placeholder="Email" required>
+    <div class="bg-[#121212] rounded-[32px] border border-gray-800 shadow-2xl overflow-hidden w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 min-h-[600px] animate-fade-up">
+        
+        <div class="left-panel hidden md:flex flex-col justify-between p-12 relative">
+            <div class="left-pattern"></div>
+            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/20 to-transparent pointer-events-none"></div>
+            
+            <div class="relative z-10 flex items-center gap-4">
+                <div class="w-12 h-12 bg-white/5 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/10">
+                    <img src="/logo.webp" class="w-8 h-8 object-contain">
+                </div>
+                <div>
+                    <h2 class="font-black text-2xl tracking-widest text-white leading-none">WIBUPHIM</h2>
+                    <p class="text-orange-400 text-xs font-bold tracking-wider">CINEMA WORLD</p>
+                </div>
             </div>
-            <div class="input-group">
-                <input type="password" id="password" class="input-field" placeholder="Mật khẩu" required>
+
+            <div class="relative z-10 mb-8">
+                <h2 class="text-5xl font-black mb-6 leading-tight text-white">
+                    Thế Giới <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">Điện Ảnh</span>
+                </h2>
+                <p class="text-gray-400 font-medium text-lg max-w-md leading-relaxed">
+                    Kho phim Anime và Bom tấn khổng lồ. Cập nhật liên tục, chất lượng 4K sắc nét và hoàn toàn miễn phí.
+                </p>
             </div>
-            <button type="submit" id="btn-submit" class="btn-submit">Đăng nhập</button>
-        </form>
 
-        <div class="divider"><span>HOẶC</span></div>
+            <div class="relative z-10 text-xs font-bold text-gray-600 flex items-center gap-2">
+                <div class="h-px w-8 bg-gray-600"></div>
+                © 2026 WibuPhim. All Rights Reserved By WibuTeam.
+            </div>
+        </div>
 
-        <button id="google-login-btn" class="btn-google">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
-            Tiếp tục với Google
-        </button>
+        <div class="p-8 md:p-12 flex flex-col justify-center bg-[#161616] relative">
+            <a href="/" class="absolute top-6 right-6 text-gray-500 hover:text-white transition"><i class="fas fa-times text-xl"></i></a>
 
-        <div class="register-link">
-            Bạn chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+            <div class="text-center mb-8 md:hidden">
+                <img src="/logohp.webp" class="w-12 h-12 mx-auto mb-2">
+                <h3 class="font-black text-2xl text-white">WIBUPHIM</h3>
+            </div>
+
+            <div class="flex border-b border-gray-800 mb-8">
+                <button onclick="switchTab('login')" id="tab-login" class="flex-1 pb-3 text-center font-bold text-sm tab-btn active uppercase tracking-wider">Đăng nhập</button>
+                <button onclick="switchTab('register')" id="tab-register" class="flex-1 pb-3 text-center font-bold text-sm tab-btn uppercase tracking-wider">Đăng ký</button>
+            </div>
+
+            <form id="login-form" class="space-y-5 animate-fade-up">
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 uppercase mb-2 pl-1">Email</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="email" id="login-email" class="input-field w-full pl-11 pr-4 py-3.5 rounded-xl outline-none font-medium text-sm placeholder-gray-600" placeholder="fan@wibuphim.com" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 uppercase mb-2 pl-1">Mật khẩu</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="password" id="login-password" class="input-field w-full pl-11 pr-11 py-3.5 rounded-xl outline-none font-medium text-sm placeholder-gray-600" placeholder="••••••••" required>
+                        <i class="fas fa-eye absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer hover:text-orange-500 transition" onclick="togglePassword(this, 'login-password')"></i>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center text-xs font-bold text-gray-500 pl-1">
+                    <label class="flex items-center gap-2 cursor-pointer hover:text-white transition">
+                        <input type="checkbox" id="remember-me" class="accent-orange-500 w-4 h-4 rounded"> Ghi nhớ
+                    </label>
+                    <a href="#" onclick="openForgotModal()" class="text-orange-500 hover:text-orange-400">Quên mật khẩu?</a>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 rounded-xl text-white font-bold btn-gradient shadow-lg shadow-orange-500/20">
+                    Cày Phim Ngay
+                </button>
+            </form>
+
+            <form id="register-form" class="space-y-5 hidden">
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 uppercase mb-2 pl-1">Tên hiển thị</label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="text" id="reg-name" class="input-field w-full pl-11 pr-4 py-3.5 rounded-xl outline-none font-medium text-sm placeholder-gray-600" placeholder="Mọt Phim" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 uppercase mb-2 pl-1">Email</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="email" id="reg-email" class="input-field w-full pl-11 pr-4 py-3.5 rounded-xl outline-none font-medium text-sm placeholder-gray-600" placeholder="fan@wibuphim.com" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 uppercase mb-2 pl-1">Mật khẩu</label>
+                        <div class="relative">
+                            <input type="password" id="reg-pass" class="input-field w-full px-4 py-3.5 rounded-xl outline-none font-medium text-sm placeholder-gray-600" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 uppercase mb-2 pl-1">Nhập lại</label>
+                        <div class="relative">
+                            <input type="password" id="reg-confirm" class="input-field w-full px-4 py-3.5 rounded-xl outline-none font-medium text-sm placeholder-gray-600" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 rounded-xl text-white font-bold btn-gradient shadow-lg shadow-orange-500/20">
+                    Gia Nhập WibuPhim
+                </button>
+            </form>
+
+            <div class="relative my-6 text-center">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-800"></div></div>
+                <span class="relative bg-[#161616] px-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Hoặc tiếp tục với</span>
+            </div>
+
+            <button id="google-login-btn" class="w-full py-3 rounded-xl border border-gray-700 bg-[#1a1a1a] text-white font-bold hover:bg-[#222] hover:border-gray-600 transition flex justify-center items-center gap-3">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5">
+                <span>Google Account</span>
+            </button>
+
+            <div id="loading-overlay" class="absolute inset-0 bg-[#161616]/90 backdrop-blur-sm flex-col justify-center items-center z-50 hidden rounded-[32px]">
+                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500 mb-4"></div>
+                <p class="text-sm font-bold text-gray-400">Đang tải phim...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="forgot-modal" class="modal-overlay">
+        <div class="modal-content text-left">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">Khôi phục mật khẩu</h3>
+                <button onclick="closeForgotModal()" class="text-gray-500 hover:text-white transition"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div id="forgot-input-section">
+                <p class="text-sm text-gray-400 mb-5">Nhập email đăng ký của bạn. Chúng tôi sẽ gửi liên kết đặt lại mật khẩu.</p>
+                <form id="forgot-form" class="space-y-4">
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="email" id="forgot-email" class="input-field w-full pl-11 pr-4 py-3 rounded-xl outline-none font-medium text-sm" placeholder="Email của bạn..." required>
+                    </div>
+                    <button type="submit" id="forgot-btn" class="w-full py-3 rounded-xl text-white font-bold btn-gradient">Gửi Yêu Cầu</button>
+                </form>
+            </div>
+
+            <div id="forgot-success-section" class="hidden flex-col items-center text-center py-4 animate-fade-up">
+                <div class="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mb-4 text-green-500">
+                    <i class="fas fa-check text-xl"></i>
+                </div>
+                <p class="font-bold text-green-400 mb-2">Đã gửi email!</p>
+                <p class="text-xs text-gray-400">Vui lòng kiểm tra hộp thư (cả mục spam).</p>
+                <button onclick="closeForgotModal()" class="mt-6 w-full py-2.5 rounded-xl bg-[#222] text-gray-300 font-bold hover:bg-[#333] text-sm">Đóng</button>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, updateProfile, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // CONFIG CHUẨN CỦA HOPPHIM
-        const firebaseConfig = {
-            apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc",
-            authDomain: "hopphim-29e1c.firebaseapp.com",
-            projectId: "hopphim-29e1c",
-            storageBucket: "hopphim-29e1c.firebasestorage.app",
-            messagingSenderId: "1076044580405",
-            appId: "1:1076044580405:web:a3485f8533604f305e537c",
-            measurementId: "G-6RT4CX2NR0"
-        };
-
+        // Config Firebase
+        const firebaseConfig = { apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc", authDomain: "hopphim-29e1c.firebaseapp.com", projectId: "hopphim-29e1c", storageBucket: "hopphim-29e1c.firebasestorage.app", messagingSenderId: "1076044580405", appId: "1:1076044580405:web:a3485f8533604f305e537c", measurementId: "G-6RT4CX2NR0" };
+        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const REDIRECT_URL = "index.html"; 
+        const db = getFirestore(app);
 
-        // HELPER: SHOW TOAST
-        window.showToast = (msg, type = 'success') => {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-            toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
-            
-            container.appendChild(toast);
-            
-            // Tự tắt sau 3s
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
+        // --- UI LOGIC ---
+        window.switchTab = (tab) => {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const tabLogin = document.getElementById('tab-login');
+            const tabRegister = document.getElementById('tab-register');
 
-        // 1. Kiểm tra trạng thái (Nếu đã login trước đó -> Vào thẳng)
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // Không cần toast ở đây vì có thể là reload trang
-                // Chỉ redirect nếu đang ở trang login
-                // window.location.href = REDIRECT_URL; 
+            if(tab === 'login') {
+                loginForm.classList.remove('hidden'); registerForm.classList.add('hidden');
+                tabLogin.classList.add('active'); tabRegister.classList.remove('active');
+            } else {
+                loginForm.classList.add('hidden'); registerForm.classList.remove('hidden');
+                tabLogin.classList.remove('active'); tabRegister.classList.add('active');
             }
-        });
+        };
 
-        // 2. Xử lý Đăng nhập Email
-        document.getElementById("login-form").addEventListener("submit", async (e) => {
+        window.togglePassword = (el, id) => {
+            const inp = document.getElementById(id);
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+            el.classList.toggle('fa-eye');
+            el.classList.toggle('fa-eye-slash');
+        };
+
+        const setLoading = (isLoading) => {
+            document.getElementById('loading-overlay').classList.toggle('hidden', !isLoading);
+            document.getElementById('loading-overlay').classList.toggle('flex', isLoading);
+        };
+
+        // --- AUTH LOGIC ---
+        
+        // 1. LOGIN
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const btn = document.getElementById("btn-submit");
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Đang xử lý...';
+            setLoading(true);
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
 
             try {
-                await signInWithEmailAndPassword(auth, email, password);
-                
-                // Thành công
-                window.showToast("Đăng nhập thành công!", "success");
-                setTimeout(() => {
-                    window.location.href = REDIRECT_URL;
-                }, 1500); // Đợi 1.5s để xem thông báo
-
+                await signInWithEmailAndPassword(auth, email, pass);
+                window.location.href = '/';
             } catch (err) {
-                btn.disabled = false;
-                btn.innerText = "Đăng nhập";
-                
-                let msg = "Đăng nhập thất bại.";
-                if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') 
-                    msg = "Email hoặc mật khẩu không đúng.";
-                else if (err.code === 'auth/invalid-email') msg = "Định dạng email không hợp lệ.";
-                else if (err.code === 'auth/too-many-requests') msg = "Thử lại sau ít phút.";
-                
-                window.showToast(msg, "error");
+                setLoading(false);
+                alert("Đăng nhập thất bại: " + err.message);
             }
         });
 
-        // 3. Xử lý Đăng nhập Google
-        document.getElementById("google-login-btn").addEventListener("click", async () => {
+        // 2. REGISTER
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const confirm = document.getElementById('reg-confirm').value;
+
+            if(pass !== confirm) { alert("Mật khẩu không khớp!"); return; }
+            setLoading(true);
+
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                await updateProfile(cred.user, { displayName: name });
+                
+                // Lưu info user vào Firestore (Role Viewer)
+                await setDoc(doc(db, "users", cred.user.uid), {
+                    uid: cred.user.uid,
+                    name: name,
+                    email: email,
+                    role: "viewer", // Role người xem phim
+                    createdAt: serverTimestamp(),
+                    watchHistory: [],
+                    myList: []
+                });
+
+                window.location.href = '/';
+            } catch (err) {
+                setLoading(false);
+                alert("Đăng ký thất bại: " + err.message);
+            }
+        });
+
+        // 3. GOOGLE
+        document.getElementById('google-login-btn').addEventListener('click', async () => {
             const provider = new GoogleAuthProvider();
             try {
                 await signInWithPopup(auth, provider);
-                window.showToast("Đăng nhập Google thành công!", "success");
-                setTimeout(() => { window.location.href = REDIRECT_URL; }, 1500);
+                window.location.href = '/';
             } catch (err) {
-                window.showToast("Lỗi Google: " + err.message, "error");
+                console.error(err);
+                alert("Lỗi Google Login.");
             }
+        });
+
+        // 4. FORGOT PASSWORD
+        window.openForgotModal = () => {
+            document.getElementById('forgot-modal').classList.add('show');
+            document.getElementById('forgot-input-section').classList.remove('hidden');
+            document.getElementById('forgot-success-section').classList.add('hidden');
+            document.getElementById('forgot-success-section').classList.remove('flex');
+        };
+        window.closeForgotModal = () => document.getElementById('forgot-modal').classList.remove('show');
+
+        document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value;
+            const btn = document.getElementById('forgot-btn');
+            btn.innerText = "Đang gửi...";
+            
+            try {
+                await sendPasswordResetEmail(auth, email);
+                document.getElementById('forgot-input-section').classList.add('hidden');
+                document.getElementById('forgot-success-section').classList.remove('hidden');
+                document.getElementById('forgot-success-section').classList.add('flex');
+            } catch (err) {
+                alert("Lỗi gửi email: " + err.message);
+            } finally {
+                btn.innerText = "Gửi Yêu Cầu";
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) { /* Có thể redirect nếu cần */ }
         });
     </script>
 

@@ -844,15 +844,211 @@
         .top-meta-style2 { font-size: 0.85rem; color: #aaa; font-weight: 600; display: flex; gap: 10px; }
         .top-meta-badge { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: #fff; font-size: 0.7rem; }
 
-        /* Footer */
-        footer { background: var(--bg-dark); padding: 60px 4% 20px; margin-top: 50px; border-top: 1px solid #23252f; font-size: 0.9rem; }
-        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-bottom: 40px; }
-        .footer-col h3 { font-size: 1.1rem; color: #fff; margin-bottom: 20px; font-weight: 700; }
-        .footer-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-        .footer-brand img { height: 50px; object-fit: contain; }
-        .footer-col ul { list-style: none; } .footer-col ul li { margin-bottom: 12px; }
-        .footer-col ul li a { color: var(--text-sub); text-decoration: none; transition: 0.3s; } .footer-col ul li a:hover { color: var(--primary-color); }
-        .footer-bottom { border-top: 1px solid #23252f; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.8rem; }
+/* =========================================
+   FOOTER REDESIGN (WIBUPHIM x WIBUPAD STYLE)
+   ========================================= */
+footer {
+    background: #0b0c12; /* Màu nền tối hơn body một chút để tách biệt */
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 80px 4% 30px;
+    margin-top: 80px;
+    position: relative;
+    z-index: 100;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1.2fr; /* Cột Logo và Download to hơn chút */
+    gap: 40px;
+    margin-bottom: 50px;
+}
+
+/* --- Cột 1: Brand --- */
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.footer-logo img {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+}
+
+.footer-logo .brand-text {
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.footer-desc {
+    color: var(--text-sub);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+    max-width: 90%;
+}
+
+.footer-socials {
+    display: flex;
+    gap: 12px;
+}
+
+.social-link {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    transition: 0.3s;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+.social-link:hover {
+    background: var(--gradient-main);
+    color: #fff;
+    border-color: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(255, 94, 98, 0.3);
+}
+
+/* --- Các cột Link --- */
+.footer-col h4 {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 800;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 15px;
+}
+
+.footer-links a {
+    color: var(--text-sub);
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 0.95rem;
+    display: block;
+    font-weight: 500;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+/* --- Cột 4: Download Buttons --- */
+.download-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-download-app {
+    background: rgba(255, 255, 255, 0.03);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 220px;
+}
+
+.btn-download-app i {
+    font-size: 1.6rem;
+    color: #ccc;
+    transition: 0.3s;
+}
+
+.btn-content {
+    line-height: 1.3;
+}
+
+.btn-small-text {
+    font-size: 0.7rem;
+    color: #888;
+    display: block;
+}
+
+.btn-big-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.btn-download-app:hover {
+    border-color: var(--primary-color);
+    background: rgba(255, 94, 98, 0.05);
+    transform: translateY(-2px);
+}
+
+.btn-download-app:hover i {
+    color: var(--primary-color);
+}
+
+/* --- Footer Bottom --- */
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 30px;
+    text-align: center;
+    color: #555;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* --- Responsive Mobile --- */
+@media (max-width: 900px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+    }
+
+    .footer-logo, .footer-socials {
+        justify-content: center;
+    }
+
+    .footer-desc {
+        margin: 0 auto 25px;
+    }
+
+    .footer-col h4 {
+        margin-bottom: 15px;
+    }
+    
+    .download-group {
+        align-items: center;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
         
         .modal { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(15, 17, 26, 0.95); padding: 40px; overflow-y: auto; }
         .modal.active { display: block; }
@@ -1403,39 +1599,70 @@
         </a>
     </div>
 
-    <footer>
-        <div class="footer-grid">
-            <div class="footer-col">
-                <div class="footer-brand"><img src="/logo.webp" alt="WibuPhim"><span class="logo-text">WIBUPHIM</span></div>
-                <p style="color: #a0a0a0; line-height: 1.6; margin-top: 15px;">Trang xem phim trực tuyến miễn phí chất lượng cao.</p>
+<footer>
+    <div class="footer-grid">
+        <div class="footer-col">
+            <div class="footer-logo">
+                <img src="/LOGO.WEBP" alt="WibuPhim">
+                <span class="text-gradient brand-text">WIBUPHIM</span>
             </div>
-            <div class="footer-col">
-                <h3>Danh mục</h3>
-                <ul>
-                    <li><a href="#" onclick="loadCategory('phim-moi', 'Phim Mới Cập Nhật')">Phim Mới Cập Nhật</a></li>
-                    <li><a href="#" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Chiếu Rạp</a></li>
-                    <li><a href="#" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ Độc Quyền</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Quốc gia</h3>
-                <ul>
-                    <li><a href="#" onclick="loadCountry('han-quoc', 'Hàn Quốc')">Hàn Quốc</a></li>
-                    <li><a href="#" onclick="loadCountry('trung-quoc', 'Trung Quốc')">Trung Quốc</a></li>
-                    <li><a href="#" onclick="loadCountry('au-my', 'Âu Mỹ')">Âu Mỹ</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Hỗ trợ</h3>
-                <ul>
-                    <li><a href='lienhequangcao.html'>Liên hệ quảng cáo</a></li>
-                    <li><a href='baoloi.html'>Báo lỗi</a></li>
-                    <li><a href='hopteam.html'>Về HopTeam</a></li>
-                </ul>
+            <p class="footer-desc">
+                WibuPhim - Nền tảng xem phim trực tuyến miễn phí chất lượng cao. Cập nhật liên tục, không giật lag, trải nghiệm điện ảnh đỉnh cao ngay tại nhà.
+            </p>
+            <div class="footer-socials">
+                <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-telegram-plane"></i></a>
             </div>
         </div>
-        <div class="footer-bottom"><p>&copy; 2026 WibuPhim. All Rights Reserved By WibuTeam.</p></div>
-    </footer>
+
+        <div class="footer-col">
+            <h4>Khám Phá</h4>
+            <ul class="footer-links">
+                <li><a href="#" onclick="loadCategory('phim-moi', 'Phim Mới')">Phim Mới Cập Nhật</a></li>
+                <li><a href="#" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Chiếu Rạp</a></li>
+                <li><a href="#" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ Độc Quyền</a></li>
+                <li><a href="#" onclick="loadCategory('tv-shows', 'TV Shows')">TV Shows</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Hỗ Trợ</h4>
+            <ul class="footer-links">
+                <li><a href="lienhequangcao.html">Liên hệ quảng cáo</a></li>
+                <li><a href="baoloi.html">Báo lỗi phim</a></li>
+                <li><a href="dieukhoan.html">Điều khoản dịch vụ</a></li>
+                <li><a href="hopteam.html">Về WibuTeam</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Tải Ứng Dụng</h4>
+            <div class="download-group">
+                <button class="btn-download-app">
+                    <i class="fab fa-apple"></i>
+                    <div class="btn-content">
+                        <span class="btn-small-text">Download on the</span>
+                        <span class="btn-big-text">App Store</span>
+                    </div>
+                </button>
+                
+                <button class="btn-download-app">
+                    <i class="fab fa-google-play"></i>
+                    <div class="btn-content">
+                        <span class="btn-small-text">Get it on</span>
+                        <span class="btn-big-text">Google Play</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <span>&copy; 2026 WibuPhim. All Rights Reserved By WibuTeam.</span>
+    </div>
+</footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
