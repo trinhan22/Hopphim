@@ -1354,6 +1354,126 @@ footer {
             .cinema-grid { gap: 15px; padding-left: 15px; padding-right: 15px; } /* Căn lề trái phải cho đẹp */
         }
 
+/* =========================================
+   FACEBOOK COMMUNITY CARD (WIDE VERSION)
+   ========================================= */
+.community-section {
+    /* 1. CHỈNH CHIỀU RỘNG (NGANG) */
+    width: 100%;
+    max-width: 100%; /* Để 100% cho nó dài hết cỡ (hoặc 1600px nếu muốn giới hạn) */
+    margin: 0 auto 60px;
+    padding: 0 4%; /* Khoảng cách lề 2 bên */
+}
+
+.comm-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(105deg, #1877F2 0%, #0f111a 60%);
+    
+    /* 2. CHỈNH CHIỀU CAO (ĐỘ DÀY) */
+    /* Tăng padding lên: 45px (trên dưới) 60px (trái phải) */
+    padding: 36px 60px; 
+    
+    border-radius: 24px;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(24, 119, 242, 0.25);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Hiệu ứng Hover */
+.comm-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 80px rgba(24, 119, 242, 0.5); /* Bóng đổ mạnh hơn cho ngầu */
+    border-color: rgba(255,255,255,0.3);
+}
+
+/* Phần bên trái: Icon + Text */
+.comm-left {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* Tăng khoảng cách icon và chữ */
+    z-index: 2;
+}
+
+.comm-icon {
+    width: 70px; height: 70px; /* Icon to hơn xíu */
+    background: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; color: #1877F2;
+    box-shadow: 0 0 25px rgba(255,255,255,0.4);
+}
+
+.comm-title {
+    font-size: 1.8rem; /* Chữ to hơn */
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.comm-desc {
+    font-size: 1.1rem; /* Mô tả rõ hơn */
+    color: rgba(255,255,255,0.9);
+    font-weight: 500;
+}
+
+/* Phần bên phải: Nút tham gia */
+.comm-btn {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 15px 35px; /* Nút to hơn */
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 1rem;
+    display: flex; align-items: center; gap: 12px;
+    transition: 0.3s;
+    z-index: 2;
+    white-space: nowrap; /* Giữ nút không bị xuống dòng */
+}
+
+.comm-card:hover .comm-btn {
+    background: #fff;
+    color: #1877F2;
+    box-shadow: 0 0 20px rgba(255,255,255,0.5);
+}
+
+/* Hình nền trang trí */
+.comm-bg-deco {
+    position: absolute;
+    right: -20px; top: -60%;
+    font-size: 18rem; /* Icon nền to hơn */
+    color: rgba(255,255,255,0.05);
+    transform: rotate(15deg);
+    pointer-events: none;
+    transition: 0.4s;
+}
+.comm-card:hover .comm-bg-deco {
+    transform: rotate(0deg) scale(1.1);
+    color: rgba(255,255,255,0.1);
+}
+
+/* Mobile Responsive (Giữ nguyên cho điện thoại không bị vỡ) */
+@media (max-width: 768px) {
+    .comm-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+        gap: 20px;
+    }
+    .comm-left { flex-direction: column; gap: 15px; }
+    .comm-bg-deco { font-size: 10rem; top: 10%; right: -20%; }
+    .comm-btn { width: 100%; justify-content: center; }
+    .comm-title { font-size: 1.5rem; }
+}
+
     </style>
 </head>
 <body>
@@ -1522,11 +1642,25 @@ footer {
         </div>
     </div>
 
-    <div class="ad-panel-wrapper">
-        <a href="https://fphotography.club" target="_blank" class="ad-link">
-            <img src="https://fphotography.club/background.gif" alt="Quảng cáo" class="ad-img-728">
-        </a>
-    </div>
+<div class="community-section">
+    <a href="https://www.facebook.com/groups/1165263735526384/" target="_blank" class="comm-card">
+        <i class="fab fa-facebook comm-bg-deco"></i>
+        
+        <div class="comm-left">
+            <div class="comm-icon">
+                <i class="fab fa-facebook-f"></i>
+            </div>
+            <div class="comm-info">
+                <div class="comm-title">Cộng Đồng WibuTeam</div>
+                <div class="comm-desc">Tham gia Group Facebook để yêu cầu phim, báo lỗi và chém gió cùng admin!</div>
+            </div>
+        </div>
+        
+        <div class="comm-btn">
+            Tham Gia Ngay <i class="fas fa-arrow-right"></i>
+        </div>
+    </a>
+</div>
 
     <div id="history-container"></div>
 
@@ -1558,12 +1692,6 @@ footer {
             </div>
         </div>
     </main>
-
-    <div class="ad-panel-wrapper">
-        <a href="https://fphotography.club" target="_blank" class="ad-link">
-            <img src="https://fphotography.club/background.gif" alt="Quảng cáo" class="ad-img-728">
-        </a>
-    </div>
 
     <section class="top-10-wrapper">
         <div class="top-10-header"><i class="" style="color:var(--primary-color); font-size: 2.5rem;"></i><h2>Top 5 phim bộ hôm nay <i class="fas fa-chevron-right"></i></h2></div>
@@ -1597,12 +1725,6 @@ footer {
             <i class="fas fa-times" onclick="closeModal()" style="font-size:2.5rem; color:#fff; cursor:pointer;"></i>
         </div>
         <div id="modalContent" class="modal-grid"></div>
-    </div>
-
-    <div class="ad-panel-wrapper">
-        <a href="https://fphotography.club" target="_blank" class="ad-link">
-            <img src="https://fphotography.club/background.gif" alt="Quảng cáo" class="ad-img-728">
-        </a>
     </div>
 
 <footer>

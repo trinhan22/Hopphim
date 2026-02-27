@@ -571,48 +571,116 @@ footer {
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
 
-        /* --- PANEL QUẢNG CÁO (TÙY CHỈNH KÍCH THƯỚC RỘNG & DỌC) --- */
-        .ad-panel-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;             /* Khoảng cách nếu bạn đặt 2 banner liền nhau */
-            margin: 0 auto 40px;
-            padding: 0 4%;
-            width: 100%;
-            max-width: 728px;     /* Chiều rộng tối đa của toàn bộ khu vực chứa */
-        }
+/* =========================================
+   FACEBOOK COMMUNITY CARD
+   ========================================= */
+.community-section {
+    max-width: 1400px;
+    margin: 0 auto 60px; /* Cách dưới 60px */
+    padding: 0 4%;
+}
 
-        .ad-link {
-            display: block;
-            width: 100%;
-            /* 👉 CHỈNH CHIỀU RỘNG (NGANG) CỦA BANNER Ở ĐÂY */
-            /* VD: 728px (chuẩn), 1000px (to hơn), hoặc 100% (full màn hình) */
-            max-width: 728px; 
-        }
+.comm-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Nền Gradient từ Xanh Facebook sang Đen của Web */
+    background: linear-gradient(105deg, #1877F2 0%, #0f111a 60%);
+    padding: 30px 50px;
+    border-radius: 24px;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(24, 119, 242, 0.25);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
 
-        .ad-img-728 {
-            width: 100%;
-            /* 👉 CHỈNH CHIỀU DỌC (CAO) CỦA BANNER Ở ĐÂY */
-            /* VD: 90px (chuẩn), 150px, 250px... */
-            height: 100px; 
-            
-            object-fit: cover; /* Giữ cho ảnh không bị méo khi bạn đổi kích thước */
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            display: block;
-        }
+/* Hiệu ứng Hover: Nổi lên và sáng hơn */
+.comm-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(24, 119, 242, 0.4);
+    border-color: rgba(255,255,255,0.3);
+}
 
-        /* --- Tự động co giãn trên Điện thoại (Mobile) --- */
-        @media (max-width: 768px) {
-            .ad-img-728 {
-                height: auto; /* Trên điện thoại để auto cho ảnh tự thu nhỏ */
-                
-                /* 👉 QUAN TRỌNG: Nếu ở trên bạn đổi kích thước thành Rộng 1000px, Cao 200px 
-                Thì ở đây bạn sửa thành: aspect-ratio: 1000/200; để trên mobile ko bị méo */
-                aspect-ratio: 728/90; 
-            }
-        }
+/* Phần bên trái: Icon + Text */
+.comm-left {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    z-index: 2;
+}
+
+.comm-icon {
+    width: 60px; height: 60px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; color: #1877F2;
+    box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+.comm-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.comm-desc {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+}
+
+/* Phần bên phải: Nút tham gia */
+.comm-btn {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 50px;
+    font-weight: 700;
+    display: flex; align-items: center; gap: 10px;
+    transition: 0.3s;
+    z-index: 2;
+}
+
+.comm-card:hover .comm-btn {
+    background: #fff;
+    color: #1877F2;
+}
+
+/* Hình nền trang trí mờ phía sau */
+.comm-bg-deco {
+    position: absolute;
+    right: -20px; top: -50%;
+    font-size: 15rem;
+    color: rgba(255,255,255,0.05);
+    transform: rotate(15deg);
+    pointer-events: none;
+    transition: 0.4s;
+}
+.comm-card:hover .comm-bg-deco {
+    transform: rotate(0deg) scale(1.1);
+    color: rgba(255,255,255,0.1);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .comm-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+        gap: 20px;
+    }
+    .comm-left { flex-direction: column; gap: 15px; }
+    .comm-bg-deco { font-size: 10rem; top: 10%; right: -20%; }
+    .comm-btn { width: 100%; justify-content: center; }
+}
 
     </style>
 </head>
@@ -759,12 +827,6 @@ footer {
 
     <div class="container">
 
-    <div class="ad-panel-wrapper">
-        <a href="https://fphotography.club" target="_blank" class="ad-link">
-            <img src="https://fphotography.club/background.gif" alt="Quảng cáo" class="ad-img-728">
-        </a>
-    </div>
-
         <div class="watch-wrapper">
 
             <div class="main-content">
@@ -847,6 +909,26 @@ footer {
         </div>
     </div>
 
+<div class="community-section">
+    <a href="https://www.facebook.com/groups/1165263735526384/" target="_blank" class="comm-card">
+        <i class="fab fa-facebook comm-bg-deco"></i>
+        
+        <div class="comm-left">
+            <div class="comm-icon">
+                <i class="fab fa-facebook-f"></i>
+            </div>
+            <div class="comm-info">
+                <div class="comm-title">Cộng Đồng WibuTeam</div>
+                <div class="comm-desc">Tham gia Group Facebook để yêu cầu phim, báo lỗi và chém gió cùng admin!</div>
+            </div>
+        </div>
+        
+        <div class="comm-btn">
+            Tham Gia Ngay <i class="fas fa-arrow-right"></i>
+        </div>
+    </a>
+</div>
+    
  <footer>
     <div class="footer-grid">
         <div class="footer-col">
@@ -912,6 +994,7 @@ footer {
     </div>
 </footer>
 
+<script src="../chatbot.js"></script>
 <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
