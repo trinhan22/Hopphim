@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nạp Coin - WibuPhim</title>
+    
+    <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #191b24; 
+            --bg-dark: #0f111a; 
+            --bg-panel: #23252f; 
+            --text-main: #ffffff; 
+            --text-sub: #a0a0a0;
+            --primary-color: #FF5E62;
+            --gradient-main: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%);
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body { font-family: var(--font-main); background-color: var(--bg-body); color: var(--text-main); }
+        a { text-decoration: none; color: inherit; }
+
+        /* --- HEADER (Tối giản cho trang nạp) --- */
+        header {
+            height: 70px; background: var(--bg-dark); padding: 0 4%;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 1.5rem; text-transform: uppercase; }
+        .logo span { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .back-home { color: var(--text-sub); font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .back-home:hover { color: #fff; }
+
+        /* --- MAIN CONTENT --- */
+        .payment-container {
+            max-width: 1100px; margin: 100px auto 50px; padding: 0 20px;
+            display: grid; grid-template-columns: 2fr 1fr; gap: 30px;
+        }
+
+        /* LEFT SIDE - CHỌN GÓI */
+        .section-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .section-title i { color: var(--primary-color); }
+
+        .coin-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;
+        }
+
+        .coin-pack {
+            background: var(--bg-panel); border: 2px solid transparent; border-radius: 16px;
+            padding: 20px; text-align: center; cursor: pointer; transition: 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .coin-pack:hover { transform: translateY(-5px); border-color: var(--primary-color); background: #2a2d3a; }
+        .coin-pack.active { border-color: var(--primary-color); background: rgba(255, 94, 98, 0.1); }
+        
+        /* --- SỬA CSS CHO ICON COIN (FONTAWESOME) --- */
+        .coin-icon {
+            font-size: 3.5rem; /* Kích thước icon to đẹp */
+            margin-bottom: 15px;
+            display: inline-block;
+            
+            /* Tạo màu Gradient Vàng Cam (Gold) */
+            background: linear-gradient(135deg, #FFD700 0%, #FF8F50 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            /* Tạo bóng đổ phát sáng */
+            filter: drop-shadow(0 4px 10px rgba(255, 143, 80, 0.4));
+            transition: all 0.3s ease;
+        }
+
+        /* Hiệu ứng khi di chuột vào gói nạp: Icon xoay nhẹ và phóng to */
+        .coin-pack:hover .coin-icon {
+            transform: scale(1.15) rotate(-10deg);
+            filter: drop-shadow(0 8px 20px rgba(255, 143, 80, 0.6));
+        }
+        .coin-amount { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 5px; }
+        .coin-bonus { font-size: 0.8rem; color: #4ade80; font-weight: 700; margin-bottom: 10px; min-height: 20px; }
+        .coin-price { font-size: 1.1rem; color: var(--primary-color); font-weight: 700; }
+        
+        .badge-hot {
+            position: absolute; top: 0; right: 0; background: var(--gradient-main);
+            color: #fff; font-size: 0.7rem; font-weight: 700; padding: 4px 10px;
+            border-bottom-left-radius: 10px;
+        }
+
+        /* METHOD SECTION */
+        .method-list { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        .method-item {
+            display: flex; align-items: center; gap: 15px; padding: 15px;
+            background: var(--bg-panel); border-radius: 12px; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
+        }
+        .method-item:hover, .method-item.active { border-color: var(--primary-color); background: rgba(255, 94, 98, 0.05); }
+        .method-icon { width: 40px; height: 40px; object-fit: contain; }
+        .method-name { font-weight: 600; color: #fff; flex: 1; }
+        .check-circle { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #555; display: flex; align-items: center; justify-content: center; }
+        .method-item.active .check-circle { border-color: var(--primary-color); background: var(--primary-color); }
+        .method-item.active .check-circle::after { content: '✔'; font-size: 0.7rem; color: #fff; }
+
+        /* RIGHT SIDE - SUMMARY */
+        .summary-box {
+            background: var(--bg-panel); border-radius: 16px; padding: 25px;
+            position: sticky; top: 90px; height: fit-content;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .sum-row { display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--text-sub); font-size: 0.95rem; }
+        .sum-row.total { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 10px; color: #fff; font-weight: 700; font-size: 1.2rem; }
+        .total-price { color: var(--primary-color); }
+
+        .btn-pay {
+            width: 100%; padding: 15px; border-radius: 50px; border: none;
+            background: var(--gradient-main); color: #fff; font-weight: 700; font-size: 1.1rem;
+            cursor: pointer; margin-top: 20px; transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(255, 94, 98, 0.4);
+        }
+        .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 94, 98, 0.6); }
+
+        /* FAQ Section */
+        .faq-section { margin-top: 30px; }
+        .faq-item { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 15px; margin-bottom: 10px; }
+        .faq-q { color: #fff; font-weight: 600; margin-bottom: 5px; font-size: 0.95rem; }
+        .faq-a { color: var(--text-sub); font-size: 0.9rem; line-height: 1.5; }
+
+        /* --- TOAST NOTIFICATION --- */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+        .toast {
+            background: #23252f; color: #fff; padding: 15px 20px; border-radius: 8px;
+            display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-left: 4px solid var(--primary-color);
+            animation: slideIn 0.3s ease;
+        }
+        .toast i { color: #FFC107; font-size: 1.2rem; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        @media (max-width: 768px) {
+            .payment-container { grid-template-columns: 1fr; margin-top: 80px; }
+            .coin-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="logo">
+            <img src="/LOGO.WEBP" height="40" alt="Logo">
+            <span>WIBUPHIM</span>
+        </a>
+    </header>
+
+    <div class="payment-container">
+        <div class="left-col">
+            <div class="section-title"><i class="fas fa-coins"></i> Chọn gói Coin</div>
+            <div class="coin-grid">
+                <div class="coin-pack" onclick="selectPack(this, 20000, 20)">
+                    <i class="fa-sharp-duotone fa-solid fa-circle-won coin-icon"></i>
+                    <div class="coin-amount">20 Coin</div>
+                    <div class="coin-bonus"></div>
+                    <div class="coin-price">20.000đ</div>
+                </div>
+
+                <div class="coin-pack active" onclick="selectPack(this, 50000, 55)">
+                    <div class="badge-hot">Phổ biến</div>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-won coin-icon"></i>
+                    <div class="coin-amount">50 Coin</div>
+                    <div class="coin-bonus">+5 Coin tặng thêm</div>
+                    <div class="coin-price">50.000đ</div>
+                </div>
+
+                <div class="coin-pack" onclick="selectPack(this, 100000, 115)">
+                    <i class="fa-sharp-duotone fa-solid fa-circle-won coin-icon"></i>
+                    <div class="coin-amount">100 Coin</div>
+                    <div class="coin-bonus">+15 Coin tặng thêm</div>
+                    <div class="coin-price">100.000đ</div>
+                </div>
+
+                <div class="coin-pack" onclick="selectPack(this, 200000, 240)">
+                    <div class="badge-hot">Siêu hời</div>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-won coin-icon"></i>
+                    <div class="coin-amount">200 Coin</div>
+                    <div class="coin-bonus">+40 Coin tặng thêm</div>
+                    <div class="coin-price">200.000đ</div>
+                </div>
+
+                <div class="coin-pack" onclick="selectPack(this, 500000, 650)">
+                    <i class="fa-sharp-duotone fa-solid fa-circle-won coin-icon"></i>
+                    <div class="coin-amount">500 Coin</div>
+                    <div class="coin-bonus">+150 Coin tặng thêm</div>
+                    <div class="coin-price">500.000đ</div>
+                </div>
+
+                <div class="coin-pack" onclick="selectPack(this, 1000000, 1400)">
+                    <div class="badge-hot">Đại gia</div>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-won coin-icon"></i>
+                    <div class="coin-amount">1.000 Coin</div>
+                    <div class="coin-bonus">+400 Coin tặng thêm</div>
+                    <div class="coin-price">1.000.000đ</div>
+                </div>
+            </div>
+
+            <div class="section-title" style="margin-top: 40px;"><i class="fas fa-wallet"></i> Phương thức thanh toán</div>
+            <div class="method-list">
+                <div class="method-item active" onclick="selectMethod(this, 'Momo')">
+                    <img src="https://rophimm.net/images/momo.webp" class="method-icon">
+                    <div class="method-name">Thanh toán qua ví Momo</div>
+                    <div class="check-circle"></div>
+                </div>
+                <div class="method-item" onclick="selectMethod(this, 'Banking')">
+                    <img src="https://rophimm.net/images/bank.webp" class="method-icon">
+                    <div class="method-name">Chuyển khoản Ngân hàng</div>
+                    <div class="check-circle"></div>
+                </div>
+                <div class="method-item" onclick="selectMethod(this, 'Card')">
+                    <img src="https://rophimm.net/images/phone.webp" class="method-icon">
+                    <div class="method-name">Thanh toán bằng thẻ điện thoại</div>
+                    <div class="check-circle"></div>
+                </div>
+            </div>
+            
+            <div class="faq-section">
+                <div class="section-title" style="font-size: 1.2rem;"><i class="fas fa-question-circle"></i> Câu hỏi thường gặp</div>
+                <div class="faq-item">
+                    <div class="faq-q">Coin dùng để làm gì?</div>
+                    <div class="faq-a">Coin dùng để xem phim chất lượng 4K, tắt quảng cáo, và mở khóa các bộ phim độc quyền trên WibuPhim.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Nạp xong bao lâu thì có Coin?</div>
+                    <div class="faq-a">Thông thường Coin sẽ được cộng ngay lập tức. Nếu quá 5 phút chưa thấy, vui lòng liên hệ Admin.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-col">
+            <div class="summary-box">
+                <h3 style="color:#fff; margin-bottom:20px;">Thông tin thanh toán</h3>
+                <div class="sum-row">
+                    <span>Gói nạp:</span>
+                    <span id="sum-coin" style="color:#fff; font-weight:700;">50 Coin</span>
+                </div>
+                <div class="sum-row">
+                    <span>Khuyến mãi:</span>
+                    <span id="sum-bonus" style="color:#4ade80;">+5 Coin</span>
+                </div>
+                <div class="sum-row">
+                    <span>Phương thức:</span>
+                    <span id="sum-method" style="color:#fff;">Ví MoMo</span>
+                </div>
+                <div class="sum-row total">
+                    <span>Tổng thanh toán:</span>
+                    <span class="total-price" id="sum-price">50.000đ</span>
+                </div>
+
+                <button class="btn-pay" onclick="processPayment()">
+                    Thanh Toán Ngay <i class="fas fa-arrow-right"></i>
+                </button>
+                
+                <div style="margin-top:15px; font-size:0.8rem; color:#666; text-align:center;">
+                    Bằng việc thanh toán, bạn đồng ý với <a href="#" style="color:var(--primary-color);">Điều khoản sử dụng</a> của chúng tôi.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        // --- LOGIC GIAO DIỆN ---
+        let currentPrice = 50000;
+        let currentCoin = 50;
+        let currentMethod = 'Momo';
+
+        function selectPack(el, price, coin) {
+            // Xóa class active cũ
+            document.querySelectorAll('.coin-pack').forEach(item => item.classList.remove('active'));
+            // Thêm class active mới
+            el.classList.add('active');
+            
+            // Cập nhật giá trị
+            currentPrice = price;
+            currentCoin = coin;
+            
+            // Cập nhật hiển thị bên phải
+            document.getElementById('sum-coin').innerText = coin + " Coin";
+            document.getElementById('sum-price').innerText = price.toLocaleString('vi-VN') + "đ";
+            
+            // Tính bonus (giả lập logic)
+            let bonus = 0;
+            if(coin > 20) bonus = coin - (price/1000); 
+            document.getElementById('sum-bonus').innerText = bonus > 0 ? "+" + bonus + " Coin" : "0 Coin";
+        }
+
+        function selectMethod(el, name) {
+            document.querySelectorAll('.method-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+            currentMethod = name;
+            document.getElementById('sum-method').innerText = name;
+        }
+
+        // --- XỬ LÝ THANH TOÁN (FAKE) ---
+        function processPayment() {
+            const btn = document.querySelector('.btn-pay');
+            
+            // Hiệu ứng loading
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            btn.style.opacity = '0.7';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                // Trả lại nút
+                btn.innerHTML = 'Thanh Toán Ngay <i class="fas fa-arrow-right"></i>';
+                btn.style.opacity = '1';
+                btn.disabled = false;
+
+                // Hiện thông báo
+                showToast(`Tính năng nạp qua ${currentMethod} đang bảo trì! Vui lòng thử lại sau.`);
+            }, 1500);
+        }
+
+        // --- TOAST NOTIFICATION ---
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fas fa-tools"></i> <span>${msg}</span>`;
+            
+            container.appendChild(toast);
+
+            // Tự động tắt sau 3s
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

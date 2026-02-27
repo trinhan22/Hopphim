@@ -1613,6 +1613,7 @@ footer {
                 <img id="userAvatar" class="user-avatar" src="" alt="User" onclick="toggleUserDropdown()">
                 <div id="userMenu" class="user-dropdown">
                     <div id="userNameDisplay" class="user-info-item">User</div>
+                    <button class="dropdown-item" onclick="window.location.href='/nap-coin.html'"><i class="fa-duotone fa-solid fa-wallet"></i> Nạp Coin</button>
                     <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
                     <button class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
                 </div>
@@ -2742,20 +2743,24 @@ footer {
             const screen = document.getElementById('loadingScreen');
             const img = screen.querySelector('.loading-img');
 
+            // --- TRONG PHẦN SCRIPT CỦA INDEX.HTML ---
             setTimeout(() => {
                 if(img) {
-                    // 1. Thêm class để chạy animation scale(0) hút vào trong
                     img.classList.add('zoom-out');
-                    
-                    // 2. Đợi 0.48s (gần bằng 0.5s của CSS) cho ảnh hút xong mới tắt màn hình
                     setTimeout(() => {
                         screen.style.display = 'none';
+                        
+                        // 🔥 GỌI HÀM HIỆN CHATBOT TẠI ĐÂY 🔥
+                        if (window.showChatbot) {
+                            window.showChatbot();
+                        }
+                        
                     }, 480); 
                 } else {
-                    // Nếu không tìm thấy ảnh thì tắt luôn cho nhanh
                     screen.style.display = 'none';
+                    if (window.showChatbot) window.showChatbot(); // Phòng trường hợp ko có ảnh
                 }
-            }, 1000); // Thời gian chờ load giả lập (1 giây)
+            }, 1000);
 
             // --- 🔥 GÁN SỰ KIỆN TÌM KIẾM ---
             const mobileInput = document.getElementById('mobileSearchInput');

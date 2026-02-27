@@ -5,30 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Báo Lỗi - WibuPhim</title>
     
-    <meta property="og:title" content="WibuPhim - Phim Hay Trong Tầm Tay" />
-    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao." />
+    <meta property="og:title" content="Báo Lỗi - WibuPhim" />
+    <meta property="og:description" content="Tham gia Group để báo lỗi phim nhanh nhất." />
     <meta property="og:image" content="https://wibuphim.netlify.app/panel.webp" />
-    <meta property="og:url" content="https://wibuphim.netlify.app" />
-    <meta property="og:type" content="article" />
 
-    <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/webp" href="LOGO.WEBP" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --bg-dark: #0f111a;
+            --bg-body: #0f111a;
+            --card-bg: rgba(22, 24, 35, 0.7);
             --primary: #FF5E62;
             --gradient: linear-gradient(135deg, #FF8F50, #FF5E62);
-            --text: #fff;
+            --text-main: #fff;
             --text-sub: #a0a0a0;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
         body {
-            background-color: var(--bg-dark);
-            min-height: 100vh;
+            background-color: var(--bg-body);
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -36,173 +35,169 @@
             position: relative;
         }
 
-        /* Animated Background Blobs */
-        .blob {
+        /* --- BACKGROUND ANIMATION --- */
+        .bg-glow {
             position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.6;
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(255, 94, 98, 0.12) 0%, rgba(0,0,0,0) 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
             z-index: -1;
-            animation: float 10s infinite alternate;
-        }
-        .blob-1 { top: 5%; left: 10%; width: 300px; height: 300px; background: #FF5E62; animation-delay: 0s; }
-        .blob-2 { bottom: 5%; right: 10%; width: 250px; height: 250px; background: #FF8F50; animation-delay: -5s; }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(30px, 50px) scale(1.1); }
+            animation: pulse 6s infinite alternate;
         }
 
-        /* Main Card */
+        .floating-icon {
+            position: absolute; color: rgba(255,255,255,0.02);
+            font-size: 12rem; z-index: -1;
+            pointer-events: none;
+            animation: float 12s infinite ease-in-out;
+        }
+        .icon-bug { top: 5%; right: 5%; transform: rotate(15deg); }
+        .icon-fix { bottom: 5%; left: 5%; animation-delay: -6s; transform: rotate(-10deg); }
+
+        @keyframes pulse { 0% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-30px) rotate(var(--r, 0deg)); } }
+
+        /* --- REPORT CARD --- */
         .report-card {
-            width: 90%;
-            max-width: 420px;
-            background: rgba(30, 32, 40, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 90%; max-width: 450px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 94, 98, 0.2);
             border-radius: 24px;
-            padding: 40px 30px;
+            padding: 50px 30px;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.7);
             position: relative;
-            animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            overflow: hidden;
+            animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Top Line Decoration */
+        /* Thanh sáng trên đầu */
         .report-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
             background: var(--gradient);
+            box-shadow: 0 0 20px var(--primary);
         }
 
+        /* Icon Bug Lớn */
         .icon-header {
-            width: 60px; height: 60px;
-            background: rgba(255, 94, 98, 0.15);
+            width: 100px; height: 100px;
+            background: rgba(255, 94, 98, 0.1);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px;
+            margin: 0 auto 25px;
+            font-size: 3rem;
             color: var(--primary);
-            font-size: 1.8rem;
-            border: 1px solid rgba(255, 94, 98, 0.3);
-            box-shadow: 0 0 20px rgba(255, 94, 98, 0.2);
+            border: 2px solid rgba(255, 94, 98, 0.3);
+            box-shadow: 0 0 30px rgba(255, 94, 98, 0.2);
+            position: relative;
         }
-
-        h1 { color: var(--text); font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; }
-        p { color: var(--text-sub); font-size: 0.9rem; margin-bottom: 30px; line-height: 1.5; }
-
-        /* Form Styles */
-        .form-group { margin-bottom: 15px; text-align: left; }
         
-        .form-label {
-            font-size: 0.8rem; color: #ccc; font-weight: 600; margin-bottom: 5px; display: block;
+        /* Hiệu ứng chấm than cảnh báo */
+        .alert-badge {
+            position: absolute; top: 0; right: 0;
+            width: 30px; height: 30px;
+            background: #fff; color: var(--primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; font-weight: 900;
+            border: 4px solid #161823;
         }
 
-        .form-input, .form-textarea {
-            width: 100%;
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 0.95rem;
+        h1 { color: #fff; font-size: 1.8rem; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .desc { 
+            color: var(--text-sub); font-size: 0.95rem; line-height: 1.6; margin-bottom: 35px; 
+            padding: 0 10px;
+        }
+        .desc strong { color: #fff; }
+
+        /* --- GROUP INFO BOX --- */
+        .group-preview {
+            display: flex; align-items: center; gap: 15px;
+            background: linear-gradient(90deg, rgba(24, 119, 242, 0.1), rgba(24, 119, 242, 0.05));
+            border: 1px solid rgba(24, 119, 242, 0.3);
+            padding: 15px; border-radius: 12px;
+            margin-bottom: 30px; text-align: left;
             transition: 0.3s;
-            outline: none;
+        }
+        .group-preview:hover { transform: translateY(-3px); border-color: #1877F2; background: rgba(24, 119, 242, 0.15); }
+
+        .fb-icon {
+            width: 45px; height: 45px; background: #1877F2; color: #fff;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; flex-shrink: 0;
+        }
+        
+        .group-info h4 { color: #fff; font-size: 1rem; margin-bottom: 4px; font-weight: 700; }
+        .group-info p { color: #a0a0a0; font-size: 0.8rem; margin: 0; }
+
+        /* --- BUTTONS --- */
+        .btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 14px; border-radius: 50px;
+            font-weight: 700; font-size: 1rem; text-decoration: none;
+            transition: 0.3s; border: none; cursor: pointer;
         }
 
-        .form-input:focus, .form-textarea:focus {
-            border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 10px rgba(255, 94, 98, 0.2);
+        .btn-join {
+            background: var(--gradient); color: #fff;
+            box-shadow: 0 5px 20px rgba(255, 94, 98, 0.3);
+            margin-bottom: 15px;
+        }
+        .btn-join:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 30px rgba(255, 94, 98, 0.5); 
         }
 
-        .form-textarea { resize: vertical; min-height: 100px; font-family: 'Inter', sans-serif; }
-
-        .btn-submit {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            background: var(--gradient);
-            border: none;
-            border-radius: 50px;
-            color: #fff;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(255, 94, 98, 0.4);
-            display: flex; justify-content: center; align-items: center; gap: 8px;
+        .btn-back {
+            background: transparent; color: var(--text-sub);
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
         }
+        .btn-back:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
-        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 94, 98, 0.6); }
-
-        .back-link {
-            display: inline-flex; align-items: center; gap: 8px;
-            color: var(--text-sub); text-decoration: none;
-            font-size: 0.85rem; font-weight: 600;
-            transition: 0.3s; margin-top: 20px;
-            padding: 8px 15px; border-radius: 50px;
-        }
-        .back-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Mobile */
-        @media (max-width: 600px) {
-            .report-card { width: 95%; padding: 30px 20px; }
-        }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
+    <div class="bg-glow"></div>
+    <i class="fas fa-bug floating-icon icon-bug"></i>
+    <i class="fas fa-tools floating-icon icon-fix"></i>
 
     <div class="report-card">
         <div class="icon-header">
             <i class="fas fa-bug"></i>
+            <div class="alert-badge">!</div>
         </div>
-        
-        <h1>Báo Lỗi</h1>
-        <p>Phát hiện lỗi phim hay giao diện? Hãy báo ngay cho HopTeam để tụi mình fix nhé!</p>
 
-        <form action="https://formspree.io/f/xnjbjqlq" method="POST">
-            
-            <div class="form-group">
-                <label class="form-label">Tên của bạn</label>
-                <input type="text" name="name" class="form-input" placeholder="Nhập tên..." required>
+        <h1>Phát Hiện Lỗi?</h1>
+        <p class="desc">
+            Phim bị lỗi, mất sub hay không xem được?<br>
+            Hãy tham gia <strong>Group Cộng Đồng</strong> để báo lỗi trực tiếp cho Admin và nhận hỗ trợ siêu tốc nhé!
+        </p>
+
+        <a href="https://www.facebook.com/groups/1165263735526384/" target="_blank" style="text-decoration: none;">
+            <div class="group-preview">
+                <div class="fb-icon"><i class="fab fa-facebook-f"></i></div>
+                <div class="group-info">
+                    <h4>Cộng Đồng WibuTeam</h4>
+                    <p>Báo lỗi, Yêu cầu phim & Chém gió</p>
+                </div>
+                <i class="fas fa-chevron-right" style="color: #fff; margin-left: auto; opacity: 0.5;"></i>
             </div>
+        </a>
 
-            <div class="form-group">
-                <label class="form-label">Email (Để tụi mình phản hồi)</label>
-                <input type="email" name="email" class="form-input" placeholder="Nhập email..." required>
-            </div>
+        <a href="https://www.facebook.com/groups/1165263735526384/" target="_blank" class="btn btn-join">
+            <i class="fas fa-users"></i> Tham Gia Group Báo Lỗi
+        </a>
 
-            <input type="hidden" name="error_url" id="errorUrl">
-
-            <div class="form-group">
-                <label class="form-label">Mô tả lỗi</label>
-                <textarea name="message" class="form-textarea" placeholder="Ví dụ: Phim không xem được, Lệch sub,..." required></textarea>
-            </div>
-
-            <button type="submit" class="btn-submit">
-                Gửi Báo Cáo <i class="fas fa-paper-plane"></i>
-            </button>
-
-        </form>
-
-        <a href="/" class="back-link">
+        <a href="/" class="btn btn-back">
             <i class="fas fa-arrow-left"></i> Quay lại trang chủ
         </a>
     </div>
-
-    <script>
-        // Tự động lấy URL trang trước đó (nếu có) để biết lỗi ở đâu
-        document.addEventListener("DOMContentLoaded", function() {
-            // Lấy URL trang người dùng vừa ghé qua (Referrer) hoặc trang hiện tại
-            var currentUrl = document.referrer || window.location.href;
-            document.getElementById('errorUrl').value = currentUrl;
-        });
-    </script>
 
 </body>
 </html>

@@ -8,25 +8,25 @@
     <meta property="og:title" content="Liên Hệ Quảng Cáo - WibuPhim" />
     <meta property="og:description" content="Liên hệ hợp tác, đặt quảng cáo trên WibuPhim." />
     <meta property="og:image" content="https://wibuphim.netlify.app/panel.webp" />
-    <meta property="og:type" content="website" />
 
     <link rel="icon" type="image/webp" href="LOGO.WEBP" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --bg-dark: #0f111a;
+            --bg-body: #0f111a;
+            --card-bg: rgba(22, 24, 35, 0.7);
             --primary: #FF5E62;
             --gradient: linear-gradient(135deg, #FF8F50, #FF5E62);
-            --text: #fff;
+            --text-main: #fff;
             --text-sub: #a0a0a0;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
         body {
-            background-color: var(--bg-dark);
+            background-color: var(--bg-body);
             height: 100vh;
             display: flex;
             align-items: center;
@@ -35,123 +35,135 @@
             position: relative;
         }
 
-        /* Animated Background Blobs */
-        .blob {
+        /* --- BACKGROUND EFFECTS --- */
+        .bg-glow {
             position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.6;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(255, 94, 98, 0.15) 0%, rgba(0,0,0,0) 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
             z-index: -1;
-            animation: float 10s infinite alternate;
-        }
-        .blob-1 { top: 10%; left: 20%; width: 300px; height: 300px; background: #FF5E62; animation-delay: 0s; }
-        .blob-2 { bottom: 10%; right: 20%; width: 250px; height: 250px; background: #FF8F50; animation-delay: -5s; }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(30px, 50px) scale(1.1); }
+            animation: pulse 5s infinite alternate;
         }
 
-        /* Main Card */
+        .floating-icon {
+            position: absolute; color: rgba(255,255,255,0.03);
+            font-size: 10rem; z-index: -1;
+            animation: float 10s infinite ease-in-out;
+        }
+        .icon-1 { top: 10%; left: 10%; animation-delay: 0s; transform: rotate(-15deg); }
+        .icon-2 { bottom: 10%; right: 10%; animation-delay: -5s; transform: rotate(15deg); }
+
+        @keyframes pulse { 0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(var(--r)); } 50% { transform: translateY(-20px) rotate(var(--r)); } }
+
+        /* --- MAIN CARD --- */
         .contact-card {
-            width: 90%;
-            max-width: 400px;
-            background: rgba(30, 32, 40, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 90%; max-width: 420px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 94, 98, 0.2);
             border-radius: 24px;
-            padding: 40px 30px;
+            padding: 45px 30px;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
             position: relative;
             overflow: hidden;
-            animation: zoomIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .contact-card::before {
+        /* Viền sáng trên cùng */
+        .contact-card::after {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
             background: var(--gradient);
+            box-shadow: 0 0 15px var(--primary);
         }
 
-        .icon-header {
-            width: 70px; height: 70px;
-            background: rgba(255, 94, 98, 0.15);
+        /* Avatar / Logo */
+        .avatar-box {
+            position: relative; margin: 0 auto 25px;
+            width: 90px; height: 90px;
+        }
+        .avatar-img {
+            width: 100%; height: 100%; object-fit: cover;
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px;
-            color: var(--primary);
-            font-size: 1.8rem;
+            border: 3px solid rgba(255,255,255,0.1);
+            padding: 3px;
+            background: var(--gradient); /* Viền gradient */
+        }
+        .status-dot {
+            position: absolute; bottom: 5px; right: 5px;
+            width: 18px; height: 18px;
+            background: #2ecc71;
+            border: 3px solid #161823;
+            border-radius: 50%;
+        }
+
+        h1 { color: #fff; font-size: 1.6rem; font-weight: 900; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .role-badge { 
+            display: inline-block; padding: 4px 12px; 
+            background: rgba(255, 94, 98, 0.15); color: #FF8F50; 
+            border-radius: 20px; font-size: 0.75rem; font-weight: 700; 
+            text-transform: uppercase; margin-bottom: 20px;
             border: 1px solid rgba(255, 94, 98, 0.3);
         }
 
-        h1 { color: var(--text); font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .desc { color: var(--text-sub); font-size: 0.95rem; line-height: 1.5; margin-bottom: 30px; }
 
-        .subtitle { color: var(--text-sub); font-size: 0.9rem; margin-bottom: 30px; line-height: 1.5; }
-
-        /* Email Info Box */
-        .info-box {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        /* --- COPY LINK BOX --- */
+        .link-box {
             background: rgba(0,0,0,0.3);
-            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 20px;
-        }
-        .info-left { text-align: left; overflow: hidden; }
-        .info-label { font-size: 0.75rem; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .info-value { font-size: 1rem; color: #fff; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        .copy-btn {
-            width: 40px; height: 40px;
-            border-radius: 10px;
-            border: none;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
+            padding: 12px 15px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 25px;
             cursor: pointer;
-            transition: 0.2s;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-            margin-left: 10px;
-        }
-        .copy-btn:hover { background: var(--primary); transform: scale(1.05); }
-        .copy-btn:active { transform: scale(0.95); }
-
-        /* Action Buttons */
-        .actions { display: flex; gap: 10px; margin-bottom: 25px; }
-        .btn-action {
-            flex: 1;
-            padding: 12px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
             transition: 0.3s;
         }
-        .btn-primary {
-            background: var(--gradient);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3);
+        .link-box:hover { border-color: var(--primary); background: rgba(255, 94, 98, 0.05); }
+        
+        .fb-icon-box {
+            width: 35px; height: 35px; background: #1877F2; color: #fff;
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; margin-right: 12px;
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 94, 98, 0.4); }
+        
+        .link-info { text-align: left; flex: 1; overflow: hidden; }
+        .link-label { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; font-weight: 600; }
+        .link-url { font-size: 0.95rem; color: #fff; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .copy-icon { color: var(--text-sub); font-size: 1.1rem; transition: 0.3s; }
+        .link-box:hover .copy-icon { color: #fff; transform: scale(1.1); }
+
+        /* --- BUTTONS --- */
+        .btn-group { display: flex; gap: 12px; }
+        .btn {
+            flex: 1; padding: 14px; border-radius: 12px;
+            font-weight: 700; font-size: 0.95rem;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-decoration: none; transition: 0.3s; cursor: pointer; border: none;
+        }
+        
+        .btn-primary {
+            background: var(--gradient); color: #fff;
+            box-shadow: 0 5px 20px rgba(255, 94, 98, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(255, 94, 98, 0.5); }
         
         .btn-secondary {
-            background: rgba(255,255,255,0.05);
-            color: var(--text-sub);
+            background: rgba(255,255,255,0.05); color: #ccc;
             border: 1px solid rgba(255,255,255,0.1);
         }
-        .btn-secondary:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.3); }
 
-        /* Toast */
+        /* --- TOAST --- */
         #toast {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(50px);
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(50px);
             background: #23252f; color: #fff; padding: 12px 25px; border-radius: 50px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--primary);
-            font-size: 0.9rem; font-weight: 600; opacity: 0; pointer-events: none; transition: 0.4s;
-            display: flex; align-items: center; gap: 10px; z-index: 2000; white-space: nowrap;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); border: 1px solid var(--primary);
+            font-weight: 600; opacity: 0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; gap: 10px; z-index: 2000;
         }
         #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -160,59 +172,65 @@
 </head>
 <body>
 
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
+    <div class="bg-glow"></div>
+    <i class="fas fa-bullhorn floating-icon icon-1" style="--r: -15deg"></i>
+    <i class="fab fa-facebook floating-icon icon-2" style="--r: 15deg"></i>
 
     <div class="contact-card">
-        <div class="icon-header">
-            <i class="fas fa-envelope-open-text"></i>
+        <div class="avatar-box">
+            <img src="LOGO.WEBP" alt="WibuPhim" class="avatar-img">
+            <div class="status-dot" title="Online"></div>
         </div>
-        
-        <h1>Liên Hệ Quảng Cáo</h1>
-        <p class="subtitle">
-            Bạn quan tâm đến việc đặt banner hoặc hợp tác cùng WibuPhim?<br>
-            Vui lòng liên hệ qua Email để nhận báo giá.
+
+        <h1>WibuTeam Support</h1>
+        <span class="role-badge">Admin & Quảng Cáo</span>
+
+        <p class="desc">
+            Bạn muốn đặt banner quảng cáo hoặc hợp tác phát triển?<br>
+            Hãy liên hệ trực tiếp qua Fanpage để được hỗ trợ nhanh nhất nhé!
         </p>
 
-        <div class="info-box">
-            <div class="info-left">
-                <div class="info-label">Gmail Hỗ Trợ</div>
-                <div class="info-value" id="emailText">ntrinhan712@gmail.com</div>
+        <div class="link-box" onclick="copyLink()">
+            <div class="fb-icon-box"><i class="fab fa-facebook-f"></i></div>
+            <div class="link-info">
+                <div class="link-label">Fanpage Chính Thức</div>
+                <div class="link-url" id="fbLink">facebook.com/wibuteam2026</div>
             </div>
-            <button class="copy-btn" onclick="copyEmail()" title="Sao chép Email">
-                <i class="far fa-copy"></i>
-            </button>
+            <i class="far fa-copy copy-icon" id="copyIcon"></i>
         </div>
 
-        <div class="actions">
-            <a href="mailto:ntrinhan712@gmail.com" class="btn-action btn-primary">
-                <i class="fas fa-paper-plane"></i> Gửi Email Ngay
+        <div class="btn-group">
+            <a href="https://www.facebook.com/wibuteam2026" target="_blank" class="btn btn-primary">
+                <i class="fab fa-facebook-messenger"></i> Nhắn tin ngay
             </a>
-            <a href="/" class="btn-action btn-secondary">
-                <i class="fas fa-arrow-left"></i> Trang chủ
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Trang chủ
             </a>
         </div>
     </div>
 
     <div id="toast">
-        <i class="fas fa-check-circle" style="color: #2ecc71;"></i> Đã sao chép Email!
+        <i class="fas fa-check-circle" style="color: #2ecc71;"></i> Đã sao chép liên kết!
     </div>
 
     <script>
-        function copyEmail() {
-            const email = document.getElementById('emailText').innerText;
-            navigator.clipboard.writeText(email).then(() => {
+        function copyLink() {
+            const link = "https://www.facebook.com/wibuteam2026";
+            navigator.clipboard.writeText(link).then(() => {
+                // Show Toast
                 const toast = document.getElementById('toast');
                 toast.classList.add('show');
                 
-                // Đổi icon nút copy tạm thời
-                const btnIcon = document.querySelector('.copy-btn i');
-                btnIcon.className = 'fas fa-check';
-                
+                // Change Icon
+                const icon = document.getElementById('copyIcon');
+                icon.className = 'fas fa-check';
+                icon.style.color = '#2ecc71';
+
                 setTimeout(() => { 
                     toast.classList.remove('show'); 
-                    btnIcon.className = 'far fa-copy';
-                }, 2500);
+                    icon.className = 'far fa-copy';
+                    icon.style.color = '';
+                }, 2000);
             });
         }
     </script>

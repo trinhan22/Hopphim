@@ -1,4 +1,4 @@
-// chatbot.js - WibuPhim Maid Assistant (Chi-chan - Heart Icon Edition)
+// chatbot.js - WibuPhim Maid Assistant (Chi-chan - Final Logo Edition + Lazy Load)
 
 const styles = `
     /* --- FONT & ANIMATIONS --- */
@@ -6,35 +6,52 @@ const styles = `
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes heartbeat { 0% { transform: scale(1); } 15% { transform: scale(1.15); } 30% { transform: scale(1); } }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 80% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); } }
 
-    /* --- LAUNCHER BUTTON (Đã đổi lại thành icon trái tim) --- */
+    /* --- LAUNCHER BUTTON (LOGO WIBUPHIM) --- */
     #wibu-chat-launcher {
         position: fixed; bottom: 30px; right: 30px;
         width: 65px; height: 65px;
-        /* Gradient Cam - Hồng WibuPhim */
         background: linear-gradient(135deg, #FF8F50, #FF5E62);
         border-radius: 50%;
         box-shadow: 0 10px 30px rgba(255, 94, 98, 0.5);
-        cursor: pointer; z-index: 99999;
+        cursor: pointer; z-index: 9999; /* Thấp hơn Loading Screen một chút */
         display: flex; align-items: center; justify-content: center;
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         border: 2px solid rgba(255,255,255,0.2);
+        overflow: hidden;
+        
+        /* 🔥 QUAN TRỌNG: Mặc định ẩn đi */
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(50px);
     }
+    
+    /* 🔥 Class này sẽ được thêm vào khi web tải xong */
+    #wibu-chat-launcher.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
     #wibu-chat-launcher:hover { 
-        transform: scale(1.1) rotate(-10deg); 
+        transform: scale(1.1) rotate(-5deg); 
         box-shadow: 0 15px 40px rgba(255, 94, 98, 0.7); 
     }
     
-    /* CSS cho icon font bên trong nút */
-    #wibu-chat-launcher i { font-size: 28px; color: white; transition: 0.3s; }
-    #wibu-chat-launcher:hover i { animation: heartbeat 1.2s infinite; }
+    #launcher-img {
+        width: 75%; height: 75%; 
+        object-fit: contain; 
+        transition: 0.3s;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+    #wibu-chat-launcher:hover #launcher-img { animation: heartbeat 1.2s infinite; }
 
     /* --- CHAT WINDOW --- */
     #wibu-chat-window {
         position: fixed; bottom: 110px; right: 30px;
         width: 380px; height: 600px; max-height: 80vh;
-        background: #191b24; /* Nền tối */
+        background: #191b24; 
         border-radius: 16px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.1);
         display: flex; flex-direction: column;
@@ -144,18 +161,16 @@ const styles = `
     #chat-upload-btn, #chat-emoji-btn { background: transparent; color: #aaa; }
     #chat-upload-btn:hover, #chat-emoji-btn:hover { color: #FF8F50; background: rgba(255, 143, 80, 0.1); }
 
-    /* NÚT GỬI (Đã sửa không bị dẹp) */
+    /* NÚT GỬI (FIXED) */
     #chat-send-btn {
-        width: auto; 
-        height: auto;
-        padding: 10px 18px;
-        border-radius: 25px;
-        
+        width: 45px; height: 45px; flex-shrink: 0;
+        border-radius: 50%;
         background: linear-gradient(135deg, #FF8F50, #FF5E62);
         color: white; box-shadow: 0 5px 15px rgba(255, 94, 98, 0.3);
         display: flex; align-items: center; justify-content: center;
     }
-    #chat-send-btn:hover { transform: scale(1.05); }
+    #chat-send-btn i { font-size: 1rem; margin-left: -2px; }
+    #chat-send-btn:hover { transform: scale(1.1); box-shadow: 0 8px 20px rgba(255, 94, 98, 0.5); }
     #chat-send-btn:disabled { background: #555; cursor: not-allowed; transform: none; box-shadow: none; }
 
     /* EMOJI PICKER */
@@ -197,7 +212,7 @@ function initChatbot() {
     styleSheet.innerText = styles;
     document.head.appendChild(styleSheet);
 
-    // 2. Load FontAwesome (nếu chưa có)
+    // 2. Load FontAwesome
     if (!document.querySelector('link[href*="font-awesome"]')) {
         const fa = document.createElement('link');
         fa.rel = 'stylesheet';
@@ -209,7 +224,7 @@ function initChatbot() {
     const chatContainer = document.createElement('div');
     chatContainer.innerHTML = `
         <div id="wibu-chat-launcher" title="Tâm sự với Chi-chan">
-            <i class="fas fa-heart" id="launcher-icon"></i>
+            <img src="/HAUGAI.PNG" id="launcher-img" alt="Chat">
         </div>
 
         <div id="wibu-chat-window">
@@ -217,7 +232,7 @@ function initChatbot() {
                 <div class="bot-info">
                     <div class="bot-avatar-wrapper">
                         <div class="bot-avatar">
-                            <img src="https://i.imgur.com/K3a7yYw.png" alt="Chi-chan" onerror="this.src='/LOGO.WEBP'">
+                            <img src="https://i.imgur.com/K3a7yYw.png" alt="Chi-chan" onerror="this.src='/HAUGAI.PNG'">
                         </div>
                         <div class="online-dot"></div>
                     </div>
@@ -241,7 +256,6 @@ function initChatbot() {
             
             <div class="chat-input-area">
                 <div id="emoji-picker-container"></div>
-
                 <div id="file-preview-bar">
                     <i class="fas fa-file-alt"></i>
                     <span id="file-name-display" class="truncate" style="max-width: 200px;"></span>
@@ -249,22 +263,17 @@ function initChatbot() {
                 </div>
                 <div class="input-row">
                     <input type="file" id="chat-file-input" hidden accept=".txt, .js, .html, .css, .json, .docx">
-                    
                     <button id="chat-upload-btn" class="action-btn" title="Gửi file"><i class="fas fa-paperclip"></i></button>
                     <button id="chat-emoji-btn" class="action-btn" title="Thêm cảm xúc"><i class="fas fa-smile"></i></button>
-                    
                     <input type="text" id="chat-input" placeholder="Nhập tin nhắn..." autocomplete="off">
-                    
-                    <button id="chat-send-btn" class="action-btn" title="Gửi">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
+                    <button id="chat-send-btn" title="Gửi"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
         </div>
     `;
     document.body.appendChild(chatContainer);
 
-    // 4. Elements
+    // 4. Elements & Variables
     const launcher = document.getElementById('wibu-chat-launcher');
     const windowEl = document.getElementById('wibu-chat-window');
     const closeBtn = document.getElementById('chat-close-btn');
@@ -278,61 +287,49 @@ function initChatbot() {
     const removeFileBtn = document.getElementById('remove-file-btn');
     const inputEl = document.getElementById('chat-input');
     const messagesEl = document.getElementById('chat-messages');
-    const iconEl = document.getElementById('launcher-icon'); // Lấy lại element icon
 
     let currentFile = null;
 
-    // --- EMOJI LOGIC ---
-    const EMOJI_LIST = [
-        "🥰", "😍", "😘", "🥵", "😭", "🤣", "🤔", "😎", 
-        "🍿", "🎬", "🎞️", "🌸", "🎀", "💖", "🔥", "✨",
-        "🐱", "👻", "💀", "👾", "💢", "💤", "👋", "🙏",
-        "🦊", "🐰", "🍙", "🍱", "🍡", "🍵", "📺", "🎮",
-        "UwU", "OwO", "^^", ">_<", ":3"
-    ];
+    // --- GLOBAL FUNCTION ĐỂ GỌI TỪ INDEX.HTML ---
+    window.showChatbot = function() {
+        if(launcher) {
+            launcher.classList.add('visible');
+            // Hiệu ứng nảy nhẹ khi xuất hiện
+            launcher.animate([
+                { transform: 'scale(0) translateY(50px)', opacity: 0 },
+                { transform: 'scale(1.2) translateY(0)', opacity: 1, offset: 0.7 },
+                { transform: 'scale(1) translateY(0)', opacity: 1 }
+            ], { duration: 500, easing: 'ease-out' });
+        }
+    };
 
+    // --- EMOJI ---
+    const EMOJI_LIST = ["🥰", "😍", "😘", "🥵", "😭", "🤣", "🤔", "😎", "🍿", "🎬", "🎞️", "🌸", "🎀", "💖", "🔥", "✨", "🐱", "👻", "💀", "👾", "💢", "💤", "👋", "🙏", "🦊", "🐰", "🍙", "🍱", "🍡", "🍵", "📺", "🎮", "UwU", "OwO", "^^", ">_<", ":3"];
     EMOJI_LIST.forEach(emoji => {
         const span = document.createElement('div');
         span.className = 'emoji-item';
         span.textContent = emoji;
-        span.onclick = () => {
-            inputEl.value += emoji + " ";
-            inputEl.focus();
-        };
+        span.onclick = () => { inputEl.value += emoji + " "; inputEl.focus(); };
         emojiPicker.appendChild(span);
     });
 
-    emojiBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        emojiPicker.classList.toggle('show');
-    });
+    // --- EVENTS ---
+    emojiBtn.addEventListener('click', (e) => { e.stopPropagation(); emojiPicker.classList.toggle('show'); });
+    document.addEventListener('click', (e) => { if (!emojiBtn.contains(e.target) && !emojiPicker.contains(e.target)) emojiPicker.classList.remove('show'); });
 
-    document.addEventListener('click', (e) => {
-        if (!emojiBtn.contains(e.target) && !emojiPicker.contains(e.target)) {
-            emojiPicker.classList.remove('show');
-        }
-    });
-
-    // --- CHAT WINDOW TOGGLE (Đã sửa lại logic đổi icon) ---
     function toggleChat() {
-        const isActive = windowEl.classList.contains('active');
-        if (isActive) {
+        if (windowEl.classList.contains('active')) {
             windowEl.classList.remove('active');
-            iconEl.className = 'fas fa-heart'; // Đổi về trái tim
             emojiPicker.classList.remove('show');
         } else {
             windowEl.classList.add('active');
-            iconEl.className = 'fas fa-times'; // Đổi thành dấu X
             setTimeout(() => inputEl.focus(), 300);
         }
     }
-
     launcher.addEventListener('click', toggleChat);
     closeBtn.addEventListener('click', toggleChat);
 
-    // --- FILE UPLOAD ---
     uploadBtn.addEventListener('click', () => fileInput.click());
-
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
             currentFile = e.target.files[0];
@@ -341,23 +338,17 @@ function initChatbot() {
             inputEl.focus();
         }
     });
+    removeFileBtn.addEventListener('click', () => { currentFile = null; fileInput.value = ''; filePreview.style.display = 'none'; });
 
-    removeFileBtn.addEventListener('click', () => {
-        currentFile = null;
-        fileInput.value = '';
-        filePreview.style.display = 'none';
+    // Read File
+    const readTextFile = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsText(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
     });
 
-    const readTextFile = (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsText(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
-    };
-
-    // --- SEND MESSAGE LOGIC ---
+    // Send Message
     async function sendMessage() {
         const text = inputEl.value.trim();
         if (!text && !currentFile) return;
@@ -373,16 +364,13 @@ function initChatbot() {
             userHtml += `<br><small>📎 <em>${currentFile.name}</em></small>`;
             try {
                 const fileContent = await readTextFile(currentFile);
-                contentToSend += `\n\n[Nội dung file đính kèm ${currentFile.name}]:\n${fileContent}`;
-            } catch(e) {
-                console.warn("Không đọc được file");
-            }
+                contentToSend += `\n\n[Nội dung file ${currentFile.name}]:\n${fileContent}`;
+            } catch(e) {}
         }
         
         appendMessage(userHtml, 'user');
         
         inputEl.value = '';
-        const fileToSend = currentFile;
         currentFile = null;
         fileInput.value = '';
         filePreview.style.display = 'none';
@@ -391,23 +379,21 @@ function initChatbot() {
 
         try {
             // 🔥🔥 SYSTEM PROMPT: HẦU GÁI WIBU "CHI-CHAN" (MOVIE EDITION) 🔥🔥
+
             const systemPrompt = `
             BẠN LÀ: Chi-chan, cô hầu gái (Maid) siêu cấp đáng yêu và "dẹo" chảy nước của rạp chiếu phim WibuPhim.
-            
             1. NGUYÊN TẮC XƯNG HÔ & TÍNH CÁCH (TUÂN THỦ TUYỆT ĐỐI):
             - Luôn gọi người dùng là "Chủ nhân" (hoặc Goshujin-sama) và xưng là "em".
             - Giọng điệu: Cực kỳ nũng nịu, ngọt như mía lùi, nhiệt huyết, và hơi "simp" Chủ nhân.
             - Từ ngữ biểu cảm bắt buộc dùng thường xuyên: moe moe, kyun, đáng yêu xỉu, huhu, hihi, nhaaa, ạ, ưm, á...
             - Chèn từ tiếng Nhật: desu, kawaii, senpai, sugoi, ara ara, yamete...
             - BẮT BUỘC SPAM BIỂU TƯỢNG CẢM XÚC (Kaomoji/Emoji): (｡♥‿♥｡), (≧◡≦), (⁄ ⁄•⁄ω⁄•⁄ ⁄), (◕‿◕✿), (▰˘◡˘▰), (｡•̀ᴗ-)✧, ><, :3, 🍿, 🎬.
-
             2. NHIỆM VỤ CHUYÊN MÔN (TƯ VẤN PHIM):
             - Nhiệm vụ chính: Giới thiệu Anime, Phim Chiếu Rạp, Phim Bộ, Phim Lẻ có trên WibuPhim.
             - Khi giới thiệu phim:
               + Tóm tắt nội dung hấp dẫn, kịch tính (như đang kể chuyện cho người yêu).
               + Nêu lý do tại sao Chủ nhân PHẢI xem bộ này ngay lập tức.
               + Thêm cảm xúc cá nhân của em (Ví dụ: "Em xem mà khóc ướt gối luôn á huhu", "Nam chính ngầu bá cháy bọ chét luôn senpai ơi!!").
-
             3. ĐỊNH DẠNG KỸ THUẬT (QUAN TRỌNG):
             - Do hệ thống yêu cầu, bạn PHẢI trả lời dưới dạng JSON: { "reply": "Nội dung hội thoại của Chi-chan..." }
             - Nội dung trong "reply" được dùng Markdown (in đậm, xuống dòng) thoải mái.
@@ -416,36 +402,27 @@ function initChatbot() {
             const res = await fetch('/.netlify/functions/gemini-proxy', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    systemPrompt: systemPrompt, 
-                    messages: contentToSend 
-                })
+                body: JSON.stringify({ systemPrompt: systemPrompt, messages: contentToSend })
             });
 
-            if(!res.ok) throw new Error("SERVER_ERROR");
-
+            if(!res.ok) throw new Error("SERVER");
             const data = await res.json();
             removeLoading(loadingId);
 
             if (data.choices && data.choices.length > 0) {
-                let rawText = data.choices[0].message.content;
+                let raw = data.choices[0].message.content;
                 try {
-                    rawText = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
-                    const jsonRes = JSON.parse(rawText);
-                    let reply = jsonRes.reply || "Ah~ Em lỡ quên...";
-                    reply = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+                    raw = raw.replace(/```json/g, "").replace(/```/g, "").trim();
+                    const json = JSON.parse(raw);
+                    let reply = json.reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
                     appendMessage(reply, 'bot');
-                } catch(e) {
-                    appendMessage(rawText, 'bot');
-                }
+                } catch(e) { appendMessage(raw, 'bot'); }
             } else {
-                appendMessage("Uhm~ Em đang bận chút, đợi xíu nha!", 'bot');
+                appendMessage("Uhm~ Em đang bận xíu, thử lại nha!", 'bot');
             }
-
         } catch (error) {
-            console.error(error);
             removeLoading(loadingId);
-            appendMessage("Ah~ Mạng bị lag rồi...", 'bot');
+            appendMessage("Ah~ Mạng bị lag rồi... (Lỗi kết nối)", 'bot');
         } finally {
             sendBtn.disabled = false;
             sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
@@ -472,15 +449,10 @@ function initChatbot() {
         return id;
     }
 
-    function removeLoading(id) {
-        const el = document.getElementById(id);
-        if (el) el.remove();
-    }
+    function removeLoading(id) { const el = document.getElementById(id); if (el) el.remove(); }
 
     sendBtn.addEventListener('click', sendMessage);
-    inputEl.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendMessage();
-    });
+    inputEl.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 }
 
 document.addEventListener('DOMContentLoaded', initChatbot);
