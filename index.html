@@ -1636,7 +1636,7 @@ footer {
             <div class="topic-card bg-marvel" onclick="loadCategory('hanh-dong', 'Marvel')"><i class="fab fa-quinscape floating-icon"></i><div class="topic-name">Marvel</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
             <div class="topic-card bg-sitcom" onclick="loadCategory('hai-huoc', 'Sitcom')"><i class="fas fa-laugh-squint floating-icon"></i><div class="topic-name">Sitcom</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
             <div class="topic-card bg-voice" onclick="loadCategory('hoat-hinh', 'Anime')"><i class="fas fa-torii-gate floating-icon"></i><div class="topic-name">Anime</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
-            <div class="topic-card bg-trans" onclick="loadCategory('vien-tuong', 'Viễn Tưởng')"><i class="fas fa-rocket floating-icon"></i><div class="topic-name">Viễn Tưởng</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-trans" onclick="loadCategory('tam-ly', 'Tâm Lý')"><i class="fas fa-film floating-icon"></i><div class="topic-name">Tâm Lý</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
             <div class="topic-card bg-ancient" onclick="loadCategory('co-trang', 'Cổ Trang')"><i class="fas fa-dragon floating-icon"></i><div class="topic-name">Cổ Trang</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
             <div class="topic-card bg-4k" onclick="loadCategory('kinh-di', 'Kinh Dị')"><i class="fas fa-ghost floating-icon"></i><div class="topic-name">Kinh Dị</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
         </div>
@@ -2661,6 +2661,58 @@ footer {
             }
             container.innerHTML = html;
         }
+
+        // --- HÀM TẢI THỂ LOẠI (ĐÃ SỬA LỖI ẢNH) ---
+        window.loadCategory = async (slug, title) => {
+            const modal = document.getElementById('modalPopup');
+            const modalContent = document.getElementById('modalContent');
+            const modalTitle = document.getElementById('modalTitle');
+
+            if (modalTitle) modalTitle.innerText = title;
+            if (modal) modal.classList.add('active');
+            
+            if (modalContent) {
+                modalContent.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; color: #a0a0a0; padding: 40px;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <br>Đang tải phim ${title}...
+                    </div>
+                `;
+            }
+
+            try {
+                // Gọi API
+                const res = await fetch(`https://ophim1.com/v1/api/the-loai/${slug}`);
+                const data = await res.json();
+
+                if (data.data && data.data.items) {
+                    let html = '';
+                    data.data.items.forEach(m => {
+                        // Xử lý link ảnh
+                        const img = m.thumb_url.startsWith('http') 
+                            ? m.thumb_url 
+                            : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
+                        
+                        // Render Card
+                        html += `
+                        <div class="n-card" onclick="window.location.href='/xem-phim/${m.slug}'">
+                            <img src="${img}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:12px; display:block;">
+                            
+                            <div class="n-info-layer" style="padding:10px;"> 
+                                <div class="n-title-in" style="font-size:0.9rem;">${m.name}</div>
+                                <div style="font-size:0.75rem; color:#aaa;">${m.year} • ${m.lang}</div>
+                            </div>
+                        </div>`;
+                    });
+                    modalContent.innerHTML = html;
+                } else {
+                    modalContent.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; color:#ccc;">Không tìm thấy phim nào.</div>';
+                }
+            } catch (e) {
+                console.error(e);
+                if (modalContent) modalContent.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; color:#ff4757;">Lỗi kết nối server!</div>';
+            }
+        };
 
         window.closeModal = () => document.getElementById('modalPopup').classList.remove('active');
         
