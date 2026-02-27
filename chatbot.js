@@ -232,7 +232,7 @@ function initChatbot() {
                 <div class="bot-info">
                     <div class="bot-avatar-wrapper">
                         <div class="bot-avatar">
-                            <img src="https://i.imgur.com/K3a7yYw.png" alt="Chi-chan" onerror="this.src='/HAUGAI.PNG'">
+                            <img src="HAUGAI.PNG" alt="Chi-chan" onerror="this.src='/HAUGAI.PNG'">
                         </div>
                         <div class="online-dot"></div>
                     </div>
