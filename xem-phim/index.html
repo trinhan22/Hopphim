@@ -571,40 +571,49 @@ footer {
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
 
-/* --- PANEL QUẢNG CÁO 728x90 (Dọc & Tĩnh) --- */
+        /* --- PANEL QUẢNG CÁO (TÙY CHỈNH KÍCH THƯỚC RỘNG & DỌC) --- */
         .ad-panel-wrapper {
             display: flex;
-            flex-direction: column; /* Xếp các quảng cáo theo hàng dọc */
-            align-items: center;    /* Căn giữa theo chiều ngang */
-            gap: 20px;              /* Khoảng cách giữa các banner */
-            margin: 100px auto -70px;    /* Canh giữa trang, cách dưới 40px */
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;             /* Khoảng cách nếu bạn đặt 2 banner liền nhau */
+            margin: 0 auto 40px;
+            padding: 0 4%;
             width: 100%;
-            max-width: 1400px;
+            max-width: 728px;     /* Chiều rộng tối đa của toàn bộ khu vực chứa */
         }
 
         .ad-link {
             display: block;
             width: 100%;
-            max-width: 728px; /* Kích thước tối đa chuẩn */
-            /* Đã xoá transition và hover transform */
+            /* 👉 CHỈNH CHIỀU RỘNG (NGANG) CỦA BANNER Ở ĐÂY */
+            /* VD: 728px (chuẩn), 1000px (to hơn), hoặc 100% (full màn hình) */
+            max-width: 728px; 
         }
 
         .ad-img-728 {
             width: 100%;
-            height: 90px;
-            object-fit: cover;
+            /* 👉 CHỈNH CHIỀU DỌC (CAO) CỦA BANNER Ở ĐÂY */
+            /* VD: 90px (chuẩn), 150px, 250px... */
+            height: 100px; 
+            
+            object-fit: cover; /* Giữ cho ảnh không bị méo khi bạn đổi kích thước */
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             display: block;
         }
 
-        /* Mobile: Tự thu nhỏ */
+        /* --- Tự động co giãn trên Điện thoại (Mobile) --- */
         @media (max-width: 768px) {
             .ad-img-728 {
-                height: auto;
-                aspect-ratio: 728/90;
+                height: auto; /* Trên điện thoại để auto cho ảnh tự thu nhỏ */
+                
+                /* 👉 QUAN TRỌNG: Nếu ở trên bạn đổi kích thước thành Rộng 1000px, Cao 200px 
+                Thì ở đây bạn sửa thành: aspect-ratio: 1000/200; để trên mobile ko bị méo */
+                aspect-ratio: 728/90; 
             }
         }
+
     </style>
 </head>
 <body>
@@ -751,8 +760,8 @@ footer {
     <div class="container">
 
     <div class="ad-panel-wrapper">
-        <a href="https://hopvan.netlify.app" target="_blank" class="ad-link">
-            <img src="https://exokit.org/f8bet-728x90-2.gif" alt="Quảng cáo" class="ad-img-728">
+        <a href="https://fphotography.club" target="_blank" class="ad-link">
+            <img src="https://fphotography.club/background.gif" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
 
