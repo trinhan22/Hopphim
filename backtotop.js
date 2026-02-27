@@ -4,8 +4,8 @@
     style.textContent = `
         .back-to-top-btn {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 35px;
+            right: 110px;
             width: 56px; 
             height: 56px;
             background: #ffffff;
