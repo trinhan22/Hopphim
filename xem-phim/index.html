@@ -738,11 +738,35 @@ footer {
             }
         }
 
-/* Style huy hiệu số dư cạnh tên */
+/* =========================================
+   1. GLOBAL VIP STYLES (Giao diện Nhà Vua)
+   ========================================= */
+
+/* Hào quang cho Avatar VIP */
+.vip-glow {
+    border: 2px solid #FFD700 !important;
+    box-shadow: 0 0 15px #FFD700, 0 0 25px rgba(255, 215, 0, 0.4) !important;
+    animation: vipPulse 2s infinite !important;
+    position: relative;
+}
+
+/* Tên hiển thị màu vàng Gold Gradient */
+.vip-name {
+    background: linear-gradient(to right, #FFD700, #FFF5C3, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900 !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Huy hiệu số dư cạnh tên */
 .balance-badge {
     background: rgba(255, 215, 0, 0.15);
     color: #FFD700;
-    padding: 2px 10px;
+    padding: 2px 12px;
     border-radius: 50px;
     font-size: 0.75rem;
     font-weight: 800;
@@ -752,76 +776,127 @@ footer {
     align-items: center;
     gap: 4px;
     vertical-align: middle;
-    text-transform: none;
+    transition: all 0.3s ease;
 }
+
 .balance-badge i {
     font-size: 0.7rem;
     filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.6));
 }
 
-/* --- STYLE CHO BÌNH LUẬN VIP --- */
+/* =========================================
+   2. VIP COMMENT STYLES (Bình luận nổi bật)
+   ========================================= */
+
+/* Khung bình luận của VIP */
 .comment-item.is-vip .comment-avatar {
-    border: 2px solid #FFD700;
-    box-shadow: 0 0 10px #FFD700;
+    border: 2px solid #FFD700 !important;
+    box-shadow: 0 0 10px #FFD700 !important;
 }
+
 .comment-item.is-vip .comment-author {
     color: #FFD700 !important;
     text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-    display: inline-flex; align-items: center; gap: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
+
 .comment-item.is-vip .comment-text {
     background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
     border: 1px solid rgba(255, 215, 0, 0.3);
     color: #fff;
+    border-radius: 0 12px 12px 12px;
 }
 
-/* --- QUẢNG CÁO PRE-ROLL (TRƯỚC KHI CHIẾU) --- */
+/* =========================================
+   3. PREROLL AD STYLES (YouTube Style UI)
+   ========================================= */
+
 .preroll-container {
-    width: 100%; height: 100%; 
-    background: #000; 
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    width: 100%;
+    height: 100%;
+    background: #000;
     position: relative;
-    aspect-ratio: 16/9;
-}
-.preroll-img { max-height: 80%; max-width: 90%; object-fit: contain; margin-bottom: 15px; }
-.preroll-timer {
-    background: #FF5E62; color: #fff; 
-    padding: 8px 20px; border-radius: 50px; 
-    font-weight: 700; font-size: 1rem;
-    animation: pulse 1s infinite;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* --- ĐỒNG BỘ VIP KING TỪ INDEX --- */
-.vip-glow {
-    border: 2px solid #FFD700 !important;
-    box-shadow: 0 0 15px #FFD700, 0 0 25px rgba(255, 215, 0, 0.4) !important;
-    animation: vipPulse 2s infinite !important;
+.preroll-gif {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
 }
-.vip-name {
-    background: linear-gradient(to right, #FFD700, #FFF5C3, #FFD700);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 900 !important;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-    display: inline-flex; align-items: center; gap: 5px;
-}
-@keyframes vipPulse {
-    0% { box-shadow: 0 0 5px #FFD700; }
-    50% { box-shadow: 0 0 20px #FFD700; }
-    100% { box-shadow: 0 0 5px #FFD700; }
-}
-/* Badge số dư */
-.balance-badge {
-    background: rgba(255, 215, 0, 0.15); color: #FFD700;
-    padding: 2px 10px; border-radius: 50px;
-    font-size: 0.75rem; font-weight: 800;
+
+/* Khung thông báo góc trái trên */
+.preroll-info-box {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(28, 28, 28, 0.9);
+    padding: 12px 18px;
+    border-radius: 8px;
     border: 1px solid rgba(255, 215, 0, 0.4);
-    margin-left: 8px; display: inline-flex; align-items: center; gap: 4px;
+    z-index: 10;
+    backdrop-filter: blur(5px);
 }
-/* Style bình luận VIP */
-.comment-item.is-vip .comment-avatar {
-    border: 2px solid #FFD700 !important;
-    box-shadow: 0 0 10px #FFD700 !important;
+
+.preroll-info-box p {
+    color: #aaa;
+    font-size: 13px;
+    margin: 0;
+}
+
+.preroll-info-box div {
+    color: #FFD700;
+    font-weight: 800;
+    font-size: 15px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Nút Skip đếm ngược góc phải dưới */
+.preroll-skip-area {
+    position: absolute;
+    bottom: 30px;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 12px 25px;
+    min-width: 150px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-right: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* =========================================
+   4. ANIMATIONS (Hiệu ứng chuyển động)
+   ========================================= */
+
+/* Hiệu ứng nhịp đập vàng VIP */
+@keyframes vipPulse {
+    0%, 100% { box-shadow: 0 0 10px #FFD700, 0 0 20px rgba(255, 215, 0, 0.4); border-color: #FFD700; }
+    50% { box-shadow: 0 0 20px #FFD700, 0 0 35px rgba(255, 215, 0, 0.6); border-color: #FFF5C3; }
+}
+
+/* Hiệu ứng xoay vương miện nhẹ trong quảng cáo */
+.preroll-info-box div i {
+    animation: crownRotate 2s infinite;
+}
+
+@keyframes crownRotate {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(15deg) scale(1.2); color: #FFF5C3; }
 }
     </style>
 </head>
