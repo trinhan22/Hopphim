@@ -775,21 +775,45 @@ footer {
     color: #fff;
 }
 
-/* --- QUẢNG CÁO PRE-ROLL (TRƯỚC KHI CHIẾU) --- */
-.preroll-container {
-    width: 100%; height: 100%; 
-    background: #000; 
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    position: relative;
-    aspect-ratio: 16/9;
+/* --- GIAO DIỆN QUẢNG CÁO YOUTUBE STYLE (CLEAN) --- */
+.preroll-wrapper {
+    position: absolute; inset: 0; background: #000; z-index: 1000;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
 }
-.preroll-img { max-height: 80%; max-width: 90%; object-fit: contain; margin-bottom: 15px; }
-.preroll-timer {
-    background: #FF5E62; color: #fff; 
-    padding: 8px 20px; border-radius: 50px; 
-    font-weight: 700; font-size: 1rem;
-    animation: pulse 1s infinite;
+.preroll-media { width: 100%; height: 100%; object-fit: cover; }
+
+/* Nút Bỏ qua chuẩn YouTube */
+.preroll-skip-button {
+    position: absolute;
+    bottom: 50px; right: 0; /* Vị trí góc phải dưới */
+    background-color: rgba(0, 0, 0, 0.6); /* Nền đen mờ */
+    color: #fff;
+    padding: 12px 25px 12px 20px;
+    font-family: "Roboto", "Arial", sans-serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 4px 0 0 4px; /* Bo nhẹ góc trái */
+    z-index: 20;
+    cursor: default;
+    display: flex; align-items: center; justify-content: center;
+    min-width: 140px;
+    backdrop-filter: blur(2px);
+    transition: all 0.2s;
 }
+
+/* Trạng thái khi nút Skip hiện lên */
+.preroll-skip-button.enabled {
+    background-color: rgba(0, 0, 0, 0.9); /* Đậm hơn */
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-right: none;
+}
+.preroll-skip-button.enabled:hover { background-color: #222; }
+
+/* Icon mũi tên */
+.skip-icon { margin-left: 8px; display: none; }
+.preroll-skip-button.enabled .skip-icon { display: inline-block; }
 
 /* --- ĐỒNG BỘ VIP KING TỪ INDEX --- */
 .vip-glow {
@@ -1806,26 +1830,19 @@ async function loadMovie() {
             }
         }
 
-        function showPrerollAd(link, type, time) {
+        // --- HÀM HIỆN QUẢNG CÁO TỐI GIẢN (YOUTUBE STYLE) ---
+function showPrerollAd(link, type, time) {
     const container = document.getElementById('player-container');
     
-    // Inject HTML giao diện mới
+    // Chỉ hiện GIF và Nút Skip
     container.innerHTML = `
         <div class="preroll-wrapper">
             <img src="https://hopvan.netlify.app/IMG/hero-video.gif" class="preroll-media">
             
-            <div class="preroll-vip-notice">
-                <p>Khó chịu vì quảng cáo?</p>
-                <div><i class="fas fa-crown"></i> BẬT WIBU VIP NGAY</div>
+            <div id="skip-ad-btn" class="preroll-skip-button">
+                Bỏ qua sau <span id="ad-timer" style="margin-left:5px; width:15px; text-align:center;">5</span>s
             </div>
-
-            <div class="preroll-skip-area">
-                <button id="skip-ad-btn" class="btn-skip-preroll" disabled>
-                    Chờ <span id="ad-timer">5</span>s
-                </button>
-            </div>
-        </div>
-    `;
+        </div>`;
 
     let timeLeft = 5;
     const skipBtn = document.getElementById('skip-ad-btn');
@@ -1838,15 +1855,14 @@ async function loadMovie() {
         if (timeLeft <= 0) {
             clearInterval(countdown);
             if (skipBtn) {
-                skipBtn.disabled = false;
-                skipBtn.classList.add('ready');
-                skipBtn.innerHTML = 'Bỏ qua quảng cáo <i class="fas fa-step-forward"></i>';
+                // Đổi giao diện sang nút bấm được
+                skipBtn.classList.add('enabled');
+                skipBtn.innerHTML = `Bỏ qua quảng cáo <i class="fas fa-step-forward skip-icon"></i>`;
+                
+                // Gán sự kiện click để vào phim
                 skipBtn.onclick = () => {
-                    // Gọi hàm phát phim thực tế của bạn
                     if (typeof window.startActualPlayer === 'function') {
                         window.startActualPlayer(link, type, time);
-                    } else if (typeof startActualPlayer === 'function') {
-                        startActualPlayer(link, type, time);
                     }
                 };
             }
