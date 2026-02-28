@@ -738,35 +738,11 @@ footer {
             }
         }
 
-/* =========================================
-   1. GLOBAL VIP STYLES (Giao diện Nhà Vua)
-   ========================================= */
-
-/* Hào quang cho Avatar VIP */
-.vip-glow {
-    border: 2px solid #FFD700 !important;
-    box-shadow: 0 0 15px #FFD700, 0 0 25px rgba(255, 215, 0, 0.4) !important;
-    animation: vipPulse 2s infinite !important;
-    position: relative;
-}
-
-/* Tên hiển thị màu vàng Gold Gradient */
-.vip-name {
-    background: linear-gradient(to right, #FFD700, #FFF5C3, #FFD700);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 900 !important;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-}
-
-/* Huy hiệu số dư cạnh tên */
+/* Style huy hiệu số dư cạnh tên */
 .balance-badge {
     background: rgba(255, 215, 0, 0.15);
     color: #FFD700;
-    padding: 2px 12px;
+    padding: 2px 10px;
     border-radius: 50px;
     font-size: 0.75rem;
     font-weight: 800;
@@ -776,163 +752,76 @@ footer {
     align-items: center;
     gap: 4px;
     vertical-align: middle;
-    transition: all 0.3s ease;
+    text-transform: none;
 }
-
 .balance-badge i {
     font-size: 0.7rem;
     filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.6));
 }
 
-/* =========================================
-   2. VIP COMMENT STYLES (Bình luận nổi bật)
-   ========================================= */
-
-/* Khung bình luận của VIP */
+/* --- STYLE CHO BÌNH LUẬN VIP --- */
 .comment-item.is-vip .comment-avatar {
-    border: 2px solid #FFD700 !important;
-    box-shadow: 0 0 10px #FFD700 !important;
+    border: 2px solid #FFD700;
+    box-shadow: 0 0 10px #FFD700;
 }
-
 .comment-item.is-vip .comment-author {
     color: #FFD700 !important;
     text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
+    display: inline-flex; align-items: center; gap: 5px;
 }
-
 .comment-item.is-vip .comment-text {
     background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
     border: 1px solid rgba(255, 215, 0, 0.3);
     color: #fff;
-    border-radius: 0 12px 12px 12px;
 }
 
-/* =========================================
-   WIBUPHIM PREROLL AD (YOUTUBE STYLE)
-   ========================================= */
-.preroll-wrapper {
-    position: absolute;
-    inset: 0;
-    background: #000;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    font-family: 'Inter', sans-serif;
+/* --- QUẢNG CÁO PRE-ROLL (TRƯỚC KHI CHIẾU) --- */
+.preroll-container {
+    width: 100%; height: 100%; 
+    background: #000; 
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    position: relative;
+    aspect-ratio: 16/9;
+}
+.preroll-img { max-height: 80%; max-width: 90%; object-fit: contain; margin-bottom: 15px; }
+.preroll-timer {
+    background: #FF5E62; color: #fff; 
+    padding: 8px 20px; border-radius: 50px; 
+    font-weight: 700; font-size: 1rem;
+    animation: pulse 1s infinite;
 }
 
-.preroll-media {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.6;
+/* --- ĐỒNG BỘ VIP KING TỪ INDEX --- */
+.vip-glow {
+    border: 2px solid #FFD700 !important;
+    box-shadow: 0 0 15px #FFD700, 0 0 25px rgba(255, 215, 0, 0.4) !important;
+    animation: vipPulse 2s infinite !important;
 }
-
-/* Khung thông báo VIP - Góc trái trên */
-.preroll-vip-notice {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background: rgba(15, 17, 26, 0.85);
-    padding: 12px 20px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 143, 80, 0.3);
-    backdrop-filter: blur(10px);
-    z-index: 10;
-    animation: fadeInLeft 0.5s ease-out;
+.vip-name {
+    background: linear-gradient(to right, #FFD700, #FFF5C3, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900 !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    display: inline-flex; align-items: center; gap: 5px;
 }
-
-.preroll-vip-notice p {
-    color: #aaa;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-
-.preroll-vip-notice .btn-upgrade {
-    color: #FF8F50;
-    font-weight: 800;
-    font-size: 15px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    text-transform: uppercase;
-}
-
-/* Nút Bỏ qua - Góc phải dưới */
-.preroll-skip-area {
-    position: absolute;
-    bottom: 40px;
-    right: 0;
-    z-index: 10;
-}
-
-.btn-skip-preroll {
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-right: none;
-    padding: 12px 30px;
-    font-size: 15px;
-    font-weight: 700;
-    border-radius: 4px 0 0 4px;
-    cursor: not-allowed;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 160px;
-    justify-content: center;
-}
-
-/* Khi nút được kích hoạt */
-.btn-skip-preroll.ready {
-    background: rgba(255, 255, 255, 0.95);
-    color: #000;
-    border-color: #fff;
-    cursor: pointer;
-}
-
-.btn-skip-preroll.ready:hover {
-    background: #fff;
-    padding-right: 40px;
-}
-
-/* Animation */
-@keyframes fadeInLeft {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes pulseCrown {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.2); opacity: 0.8; color: #FFD700; }
-}
-
-.preroll-vip-notice i {
-    animation: pulseCrown 2s infinite;
-}
-/* =========================================
-   4. ANIMATIONS (Hiệu ứng chuyển động)
-   ========================================= */
-
-/* Hiệu ứng nhịp đập vàng VIP */
 @keyframes vipPulse {
-    0%, 100% { box-shadow: 0 0 10px #FFD700, 0 0 20px rgba(255, 215, 0, 0.4); border-color: #FFD700; }
-    50% { box-shadow: 0 0 20px #FFD700, 0 0 35px rgba(255, 215, 0, 0.6); border-color: #FFF5C3; }
+    0% { box-shadow: 0 0 5px #FFD700; }
+    50% { box-shadow: 0 0 20px #FFD700; }
+    100% { box-shadow: 0 0 5px #FFD700; }
 }
-
-/* Hiệu ứng xoay vương miện nhẹ trong quảng cáo */
-.preroll-info-box div i {
-    animation: crownRotate 2s infinite;
+/* Badge số dư */
+.balance-badge {
+    background: rgba(255, 215, 0, 0.15); color: #FFD700;
+    padding: 2px 10px; border-radius: 50px;
+    font-size: 0.75rem; font-weight: 800;
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    margin-left: 8px; display: inline-flex; align-items: center; gap: 4px;
 }
-
-@keyframes crownRotate {
-    0%, 100% { transform: rotate(0deg) scale(1); }
-    50% { transform: rotate(15deg) scale(1.2); color: #FFF5C3; }
+/* Style bình luận VIP */
+.comment-item.is-vip .comment-avatar {
+    border: 2px solid #FFD700 !important;
+    box-shadow: 0 0 10px #FFD700 !important;
 }
     </style>
 </head>
@@ -1918,52 +1807,28 @@ async function loadMovie() {
         }
 
         function showPrerollAd(link, type, time) {
-    const container = document.getElementById('player-container');
-    
-    // Tạo cấu trúc HTML WibuPhim Style
-    container.innerHTML = `
-        <div class="preroll-wrapper">
-            <img src="https://hopvan.netlify.app/IMG/hero-video.gif" class="preroll-media">
-            
-            <div class="preroll-vip-notice">
-                <p>Trải nghiệm không quảng cáo?</p>
-                <div class="btn-upgrade">
-                    <i class="fas fa-crown"></i> Nâng cấp WIBU VIP
+            const container = document.getElementById('player-container');
+            // HTML Quảng cáo 5s
+            container.innerHTML = `
+                <div class="preroll-container">
+                    <img src="https://hopvan.netlify.app/IMG/hero-video.gif" class="preroll-img">
+                    <div class="preroll-timer">Quảng cáo: <span id="adCount">5</span>s</div>
+                    <div style="color:#aaa; font-size:0.8rem; margin-top:10px;">Nâng cấp VIP để bỏ qua</div>
                 </div>
-            </div>
-
-            <div class="preroll-skip-area">
-                <button id="skip-ad-btn" class="btn-skip-preroll" disabled>
-                    Chờ <span id="ad-timer">5</span>s
-                </button>
-            </div>
-        </div>
-    `;
-
-    let timeLeft = 5;
-    const skipBtn = document.getElementById('skip-ad-btn');
-    const timerText = document.getElementById('ad-timer');
-
-    const countdown = setInterval(() => {
-        timeLeft--;
-        if (timerText) timerText.innerText = timeLeft;
-
-        if (timeLeft <= 0) {
-            clearInterval(countdown);
-            if (skipBtn) {
-                skipBtn.disabled = false;
-                skipBtn.classList.add('ready');
-                skipBtn.innerHTML = 'Bỏ qua quảng cáo <i class="fas fa-step-forward"></i>';
-                skipBtn.onclick = () => {
-                    // Hàm startActualPlayer của bạn đã đổi tên ở bước trước
-                    if (typeof startActualPlayer === 'function') {
-                        startActualPlayer(link, type, time);
-                    }
-                };
-            }
+            `;
+            
+            let timeLeft = 5;
+            const timer = setInterval(() => {
+                timeLeft--;
+                const countSpan = document.getElementById('adCount');
+                if(countSpan) countSpan.innerText = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    startPlayer(link, type, time); // Hết giờ thì phát phim
+                }
+            }, 1000);
         }
-    }, 1000);
-}
 
         function startPlayer(link, type, startTime) {
             if (type === 'iframe') {
