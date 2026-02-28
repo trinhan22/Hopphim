@@ -791,12 +791,11 @@ footer {
     animation: pulse 1s infinite;
 }
 
-/* --- HIỆU ỨNG VIP KING (ĐỒNG BỘ INDEX) --- */
+/* --- ĐỒNG BỘ VIP KING TỪ INDEX --- */
 .vip-glow {
     border: 2px solid #FFD700 !important;
-    box-shadow: 0 0 12px #FFD700, 0 0 20px rgba(255, 215, 0, 0.5) !important;
+    box-shadow: 0 0 15px #FFD700, 0 0 25px rgba(255, 215, 0, 0.4) !important;
     animation: vipPulse 2s infinite !important;
-    position: relative;
 }
 .vip-name {
     background: linear-gradient(to right, #FFD700, #FFF5C3, #FFD700);
@@ -807,9 +806,17 @@ footer {
     display: inline-flex; align-items: center; gap: 5px;
 }
 @keyframes vipPulse {
-    0% { box-shadow: 0 0 5px #FFD700; border-color: #FFD700; }
-    50% { box-shadow: 0 0 20px #FFD700; border-color: #FFF5C3; }
-    100% { box-shadow: 0 0 5px #FFD700; border-color: #FFD700; }
+    0% { box-shadow: 0 0 5px #FFD700; }
+    50% { box-shadow: 0 0 20px #FFD700; }
+    100% { box-shadow: 0 0 5px #FFD700; }
+}
+/* Badge số dư */
+.balance-badge {
+    background: rgba(255, 215, 0, 0.15); color: #FFD700;
+    padding: 2px 10px; border-radius: 50px;
+    font-size: 0.75rem; font-weight: 800;
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    margin-left: 8px; display: inline-flex; align-items: center; gap: 4px;
 }
 /* Style bình luận VIP */
 .comment-item.is-vip .comment-avatar {
@@ -1255,7 +1262,7 @@ footer {
             }
         };
 
-        // --- QUẢNG LÝ TRẠNG THÁI & VIP MENU (CẬP NHẬT THỜI HẠN) ---
+        // --- QUẢNG LÝ TRẠNG THÁI & VIP MENU (ĐỒNG BỘ INDEX) ---
         onAuthStateChanged(auth, async (user) => {
             const adOverlay = document.getElementById('ad-overlay');
             const adPanels = document.querySelectorAll('.ad-panel-wrapper');
@@ -1272,6 +1279,7 @@ footer {
                 if(cmtMyAvatar) cmtMyAvatar.src = user.photoURL || '/Guest.webp';
                 if(drawerLogout) drawerLogout.style.display = 'flex';
 
+                // LẮNG NGHE DỮ LIỆU USER REAL-TIME ĐỂ CẬP NHẬT VIP
                 onSnapshot(doc(db, "users", user.uid), (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
@@ -1293,7 +1301,6 @@ footer {
                         const vipStatusEl = document.getElementById('vipStatus');
                         if (vipStatusEl) {
                             if (isVip) {
-                                // Định dạng ngày: ngày/tháng/năm
                                 const d = new Date(vipExp);
                                 const dateStr = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
                                 vipStatusEl.innerHTML = `<span style="color:#FFD700; font-weight:bold;"><i class="fas fa-gem"></i> VIP đến: ${dateStr}</span>`;
@@ -1314,7 +1321,7 @@ footer {
                             adPanels.forEach(p => p.style.display = 'flex');
                         }
 
-                        // 5. MOBILE MENU
+                        // 5. CẬP NHẬT MENU MOBILE
                         if(mobileMemberBtn) {
                             const photo = user.photoURL || '/Guest.webp';
                             const nameHtmlMobile = isVip ? `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>` : `<span>${name}</span>`;
@@ -1338,10 +1345,9 @@ footer {
                 }
                 if(drawerLogout) drawerLogout.style.display = 'none';
                 if (adOverlay) adOverlay.style.display = 'flex';
+                adPanels.forEach(p => p.style.display = 'flex');
             }
         });
-
-
         
         // 5. GLOBAL FUNCTIONS (Logout, Toast...)
         window.logout = async () => {

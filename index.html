@@ -1545,28 +1545,32 @@ footer {
 .coin-reward { color: #FFD700; font-weight: 800; }
 
 
-/* --- HIỆU ỨNG VIP (KING STYLE) ĐỒNG BỘ INDEX --- */
+/* --- HIỆU ỨNG VIP (KING STYLE) --- */
 .vip-glow {
     border: 2px solid #FFD700 !important;
     box-shadow: 0 0 12px #FFD700, 0 0 20px rgba(255, 215, 0, 0.5) !important;
     animation: vipPulse 2s infinite !important;
     position: relative;
 }
+
 .vip-name {
     background: linear-gradient(to right, #FFD700, #FFF5C3, #FFD700);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 900 !important;
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-    display: inline-flex; align-items: center; gap: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
+
 @keyframes vipPulse {
     0% { box-shadow: 0 0 5px #FFD700; border-color: #FFD700; }
     50% { box-shadow: 0 0 20px #FFD700; border-color: #FFF5C3; }
     100% { box-shadow: 0 0 5px #FFD700; border-color: #FFD700; }
 }
 
-/* Badge số dư cạnh tên */
+/* Badge số dư */
 .balance-badge {
     background: rgba(255, 215, 0, 0.15);
     color: #FFD700;
@@ -1577,8 +1581,9 @@ footer {
     border: 1px solid rgba(255, 215, 0, 0.4);
     margin-left: 8px;
     display: inline-flex;
-    align-items: center; gap: 4px;
-    vertical-align: middle; text-transform: none;
+    align-items: center;
+    gap: 4px;
+    vertical-align: middle;
 }
 .balance-badge i { font-size: 0.7rem; filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.6)); }
 
@@ -1985,40 +1990,35 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             const userRef = doc(db, "users", window.currentUser.uid);
             
             try {
-                // Kiểm tra số dư hiện tại
                 const snap = await getDoc(userRef);
-                if (!snap.exists()) return;
+                // Nếu User chưa từng có dữ liệu trong Firestore, tạo mới document với balance = 0
+                let data = snap.exists() ? snap.data() : { coinBalance: 0 };
                 
-                const data = snap.data();
                 const currentBalance = data.coinBalance || 0;
 
                 if (currentBalance < 50) {
                     window.showToast("Số dư không đủ! Cần 50 Coin.", "error");
-                    // Gợi ý chuyển hướng nạp tiền (tùy chọn)
                     setTimeout(() => window.location.href = '/nap-coin.html', 1500);
                     return;
                 }
 
-                // Tính toán ngày hết hạn mới
-                // 30 ngày = 30 * 24 * 60 * 60 * 1000 mili giây
-                const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000; 
+                const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
                 let newExpiration = Date.now() + thirtyDaysMs;
 
-                // Nếu đang còn hạn VIP thì cộng dồn nối tiếp
                 if (data.vipExpiration && data.vipExpiration > Date.now()) {
                     newExpiration = data.vipExpiration + thirtyDaysMs;
                 }
 
-                // Thực hiện giao dịch: Trừ tiền & Cập nhật hạn
-                await updateDoc(userRef, {
+                // 🔥 Dùng setDoc thay vì updateDoc để an toàn hơn
+                await setDoc(userRef, {
                     coinBalance: increment(-50),
                     vipExpiration: newExpiration
-                });
+                }, { merge: true });
 
-                window.showToast("Mua VIP thành công! Bạn đã sạch bóng quảng cáo.", "success");
+                window.showToast("Mua VIP thành công! Hệ thống đang cập nhật...", "success");
             } catch (e) {
-                console.error(e);
-                window.showToast("Lỗi giao dịch, vui lòng thử lại!", "error");
+                console.error("Lỗi giao dịch:", e);
+                window.showToast("Lỗi hệ thống, vui lòng thử lại sau!", "error");
             }
         };
 
@@ -2063,10 +2063,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                         // 🔥 2. HIỂN THỊ THỜI HẠN VIP THAY CHO FREE PLAN 🔥
                         if (vipStatusLabel) {
                             if (isVip) {
-                                const d = new Date(vipExp);
-                                const dateStr = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
-                                vipStatusLabel.innerHTML = `<span style="color:#FFD700; font-weight:bold;"><i class="fas fa-gem"></i> VIP đến: ${dateStr}</span>`;
-                            } else {
+                            const d = new Date(vipExp);
+                            const dateStr = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+                            vipStatusLabel.innerHTML = `<span style="color:#FFD700; font-weight:bold;"><i class="fas fa-gem"></i> VIP đến: ${dateStr}</span>`;
+                        } else {
                                 vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free Plan`;
                             }
                         }
