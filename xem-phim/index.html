@@ -682,6 +682,61 @@ footer {
     .comm-btn { width: 100%; justify-content: center; }
 }
 
+
+/* --- PANEL QUẢNG CÁO (ĐÃ CHỈNH 1456x180) --- */
+        .ad-panel-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 0 auto 40px;
+            padding: 0 4%;
+            width: 80%;
+            /* 👉 SỬA: Tăng độ rộng tối đa lên 1456px */
+            max-width: 1456px; 
+        }
+
+        .ad-link {
+            display: block;
+            width: 100%;
+            /* 👉 SỬA: Tăng độ rộng tối đa lên 1456px */
+            max-width: 1456px; 
+        }
+
+        .ad-img-728 {
+            width: 100%;
+            /* 👉 SỬA: Để height là auto để nó tự co giãn theo tỉ lệ */
+            height: auto; 
+            
+            /* 👉 QUAN TRỌNG: Thiết lập tỉ lệ khung hình chuẩn 1456/180 
+               Giúp ảnh luôn giữ đúng tỉ lệ dù ở màn hình to hay nhỏ */
+            aspect-ratio: 1456 / 180;
+
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: block;
+        }
+
+        /* --- Tự động co giãn trên Điện thoại (Mobile) --- */
+        @media (max-width: 768px) {
+            .ad-img-728 {
+                height: auto;
+                /* 👉 SỬA: Cập nhật tỉ lệ cho mobile cũng theo kích thước mới */
+                aspect-ratio: 1456 / 180; 
+            }
+        }
+
+        /* --- Tự động co giãn trên Điện thoại (Mobile) --- */
+        @media (max-width: 768px) {
+            .ad-img-728 {
+                height: auto; /* Trên điện thoại để auto cho ảnh tự thu nhỏ */
+                
+                /* 👉 QUAN TRỌNG: Nếu ở trên bạn đổi kích thước thành Rộng 1000px, Cao 200px 
+                Thì ở đây bạn sửa thành: aspect-ratio: 1000/200; để trên mobile ko bị méo */
+                aspect-ratio: 728/90; 
+            }
+        }
     </style>
 </head>
 <body>
@@ -916,6 +971,12 @@ footer {
             </div>
 
         </div>
+    </div>
+
+    <div class="ad-panel-wrapper">
+        <a href="https://wibuphim.netlify.app" target="_blank" class="ad-link">
+            <img src="../WIBUPHIMADS.png" alt="Quảng cáo" class="ad-img-728">
+        </a>
     </div>
 
 <div class="community-section">

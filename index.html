@@ -1145,36 +1145,48 @@ footer {
         #desktopSearchResults::-webkit-scrollbar { width: 5px; }
         #desktopSearchResults::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
 
-        /* --- PANEL QUẢNG CÁO (TÙY CHỈNH KÍCH THƯỚC RỘNG & DỌC) --- */
+       /* --- PANEL QUẢNG CÁO (ĐÃ CHỈNH 1456x180) --- */
         .ad-panel-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;             /* Khoảng cách nếu bạn đặt 2 banner liền nhau */
+            gap: 15px;
             margin: 0 auto 40px;
             padding: 0 4%;
-            width: 100%;
-            max-width: 728px;     /* Chiều rộng tối đa của toàn bộ khu vực chứa */
+            width: 80%;
+            /* 👉 SỬA: Tăng độ rộng tối đa lên 1456px */
+            max-width: 1456px; 
         }
 
         .ad-link {
             display: block;
             width: 100%;
-            /* 👉 CHỈNH CHIỀU RỘNG (NGANG) CỦA BANNER Ở ĐÂY */
-            /* VD: 728px (chuẩn), 1000px (to hơn), hoặc 100% (full màn hình) */
-            max-width: 728px; 
+            /* 👉 SỬA: Tăng độ rộng tối đa lên 1456px */
+            max-width: 1456px; 
         }
 
         .ad-img-728 {
             width: 100%;
-            /* 👉 CHỈNH CHIỀU DỌC (CAO) CỦA BANNER Ở ĐÂY */
-            /* VD: 90px (chuẩn), 150px, 250px... */
-            height: 100px; 
+            /* 👉 SỬA: Để height là auto để nó tự co giãn theo tỉ lệ */
+            height: auto; 
             
-            object-fit: cover; /* Giữ cho ảnh không bị méo khi bạn đổi kích thước */
+            /* 👉 QUAN TRỌNG: Thiết lập tỉ lệ khung hình chuẩn 1456/180 
+               Giúp ảnh luôn giữ đúng tỉ lệ dù ở màn hình to hay nhỏ */
+            aspect-ratio: 1456 / 180;
+
+            object-fit: cover;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             display: block;
+        }
+
+        /* --- Tự động co giãn trên Điện thoại (Mobile) --- */
+        @media (max-width: 768px) {
+            .ad-img-728 {
+                height: auto;
+                /* 👉 SỬA: Cập nhật tỉ lệ cho mobile cũng theo kích thước mới */
+                aspect-ratio: 1456 / 180; 
+            }
         }
 
         /* --- Tự động co giãn trên Điện thoại (Mobile) --- */
@@ -1703,6 +1715,12 @@ footer {
         </div>
     </main>
 
+    <div class="ad-panel-wrapper">
+        <a href="https://wibuphim.netlify.app" target="_blank" class="ad-link">
+            <img src="WIBUPHIMADS.png" alt="Quảng cáo" class="ad-img-728">
+        </a>
+    </div>
+
     <section class="top-10-wrapper">
         <div class="top-10-header"><i class="" style="color:var(--primary-color); font-size: 2.5rem;"></i><h2>Top 5 phim bộ hôm nay <i class="fas fa-chevron-right"></i></h2></div>
         <div class="top-5-grid" id="top5List"></div>
@@ -1735,6 +1753,12 @@ footer {
             <i class="fas fa-times" onclick="closeModal()" style="font-size:2.5rem; color:#fff; cursor:pointer;"></i>
         </div>
         <div id="modalContent" class="modal-grid"></div>
+    </div>
+
+    <div class="ad-panel-wrapper">
+        <a href="https://wibuphim.netlify.app" target="_blank" class="ad-link">
+            <img src="WIBUPHIMADS.png" alt="Quảng cáo" class="ad-img-728">
+        </a>
     </div>
 
 <footer>
