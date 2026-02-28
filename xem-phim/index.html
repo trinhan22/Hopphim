@@ -1830,19 +1830,26 @@ async function loadMovie() {
             }
         }
 
-        // --- HÀM HIỆN QUẢNG CÁO TỐI GIẢN (YOUTUBE STYLE) ---
-function showPrerollAd(link, type, time) {
+        function showPrerollAd(link, type, time) {
     const container = document.getElementById('player-container');
     
-    // Chỉ hiện GIF và Nút Skip
+    // Inject HTML giao diện mới
     container.innerHTML = `
         <div class="preroll-wrapper">
             <img src="https://hopvan.netlify.app/IMG/hero-video.gif" class="preroll-media">
             
-            <div id="skip-ad-btn" class="preroll-skip-button">
-                Bỏ qua sau <span id="ad-timer" style="margin-left:5px; width:15px; text-align:center;">5</span>s
+            <div class="preroll-vip-notice">
+                <p>Khó chịu vì quảng cáo?</p>
+                <div><i class="fas fa-crown"></i> BẬT WIBU VIP NGAY</div>
             </div>
-        </div>`;
+
+            <div class="preroll-skip-area">
+                <button id="skip-ad-btn" class="btn-skip-preroll" disabled>
+                    Chờ <span id="ad-timer">5</span>s
+                </button>
+            </div>
+        </div>
+    `;
 
     let timeLeft = 5;
     const skipBtn = document.getElementById('skip-ad-btn');
@@ -1855,14 +1862,15 @@ function showPrerollAd(link, type, time) {
         if (timeLeft <= 0) {
             clearInterval(countdown);
             if (skipBtn) {
-                // Đổi giao diện sang nút bấm được
-                skipBtn.classList.add('enabled');
-                skipBtn.innerHTML = `Bỏ qua quảng cáo <i class="fas fa-step-forward skip-icon"></i>`;
-                
-                // Gán sự kiện click để vào phim
+                skipBtn.disabled = false;
+                skipBtn.classList.add('ready');
+                skipBtn.innerHTML = 'Bỏ qua quảng cáo <i class="fas fa-step-forward"></i>';
                 skipBtn.onclick = () => {
+                    // Gọi hàm phát phim thực tế của bạn
                     if (typeof window.startActualPlayer === 'function') {
                         window.startActualPlayer(link, type, time);
+                    } else if (typeof startActualPlayer === 'function') {
+                        startActualPlayer(link, type, time);
                     }
                 };
             }
