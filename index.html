@@ -1496,6 +1496,14 @@ footer {
         </div>
     </div>
 
+    <div id="modalPopup" class="modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px; border-bottom:1px solid #222; padding-bottom:20px;">
+            <h2 id="modalTitle" class="text-gradient" style="font-size: 2rem;">Danh sách phim</h2>
+            <i class="fas fa-times" onclick="closeModal()" style="font-size:2.5rem; color:#fff; cursor:pointer;"></i>
+        </div>
+        <div id="modalContent" class="modal-grid"></div>
+    </div>
+
     <div id="mobileMenuOverlay" class="mobile-overlay">
         <div class="backdrop" onclick="closeMobileMenu()"></div>
         <div id="mobileMenuContent" style="background: var(--mobile-menu-bg); width: 300px; height: 100%; display: flex; flex-direction: column; position: relative; z-index: 2; box-shadow: 20px 0 60px rgba(0,0,0,0.8); padding: 25px;">
@@ -1545,7 +1553,7 @@ footer {
             </div>
             <ul class="nav-links" id="navLinks">
                 <li class="nav-item">
-                    <a href="/" class="nav-link" onclick="loadHome()">Trang chủ</a>
+                    <a href="/" class="nav-link">Trang chủ</a>
                 </li>
                 
                 <li class="nav-item">
@@ -1580,16 +1588,17 @@ footer {
 
                 <li class="nav-item">
                     <div class="nav-link">Quốc gia <i class="fas fa-caret-down"></i></div>
-                    <div class="dropdown-menu" style="width: 400px;"> <div class="dropdown-grid" style="grid-template-columns: repeat(3, 1fr);">
-                            <a href="#" class="dropdown-item-link" onclick="loadCountry('trung-quoc', 'Trung Quốc')">Trung Quốc</a>
-                            <a href="#" class="dropdown-item-link" onclick="loadCountry('han-quoc', 'Hàn Quốc')">Hàn Quốc</a>
-                            <a href="#" class="dropdown-item-link" onclick="loadCountry('nhat-ban', 'Nhật Bản')">Nhật Bản</a>
-                            <a href="#" class="dropdown-item-link" onclick="loadCountry('thai-lan', 'Thái Lan')">Thái Lan</a>
-                            <a href="#" class="dropdown-item-link" onclick="loadCountry('au-my', 'Âu Mỹ')">Âu Mỹ</a>
-                            <a href="#" class="dropdown-item-link" onclick="loadCountry('dai-loan', 'Đài Loan')">Đài Loan</a>
-                            <a href="#" class="dropdown-item-link" onclick="loadCountry('hong-kong', 'Hồng Kông')">Hồng Kông</a>
-                            <a href="#" class="dropdown-item-link" onclick="loadCountry('an-do', 'Ấn Độ')">Ấn Độ</a>
-                            <a href="#" class="dropdown-item-link" onclick="loadCountry('viet-nam', 'Việt Nam')">Việt Nam</a>
+                    <div class="dropdown-menu" style="width: 400px;">
+                        <div class="dropdown-grid" style="grid-template-columns: repeat(3, 1fr);">
+                            <a href="#" class="dropdown-item-link" onclick="openModal('trung-quoc', 'Phim Trung Quốc')">Trung Quốc</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('han-quoc', 'Phim Hàn Quốc')">Hàn Quốc</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('nhat-ban', 'Phim Nhật Bản')">Nhật Bản</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('thai-lan', 'Phim Thái Lan')">Thái Lan</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('au-my', 'Phim Âu Mỹ')">Âu Mỹ</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('dai-loan', 'Phim Đài Loan')">Đài Loan</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('hong-kong', 'Phim Hồng Kông')">Hồng Kông</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('an-do', 'Phim Ấn Độ')">Ấn Độ</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('viet-nam', 'Phim Việt Nam')">Việt Nam</a>
                         </div>
                     </div>
                 </li>
@@ -2019,6 +2028,72 @@ footer {
         // Helper UI
         window.toggleUserDropdown = () => document.getElementById('userMenu').classList.toggle('active');
         window.handleUserClick = () => { window.location.href = window.currentUser ? '/profile.html' : '/login.html'; }
+
+
+// ============================================================
+    // 🔥 BỔ SUNG CÁC HÀM XỬ LÝ MENU & MODAL (CÒN THIẾU)
+    // ============================================================
+
+    // 1. Hàm hiển thị Modal chung
+    function showModal(title) {
+        const modal = document.getElementById('modalPopup');
+        const modalContent = document.getElementById('modalContent');
+        const modalTitle = document.getElementById('modalTitle');
+        
+        if (modalTitle) modalTitle.innerText = title;
+        if (modal) modal.classList.add('active');
+        if (modalContent) modalContent.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#888;"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Đang tải...</div>`;
+    }
+
+    // 2. Hàm Fetch API và Render ra Modal
+    async function fetchAndRender(apiUrl) {
+        try {
+            const res = await fetch(apiUrl);
+            const data = await res.json();
+            const container = document.getElementById('modalContent');
+            
+            if (data.data && data.data.items) {
+                let html = '';
+                data.data.items.forEach(m => {
+                    // Xử lý ảnh: Vì đang ở trong Modal nên ép hiển thị (display:block) để không bị CSS trang chủ ẩn mất
+                    const img = m.thumb_url.startsWith('http') ? m.thumb_url : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
+                    html += `
+                    <div class="n-card" onclick="window.location.href='/xem-phim/${m.slug}'">
+                        <img src="${img}" style="width:100%; height:100%; object-fit:cover; border-radius:12px; display:block !important;">
+                        <div class="n-info-layer" style="padding:10px;"> 
+                            <div class="n-title-in" style="font-size:0.9rem; font-weight:700; color:#fff;">${m.name}</div>
+                            <div style="font-size:0.75rem; color:#aaa;">${m.year} • ${m.lang}</div>
+                        </div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            } else {
+                if(container) container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ccc;">Không tìm thấy phim.</div>';
+            }
+        } catch (e) {
+            console.error(e);
+            const container = document.getElementById('modalContent');
+            if(container) container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ff4757;">Lỗi kết nối server!</div>';
+        }
+    }
+
+    // 3. Hàm gọi từ Menu Thể Loại (Gán vào window để HTML gọi được)
+    window.loadCategory = async (slug, title) => {
+        showModal(title);
+        fetchAndRender(`https://ophim1.com/v1/api/the-loai/${slug}`);
+    };
+
+    // 4. Hàm gọi từ Menu Quốc Gia
+    window.openModal = async (slug, title) => {
+        showModal(title);
+        fetchAndRender(`https://ophim1.com/v1/api/quoc-gia/${slug}`);
+    };
+
+    // 5. Hàm đóng Modal
+    window.closeModal = () => {
+        const modal = document.getElementById('modalPopup');
+        if(modal) modal.classList.remove('active');
+    };
     </script>
 
     <script>

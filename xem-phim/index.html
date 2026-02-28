@@ -586,7 +586,7 @@ footer {
     justify-content: space-between;
     /* Nền Gradient từ Xanh Facebook sang Đen của Web */
     background: linear-gradient(105deg, #1877F2 0%, #0f111a 60%);
-    padding: 30px 50px;
+    padding: 45px 50px;
     border-radius: 24px;
     text-decoration: none;
     position: relative;
@@ -711,6 +711,14 @@ footer {
         </div>
     </div>
 
+    <div id="modalPopup" class="modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px; border-bottom:1px solid #222; padding-bottom:20px;">
+            <h2 id="modalTitle" class="text-gradient" style="font-size: 2rem;">Danh sách phim</h2>
+            <i class="fas fa-times" onclick="closeModal()" style="font-size:2.5rem; color:#fff; cursor:pointer;"></i>
+        </div>
+        <div id="modalContent" class="modal-grid"></div>
+    </div>
+
     <div id="mobileMenuOverlay" class="mobile-overlay">
         <div class="menu-header">
             <div class="menu-logo"><img src="/LOGO.WEBP" alt="WibuPhim"><span>WIBUPHIM</span></div>
@@ -756,45 +764,45 @@ footer {
                     <div class="nav-link">Thể loại <i class="fas fa-caret-down"></i></div>
                     <div class="dropdown-menu">
                         <div class="dropdown-grid">
-                            <a href="/" class="dropdown-item-link">Hành Động</a>
-                            <a href="/" class="dropdown-item-link">Tình Cảm</a>
-                            <a href="/" class="dropdown-item-link">Hài Hước</a>
-                            <a href="/" class="dropdown-item-link">Cổ Trang</a>
-                            <a href="/" class="dropdown-item-link">Tâm Lý</a>
-                            <a href="/" class="dropdown-item-link">Hình Sự</a>
-                            <a href="/" class="dropdown-item-link">Chiến Tranh</a>
-                            <a href="/" class="dropdown-item-link">Thể Thao</a>
-                            <a href="/" class="dropdown-item-link">Võ Thuật</a>
-                            <a href="/" class="dropdown-item-link">Viễn Tưởng</a>
-                            <a href="/" class="dropdown-item-link">Phiêu Lưu</a>
-                            <a href="/" class="dropdown-item-link">Khoa Học</a>
-                            <a href="/" class="dropdown-item-link">Kinh Dị</a>
-                            <a href="/" class="dropdown-item-link">Âm Nhạc</a>
-                            <a href="/" class="dropdown-item-link">Thần Thoại</a>
-                            <a href="/" class="dropdown-item-link">Tài Liệu</a>
-                            <a href="/" class="dropdown-item-link">Gia Đình</a>
-                            <a href="/" class="dropdown-item-link">Học Đường</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('hanh-dong', 'Hành Động')">Hành Động</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('tinh-cam', 'Tình Cảm')">Tình Cảm</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('hai-huoc', 'Hài Hước')">Hài Hước</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('co-trang', 'Cổ Trang')">Cổ Trang</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('tam-ly', 'Tâm Lý')">Tâm Lý</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('hinh-su', 'Hình Sự')">Hình Sự</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('chien-tranh', 'Chiến Tranh')">Chiến Tranh</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('the-thao', 'Thể Thao')">Thể Thao</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('vo-thuat', 'Võ Thuật')">Võ Thuật</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('vien-tuong', 'Viễn Tưởng')">Viễn Tưởng</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('phieu-luu', 'Phiêu Lưu')">Phiêu Lưu</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('khoa-hoc', 'Khoa Học')">Khoa Học</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('kinh-di', 'Kinh Dị')">Kinh Dị</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('am-nhac', 'Âm Nhạc')">Âm Nhạc</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('than-thoai', 'Thần Thoại')">Thần Thoại</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('tai-lieu', 'Tài Liệu')">Tài Liệu</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('gia-dinh', 'Gia Đình')">Gia Đình</a>
+                            <a href="#" class="dropdown-item-link" onclick="loadCategory('hoc-duong', 'Học Đường')">Học Đường</a>
                         </div>
                     </div>
                 </li>
 
-                <li class="nav-item"><a href="/" class="nav-link">Phim Lẻ</a></li>
-                <li class="nav-item"><a href="/" class="nav-link">Phim Bộ</a></li>
-                <li class="nav-item"><a href="/" class="nav-link">TV Shows</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Lẻ</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" onclick="loadCategory('tv-shows', 'TV Shows')">TV Shows</a></li>
 
                 <li class="nav-item">
                     <div class="nav-link">Quốc gia <i class="fas fa-caret-down"></i></div>
                     <div class="dropdown-menu" style="width: 400px;">
                         <div class="dropdown-grid" style="grid-template-columns: repeat(3, 1fr);">
-                            <a href="/" class="dropdown-item-link">Trung Quốc</a>
-                            <a href="/" class="dropdown-item-link">Hàn Quốc</a>
-                            <a href="/" class="dropdown-item-link">Nhật Bản</a>
-                            <a href="/" class="dropdown-item-link">Thái Lan</a>
-                            <a href="/" class="dropdown-item-link">Âu Mỹ</a>
-                            <a href="/" class="dropdown-item-link">Đài Loan</a>
-                            <a href="/" class="dropdown-item-link">Hồng Kông</a>
-                            <a href="/" class="dropdown-item-link">Ấn Độ</a>
-                            <a href="/" class="dropdown-item-link">Việt Nam</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('trung-quoc', 'Phim Trung Quốc')">Trung Quốc</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('han-quoc', 'Phim Hàn Quốc')">Hàn Quốc</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('nhat-ban', 'Phim Nhật Bản')">Nhật Bản</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('thai-lan', 'Phim Thái Lan')">Thái Lan</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('au-my', 'Phim Âu Mỹ')">Âu Mỹ</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('dai-loan', 'Phim Đài Loan')">Đài Loan</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('hong-kong', 'Phim Hồng Kông')">Hồng Kông</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('an-do', 'Phim Ấn Độ')">Ấn Độ</a>
+                            <a href="#" class="dropdown-item-link" onclick="openModal('viet-nam', 'Phim Việt Nam')">Việt Nam</a>
                         </div>
                     </div>
                 </li>
@@ -1430,13 +1438,20 @@ async function loadMovie() {
             finally { hideLoadingState(); }
         }
 
-        // Hàm hỗ trợ tắt loading với hiệu ứng zoom-out bạn muốn
+        // Hàm hỗ trợ tắt loading + Hiện Chatbot
         function hideLoadingState() {
             setTimeout(() => {
                 const screen = document.getElementById('loadingScreen');
                 const img = screen?.querySelector('.loading-img');
                 if(img) img.classList.add('zoom-out');
-                setTimeout(() => { if(screen) screen.style.display = 'none'; }, 480);
+                
+                setTimeout(() => { 
+                    if(screen) screen.style.display = 'none'; 
+
+                    // 🔥 KÍCH HOẠT CHATBOT SAU KHI LOAD XONG 🔥
+                    if (window.showChatbot) window.showChatbot();
+
+                }, 480);
             }, 500);
         }
 
@@ -1545,6 +1560,7 @@ async function loadMovie() {
             }
         }
 
+        
         // --- CẤU HÌNH ĐỀ XUẤT ---
         const MANUAL_RELATED = ["con-ra-the-thong-gi-nua-2026", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "duong-cung-ky-an-thanh-vu-phong-minh", "su-tro-lai-cua-tham-phan", "tuoi-tre-tai-cao", "con-say-mua-xuan", "trao-em-ca-vu-tru", "thu-hut-manh-liet", "truong-nguyet-tan-minh"];
         async function loadRelated() {
