@@ -775,45 +775,50 @@ footer {
     color: #fff;
 }
 
-/* --- GIAO DIỆN QUẢNG CÁO YOUTUBE STYLE (CLEAN) --- */
-.preroll-wrapper {
-    position: absolute; inset: 0; background: #000; z-index: 1000;
-    display: flex; align-items: center; justify-content: center; overflow: hidden;
+/* --- GIAO DIỆN QUẢNG CÁO YOUTUBE STYLE (FIXED) --- */
+.preroll-container {
+    width: 100%; height: 100%; background: #000;
+    position: relative; overflow: hidden; display: flex;
+    justify-content: center; align-items: center;
 }
-.preroll-media { width: 100%; height: 100%; object-fit: cover; }
+.preroll-gif { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
 
-/* Nút Bỏ qua chuẩn YouTube */
-.preroll-skip-button {
-    position: absolute;
-    bottom: 50px; right: 0; /* Vị trí góc phải dưới */
-    background-color: rgba(0, 0, 0, 0.6); /* Nền đen mờ */
-    color: #fff;
-    padding: 12px 25px 12px 20px;
-    font-family: "Roboto", "Arial", sans-serif;
-    font-size: 1.1rem;
-    font-weight: 500;
-    border: none;
-    border-radius: 4px 0 0 4px; /* Bo nhẹ góc trái */
-    z-index: 20;
-    cursor: default;
-    display: flex; align-items: center; justify-content: center;
-    min-width: 140px;
-    backdrop-filter: blur(2px);
-    transition: all 0.2s;
+/* Góc trên trái: Dụ dỗ nạp VIP */
+.preroll-info-box {
+    position: absolute; top: 0; left: 0; padding: 25px;
+    z-index: 10; pointer-events: none; /* Để không chặn click */
 }
+.preroll-info-box p { 
+    background: #f1c40f; color: #000; padding: 2px 6px; 
+    font-size: 11px; font-weight: 900; border-radius: 2px; 
+    display: inline-block; margin-bottom: 5px; text-transform: uppercase;
+}
+.preroll-info-box div { 
+    color: #fff; font-size: 18px; font-weight: 500; 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8); display: flex; align-items: center; gap: 8px;
+}
+.preroll-info-box div i { color: #FF5E62; animation: crownRotate 2s infinite; }
 
-/* Trạng thái khi nút Skip hiện lên */
-.preroll-skip-button.enabled {
-    background-color: rgba(0, 0, 0, 0.9); /* Đậm hơn */
+/* Góc dưới phải: Nút Bỏ qua */
+.preroll-skip-area {
+    position: absolute; bottom: 50px; right: 0; 
+    z-index: 20; display: flex; align-items: center;
+}
+.btn-skip-preroll {
+    background: rgba(0, 0, 0, 0.6); 
+    color: #fff; border: none; padding: 12px 30px;
+    font-size: 1.1rem; font-weight: 500;
+    border-radius: 4px 0 0 4px;
+    cursor: default; transition: 0.2s;
+    backdrop-filter: blur(5px);
+    display: flex; align-items: center; gap: 10px;
+}
+.btn-skip-preroll.ready {
+    background: rgba(0, 0, 0, 0.9);
     cursor: pointer;
-    border: 1px solid rgba(255,255,255,0.2);
-    border-right: none;
+    border: 1px solid rgba(255,255,255,0.2); border-right: none;
 }
-.preroll-skip-button.enabled:hover { background-color: #222; }
-
-/* Icon mũi tên */
-.skip-icon { margin-left: 8px; display: none; }
-.preroll-skip-button.enabled .skip-icon { display: inline-block; }
+.btn-skip-preroll.ready:hover { background: #333; }
 
 /* --- ĐỒNG BỘ VIP KING TỪ INDEX --- */
 .vip-glow {
@@ -1612,106 +1617,159 @@ window.closeMobileSearch = () => {
 }
         
         // 6. MAIN LOAD MOVIE LOGIC (ĐÃ TÁCH RA 2 TRƯỜNG HỢP)
-async function loadMovie() {
-    // 0. Khai báo các tham số từ URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const isYT = urlParams.get('custom') === 'youtube';
-    const ytId = urlParams.get('id');
-    const customName = urlParams.get('name');
-    const movieSlug = urlParams.get('slug') || window.location.pathname.split('/').pop().replace('.html', '');
+// --- 6. HÀM LOAD PHIM CHÍNH (FULL LOGIC - DÁN ĐÈ CÁI CŨ) ---
+        async function loadMovie() {
+            // 1. Lấy thông tin từ URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const isYT = urlParams.get('custom') === 'youtube';
+            const ytId = urlParams.get('id');
+            const customName = urlParams.get('name');
+            const movieSlug = urlParams.get('slug') || window.location.pathname.split('/').pop().replace('.html', '');
 
-    // Xác định ID duy nhất của phim để tìm trong lịch sử
-    const currentSlugId = isYT ? `?custom=youtube&id=${ytId}&name=${encodeURIComponent(customName)}` : movieSlug;
-    
-    let savedEp = "Tập 1";
-    let savedTime = 0;
+            // Tạo ID duy nhất để lưu/lấy lịch sử
+            const currentSlugId = isYT ? `?custom=youtube&id=${ytId}&name=${encodeURIComponent(customName)}` : movieSlug;
 
-    // 1. LẤY TIẾN TRÌNH CŨ TỪ FIREBASE (NẾU CÓ)
-    if (currentUser) {
-        try {
-            const snap = await getDoc(doc(db, "users", currentUser.uid));
-            if (snap.exists() && snap.data().watchHistory) {
-                const history = snap.data().watchHistory;
-                const oldData = history.find(m => m.slug === currentSlugId);
-                if (oldData) {
-                    savedEp = oldData.epName || "Tập 1";
-                    savedTime = oldData.duration || 0;
-                    currentEpName = savedEp; // Cập nhật biến toàn cục cho bộ tracker
-                }
+            let savedEpName = "Tập 1";
+            let savedTime = 0;
+
+            // 2. LẤY LỊCH SỬ XEM (RESUME) TỪ FIREBASE
+            if (currentUser) {
+                try {
+                    const snap = await getDoc(doc(db, "users", currentUser.uid));
+                    if (snap.exists() && snap.data().watchHistory) {
+                        const history = snap.data().watchHistory;
+                        // Tìm phim trong lịch sử
+                        const oldData = history.find(m => decodeURIComponent(m.slug) === decodeURIComponent(currentSlugId));
+                        
+                        if (oldData) {
+                            savedEpName = oldData.epName || "Tập 1";
+                            savedTime = oldData.duration || 0;
+                            console.log(`🔥 Resume: ${savedEpName} tại giây ${savedTime}`);
+                        }
+                    }
+                } catch (e) { console.error("Lỗi lấy lịch sử:", e); }
             }
-        } catch (e) { console.error("Lỗi lấy lịch sử:", e); }
-    }
 
-            // --- CASE A: PHIM YOUTUBE TỪ TRANG CHỦ ---
-// --- CASE A: PHIM YOUTUBE TỪ TRANG CHỦ ---
-    if (isYT && ytId) {
-        const finalName = customName ? decodeURIComponent(customName) : "Phim Đặc Sắc";
-        const posterUrl = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+            // --- TRƯỜNG HỢP A: PHIM YOUTUBE ---
+            if (isYT && ytId) {
+                const finalName = decodeURIComponent(customName || "Phim Youtube");
+                const posterUrl = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
 
-        // 1. Tạo một đối tượng phim giả lập để tận dụng hàm renderInfo (có rút gọn chữ)
-        const customMovie = {
-            name: finalName,
-            origin_name: "Phim Độc Quyền WibuPhim",
-            content: "Phim được phát độc quyền trên hệ thống WibuPhim. Chúc bạn có những giây phút xem phim vui vẻ và thư giãn nhất cùng bạn bè và người thân.", 
-            poster_url: posterUrl,
-            thumb_url: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`,
-            year: "2025",
-            quality: "FHD",
-            category: [{name: "Tâm Lý Học Đường"}, {name: "Chính kịch"}],
-            country: [{name: "Việt Nam"}]
-        };
+                // Tạo object dữ liệu phim
+                currentMovieData = {
+                    slug: currentSlugId,
+                    name: finalName,
+                    thumb_url: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`,
+                    poster_url: posterUrl
+                };
 
-        // 2. Chạy hàm hiển thị thông tin (Nó sẽ tự động cắt 36 từ và tạo nút Xem thêm)
-        renderInfo(customMovie);
+                // Hiển thị thông tin phim giả lập
+                const fakeInfo = {
+                    name: finalName,
+                    origin_name: 'YouTube Premium',
+                    year: '2026',
+                    quality: '4K',
+                    lang: 'Vietsub',
+                    content: 'Phim được phát độc quyền trên hệ thống WibuPhim. Chúc bạn xem phim vui vẻ!',
+                    poster_url: posterUrl,
+                    thumb_url: currentMovieData.thumb_url
+                };
+                renderInfo(fakeInfo);
+                
+                // Ẩn block tập phim vì Youtube chỉ có 1 video
+                document.querySelectorAll('.episode-block').forEach(e => e.style.display = 'none');
 
-        // 3. Các cài đặt giao diện khác cho Youtube
-        document.title = `${finalName} - WibuPhim`;
-        document.getElementById('breadCrumbTitle').innerText = finalName;
-        document.querySelectorAll('.episode-block').forEach(el => el.style.display = 'none');
+                // Gọi hàm phát (Kèm thời gian đã xem)
+                window.changeEp(ytId, 'youtube', null, 'Full Video', savedTime);
+                
+                loadRelated(); // Load đề xuất
+                hideLoadingState(); 
+                return;
+            }
+            
+            // --- TRƯỜNG HỢP B: PHIM TỪ OPHIM API ---
+            if (!movieSlug) {
+                hideLoadingState();
+                return;
+            }
 
-        // 4. Ghi nhớ dữ liệu cho bộ lưu tiến trình (Tracker)
-        currentMovieData = { 
-            slug: currentSlugId, 
-            name: finalName, 
-            thumb_url: customMovie.thumb_url, 
-            poster_url: posterUrl 
-        };
-        currentEpName = "Full Video";
-
-        // 5. Khởi tạo trình phát và nhảy đến giây cũ (nếu có)
-        initPlayer('youtube', ytId, posterUrl, savedTime);
-        
-        loadRelated();
-        hideLoadingState(); 
-        return;
-    }
-
-            // --- CASE B: PHIM OPHIM (BÌNH THƯỜNG) ---
-            if (!movieSlug) return;
             try {
                 const res = await fetch(`${API_BASE}/${movieSlug}`);
                 const data = await res.json();
+
                 if (data.status) {
                     const movie = data.data.item;
-                    currentMovieData = movie;
+                    currentMovieData = movie; // Lưu lại global để dùng cho player
                     
-                    renderInfo(movie); // Điền thông tin tiêu đề, mô tả
-                    renderEpisodes(movie.episodes); // Hiện danh sách tập
+                    renderInfo(movie);
 
-                    // Tìm tập đã xem dở trong danh sách tập
-                    const serverData = movie.episodes[0].server_data;
-                    const epData = serverData.find(e => e.name === savedEp) || serverData[0];
-                    const link = epData.link_m3u8 || epData.link_embed;
-                    const type = epData.link_m3u8 ? 'hls' : 'iframe';
-
-                    // Phát phim kèm số giây cũ (Resume)
-                    window.changeEp(link, type, null, epData.name, savedTime);
+                    // Xử lý danh sách tập
+                    const svData = movie.episodes[0].server_data;
+                    let epHtml = ''; // Biến chứa HTML danh sách nút tập
                     
-                    if(savedTime > 2) window.showToast(`Đang xem tiếp ${savedEp}`);
+                    // Biến tạm để xác định tập nào sẽ được phát
+                    let targetEpToPlay = null; 
+                    let targetIndex = 0;
+
+                    svData.forEach((ep, idx) => {
+                        const type = ep.link_m3u8 ? 'hls' : 'iframe';
+                        const link = ep.link_m3u8 || ep.link_embed;
+                        
+                        // Tạo nút tập phim, gán ID để sau này active
+                        epHtml += `<div class="ep-btn" id="btn-ep-${idx}" onclick="window.changeEp('${link}', '${type}', this, '${ep.name}')">${ep.name}</div>`;
+
+                        // Logic tìm tập để phát:
+                        // Nếu tên tập trùng với lịch sử -> Chọn tập này
+                        if (ep.name === savedEpName) {
+                            targetEpToPlay = { link, type, name: ep.name };
+                            targetIndex = idx;
+                        }
+                    });
+
+                    // Nếu không tìm thấy trong lịch sử (hoặc lần đầu xem), mặc định chọn Tập 1 (index 0)
+                    if (!targetEpToPlay && svData.length > 0) {
+                        const firstEp = svData[0];
+                        targetEpToPlay = { 
+                            link: firstEp.link_m3u8 || firstEp.link_embed, 
+                            type: firstEp.link_m3u8 ? 'hls' : 'iframe', 
+                            name: firstEp.name 
+                        };
+                        targetIndex = 0;
+                        savedTime = 0; // Reset time vì là xem mới
+                    }
+
+                    // Render danh sách nút tập ra màn hình
+                    const mobileList = document.getElementById('episodeListMobile');
+                    const desktopList = document.getElementById('episodeListDesktop');
+                    if (mobileList) mobileList.innerHTML = epHtml;
+                    if (desktopList) desktopList.innerHTML = epHtml;
+
+                    // Tự động phát tập đã chọn
+                    if (targetEpToPlay) {
+                        // Highlight nút đang xem (cả trên mobile và desktop)
+                        setTimeout(() => {
+                            const mobileBtn = document.querySelector(`#episodeListMobile #btn-ep-${targetIndex}`);
+                            const desktopBtn = document.querySelector(`#episodeListDesktop #btn-ep-${targetIndex}`);
+                            if (mobileBtn) mobileBtn.classList.add('active');
+                            if (desktopBtn) desktopBtn.classList.add('active');
+                        }, 100);
+
+                        // Gọi hàm phát phim
+                        window.changeEp(targetEpToPlay.link, targetEpToPlay.type, null, targetEpToPlay.name, savedTime);
+                        
+                        if(savedTime > 5) {
+                            window.showToast(`Đang xem tiếp ${targetEpToPlay.name}`, "success");
+                        }
+                    }
+
                     loadRelated();
                 }
-            } catch (e) { console.error(e); } 
-            finally { hideLoadingState(); }
+            } catch (e) {
+                console.error("Lỗi tải phim:", e);
+                window.showToast("Lỗi kết nối server phim!", "error");
+            }
+            
+            hideLoadingState();
         }
 
         // Hàm hỗ trợ tắt loading + Hiện Chatbot
@@ -1789,10 +1847,9 @@ async function loadMovie() {
 
         function renderEpisodes(episodes) {
             if (!episodes || episodes.length === 0) return;
-            const serverData = episodes[0].server_data;
-            let html = '';
-            
-            serverData.forEach((ep, index) => {
+            const svData = movie.episodes[0].server_data;
+            let epHtml = ''; // 🔥 THÊM DÒNG NÀY ĐỂ KHÔNG BỊ LỖI
+            svData.forEach((ep, idx) => {
                 const link = ep.link_m3u8 || ep.link_embed;
                 const type = ep.link_m3u8 ? 'hls' : 'iframe';
                 const active = index === 0 ? 'active' : '';
@@ -1830,22 +1887,23 @@ async function loadMovie() {
             }
         }
 
-        function showPrerollAd(link, type, time) {
+// --- HÀM HIỆN QUẢNG CÁO YOUTUBE STYLE ---
+function showPrerollAd(link, type, time) {
     const container = document.getElementById('player-container');
     
     // Inject HTML giao diện mới
     container.innerHTML = `
-        <div class="preroll-wrapper">
-            <img src="https://hopvan.netlify.app/IMG/hero-video.gif" class="preroll-media">
+        <div class="preroll-container">
+            <img src="https://hopvan.netlify.app/IMG/hero-video.gif" class="preroll-gif">
             
-            <div class="preroll-vip-notice">
-                <p>Khó chịu vì quảng cáo?</p>
-                <div><i class="fas fa-crown"></i> BẬT WIBU VIP NGAY</div>
+            <div class="preroll-info-box">
+                <p>Quảng cáo</p>
+                <div>hopvan.netlify.app</div>
             </div>
 
             <div class="preroll-skip-area">
                 <button id="skip-ad-btn" class="btn-skip-preroll" disabled>
-                    Chờ <span id="ad-timer">5</span>s
+                    Bỏ qua sau <span id="ad-timer" style="margin-left:5px; width:15px; text-align:center;">5</span>s
                 </button>
             </div>
         </div>
@@ -1866,11 +1924,9 @@ async function loadMovie() {
                 skipBtn.classList.add('ready');
                 skipBtn.innerHTML = 'Bỏ qua quảng cáo <i class="fas fa-step-forward"></i>';
                 skipBtn.onclick = () => {
-                    // Gọi hàm phát phim thực tế của bạn
+                    // Gọi hàm phát phim
                     if (typeof window.startActualPlayer === 'function') {
                         window.startActualPlayer(link, type, time);
-                    } else if (typeof startActualPlayer === 'function') {
-                        startActualPlayer(link, type, time);
                     }
                 };
             }
@@ -1878,16 +1934,15 @@ async function loadMovie() {
     }, 1000);
 }
 
-        function startPlayer(link, type, startTime) {
-            if (type === 'iframe') {
-                document.getElementById('player-container').innerHTML = `
-                    <div style="position:relative; padding-top:56.25%;">
-                        <iframe src="${link}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
-                    </div>`;
-            } else {
-                initPlayer(type, link, currentMovieData?.poster_url, startTime);
-            }
-        }
+// 🔥 ĐỔI TÊN HÀM NÀY ĐỂ FIX LỖI MẤT KHUNG CHIẾU 🔥
+window.startActualPlayer = function(link, type, startTime) {
+    const container = document.getElementById('player-container');
+    if (type === 'iframe') {
+        container.innerHTML = `<div style="position:relative; width:100%; height:100%; padding-top:56.25%;"><iframe src="${link}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe></div>`;
+    } else {
+        initPlayer(type, link, currentMovieData?.poster_url, startTime);
+    }
+}
         
         // --- CẤU HÌNH ĐỀ XUẤT ---
         const MANUAL_RELATED = ["con-ra-the-thong-gi-nua-2026", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "duong-cung-ky-an-thanh-vu-phong-minh", "su-tro-lai-cua-tham-phan", "tuoi-tre-tai-cao", "con-say-mua-xuan", "trao-em-ca-vu-tru", "thu-hut-manh-liet", "truong-nguyet-tan-minh"];
