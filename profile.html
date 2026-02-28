@@ -4,246 +4,160 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý tài khoản - WibuPhim</title>
-    <meta property="og:title" content="WibuPhim - Phim Hay Trong Tầm Tay" />
-    <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao." />
-    <meta property="og:image" content="https://wibuphim.netlify.app/panel.webp" />
-    <meta property="og:url" content="https://wibuphim.netlify.app" />
-    <meta property="og:type" content="article" />
-
+    
     <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --bg-body: #0f1015;
-            --bg-sidebar: #181a20;
-            --bg-card: #20222b;
-            --text-main: #ffffff;
-            --text-sub: #8a8d98;
+            --bg-body: #0f1015; --bg-sidebar: #181a20; --bg-card: #20222b;
+            --text-main: #ffffff; --text-sub: #8a8d98;
             --primary: #FF5E62;
-            --primary-hover: #ff4757;
             --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62);
             --border-color: rgba(255,255,255,0.05);
-            --font-main: 'Be Vietnam Pro', sans-serif;
-            --radius: 12px;
+            --font-main: 'Be Vietnam Pro', sans-serif; --radius: 12px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-main); outline: none; }
-        
-        body { 
-            background-color: var(--bg-body); 
-            color: var(--text-main); 
-            height: 100vh; 
-            display: flex; 
-            overflow: hidden; 
-        }
+        body { background-color: var(--bg-body); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
 
         /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,94,98,0.5); }
 
-        /* --- TOAST NOTIFICATION --- */
+        /* TOAST & CONFIRM */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast {
-            background: #23252f; color: #fff; padding: 15px 25px; border-radius: 12px;
-            display: flex; align-items: center; gap: 12px; min-width: 300px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary);
-            animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto;
-        }
-        .toast.success { border-left-color: #2ecc71; }
-        .toast.error { border-left-color: #ff4757; }
-        .toast i { font-size: 1.2rem; }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast { background: #23252f; color: #fff; padding: 15px 25px; border-radius: 12px; display: flex; align-items: center; gap: 12px; min-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary); animation: slideIn 0.3s ease; pointer-events: auto; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* --- CUSTOM CONFIRM MODAL --- */
-        .custom-confirm-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10001;
-            display: none; justify-content: center; align-items: center;
-            opacity: 0; transition: 0.3s; backdrop-filter: blur(5px);
-        }
+        .custom-confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10001; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.3s; }
         .custom-confirm-overlay.active { display: flex; opacity: 1; }
-        
-        .confirm-box {
-            background: #23252f; width: 90%; max-width: 400px; padding: 30px;
-            border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
-            transform: scale(0.9); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-        }
+        .confirm-box { background: #23252f; width: 90%; max-width: 400px; padding: 30px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); transform: scale(0.9); transition: 0.3s; }
         .custom-confirm-overlay.active .confirm-box { transform: scale(1); }
-        
-        .confirm-icon { font-size: 3rem; margin-bottom: 15px; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .confirm-title { font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
-        .confirm-desc { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 25px; line-height: 1.5; }
-        
-        .confirm-actions { display: flex; gap: 15px; justify-content: center; }
-        .btn-confirm { padding: 12px 30px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; font-size: 0.95rem; }
-        .btn-cancel { background: transparent; color: #ccc; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .btn-ok { background: var(--gradient-main); color: #fff; box-shadow: 0 5px 15px rgba(255, 94, 98, 0.3); }
-        .btn-ok:hover { transform: translateY(-2px); }
+        .btn-confirm { padding: 10px 25px; border-radius: 8px; margin: 0 5px; cursor: pointer; border: none; font-weight: 600; }
+        .btn-ok { background: var(--gradient-main); color: #fff; } .btn-cancel { background: transparent; color: #ccc; border: 1px solid #444; }
 
         /* LOADING */
-        #loadingScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-            background: var(--bg-body); z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
-            flex-direction: column; gap: 15px;
-        }
-        .loader-spinner {
-            width: 50px; height: 50px; border-radius: 50%;
-            border: 4px solid rgba(255, 94, 98, 0.1); 
-            border-top-color: #FF5E62; border-right-color: #FF8F50;
-            animation: spin 0.8s linear infinite; box-shadow: 0 0 15px rgba(255, 94, 98, 0.3);
-        }
+        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg-body); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .loader-spinner { width: 50px; height: 50px; border-radius: 50%; border: 4px solid rgba(255,94,98,0.1); border-top-color: #FF5E62; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: 300px; background: var(--bg-sidebar); display: flex; flex-direction: column;
-            padding: 30px 20px; border-right: 1px solid var(--border-color); z-index: 100;
-        }
+        /* SIDEBAR */
+        .sidebar { width: 300px; background: var(--bg-sidebar); display: flex; flex-direction: column; padding: 30px 20px; border-right: 1px solid var(--border-color); z-index: 100; }
         .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; padding-left: 10px; cursor: pointer; }
-        .brand img { height: 35px; }
-        .brand span { font-weight: 900; font-size: 1.4rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .brand img { height: 35px; } .brand span { font-weight: 900; font-size: 1.4rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-        .nav-item {
-            display: flex; align-items: center; gap: 15px; padding: 14px 20px;
-            color: var(--text-sub); border-radius: 8px; cursor: pointer;
-            transition: all 0.2s; font-weight: 500; font-size: 0.95rem; background: transparent;
-        }
+        .nav-item { display: flex; align-items: center; gap: 15px; padding: 14px 20px; color: var(--text-sub); border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: 500; font-size: 0.95rem; }
         .nav-item:hover { background: rgba(255,255,255,0.03); color: #fff; }
         .nav-item.active { background: linear-gradient(90deg, rgba(255, 94, 98, 0.1) 0%, transparent 100%); color: #fff; border-left: 3px solid var(--primary); }
-        .nav-item i { width: 20px; font-size: 1.1rem; }
-
+        
         .user-mini-profile { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .sidebar-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
-        .user-info-text { overflow: hidden; }
-        .user-info-text h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
-        .user-info-text p { font-size: 0.75rem; color: var(--text-sub); }
+        .user-info-text h4 { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+        .user-info-text p { font-size: 0.75rem; color: var(--text-sub); display: flex; align-items: center; gap: 5px; }
 
-        /* --- MAIN CONTENT --- */
-        .main-content {
-            flex: 1; padding: 40px 60px; overflow-y: auto; overflow-x: hidden;
-            position: relative; background: var(--bg-body);
-        }
-        .main-content::before {
-            content: ''; position: absolute; top: -100px; right: -100px; width: 500px; height: 500px;
-            background: radial-gradient(circle, rgba(255, 94, 98, 0.08) 0%, transparent 70%); z-index: 0; pointer-events: none;
-        }
-
-        .tab-pane { display: none; animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); position: relative; z-index: 1; }
+        /* MAIN CONTENT */
+        .main-content { flex: 1; padding: 40px 60px; overflow-y: auto; overflow-x: hidden; position: relative; background: var(--bg-body); }
+        .tab-pane { display: none; animation: fadeUp 0.4s ease; }
         .tab-pane.active { display: block; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .section-header { margin-bottom: 30px; }
         .section-title { font-size: 2rem; font-weight: 800; margin-bottom: 5px; color: #fff; }
-        .section-desc { color: var(--text-sub); }
-
-        /* --- FORM STYLE --- */
+        .section-desc { color: var(--text-sub); margin-bottom: 30px; }
         .settings-container { display: grid; grid-template-columns: 250px 1fr; gap: 40px; }
-        .avatar-box { background: var(--bg-card); padding: 30px; border-radius: 20px; text-align: center; height: fit-content; border: 1px solid var(--border-color); }
+        .avatar-box { background: var(--bg-card); padding: 30px; border-radius: 20px; text-align: center; border: 1px solid var(--border-color); height: fit-content; }
         .large-avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--bg-body); box-shadow: 0 0 0 2px var(--primary); margin-bottom: 20px; }
-        .btn-change-photo { background: rgba(255,255,255,0.05); color: #fff; padding: 10px 20px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.3s; width: 100%; border: 1px solid var(--border-color); }
-        .btn-change-photo:hover { border-color: var(--primary); color: var(--primary); background: rgba(255, 94, 98, 0.1); }
-
+        .btn-change-photo { background: rgba(255,255,255,0.05); color: #fff; padding: 10px 20px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; cursor: pointer; width: 100%; border: 1px solid var(--border-color); transition: 0.3s; }
+        .btn-change-photo:hover { border-color: var(--primary); color: var(--primary); }
         .info-box { background: var(--bg-card); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         .form-label { display: block; margin-bottom: 8px; color: var(--text-sub); font-size: 0.9rem; font-weight: 600; }
-        .form-input { width: 100%; padding: 12px 15px; background: #191b24; border: 1px solid var(--border-color); border-radius: 8px; color: #fff; font-size: 1rem; transition: 0.3s; }
-        .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 94, 98, 0.15); }
-        .form-input:disabled { opacity: 0.6; cursor: not-allowed; }
+        .form-input { width: 100%; padding: 12px 15px; background: #191b24; border: 1px solid var(--border-color); border-radius: 8px; color: #fff; font-size: 1rem; }
+        .btn-save { background: var(--gradient-main); color: #fff; border: none; padding: 14px 40px; border-radius: 50px; font-weight: 700; cursor: pointer; float: right; margin-top: 10px; }
 
-        .radio-group { display: flex; gap: 20px; padding: 10px 0; }
-        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #fff; font-weight: 500; }
-        .radio-label input { accent-color: var(--primary); transform: scale(1.2); }
+        /* MOVIE GRID */
+        .movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        .movie-card { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 2/3; cursor: pointer; transition: 0.3s; }
+        .movie-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .movie-card img { width: 100%; height: 100%; object-fit: cover; }
+        .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; }
+        .movie-title { font-weight: 700; font-size: 0.9rem; color: #fff; }
+        .btn-delete { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; }
+        .movie-card:hover .btn-delete { opacity: 1; } .btn-delete:hover { background: #ff4757; border-color: #ff4757; }
 
-        .btn-save { background: var(--gradient-main); color: #fff; border: none; padding: 14px 40px; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; float: right; margin-top: 10px; box-shadow: 0 5px 15px rgba(255, 94, 98, 0.3); transition: 0.3s; }
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 94, 98, 0.5); }
+        /* MISSION STYLES */
+        .mission-list { display: flex; flex-direction: column; gap: 15px; }
+        .mission-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .m-info h4 { color: #fff; font-size: 1.1rem; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+        .m-info p { color: var(--text-sub); font-size: 0.9rem; }
+        .coin-reward { color: #FFD700; font-weight: 800; background: rgba(255, 215, 0, 0.1); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
+        .btn-mission { padding: 8px 20px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; background: var(--gradient-main); color: #fff; transition: 0.3s; min-width: 100px; }
+        .btn-mission:disabled { background: #333; color: #666; cursor: not-allowed; opacity: 0.8; }
+        .vip-lock-msg { color: #ff4757; font-size: 0.8rem; margin-top: 10px; font-weight: 600; display: none; }
 
-        /* --- MOVIE LIST STYLE --- */
-        .movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .movie-card { position: relative; border-radius: var(--radius); overflow: hidden; aspect-ratio: 2/3; background: var(--bg-card); cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .movie-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .movie-poster { width: 100%; height: 100%; object-fit: cover; }
-        .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95), transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; }
-        .movie-title { font-weight: 700; font-size: 0.95rem; line-height: 1.3; color: #fff; margin-bottom: 2px; }
-        .movie-meta { font-size: 0.75rem; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        .btn-delete { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: #fff; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; }
-        .btn-delete:hover { background: #ff4757; border-color: #ff4757; }
-        .movie-card:hover .btn-delete { opacity: 1; }
-
-        /* --- AVATAR MODAL --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.3s; backdrop-filter: blur(5px); }
-        .modal-overlay.active { display: flex; opacity: 1; }
-        .custom-popup { background: #23252f; width: 400px; padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); transform: scale(0.9); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); text-align: center; }
-        .modal-overlay.active .custom-popup { transform: scale(1); }
-        .popup-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
-        .popup-options { display: flex; flex-direction: column; gap: 15px; }
-        .popup-btn { background: #191b24; color: #ccc; border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+        /* Modal Avatar */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .custom-popup { background: #23252f; width: 400px; padding: 30px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .popup-btn { background: #191b24; color: #ccc; border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
         .popup-btn:hover { background: var(--gradient-main); color: #fff; border-color: transparent; }
         .input-url-group { display: none; margin-top: 10px; }
-        .input-url-group.show { display: block; animation: fadeUp 0.3s; }
+        .input-url-group.show { display: block; }
         .btn-confirm-url { background: var(--gradient-main); color: #fff; width: 100%; margin-top: 10px; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:700;}
 
         @media (max-width: 900px) {
             body { flex-direction: column; overflow: auto; }
             .sidebar { width: 100%; border-right: none; padding: 15px; flex-direction: row; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); position: sticky; top:0; z-index: 999; }
-            .brand { margin-bottom: 0; }
             .nav-menu { display: none; position: fixed; top: 70px; left: 0; width: 100%; background: var(--bg-body); padding: 20px; z-index: 100; border-bottom: 1px solid var(--border-color); }
             .nav-menu.active { display: flex; }
             .user-mini-profile { display: none; }
             .mobile-menu-btn { display: block; font-size: 1.5rem; cursor: pointer; color: #fff; }
-            .main-content { padding: 20px; overflow-x: hidden; }
+            .main-content { padding: 20px; }
             .settings-container { grid-template-columns: 1fr; }
-            .avatar-box { margin-bottom: 0; }
-            .grid-container { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .movie-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
         }
-        @media (min-width: 901px) { .mobile-menu-btn { display: none; } }
+        .mobile-menu-btn { display: none; }
+        @media (max-width: 900px) { .mobile-menu-btn { display: block; } }
     </style>
 </head>
 <body>
 
-    <div id="loadingScreen">
-        <div class="loader-spinner"></div>
-    </div>
-
+    <div id="loadingScreen"><div class="loader-spinner"></div></div>
     <div id="toast-container"></div>
-
-    <div id="confirmModal" class="custom-confirm-overlay">
-        <div class="confirm-box">
-            <div class="confirm-icon"><i class="fas fa-exclamation-circle"></i></div>
-            <h3 class="confirm-title">Xác nhận</h3>
-            <p class="confirm-desc" id="confirmMsg">Bạn có chắc chắn muốn thực hiện?</p>
-            <div class="confirm-actions">
-                <button class="btn-confirm btn-cancel" id="btnConfirmNo">Hủy bỏ</button>
-                <button class="btn-confirm btn-ok" id="btnConfirmYes">Đồng ý</button>
-            </div>
-        </div>
-    </div>
 
     <div id="avatarModal" class="modal-overlay" onclick="closeAvatarModal(event)">
         <div class="custom-popup">
-            <div class="popup-title">Đổi ảnh đại diện</div>
-            <div class="popup-options">
-                <label for="fileInput" class="popup-btn">
-                    <i class="fas fa-cloud-upload-alt"></i> Tải ảnh từ máy
-                </label>
-                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileUpload(this)">
+            <div class="popup-title" style="color:#fff; font-size:1.2rem; font-weight:700; margin-bottom:20px;">Đổi ảnh đại diện</div>
+            
+            <label for="fileInput" class="popup-btn">
+                <i class="fas fa-cloud-upload-alt"></i> Tải ảnh từ máy
+            </label>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileUpload(this)">
 
-                <div class="popup-btn" onclick="toggleUrlInput()">
-                    <i class="fas fa-link"></i> Dùng đường dẫn (URL)
-                </div>
-                
-                <div id="urlInputBox" class="input-url-group">
-                    <input type="text" id="avatarUrlInput" class="form-input" placeholder="Dán link ảnh vào đây...">
-                    <button class="btn-confirm-url" onclick="saveAvatarUrl()">Xác nhận</button>
-                </div>
+            <div class="popup-btn" onclick="toggleUrlInput()">
+                <i class="fas fa-link"></i> Dùng đường dẫn (URL)
+            </div>
+            
+            <div id="urlInputBox" class="input-url-group">
+                <input type="text" id="avatarUrlInput" class="form-input" placeholder="Dán link ảnh vào đây..." style="width:100%; padding:10px; border-radius:8px; border:1px solid #444; background:#111; color:#fff;">
+                <button class="btn-confirm-url" onclick="saveAvatarUrl()">Xác nhận</button>
+            </div>
 
-                <div class="popup-btn" style="background: transparent; border: 1px solid #444; color: #888;" onclick="closeAvatarModal(null, true)">Hủy bỏ</div>
+            <div class="popup-btn" style="background: transparent; border: 1px solid #444; color: #888; margin-top:10px;" onclick="closeAvatarModal(null, true)">Hủy bỏ</div>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="custom-confirm-overlay">
+        <div class="confirm-box">
+            <div class="confirm-icon"><i class="fas fa-question-circle"></i></div>
+            <h3 style="color:#fff; font-size:1.6rem; margin-bottom:12px;">Xác nhận</h3>
+            <p id="confirmMsg" style="color:#888; font-size:1.05rem;">Bạn có chắc chắn muốn thực hiện?</p>
+            <div class="confirm-actions" style="margin-top:25px;">
+                <button class="btn-confirm btn-cancel" id="btnConfirmNo">Hủy bỏ</button>
+                <button class="btn-confirm btn-ok" id="btnConfirmYes">Đồng ý</button>
             </div>
         </div>
     </div>
@@ -257,6 +171,16 @@
         <ul class="nav-menu" id="sidebarMenu">
             <li class="nav-item active" onclick="switchTab('account')">
                 <i class="fas fa-user-circle"></i> Tài khoản
+            </li>
+            <li class="nav-item" onclick="window.buyVipPackage()">
+                <i class="fas fa-star" style="color: #FFD700;"></i> Mua VIP (50 Coin)
+            </li>
+            <li class="nav-item" onclick="window.location.href='nap-coin.html'">
+                <i class="fas fa-wallet" style="color: #2ecc71;"></i> Nạp Coin
+            </li>
+
+            <li class="nav-item" onclick="switchTab('missions')">
+                <i class="fas fa-tasks"></i> Nhiệm vụ <span style="margin-left:auto; background:#FF5E62; font-size:0.7rem; padding:2px 6px; border-radius:4px; color:#fff;">HOT</span>
             </li>
             <li class="nav-item" onclick="switchTab('mylist')">
                 <i class="fas fa-bookmark"></i> Danh sách phim
@@ -277,7 +201,7 @@
             <img src="Guest.webp" id="sidebarAvatar" class="sidebar-avatar">
             <div class="user-info-text">
                 <h4 id="sidebarName">...</h4>
-                <p id="sidebarEmail">...</p>
+                <p id="sidebarBalance" style="color:#FFD700; font-weight:700;"><i class="fas fa-coins"></i> 0</p>
             </div>
         </div>
     </div>
@@ -293,9 +217,10 @@
             <div class="settings-container">
                 <div class="avatar-box">
                     <img src="Guest.webp" id="formAvatar" class="large-avatar">
-                    <button class="btn-change-photo" onclick="openAvatarModal()">
-                        <i class="fas fa-camera"></i> Đổi ảnh
+                    <button class="btn-change-photo" onclick="tryOpenAvatarModal()">
+                        <i class="fas fa-camera"></i> Đổi ảnh (VIP)
                     </button>
+                    <div id="vipLockMsg" class="vip-lock-msg"><i class="fas fa-lock"></i> Chỉ dành cho thành viên VIP</div>
                 </div>
 
                 <div class="info-box">
@@ -307,28 +232,59 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Email</label>
-                                <input type="email" id="inputEmail" class="form-input" disabled style="opacity: 0.5;">
+                                <input type="email" id="inputEmail" class="form-input" disabled style="opacity: 0.6; cursor: not-allowed;">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">Giới tính</label>
-                            <div class="radio-group">
-                                <label class="radio-label"><input type="radio" name="gender" value="nam"> Nam</label>
-                                <label class="radio-label"><input type="radio" name="gender" value="nu"> Nữ</label>
-                                <label class="radio-label"><input type="radio" name="gender" value="phi-nhi-gioi"> Phi nhị giới</label>
-                                <label class="radio-label"><input type="radio" name="gender" value="khac"> Khác</label>
+                            <div style="display:flex; gap:20px; color:#fff; padding:10px 0;">
+                                <label><input type="radio" name="gender" value="nam"> Nam</label>
+                                <label><input type="radio" name="gender" value="nu"> Nữ</label>
+                                <label><input type="radio" name="gender" value="khac"> Khác</label>
                             </div>
                         </div>
 
-                        <div class="form-group" style="margin-top: 30px;">
+                        <div class="form-group" style="margin-top: 20px;">
                             <label class="form-label">Mật khẩu mới (Để trống nếu không đổi)</label>
                             <input type="password" id="inputNewPass" class="form-input" placeholder="••••••••">
                         </div>
 
                         <button type="submit" class="btn-save">Lưu thay đổi</button>
-                        <div style="clear: both;"></div>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-missions" class="tab-pane">
+            <div class="section-header">
+                <h2 class="section-title">Nhiệm vụ kiếm Coin</h2>
+                <p class="section-desc">Hoàn thành nhiệm vụ để nhận Coin miễn phí.</p>
+            </div>
+
+            <div class="mission-list">
+                <div class="mission-item">
+                    <div class="m-info">
+                        <h4><i class="fab fa-facebook" style="color:#1877F2"></i> Like Fanpage WibuPhim</h4>
+                        <p>Nhận ngay <span class="coin-reward">+10 Coin</span> (Một lần duy nhất)</p>
+                    </div>
+                    <button id="btnMissionFb" class="btn-mission" onclick="doMission('fb_like', 10, 'https://www.facebook.com/wibuteam2026')">Thực hiện</button>
+                </div>
+
+                <div class="mission-item">
+                    <div class="m-info">
+                        <h4><i class="fab fa-facebook" style="color:#1877F2"></i> Tham gia Group Facebook</h4>
+                        <p>Nhận ngay <span class="coin-reward">+10 Coin</span> (Một lần duy nhất)</p>
+                    </div>
+                    <button id="btnMissionGroup" class="btn-mission" onclick="doMission('join_group', 10, 'https://www.facebook.com/groups/1165263735526384')">Thực hiện</button>
+                </div>
+
+                <div class="mission-item">
+                    <div class="m-info">
+                        <h4><i class="fas fa-ad" style="color:#FF5E62"></i> Xem quảng cáo</h4>
+                        <p>Nhận <span class="coin-reward">+2 Coin</span>. Còn lại: <span id="adsCount" style="color:#fff; font-weight:bold;">5</span>/5 hôm nay.</p>
+                    </div>
+                    <button id="btnMissionAds" class="btn-mission" onclick="watchAdsMission()">Xem ngay</button>
                 </div>
             </div>
         </div>
@@ -351,20 +307,27 @@
 
     </div>
 
+    <div id="ad-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:99999; justify-content:center; align-items:center;">
+        <div style="position:relative; width:80%; max-width:800px;">
+            <img src="https://hopvan.netlify.app/IMG/hero-video.gif" style="width:100%; border-radius:10px;">
+            <button id="skip-button" disabled style="position:absolute; top:10px; right:10px; padding:8px 15px; background:rgba(0,0,0,0.5); color:#fff; border:none; border-radius:4px;">Đang xem (30s)</button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, updateProfile, updatePassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, setDoc, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc",
-            authDomain: "hopphim-29e1c.firebaseapp.com",
-            projectId: "hopphim-29e1c",
-            storageBucket: "hopphim-29e1c.firebasestorage.app",
-            messagingSenderId: "1076044580405",
-            appId: "1:1076044580405:web:a3485f8533604f305e537c",
-            measurementId: "G-6RT4CX2NR0"
+        // CẤU HÌNH FIREBASE
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc", 
+            authDomain: "hopphim-29e1c.firebaseapp.com", 
+            projectId: "hopphim-29e1c", 
+            storageBucket: "hopphim-29e1c.firebasestorage.app", 
+            messagingSenderId: "1076044580405", 
+            appId: "1:1076044580405:web:a3485f8533604f305e537c" 
         };
 
         const app = initializeApp(firebaseConfig);
@@ -373,80 +336,264 @@
         const storage = getStorage(app);
         
         let currentUser = null;
-        const loading = document.getElementById('loadingScreen');
+        let isUserVip = false;
 
-        // Fail-safe loading
-        setTimeout(() => { if(loading) loading.style.display = 'none'; }, 2000);
+        document.getElementById('loadingScreen').style.display = 'none';
 
-        // --- HELPER: TOAST & CONFIRM ---
+        // --- AUTH & LẮNG NGHE DỮ LIỆU ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                loadProfile(user);
+                loadMyList(user.uid);
+                loadHistory(user.uid);
+                
+                // Lắng nghe dữ liệu User Realtime
+                onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        // 🔥 FIX: Kiểm tra cả 2 tên biến coinBalance hoặc coin
+                        const balance = data.coinBalance !== undefined ? data.coinBalance : (data.coin || 0);
+                        const vipExp = data.vipExpiration || 0;
+                        const missions = data.missions || {};
+
+                        // 1. CẬP NHẬT SỐ DƯ SIDEBAR NGAY LẬP TỨC
+                        const sidebarBalanceEl = document.getElementById('sidebarBalance');
+                        if (sidebarBalanceEl) {
+                            sidebarBalanceEl.innerHTML = `<i class="fas fa-coins"></i> ${balance.toLocaleString()}`;
+                        }
+                        
+                        // 2. CHECK VIP
+                        isUserVip = vipExp > Date.now();
+                        
+                        // 3. CẬP NHẬT TRẠNG THÁI NHIỆM VỤ
+                        updateMissionUI(missions);
+                    }
+                });
+
+                // Kiểm tra xem có cần mở tab Nhiệm vụ ngay không (từ link)
+                const urlParams = new URLSearchParams(window.location.search);
+                if(urlParams.get('tab') === 'missions') {
+                    window.switchTab('missions');
+                }
+
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // --- GLOBAL HELPERS ---
         window.showToast = (msg, type = 'success') => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-            toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
+            toast.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-triangle'}"></i> <span>${msg}</span>`;
             container.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+            setTimeout(() => { toast.remove(); }, 3000);
         }
 
-        window.customConfirm = (message) => {
+        window.customConfirm = (msg) => {
             return new Promise((resolve) => {
                 const overlay = document.getElementById('confirmModal');
-                document.getElementById('confirmMsg').innerText = message;
+                document.getElementById('confirmMsg').innerText = msg;
                 overlay.classList.add('active');
                 document.getElementById('btnConfirmYes').onclick = () => { overlay.classList.remove('active'); resolve(true); };
                 document.getElementById('btnConfirmNo').onclick = () => { overlay.classList.remove('active'); resolve(false); };
             });
         }
 
-        // --- GLOBAL FUNCTIONS ---
+        window.switchTab = (tabId) => {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const clickedItem = document.querySelector(`.nav-item[onclick*="'${tabId}'"]`);
+            if(clickedItem) clickedItem.classList.add('active');
+
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            if(window.innerWidth < 900) document.getElementById('sidebarMenu').classList.remove('active');
+            if(tabId === 'missions') checkMissionStatus();
+        }
+
         window.confirmLogout = async () => {
-            const ok = await window.customConfirm("Bạn có chắc chắn muốn đăng xuất?");
-            if(ok) {
+            if(confirm("Bạn muốn đăng xuất?")) {
                 await signOut(auth);
                 window.location.href = "login.html";
             }
         }
 
-        window.switchTab = (tabId) => {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            
-            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            
-            if(window.innerWidth < 900) document.getElementById('sidebarMenu').classList.remove('active');
-        }
+        // --- UI UPDATES: NHIỆM VỤ ---
+        function updateMissionUI(missions) {
+            // Facebook (1 lần)
+            const btnFb = document.getElementById('btnMissionFb');
+            if (btnFb) {
+                if (missions.fb_like) {
+                    btnFb.innerText = "Đã nhận";
+                    btnFb.disabled = true;
+                    btnFb.style.background = "#444";
+                    btnFb.style.cursor = "not-allowed";
+                    btnFb.onclick = null; // Gỡ bỏ sự kiện click
+                } else {
+                    btnFb.disabled = false;
+                    btnFb.innerText = "Thực hiện";
+                    btnFb.style.background = "var(--gradient-main)";
+                }
+            }
 
-        window.openAvatarModal = () => document.getElementById('avatarModal').classList.add('active');
-        window.closeAvatarModal = (e, force) => {
-            if (force || e.target.id === 'avatarModal') {
-                document.getElementById('avatarModal').classList.remove('active');
-                document.getElementById('urlInputBox').classList.remove('show');
+            // Group (1 lần)
+            const btnGr = document.getElementById('btnMissionGroup');
+            if (btnGr) {
+                if (missions.join_group) {
+                    btnGr.innerText = "Đã nhận";
+                    btnGr.disabled = true;
+                    btnGr.style.background = "#444";
+                    btnGr.style.cursor = "not-allowed";
+                    btnGr.onclick = null;
+                } else {
+                    btnGr.disabled = false;
+                    btnGr.innerText = "Thực hiện";
+                    btnGr.style.background = "var(--gradient-main)";
+                }
+            }
+
+            // Ads Daily (Reset mỗi ngày)
+            const today = new Date().toLocaleDateString("vi-VN");
+            let adsData = missions.daily_ads || { date: "", count: 0 };
+            if (adsData.date !== today) adsData = { date: today, count: 0 };
+
+            const adsCountEl = document.getElementById('adsCount');
+            if(adsCountEl) adsCountEl.innerText = 5 - adsData.count;
+
+            const btnAds = document.getElementById('btnMissionAds');
+            if (btnAds) {
+                if (adsData.count >= 5) {
+                    btnAds.innerText = "Hết lượt";
+                    btnAds.disabled = true;
+                    btnAds.style.background = "#444";
+                } else {
+                    btnAds.innerText = "Xem ngay";
+                    btnAds.disabled = false;
+                    btnAds.style.background = "var(--gradient-main)";
+                }
             }
         }
-        window.toggleUrlInput = () => document.getElementById('urlInputBox').classList.toggle('show');
-
-        // UPLOAD FILE
-        window.handleFileUpload = async (input) => {
-            const file = input.files[0];
-            if (!file) return;
-            
-            document.getElementById('avatarModal').classList.remove('active');
-            const btn = document.querySelector('.btn-change-photo');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-            btn.disabled = true;
-
-            try {
-                const storageRef = ref(storage, `avatars/${currentUser.uid}/${Date.now()}_${file.name}`);
-                await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(storageRef);
-                await updateUserData(url);
-                window.showToast("Đổi ảnh thành công!", "success");
-            } catch (err) { window.showToast("Lỗi: " + err.message, "error"); } 
-            finally { btn.innerHTML = '<i class="fas fa-camera"></i> Đổi ảnh'; btn.disabled = false; }
+        
+        async function checkMissionStatus() {
+            if (!currentUser) return;
+            const snap = await getDoc(doc(db, "users", currentUser.uid));
+            if(snap.exists()) updateMissionUI(snap.data().missions || {});
         }
 
+        // --- XỬ LÝ LÀM NHIỆM VỤ ---
+        window.doMission = async (type, reward, url) => {
+            if (!currentUser) return;
+            
+            // 1. Kiểm tra lại lần nữa trong Database để chắc chắn chưa làm
+            const userRef = doc(db, "users", currentUser.uid);
+            const snap = await getDoc(userRef);
+            const missions = snap.data().missions || {};
+            
+            if (missions[type]) {
+                window.showToast("Bạn đã nhận thưởng nhiệm vụ này rồi!", "error");
+                updateMissionUI(missions); // Cập nhật lại giao diện ngay
+                return;
+            }
+
+            // 2. Mở link
+            window.open(url, '_blank');
+            
+            // 3. UI Loading
+            const btnId = type === 'fb_like' ? 'btnMissionFb' : 'btnMissionGroup';
+            const btn = document.getElementById(btnId);
+            const oldText = btn.innerText;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kiểm tra...';
+            btn.disabled = true;
+
+            // 4. Giả lập check 5s rồi cộng tiền (Chỉ cộng nếu chưa có trong DB)
+            setTimeout(async () => {
+                try {
+                    // Update: Sử dụng dot notation để chỉ update trường cụ thể
+                    await updateDoc(userRef, {
+                        coinBalance: increment(reward),
+                        [`missions.${type}`]: true
+                    });
+                    window.showToast(`Tuyệt vời! Bạn nhận được +${reward} Coin.`, "success");
+                    // UI tự động update nhờ onSnapshot
+                } catch(e) { 
+                    console.error(e);
+                    btn.disabled = false; 
+                    btn.innerText = oldText;
+                    window.showToast("Lỗi cập nhật dữ liệu!", "error");
+                }
+            }, 5000);
+        }
+
+        // --- HÀM MUA GÓI VIP ---
+        window.buyVipPackage = async () => {
+            if (!currentUser) return window.showToast("Vui lòng đăng nhập!", "error");
+            
+            const confirmBuy = await window.customConfirm("Gia hạn VIP 30 ngày với 50 Coin?");
+            if (!confirmBuy) return;
+
+            const userRef = doc(db, "users", currentUser.uid);
+            try {
+                const snap = await getDoc(userRef);
+                const data = snap.data();
+                
+                // Lấy coin an toàn
+                const currentBalance = data.coinBalance !== undefined ? data.coinBalance : (data.coin || 0);
+
+                if (currentBalance < 50) {
+                    window.showToast("Số dư không đủ 50 Coin!", "error");
+                    // Chờ 1.5s rồi mở trang nạp
+                    setTimeout(() => window.location.href = 'nap-coin.html', 1500);
+                    return;
+                }
+
+                const thirtyDays = 2592000000;
+                let newExpiration = Date.now() + thirtyDays;
+                if (data.vipExpiration && data.vipExpiration > Date.now()) {
+                    newExpiration = data.vipExpiration + thirtyDays;
+                }
+
+                await updateDoc(userRef, {
+                    coinBalance: increment(-50),
+                    vipExpiration: newExpiration
+                });
+                window.showToast("Mua VIP thành công!", "success");
+            } catch (e) {
+                window.showToast("Lỗi giao dịch!", "error");
+            }
+        };
+
+        // --- PROFILE FUNCTIONS ---
+        function loadProfile(user) {
+            const photo = user.photoURL || 'Guest.webp';
+            document.getElementById('sidebarAvatar').src = photo;
+            document.getElementById('formAvatar').src = photo;
+            
+            // Xử lý tên: Nếu tên bị trùng email thì lấy phần đầu
+            let displayName = user.displayName;
+            if (!displayName || displayName === user.email) {
+                displayName = user.email.split('@')[0];
+            }
+            
+            document.getElementById('sidebarName').innerText = displayName;
+            document.getElementById('sidebarEmail').innerText = user.email;
+
+            document.getElementById('inputName').value = displayName;
+            document.getElementById('inputEmail').value = user.email;
+        }
+
+        window.tryOpenAvatarModal = () => {
+            if (!isUserVip) {
+                document.getElementById('vipLockMsg').style.display = 'block';
+                setTimeout(() => document.getElementById('vipLockMsg').style.display = 'none', 3000);
+                window.showToast("Bạn cần là VIP để đổi Avatar!", "error");
+            } else {
+                document.getElementById('avatarModal').classList.add('active');
+            }
+        }
+        
         window.saveAvatarUrl = async () => {
             const url = document.getElementById('avatarUrlInput').value;
             if(url) {
@@ -463,60 +610,73 @@
             await setDoc(doc(db, "users", currentUser.uid), { photoURL }, { merge: true });
         }
 
-        window.removeFromList = async (slug) => {
-            const ok = await window.customConfirm("Xóa phim này khỏi danh sách?");
-            if(!ok) return;
+        // --- UPLOAD FILE ---
+        window.handleFileUpload = async (input) => {
+            const file = input.files[0];
+            if (!file) return;
+            document.getElementById('avatarModal').classList.remove('active');
+            const btn = document.querySelector('.btn-change-photo');
+            btn.innerHTML = 'Uploading...';
             try {
-                const userRef = doc(db, "users", currentUser.uid);
-                const docSnap = await getDoc(userRef);
-                let list = docSnap.data().myList || [];
-                list = list.filter(m => m.slug !== slug);
-                await updateDoc(userRef, { myList: list });
-                loadMyList(currentUser.uid);
-                window.showToast("Đã xóa phim!", "success");
-            } catch(e) { window.showToast("Lỗi: " + e.message, "error"); }
+                const storageRef = ref(storage, `avatars/${currentUser.uid}/${Date.now()}`);
+                await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(storageRef);
+                await updateUserData(url);
+                window.showToast("Đổi ảnh thành công!", "success");
+            } catch (err) { window.showToast("Lỗi: " + err.message, "error"); }
+            finally { btn.innerHTML = '<i class="fas fa-camera"></i> Đổi ảnh (VIP)'; }
         }
-
-        // --- AUTH & LOAD ---
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                await Promise.all([loadProfile(user), loadMyList(user.uid), loadHistory(user.uid)]);
-                if(loading) loading.style.display = 'none';
-            } else {
-                window.location.href = "login.html";
+        
+        window.toggleUrlInput = () => document.getElementById('urlInputBox').classList.toggle('show');
+        window.closeAvatarModal = (e, force) => {
+            if (force || e.target.id === 'avatarModal') {
+                document.getElementById('avatarModal').classList.remove('active');
             }
-        });
-
-        async function loadProfile(user) {
-            const photo = user.photoURL || 'Guest.webp';
-            const name = user.displayName || 'Thành viên';
-            document.getElementById('sidebarAvatar').src = photo;
-            document.getElementById('formAvatar').src = photo;
-            document.getElementById('sidebarName').innerText = name;
-            document.getElementById('sidebarEmail').innerText = user.email;
-            document.getElementById('inputName').value = name;
-            document.getElementById('inputEmail').value = user.email;
-            
-            try {
-                const docSnap = await getDoc(doc(db, "users", user.uid));
-                if(docSnap.exists() && docSnap.data().gender) {
-                    document.querySelector(`input[name="gender"][value="${docSnap.data().gender}"]`).checked = true;
-                } else {
-                    document.querySelector('input[name="gender"][value="khac"]').checked = true;
-                }
-            } catch(e) {}
         }
 
+        // --- LIST & HISTORY LOAD ---
+        async function loadMyList(uid) {
+             const container = document.getElementById('myListGrid');
+             try {
+                const snap = await getDoc(doc(db, "users", uid));
+                if(snap.exists() && snap.data().myList?.length > 0) {
+                    container.innerHTML = snap.data().myList.reverse().map(m => createCard(m, true)).join('');
+                } else container.innerHTML = '<div style="color:#666">Chưa có phim.</div>';
+             } catch(e) {}
+        }
+        async function loadHistory(uid) {
+             const container = document.getElementById('historyGrid');
+             try {
+                const snap = await getDoc(doc(db, "users", uid));
+                if(snap.exists() && snap.data().watchHistory?.length > 0) {
+                    container.innerHTML = snap.data().watchHistory.reverse().map(m => createCard(m, false, m.timestamp)).join('');
+                } else container.innerHTML = '<div style="color:#666">Chưa xem phim.</div>';
+             } catch(e) {}
+        }
+        
+        function createCard(movie, allowDelete, timestamp = null) {
+            let imgUrl = movie.thumb_url;
+            if (!imgUrl.startsWith('http')) imgUrl = `https://img.ophim1.com/uploads/movies/${movie.thumb_url}`;
+            return `
+                <div class="movie-card" onclick="window.location.href='/xem-phim/${movie.slug}'">
+                    <img src="${imgUrl}" class="movie-poster" loading="lazy">
+                    <div class="card-overlay">
+                        <div class="movie-title">${movie.name}</div>
+                        ${timestamp ? `<div class="movie-meta"><i class="fas fa-history"></i> Xem gần đây</div>` : ''}
+                    </div>
+                     ${allowDelete ? `<button class="btn-delete" onclick="event.stopPropagation(); removeFromList('${movie.slug}')"><i class="fas fa-trash"></i></button>` : ''}
+                </div>`;
+        }
+
+        // --- PROFILE FORM SUBMIT ---
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.querySelector('.btn-save');
             btn.innerText = "Đang lưu...";
-            btn.disabled = true;
             try {
                 const name = document.getElementById('inputName').value;
                 const pass = document.getElementById('inputNewPass').value;
-                const gender = document.querySelector('input[name="gender"]:checked').value;
+                const gender = document.querySelector('input[name="gender"]:checked')?.value || "khac";
                 
                 await updateProfile(currentUser, { displayName: name });
                 if(pass.length >= 6) await updatePassword(currentUser, pass);
@@ -525,50 +685,42 @@
                 document.getElementById('sidebarName').innerText = name;
                 window.showToast("Cập nhật thành công!", "success");
             } catch(err) { window.showToast("Lỗi: " + err.message, "error"); }
-            finally { btn.innerText = "Lưu thay đổi"; btn.disabled = false; }
+            finally { btn.innerText = "Lưu thay đổi"; }
         });
 
-        async function loadMyList(uid) {
-            const container = document.getElementById('myListGrid');
-            try {
-                const docSnap = await getDoc(doc(db, "users", uid));
-                if(docSnap.exists() && docSnap.data().myList?.length > 0) {
-                    container.innerHTML = docSnap.data().myList.reverse().map(m => createCard(m, true)).join('');
-                } else { container.innerHTML = '<div style="color:#666">Chưa có phim.</div>'; }
-            } catch(e) { container.innerHTML = ''; }
+        // Function xem quảng cáo nhiệm vụ
+        window.watchAdsMission = async () => {
+             const adOverlay = document.getElementById('ad-overlay');
+             const skipBtn = document.getElementById('skip-button');
+             adOverlay.style.display = 'flex';
+             let timeLeft = 30;
+             skipBtn.innerText = `Đang xem (${timeLeft}s)`;
+             skipBtn.disabled = true;
+             
+             const timer = setInterval(() => {
+                timeLeft--;
+                skipBtn.innerText = `Đang xem (${timeLeft}s)`;
+                if(timeLeft <= 0) {
+                    clearInterval(timer);
+                    adOverlay.style.display = 'none';
+                    finishAdsMission();
+                }
+             }, 1000);
         }
 
-        async function loadHistory(uid) {
-            const container = document.getElementById('historyGrid');
-            try {
-                const docSnap = await getDoc(doc(db, "users", uid));
-                if(docSnap.exists() && docSnap.data().watchHistory?.length > 0) {
-                    container.innerHTML = docSnap.data().watchHistory.reverse().map(m => createCard(m, false, m.timestamp)).join('');
-                } else { container.innerHTML = '<div style="color:#666">Chưa xem phim.</div>'; }
-            } catch(e) { container.innerHTML = ''; }
-        }
-
-        // CẬP NHẬT ĐƯỜNG DẪN CLEAN URL Ở ĐÂY
-        function createCard(movie, allowDelete, timestamp = null) {
-            let imgUrl = movie.thumb_url;
-            if (!imgUrl.startsWith('http')) imgUrl = `https://img.ophim1.com/uploads/movies/${movie.thumb_url}`;
+        async function finishAdsMission() {
+            const userRef = doc(db, "users", currentUser.uid);
+            const snap = await getDoc(userRef);
+            const data = snap.data();
+            const today = new Date().toLocaleDateString("vi-VN");
+            let adsData = (data.missions && data.missions.daily_ads) || { date: "", count: 0 };
+            if (adsData.date !== today) adsData = { date: today, count: 0 };
             
-            let timeStr = "";
-            if(timestamp) {
-                const diff = Math.floor((Date.now() - timestamp) / 60000);
-                timeStr = diff < 60 ? "Vừa xem" : (diff < 1440 ? Math.floor(diff/60) + "h trước" : Math.floor(diff/1440) + " ngày trước");
+            if (adsData.count < 5) {
+                adsData.count += 1;
+                await updateDoc(userRef, { coinBalance: increment(2), "missions.daily_ads": adsData });
+                window.showToast("Đã xem xong! +2 Coin.", "success");
             }
-
-            // LINK ĐÃ ĐƯỢC SỬA THÀNH CLEAN URL
-            return `
-                <div class="movie-card" onclick="window.location.href='/xem-phim/${movie.slug}'">
-                    <img src="${imgUrl}" class="movie-poster" loading="lazy">
-                    <div class="card-overlay">
-                        <div class="movie-title">${movie.name}</div>
-                        ${timestamp ? `<div class="movie-meta"><i class="fas fa-history"></i> ${timeStr}</div>` : ''}
-                    </div>
-                    ${allowDelete ? `<button class="btn-delete" onclick="event.stopPropagation(); removeFromList('${movie.slug}')"><i class="fas fa-trash"></i></button>` : ''}
-                </div>`;
         }
     </script>
 </body>

@@ -1486,6 +1486,117 @@ footer {
     .comm-title { font-size: 1.5rem; }
 }
 
+/* Style huy hiệu số dư cạnh tên */
+.balance-badge {
+    background: rgba(255, 215, 0, 0.15);
+    color: #FFD700;
+    padding: 2px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    vertical-align: middle;
+    text-transform: none;
+}
+.balance-badge i {
+    font-size: 0.7rem;
+    filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.6));
+}
+
+/* --- HIỆU ỨNG VIP (KING STYLE) --- */
+.vip-glow {
+    border: 2px solid #FFD700 !important;
+    box-shadow: 0 0 10px #FFD700, 0 0 20px rgba(255, 215, 0, 0.6) !important;
+    animation: vipPulse 2s infinite;
+}
+.vip-name {
+    background: linear-gradient(to right, #FFD700, #FFF5C3, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900 !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    display: inline-flex; align-items: center; gap: 5px;
+}
+@keyframes vipPulse {
+    0% { box-shadow: 0 0 5px #FFD700; border-color: #FFD700; }
+    50% { box-shadow: 0 0 20px #FFD700; border-color: #FFF5C3; }
+    100% { box-shadow: 0 0 5px #FFD700; border-color: #FFD700; }
+}
+.vip-crown { display: inline-block; color: #FFD700; font-size: 0.8rem; transform: translateY(-2px); }
+@keyframes pulseGold { 0% { box-shadow: 0 0 10px #FFD700; } 50% { box-shadow: 0 0 20px #FFD700; } 100% { box-shadow: 0 0 10px #FFD700; } }
+
+/* --- 2. GIAO DIỆN NHIỆM VỤ (MODAL) --- */
+.mission-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px;
+    margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);
+}
+.mission-info h4 { color: #fff; margin-bottom: 5px; font-size: 1rem; }
+.mission-info p { color: #aaa; font-size: 0.85rem; }
+.btn-mission {
+    padding: 8px 20px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer;
+    background: var(--gradient-main); color: #fff; transition: 0.3s;
+}
+.btn-mission:disabled { background: #444; color: #888; cursor: not-allowed; }
+.coin-reward { color: #FFD700; font-weight: 800; }
+
+
+/* --- HIỆU ỨNG VIP (KING STYLE) ĐỒNG BỘ INDEX --- */
+.vip-glow {
+    border: 2px solid #FFD700 !important;
+    box-shadow: 0 0 12px #FFD700, 0 0 20px rgba(255, 215, 0, 0.5) !important;
+    animation: vipPulse 2s infinite !important;
+    position: relative;
+}
+.vip-name {
+    background: linear-gradient(to right, #FFD700, #FFF5C3, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900 !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    display: inline-flex; align-items: center; gap: 5px;
+}
+@keyframes vipPulse {
+    0% { box-shadow: 0 0 5px #FFD700; border-color: #FFD700; }
+    50% { box-shadow: 0 0 20px #FFD700; border-color: #FFF5C3; }
+    100% { box-shadow: 0 0 5px #FFD700; border-color: #FFD700; }
+}
+
+/* Badge số dư cạnh tên */
+.balance-badge {
+    background: rgba(255, 215, 0, 0.15);
+    color: #FFD700;
+    padding: 2px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center; gap: 4px;
+    vertical-align: middle; text-transform: none;
+}
+.balance-badge i { font-size: 0.7rem; filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.6)); }
+
+/* --- 3. BÌNH LUẬN NỔI BẬT CHO VIP --- */
+.comment-item.is-vip .comment-avatar {
+    border: 2px solid #FFD700;
+    box-shadow: 0 0 10px #FFD700;
+}
+.comment-item.is-vip .comment-author {
+    color: #FFD700 !important;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    display: inline-flex; align-items: center; gap: 5px;
+}
+.comment-item.is-vip .comment-text {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    color: #fff;
+}
     </style>
 </head>
 <body>
@@ -1634,6 +1745,15 @@ footer {
                 <img id="userAvatar" class="user-avatar" src="" alt="User" onclick="toggleUserDropdown()">
                 <div id="userMenu" class="user-dropdown">
                     <div id="userNameDisplay" class="user-info-item">User</div>
+                    
+                    <div id="vipStatus" style="padding: 10px; font-size: 0.8rem; color: #aaa; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <i class="fas fa-crown"></i> Free Plan
+                    </div>
+
+                    <button class="dropdown-item" onclick="window.buyVipPackage()">
+                        <i class="fas fa-star" style="color: #FFD700;"></i> Mua VIP
+                    </button>
+
                     <button class="dropdown-item" onclick="window.location.href='/nap-coin.html'"><i class="fa-duotone fa-solid fa-wallet"></i> Nạp Coin</button>
                     <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
                     <button class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
@@ -1834,67 +1954,166 @@ footer {
 
     <script src="chatbot.js"></script>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, setDoc, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc", authDomain: "hopphim-29e1c.firebaseapp.com", projectId: "hopphim-29e1c", storageBucket: "hopphim-29e1c.firebasestorage.app", messagingSenderId: "1076044580405", appId: "1:1076044580405:web:a3485f8533604f305e537c", measurementId: "G-6RT4CX2NR0" };
+        // 1. CẤU HÌNH FIREBASE
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc", 
+            authDomain: "hopphim-29e1c.firebaseapp.com", 
+            projectId: "hopphim-29e1c", 
+            storageBucket: "hopphim-29e1c.firebasestorage.app", 
+            messagingSenderId: "1076044580405", 
+            appId: "1:1076044580405:web:a3485f8533604f305e537c", 
+            measurementId: "G-6RT4CX2NR0" 
+        };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- 1. QUẢN LÝ ĐĂNG NHẬP (AUTH - Đã cập nhật cho Mobile Header mới) ---
+        // --- 2. HÀM MUA GÓI VIP (GÁN VÀO WINDOW ĐỂ HTML GỌI ĐƯỢC) ---
+        window.buyVipPackage = async () => {
+            if (!window.currentUser) {
+                window.showToast("Vui lòng đăng nhập để mua VIP!", "error");
+                return;
+            }
+            
+            const confirmBuy = await window.customConfirm("Gia hạn VIP 30 ngày với 50 Coin?");
+            if (!confirmBuy) return;
+
+            const userRef = doc(db, "users", window.currentUser.uid);
+            
+            try {
+                // Kiểm tra số dư hiện tại
+                const snap = await getDoc(userRef);
+                if (!snap.exists()) return;
+                
+                const data = snap.data();
+                const currentBalance = data.coinBalance || 0;
+
+                if (currentBalance < 50) {
+                    window.showToast("Số dư không đủ! Cần 50 Coin.", "error");
+                    // Gợi ý chuyển hướng nạp tiền (tùy chọn)
+                    setTimeout(() => window.location.href = '/nap-coin.html', 1500);
+                    return;
+                }
+
+                // Tính toán ngày hết hạn mới
+                // 30 ngày = 30 * 24 * 60 * 60 * 1000 mili giây
+                const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000; 
+                let newExpiration = Date.now() + thirtyDaysMs;
+
+                // Nếu đang còn hạn VIP thì cộng dồn nối tiếp
+                if (data.vipExpiration && data.vipExpiration > Date.now()) {
+                    newExpiration = data.vipExpiration + thirtyDaysMs;
+                }
+
+                // Thực hiện giao dịch: Trừ tiền & Cập nhật hạn
+                await updateDoc(userRef, {
+                    coinBalance: increment(-50),
+                    vipExpiration: newExpiration
+                });
+
+                window.showToast("Mua VIP thành công! Bạn đã sạch bóng quảng cáo.", "success");
+            } catch (e) {
+                console.error(e);
+                window.showToast("Lỗi giao dịch, vui lòng thử lại!", "error");
+            }
+        };
+
+        // --- 3. QUẢN LÝ TRẠNG THÁI NGƯỜI DÙNG & GIAO DIỆN ---
         onAuthStateChanged(auth, async (user) => {
-            // Các biến Desktop
             const btnLogin = document.getElementById('btnLogin');
             const userAvatar = document.getElementById('userAvatar');
             const userNameDisplay = document.getElementById('userNameDisplay');
-            
-            // Các biến Mobile mới
             const mobileMemberBtn = document.getElementById('mobileMemberBtn');
             const drawerLogout = document.getElementById('drawerLogout');
+            const vipStatusLabel = document.getElementById('vipStatus'); // ID Free Plan
+            const adPanels = document.querySelectorAll('.ad-panel-wrapper');
+            const adOverlay = document.getElementById('ad-overlay');
 
             if (user) {
-                // --- ĐÃ ĐĂNG NHẬP ---
                 window.currentUser = user;
                 
-                // Desktop: Ẩn nút Login, hiện Avatar
                 if(btnLogin) btnLogin.style.display = 'none';
-                if(userAvatar) { userAvatar.style.display = 'block'; userAvatar.src = user.photoURL || '/Guest.webp'; }
-                if(userNameDisplay) userNameDisplay.innerText = user.displayName || "Thành viên";
-                
-                // Mobile: Biến nút to thành nút Profile (Có Avatar + Tên)
-                if(mobileMemberBtn) {
-                    const photo = user.photoURL || '/Guest.webp';
-                    const name = user.displayName || "Thành viên";
-                    mobileMemberBtn.innerHTML = `<img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #fff;"> <span>${name}</span>`;
-                    mobileMemberBtn.onclick = () => window.location.href = '/profile.html';
+                if(userAvatar) { 
+                    userAvatar.style.display = 'block'; 
+                    userAvatar.src = user.photoURL || '/Guest.webp'; 
                 }
-                
-                // Mobile: Hiện nút đăng xuất ở dưới cùng menu
-                if(drawerLogout) drawerLogout.style.display = 'flex'; 
-                
+
+                // LẮNG NGHE DỮ LIỆU USER REAL-TIME
+                onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        const balance = data.coinBalance || 0;
+                        const vipExp = data.vipExpiration || 0;
+                        const isVip = vipExp > Date.now(); 
+                        const name = user.displayName || "Thành viên";
+                        
+                        // 1. Xử lý Hiệu ứng Nhà Vua (VIP King)
+                        if (isVip) {
+                            if(userAvatar) userAvatar.classList.add('vip-glow');
+                            if(userNameDisplay) userNameDisplay.innerHTML = `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>`;
+                        } else {
+                            if(userAvatar) userAvatar.classList.remove('vip-glow');
+                            if(userNameDisplay) userNameDisplay.innerText = name;
+                        }
+
+                        // 🔥 2. HIỂN THỊ THỜI HẠN VIP THAY CHO FREE PLAN 🔥
+                        if (vipStatusLabel) {
+                            if (isVip) {
+                                const d = new Date(vipExp);
+                                const dateStr = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+                                vipStatusLabel.innerHTML = `<span style="color:#FFD700; font-weight:bold;"><i class="fas fa-gem"></i> VIP đến: ${dateStr}</span>`;
+                            } else {
+                                vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free Plan`;
+                            }
+                        }
+
+                        // 3. Thêm Badge số dư
+                        const balanceHTML = `<span class="balance-badge"><i class="fas fa-coins"></i> ${balance.toLocaleString()}</span>`;
+                        if(userNameDisplay) userNameDisplay.innerHTML += " " + balanceHTML;
+
+                        // 4. Logic ẩn quảng cáo
+                        if (isVip) {
+                            adPanels.forEach(p => p.style.display = 'none');
+                            if(adOverlay) adOverlay.style.display = 'none';
+                        } else {
+                            adPanels.forEach(p => p.style.display = 'flex');
+                        }
+                        
+                        // 5. Cập nhật Mobile Menu
+                        if(mobileMemberBtn) {
+                             const photo = user.photoURL || '/Guest.webp';
+                             const nameHtmlMobile = isVip ? `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>` : `<span>${name}</span>`;
+                             mobileMemberBtn.innerHTML = `
+                                <img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #fff;" class="${isVip ? 'vip-glow' : ''}"> 
+                                ${nameHtmlMobile} ${balanceHTML}
+                            `;
+                        }
+                    }
+                });
+
+                if(drawerLogout) drawerLogout.style.display = 'flex';
                 loadHistory(user.uid);
+
             } else {
-                // --- CHƯA ĐĂNG NHẬP ---
+                // KHI CHƯA ĐĂNG NHẬP
                 window.currentUser = null;
-                
-                // Desktop
                 if(btnLogin) btnLogin.style.display = 'block';
                 if(userAvatar) userAvatar.style.display = 'none';
-                
-                // Mobile: Trả về nút Đăng nhập to màu cam
                 if(mobileMemberBtn) {
                     mobileMemberBtn.innerHTML = `<i class="fas fa-user-circle"></i> <span>Đăng nhập / Đăng ký</span>`;
                     mobileMemberBtn.onclick = () => window.location.href = '/login.html';
                 }
-
-                if(drawerLogout) drawerLogout.style.display = 'none'; // Ẩn nút đăng xuất
-                
-                const historyContainer = document.getElementById('history-container');
-                if(historyContainer) historyContainer.innerHTML = '';
+                if(drawerLogout) drawerLogout.style.display = 'none';
+                adPanels.forEach(p => p.style.display = 'flex');
             }
         });
+        
+        // ... (Giữ nguyên các hàm phụ trợ khác như search, modal...)
+        // (Bạn không cần copy lại các hàm bên dưới onAuthStateChanged nếu chúng đã có trong file gốc)
 
         // --- 2. HÀM THÔNG BÁO (TOAST) - Gán vào Window để dùng toàn cục ---
         window.showToast = (msg, type = 'success') => {

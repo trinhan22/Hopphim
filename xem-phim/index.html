@@ -737,6 +737,85 @@ footer {
                 aspect-ratio: 728/90; 
             }
         }
+
+/* Style huy hiệu số dư cạnh tên */
+.balance-badge {
+    background: rgba(255, 215, 0, 0.15);
+    color: #FFD700;
+    padding: 2px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    vertical-align: middle;
+    text-transform: none;
+}
+.balance-badge i {
+    font-size: 0.7rem;
+    filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.6));
+}
+
+/* --- STYLE CHO BÌNH LUẬN VIP --- */
+.comment-item.is-vip .comment-avatar {
+    border: 2px solid #FFD700;
+    box-shadow: 0 0 10px #FFD700;
+}
+.comment-item.is-vip .comment-author {
+    color: #FFD700 !important;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    display: inline-flex; align-items: center; gap: 5px;
+}
+.comment-item.is-vip .comment-text {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    color: #fff;
+}
+
+/* --- QUẢNG CÁO PRE-ROLL (TRƯỚC KHI CHIẾU) --- */
+.preroll-container {
+    width: 100%; height: 100%; 
+    background: #000; 
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    position: relative;
+    aspect-ratio: 16/9;
+}
+.preroll-img { max-height: 80%; max-width: 90%; object-fit: contain; margin-bottom: 15px; }
+.preroll-timer {
+    background: #FF5E62; color: #fff; 
+    padding: 8px 20px; border-radius: 50px; 
+    font-weight: 700; font-size: 1rem;
+    animation: pulse 1s infinite;
+}
+
+/* --- HIỆU ỨNG VIP KING (ĐỒNG BỘ INDEX) --- */
+.vip-glow {
+    border: 2px solid #FFD700 !important;
+    box-shadow: 0 0 12px #FFD700, 0 0 20px rgba(255, 215, 0, 0.5) !important;
+    animation: vipPulse 2s infinite !important;
+    position: relative;
+}
+.vip-name {
+    background: linear-gradient(to right, #FFD700, #FFF5C3, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900 !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    display: inline-flex; align-items: center; gap: 5px;
+}
+@keyframes vipPulse {
+    0% { box-shadow: 0 0 5px #FFD700; border-color: #FFD700; }
+    50% { box-shadow: 0 0 20px #FFD700; border-color: #FFF5C3; }
+    100% { box-shadow: 0 0 5px #FFD700; border-color: #FFD700; }
+}
+/* Style bình luận VIP */
+.comment-item.is-vip .comment-avatar {
+    border: 2px solid #FFD700 !important;
+    box-shadow: 0 0 10px #FFD700 !important;
+}
     </style>
 </head>
 <body>
@@ -881,6 +960,15 @@ footer {
                 <img id="userAvatar" class="user-avatar" src="" alt="User" onclick="toggleUserDropdown()">
                 <div id="userMenu" class="user-dropdown">
                     <div id="userNameDisplay" class="user-info-item">User</div>
+                    
+                    <div id="vipStatus" style="padding: 10px; font-size: 0.8rem; color: #aaa; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <i class="fas fa-crown"></i> Free Plan
+                    </div>
+
+                    <button class="dropdown-item" onclick="window.buyVipPackage()">
+                        <i class="fas fa-star" style="color: #FFD700;"></i> Mua VIP
+                    </button>
+
                     <button class="dropdown-item" onclick="window.location.href='/nap-coin.html'"><i class="fa-duotone fa-solid fa-wallet"></i> Nạp Coin</button>
                     <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
                     <button class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
@@ -1068,7 +1156,7 @@ footer {
 <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, setDoc, addDoc, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, setDoc, addDoc, collection, query, where, orderBy, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // 1. CONFIG FIREBASE
         const firebaseConfig = {
@@ -1085,7 +1173,7 @@ footer {
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // 2. CONSTANTS
+        // 2. CONSTANTS & UI ELEMENTS
         const API_BASE = 'https://ophim1.com/v1/api/phim';
         const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
         
@@ -1099,7 +1187,7 @@ footer {
         const cmtMyAvatar = document.getElementById('cmtMyAvatar');
 
         let currentUser = null;
-        let player; // Biến quản lý trình phát video
+        let player; 
         let currentMovieData = null; 
         let currentEpName = "Tập 1";
 
@@ -1129,33 +1217,119 @@ footer {
             window.location.href = '/'; 
         }
 
-        // 4. AUTH & USER STATE (Giữ nguyên)
+        // --- HÀM MUA GÓI VIP ---
+        window.buyVipPackage = async () => {
+            if (!window.currentUser) {
+                window.showToast("Vui lòng đăng nhập!", "error");
+                return;
+            }
+            const confirmBuy = await window.customConfirm("Gia hạn VIP 30 ngày với 50 Coin?");
+            if (!confirmBuy) return;
+
+            const userRef = doc(db, "users", window.currentUser.uid);
+            try {
+                const snap = await getDoc(userRef);
+                if (!snap.exists()) return;
+                
+                const data = snap.data();
+                if ((data.coinBalance || 0) < 50) {
+                    window.showToast("Số dư không đủ 50 Coin!", "error");
+                    setTimeout(() => window.location.href = '/nap-coin.html', 1500);
+                    return;
+                }
+
+                const thirtyDays = 2592000000;
+                let newExpiration = Date.now() + thirtyDays;
+                if (data.vipExpiration && data.vipExpiration > Date.now()) {
+                    newExpiration = data.vipExpiration + thirtyDays;
+                }
+
+                await updateDoc(userRef, {
+                    coinBalance: increment(-50),
+                    vipExpiration: newExpiration
+                });
+                window.showToast("Đã mua VIP thành công!", "success");
+            } catch (e) {
+                console.error(e);
+                window.showToast("Lỗi giao dịch!", "error");
+            }
+        };
+
+        // --- QUẢNG LÝ TRẠNG THÁI & VIP MENU (CẬP NHẬT THỜI HẠN) ---
         onAuthStateChanged(auth, async (user) => {
-            const btnLogin = document.getElementById('btnLogin');
-            const userAvatar = document.getElementById('userAvatar');
-            const userNameDisplay = document.getElementById('userNameDisplay');
-            const mobileMemberBtn = document.getElementById('mobileMemberBtn');
-            const drawerLogout = document.getElementById('drawerLogout');
+            const adOverlay = document.getElementById('ad-overlay');
+            const adPanels = document.querySelectorAll('.ad-panel-wrapper');
 
             if (user) {
                 window.currentUser = user;
+                currentUser = user;
+
                 if(btnLogin) btnLogin.style.display = 'none';
-                if(userAvatar) { userAvatar.style.display = 'block'; userAvatar.src = user.photoURL || '/Guest.webp'; }
-                if(userNameDisplay) userNameDisplay.innerText = user.displayName || "Thành viên";
-                
-                if(mobileMemberBtn) {
-                    const photo = user.photoURL || '/Guest.webp';
-                    const name = user.displayName || "Thành viên";
-                    mobileMemberBtn.innerHTML = `<img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #fff;"> <span>${name}</span>`;
-                    mobileMemberBtn.onclick = () => window.location.href = '/profile.html';
+                if(userAvatar) { 
+                    userAvatar.style.display = 'block'; 
+                    userAvatar.src = user.photoURL || '/Guest.webp'; 
                 }
-                if(drawerLogout) drawerLogout.style.display = 'flex';
                 if(cmtMyAvatar) cmtMyAvatar.src = user.photoURL || '/Guest.webp';
-                
-                // Chỉ load lịch sử nếu có uid
+                if(drawerLogout) drawerLogout.style.display = 'flex';
+
+                onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        const balance = data.coinBalance || 0;
+                        const vipExp = data.vipExpiration || 0;
+                        const isVip = vipExp > Date.now();
+                        const name = user.displayName || "Thành viên";
+                        
+                        // 1. HIỆU ỨNG HÀO QUANG & TÊN VÀNG
+                        if (isVip) {
+                            if(userAvatar) userAvatar.classList.add('vip-glow');
+                            if(userNameDisplay) userNameDisplay.innerHTML = `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>`;
+                        } else {
+                            if(userAvatar) userAvatar.classList.remove('vip-glow');
+                            if(userNameDisplay) userNameDisplay.innerText = name;
+                        }
+
+                        // 2. HIỂN THỊ THỜI HẠN VIP THAY CHO FREE PLAN
+                        const vipStatusEl = document.getElementById('vipStatus');
+                        if (vipStatusEl) {
+                            if (isVip) {
+                                // Định dạng ngày: ngày/tháng/năm
+                                const d = new Date(vipExp);
+                                const dateStr = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+                                vipStatusEl.innerHTML = `<span style="color:#FFD700; font-weight:bold;"><i class="fas fa-gem"></i> VIP đến: ${dateStr}</span>`;
+                            } else {
+                                vipStatusEl.innerHTML = `<i class="fas fa-crown"></i> Free Plan`;
+                            }
+                        }
+
+                        // 3. BADGE SỐ DƯ
+                        const balanceHTML = `<span class="balance-badge"><i class="fas fa-coins"></i> ${balance.toLocaleString()}</span>`;
+                        if(userNameDisplay) userNameDisplay.innerHTML += " " + balanceHTML;
+
+                        // 4. ẨN QUẢNG CÁO CHO VIP
+                        if (isVip) {
+                            if (adOverlay) adOverlay.style.display = 'none';
+                            adPanels.forEach(p => p.style.display = 'none');
+                        } else {
+                            adPanels.forEach(p => p.style.display = 'flex');
+                        }
+
+                        // 5. MOBILE MENU
+                        if(mobileMemberBtn) {
+                            const photo = user.photoURL || '/Guest.webp';
+                            const nameHtmlMobile = isVip ? `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>` : `<span>${name}</span>`;
+                            mobileMemberBtn.innerHTML = `
+                                <img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #fff;" class="${isVip ? 'vip-glow' : ''}"> 
+                                ${nameHtmlMobile} ${balanceHTML}
+                            `;
+                        }
+                    }
+                });
+
                 loadHistory(user.uid);
             } else {
                 window.currentUser = null;
+                currentUser = null;
                 if(btnLogin) btnLogin.style.display = 'block';
                 if(userAvatar) userAvatar.style.display = 'none';
                 if(mobileMemberBtn) {
@@ -1163,10 +1337,12 @@ footer {
                     mobileMemberBtn.onclick = () => window.location.href = '/login.html';
                 }
                 if(drawerLogout) drawerLogout.style.display = 'none';
-                if(cmtMyAvatar) cmtMyAvatar.src = '/Guest.webp';
+                if (adOverlay) adOverlay.style.display = 'flex';
             }
         });
 
+
+        
         // 5. GLOBAL FUNCTIONS (Logout, Toast...)
         window.logout = async () => {
             const ok = await window.customConfirm("Bạn có chắc chắn muốn đăng xuất?");
@@ -1198,38 +1374,39 @@ footer {
         }
 
         // --- COMMENT LOGIC ---
+        // --- GỬI BÌNH LUẬN (CÓ CHECK VIP) ---
         window.sendComment = async () => {
-            if(!currentUser) {
-                window.showToast("Vui lòng đăng nhập để bình luận!", "error");
-                return;
-            }
+            if(!currentUser) return window.showToast("Vui lòng đăng nhập!", "error");
+            
             const text = document.getElementById('cmtInput').value.trim();
             if(!text) return;
 
-            // Dùng ytId làm ID phim nếu là phim custom, ngược lại dùng slug
+            // Check xem user hiện tại có phải VIP không
+            const userRef = doc(db, "users", currentUser.uid);
+            const userSnap = await getDoc(userRef);
+            const isVip = userSnap.exists() && (userSnap.data().vipExpiration || 0) > Date.now();
+
             const currentMovieId = isCustomYoutube ? ('yt_' + ytId) : movieSlug;
 
             try {
                 await addDoc(collection(db, "comments"), {
-                    movieId: currentMovieId, 
+                    movieId: currentMovieId,
                     userId: currentUser.uid,
                     userName: currentUser.displayName || "Thành viên",
                     userAvatar: currentUser.photoURL || "/Guest.webp",
                     content: text,
+                    isVip: isVip, // 🔥 Lưu trạng thái VIP vào comment
                     timestamp: Date.now()
                 });
                 document.getElementById('cmtInput').value = '';
                 window.showToast("Đã gửi bình luận!", "success");
-            } catch(e) { 
-                console.error(e);
-                window.showToast("Lỗi: " + e.message, "error"); 
-            }
+            } catch(e) { window.showToast("Lỗi: " + e.message, "error"); }
         }
 
-        // Load Comment
-        const currentMovieId = isCustomYoutube ? ('yt_' + ytId) : movieSlug;
-        if(currentMovieId) {
-            const q = query(collection(db, "comments"), where("movieId", "==", currentMovieId), orderBy("timestamp", "desc"));
+        // --- HIỂN THỊ BÌNH LUẬN (RENDER) ---
+        const cId = isCustomYoutube ? ('yt_' + ytId) : movieSlug;
+        if(cId) {
+            const q = query(collection(db, "comments"), where("movieId", "==", cId), orderBy("timestamp", "desc"));
             onSnapshot(q, (snapshot) => {
                 const list = document.getElementById('commentList');
                 if(snapshot.empty) {
@@ -1241,11 +1418,19 @@ footer {
                     const c = doc.data();
                     const timeAgo = timeSince(c.timestamp);
                     const badge = (c.userName === 'Admin') ? '<span class="badge-role">QTV</span>' : '';
+                    
+                    // 🔥 XỬ LÝ STYLE VIP CHO BÌNH LUẬN 🔥
+                    const vipClass = c.isVip ? 'is-vip' : '';
+                    const avatarGlow = c.isVip ? 'vip-glow' : ''; // Thêm hào quang cho avatar comment
+                    const nameHtml = c.isVip 
+                        ? `<span class="vip-name" style="font-size:0.95rem;"><i class="fas fa-crown"></i> ${c.userName}</span>` 
+                        : `<span class="comment-author">${c.userName}</span>`;
+
                     html += `
-                        <div class="comment-item">
-                            <img src="${c.userAvatar}" class="comment-avatar">
+                        <div class="comment-item ${vipClass}">
+                            <img src="${c.userAvatar}" class="comment-avatar ${avatarGlow}">
                             <div class="comment-body">
-                                <div class="comment-meta"><span class="comment-author">${c.userName}</span> ${badge} <span class="comment-time">• ${timeAgo}</span></div>
+                                <div class="comment-meta">${nameHtml} ${badge} <span class="comment-time">• ${timeAgo}</span></div>
                                 <div class="comment-text">${c.content}</div>
                             </div>
                         </div>`;
@@ -1589,38 +1774,66 @@ async function loadMovie() {
             document.getElementById('episodeListDesktop').innerHTML = html;
         }
 
-        // Gán hàm changeEp vào window để gọi được từ HTML
-        window.changeEp = function(link, type, btn) {
+        // --- LOGIC PHÁT VIDEO KÈM QUẢNG CÁO 5 GIÂY ---
+        window.changeEp = async function(link, type, btn, epName = null, time = 0) {
             if (btn) {
-                // 1. Cập nhật tên tập phim mới vào biến ghi nhớ
-                currentEpName = btn.innerText; 
-                
-                // 2. Cập nhật giao diện nút bấm
                 document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+                if(epName) currentEpName = epName;
                 
-                // 3. Cuộn màn hình lên trình phát cho mượt
                 const playerBox = document.querySelector('.player-box');
                 if(playerBox) playerBox.scrollIntoView({behavior: "smooth", block: "center"});
-
-                // 4. LƯU NGAY vào Firebase: Tập mới, thời gian bắt đầu là 0
-                if (currentMovieData) {
-                    window.saveToHistory(currentMovieData, currentEpName, 0);
-                }
             }
 
-            // 5. Khởi tạo trình phát mới
+            // Kiểm tra user có phải VIP không để bỏ qua quảng cáo 5s
+            let isVip = false;
+            if(currentUser) {
+                const snap = await getDoc(doc(db, "users", currentUser.uid));
+                isVip = snap.exists() && (snap.data().vipExpiration || 0) > Date.now();
+            }
+
+            // Nếu là VIP: Xem luôn. Nếu thường: Xem quảng cáo 5s
+            if (isVip) {
+                startPlayer(link, type, time);
+            } else {
+                showPrerollAd(link, type, time);
+            }
+        }
+
+        function showPrerollAd(link, type, time) {
+            const container = document.getElementById('player-container');
+            // HTML Quảng cáo 5s
+            container.innerHTML = `
+                <div class="preroll-container">
+                    <img src="https://hopvan.netlify.app/IMG/hero-video.gif" class="preroll-img">
+                    <div class="preroll-timer">Quảng cáo: <span id="adCount">5</span>s</div>
+                    <div style="color:#aaa; font-size:0.8rem; margin-top:10px;">Nâng cấp VIP để bỏ qua</div>
+                </div>
+            `;
+            
+            let timeLeft = 5;
+            const timer = setInterval(() => {
+                timeLeft--;
+                const countSpan = document.getElementById('adCount');
+                if(countSpan) countSpan.innerText = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    startPlayer(link, type, time); // Hết giờ thì phát phim
+                }
+            }, 1000);
+        }
+
+        function startPlayer(link, type, startTime) {
             if (type === 'iframe') {
                 document.getElementById('player-container').innerHTML = `
                     <div style="position:relative; padding-top:56.25%;">
                         <iframe src="${link}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
                     </div>`;
             } else {
-                // link m3u8 thì dùng initPlayer xịn đã sửa ở Bước 3
-                initPlayer(type, link, currentMovieData?.poster_url, 0);
+                initPlayer(type, link, currentMovieData?.poster_url, startTime);
             }
         }
-
         
         // --- CẤU HÌNH ĐỀ XUẤT ---
         const MANUAL_RELATED = ["con-ra-the-thong-gi-nua-2026", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "duong-cung-ky-an-thanh-vu-phong-minh", "su-tro-lai-cua-tham-phan", "tuoi-tre-tai-cao", "con-say-mua-xuan", "trao-em-ca-vu-tru", "thu-hut-manh-liet", "truong-nguyet-tan-minh"];
@@ -1720,11 +1933,10 @@ async function loadMovie() {
     </script>
     
     <script>
-        // CẤU HÌNH QUẢNG CÁO
+        // CẤU HÌNH QUẢNG CÁO GIF POPUP (BỎ ĐẾM GIỜ)
         const adConfig = {
             gifUrl: "https://hopvan.netlify.app/IMG/hero-video.gif",
-            targetUrl: "https://hopvan.netlify.app/",
-            skipTime: 3 
+            targetUrl: "https://hopvan.netlify.app/"
         };
 
         const adOverlay = document.getElementById('ad-overlay');
@@ -1735,26 +1947,14 @@ async function loadMovie() {
         if (adOverlay && skipButton && goToWebsiteButton && adImage) { 
             adImage.src = adConfig.gifUrl;
             
-            const countdownSpan = skipButton.querySelector('span');
-            let timeLeft = adConfig.skipTime; 
-            if (countdownSpan) countdownSpan.textContent = timeLeft;
-
-            const countdownInterval = setInterval(() => {
-                timeLeft -= 1;
-                if (timeLeft > 0) {
-                    if (countdownSpan) countdownSpan.textContent = timeLeft;
-                    else skipButton.textContent = `Skip ad (${timeLeft})`;
-                } else {
-                    clearInterval(countdownInterval); 
-                    skipButton.textContent = 'Skip ad'; 
-                    skipButton.classList.add('enabled');
-                    skipButton.removeAttribute('disabled'); 
-                }
-            }, 1000); 
+            // 🔥 MỞ NÚT SKIP NGAY LẬP TỨC
+            skipButton.textContent = 'Skip ad'; 
+            skipButton.classList.add('enabled');
+            skipButton.removeAttribute('disabled'); 
 
             skipButton.addEventListener('click', (e) => {
                 e.stopPropagation();
-                if (skipButton.classList.contains('enabled')) closeAd();
+                closeAd();
             });
 
             goToWebsiteButton.addEventListener('click', (e) => {
