@@ -36,6 +36,7 @@
         .custom-confirm-overlay.active { display: flex; opacity: 1; }
         .confirm-box { background: #23252f; width: 90%; max-width: 400px; padding: 30px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); transform: scale(0.9); transition: 0.3s; }
         .custom-confirm-overlay.active .confirm-box { transform: scale(1); }
+        .confirm-icon { font-size: 3rem; color: var(--primary); margin-bottom: 15px; display: block; } /* FIX LỖI ICON CHẤM HỎI */
         .btn-confirm { padding: 10px 25px; border-radius: 8px; margin: 0 5px; cursor: pointer; border: none; font-weight: 600; }
         .btn-ok { background: var(--gradient-main); color: #fff; } .btn-cancel { background: transparent; color: #ccc; border: 1px solid #444; }
 
@@ -54,10 +55,11 @@
         .nav-item:hover { background: rgba(255,255,255,0.03); color: #fff; }
         .nav-item.active { background: linear-gradient(90deg, rgba(255, 94, 98, 0.1) 0%, transparent 100%); color: #fff; border-left: 3px solid var(--primary); }
         
+        /* FIX LỖI COIN KHÔNG HIỆN */
         .user-mini-profile { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .sidebar-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
         .user-info-text h4 { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
-        .user-info-text p { font-size: 0.75rem; color: var(--text-sub); display: flex; align-items: center; gap: 5px; }
+        .user-info-text p { font-size: 0.85rem; color: #FFD700; display: flex; align-items: center; gap: 5px; font-weight: 700; } /* Tăng size chữ Coin */
 
         /* MAIN CONTENT */
         .main-content { flex: 1; padding: 40px 60px; overflow-y: auto; overflow-x: hidden; position: relative; background: var(--bg-body); }
@@ -336,7 +338,7 @@
         const storage = getStorage(app);
         
         let currentUser = null;
-        let isUserVip = false;
+        let isUserVip = false; // Biến toàn cục để check VIP
 
         document.getElementById('loadingScreen').style.display = 'none';
 
@@ -352,6 +354,7 @@
                 onSnapshot(doc(db, "users", user.uid), (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
+                        
                         // 🔥 FIX: Kiểm tra cả 2 tên biến coinBalance hoặc coin
                         const balance = data.coinBalance !== undefined ? data.coinBalance : (data.coin || 0);
                         const vipExp = data.vipExpiration || 0;
@@ -363,7 +366,7 @@
                             sidebarBalanceEl.innerHTML = `<i class="fas fa-coins"></i> ${balance.toLocaleString()}`;
                         }
                         
-                        // 2. CHECK VIP
+                        // 2. CHECK VIP CHO BIẾN TOÀN CỤC
                         isUserVip = vipExp > Date.now();
                         
                         // 3. CẬP NHẬT TRẠNG THÁI NHIỆM VỤ
@@ -578,13 +581,15 @@
             }
             
             document.getElementById('sidebarName').innerText = displayName;
-            document.getElementById('sidebarEmail').innerText = user.email;
+            // document.getElementById('sidebarEmail').innerText = user.email; // Đã xóa dòng này để tránh lỗi null
 
             document.getElementById('inputName').value = displayName;
             document.getElementById('inputEmail').value = user.email;
         }
 
+        // 🔥 FIX 1: HÀM MỞ MODAL ĐỔI ẢNH (CHECK BIẾN TOÀN CỤC)
         window.tryOpenAvatarModal = () => {
+            // Kiểm tra biến isUserVip đã được cập nhật từ onSnapshot chưa
             if (!isUserVip) {
                 document.getElementById('vipLockMsg').style.display = 'block';
                 setTimeout(() => document.getElementById('vipLockMsg').style.display = 'none', 3000);
