@@ -1807,28 +1807,52 @@ async function loadMovie() {
         }
 
         function showPrerollAd(link, type, time) {
-            const container = document.getElementById('player-container');
-            // HTML Quảng cáo 5s
-            container.innerHTML = `
-                <div class="preroll-container">
-                    <img src="https://hopvan.netlify.app/IMG/hero-video.gif" class="preroll-img">
-                    <div class="preroll-timer">Quảng cáo: <span id="adCount">5</span>s</div>
-                    <div style="color:#aaa; font-size:0.8rem; margin-top:10px;">Nâng cấp VIP để bỏ qua</div>
-                </div>
-            `;
+    const container = document.getElementById('player-container');
+    
+    // Inject HTML giao diện mới
+    container.innerHTML = `
+        <div class="preroll-wrapper">
+            <img src="https://hopvan.netlify.app/IMG/hero-video.gif" class="preroll-media">
             
-            let timeLeft = 5;
-            const timer = setInterval(() => {
-                timeLeft--;
-                const countSpan = document.getElementById('adCount');
-                if(countSpan) countSpan.innerText = timeLeft;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    startPlayer(link, type, time); // Hết giờ thì phát phim
-                }
-            }, 1000);
+            <div class="preroll-vip-notice">
+                <p>Khó chịu vì quảng cáo?</p>
+                <div><i class="fas fa-crown"></i> BẬT WIBU VIP NGAY</div>
+            </div>
+
+            <div class="preroll-skip-area">
+                <button id="skip-ad-btn" class="btn-skip-preroll" disabled>
+                    Chờ <span id="ad-timer">5</span>s
+                </button>
+            </div>
+        </div>
+    `;
+
+    let timeLeft = 5;
+    const skipBtn = document.getElementById('skip-ad-btn');
+    const timerText = document.getElementById('ad-timer');
+
+    const countdown = setInterval(() => {
+        timeLeft--;
+        if (timerText) timerText.innerText = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            if (skipBtn) {
+                skipBtn.disabled = false;
+                skipBtn.classList.add('ready');
+                skipBtn.innerHTML = 'Bỏ qua quảng cáo <i class="fas fa-step-forward"></i>';
+                skipBtn.onclick = () => {
+                    // Gọi hàm phát phim thực tế của bạn
+                    if (typeof window.startActualPlayer === 'function') {
+                        window.startActualPlayer(link, type, time);
+                    } else if (typeof startActualPlayer === 'function') {
+                        startActualPlayer(link, type, time);
+                    }
+                };
+            }
         }
+    }, 1000);
+}
 
         function startPlayer(link, type, startTime) {
             if (type === 'iframe') {
