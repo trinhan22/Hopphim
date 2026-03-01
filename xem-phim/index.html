@@ -72,13 +72,17 @@
         body { font-family: var(--font-main); background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
         .text-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
 
-/* --- QUẢNG CÁO (ADS - FIX TỈ LỆ ẢNH) --- */
+        /* --- QUẢNG CÁO (ADS - FIX TỈ LỆ ẢNH) --- */
         #ad-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.9); /* Tối nền hơn chút để nổi bật quảng cáo */
-            display: flex; justify-content: center; align-items: center;
+            background-color: rgba(0, 0, 0, 0.9);
+            
+            /* 🔥 QUAN TRỌNG: Mặc định ẩn, chờ JS kiểm tra xong mới hiện */
+            display: none; 
+            
+            justify-content: center; align-items: center;
             z-index: 99999; transition: opacity 0.5s ease, visibility 0.5s ease;
-            padding: 20px; /* Thêm padding để quảng cáo không dính sát mép màn hình mobile */
+            padding: 20px;
         }
         
         #ad-container {
@@ -683,17 +687,15 @@ footer {
 }
 
 
-/* --- PANEL QUẢNG CÁO (ĐÃ CHỈNH 1456x180) --- */
+        /* --- PANEL QUẢNG CÁO (ĐÃ CHỈNH 1456x180) --- */
+        
+        /* 2. Banner Quảng Cáo: Mặc định ẩn */
         .ad-panel-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            margin: 0 auto 40px;
-            padding: 0 4%;
-            width: 80%;
-            /* 👉 SỬA: Tăng độ rộng tối đa lên 1456px */
-            max-width: 1456px; 
+            /* 🔥 QUAN TRỌNG: Mặc định ẩn */
+            display: none;
+            
+            flex-direction: column; align-items: center; gap: 15px;
+            margin: 0 auto 40px; padding: 0 4%; width: 80%; max-width: 1456px;
         }
 
         .ad-link {
@@ -1298,94 +1300,115 @@ footer {
         // --- KHAI BÁO BIẾN TOÀN CỤC ĐỂ CHECK VIP CỰC NHANH ---
         let isGlobalVip = false; // Biến này sẽ lưu trạng thái VIP luôn, không cần fetch lại
 
-        // --- 3. QUẢN LÝ TRẠNG THÁI NGƯỜI DÙNG & GIAO DIỆN (FIXED) ---
+        // --- BIẾN TOÀN CỤC ---
+        window.isCurrentVip = false; 
+        window.isMovieInitialized = false;
+
+        // --- 3. QUẢN LÝ TRẠNG THÁI NGƯỜI DÙNG & QUẢNG CÁO ---
         onAuthStateChanged(auth, async (user) => {
+            // Lấy lại element
             const btnLogin = document.getElementById('btnLogin');
             const userAvatar = document.getElementById('userAvatar');
             const userNameDisplay = document.getElementById('userNameDisplay');
-            const mobileMemberBtn = document.getElementById('mobileMemberBtn');
             const drawerLogout = document.getElementById('drawerLogout');
+            const mobileMemberBtn = document.getElementById('mobileMemberBtn');
             const vipStatusLabel = document.getElementById('vipStatus');
+            const cmtMyAvatar = document.getElementById('cmtMyAvatar');
             
-            // Các Element Quảng Cáo
-            const adOverlay = document.getElementById('ad-overlay'); // Popup
-            const adPanels = document.querySelectorAll('.ad-panel-wrapper'); // Banner
+            // Element Quảng Cáo
+            const adOverlay = document.getElementById('ad-overlay');
+            const adPanels = document.querySelectorAll('.ad-panel-wrapper');
+
+            // Hàm bật quảng cáo (Chỉ dùng cho user thường)
+            const activateAds = () => {
+                if(adOverlay) adOverlay.style.display = 'flex';
+                adPanels.forEach(p => p.style.display = 'flex');
+            };
 
             if (user) {
+                // === ĐÃ ĐĂNG NHẬP ===
                 window.currentUser = user;
                 currentUser = user;
-                
+
+                // Update UI cơ bản
                 if(btnLogin) btnLogin.style.display = 'none';
-                if(userAvatar) { 
-                    userAvatar.style.display = 'block'; 
-                    userAvatar.src = user.photoURL || '/Guest.webp'; 
-                }
+                if(userAvatar) { userAvatar.style.display = 'block'; userAvatar.src = user.photoURL || '/Guest.webp'; }
                 if(cmtMyAvatar) cmtMyAvatar.src = user.photoURL || '/Guest.webp';
                 if(drawerLogout) drawerLogout.style.display = 'flex';
 
-                // LẮNG NGHE REAL-TIME
-                onSnapshot(doc(db, "users", user.uid), (docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        const balance = data.coinBalance || 0;
+                // 🔥 CHECK VIP TỪ FIRESTORE 🔥
+                try {
+                    const snap = await getDoc(doc(db, "users", user.uid));
+                    if (snap.exists()) {
+                        const data = snap.data();
                         const vipExp = data.vipExpiration || 0;
-                        
-                        // Cập nhật biến toàn cục VIP
                         window.isCurrentVip = vipExp > Date.now();
-
-                        // --- 🔥 LOGIC DIỆT QUẢNG CÁO TUYỆT ĐỐI CHO VIP 🔥 ---
-                        if (window.isCurrentVip) {
-                            console.log("VIP DETECTED: Hiding Ads...");
-                            
-                            // 1. Tắt Popup Ad Overlay ngay lập tức
-                            if (adOverlay) {
-                                adOverlay.style.setProperty('display', 'none', 'important');
-                                adOverlay.style.visibility = 'hidden';
-                                adOverlay.innerHTML = ''; // Xóa sạch nội dung bên trong cho chắc
-                            }
-
-                            // 2. Tắt Banner
-                            adPanels.forEach(p => p.style.setProperty('display', 'none', 'important'));
-                        } else {
-                            // Nếu hết hạn VIP thì hiện lại
-                            adPanels.forEach(p => p.style.display = 'flex');
-                        }
-                        // -----------------------------------------------------
-
-                        // Update UI Header
-                        const name = user.displayName || "Thành viên";
-                        if (window.isCurrentVip) {
-                            if(userAvatar) userAvatar.classList.add('vip-glow');
-                            if(userNameDisplay) userNameDisplay.innerHTML = `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>`;
-                            if(vipStatusLabel) {
-                                const d = new Date(vipExp);
-                                vipStatusLabel.innerHTML = `<span style="color:#FFD700; font-weight:bold;"><i class="fas fa-gem"></i> VIP đến: ${d.getDate()}/${d.getMonth()+1}</span>`;
-                            }
-                        } else {
-                            if(userAvatar) userAvatar.classList.remove('vip-glow');
-                            if(userNameDisplay) userNameDisplay.innerText = name;
-                            if(vipStatusLabel) vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free Plan`;
-                        }
-
-                        // Badge số dư
-                        const balanceHTML = `<span class="balance-badge"><i class="fas fa-coins"></i> ${balance.toLocaleString()}</span>`;
-                        if(userNameDisplay && !userNameDisplay.innerHTML.includes('balance-badge')) {
-                            userNameDisplay.innerHTML += " " + balanceHTML;
-                        }
+                        
+                        // Cập nhật UI Header (Tên, Coin, Glow...)
+                        updateHeaderUI(user, data, window.isCurrentVip);
                     }
-                });
-                loadHistory(user.uid);
+                } catch(e) { console.log("Lỗi check VIP:", e); }
+
+                // 🔥 QUYẾT ĐỊNH QUẢNG CÁO 🔥
+                if (window.isCurrentVip) {
+                    console.log("💎 VIP: Giữ quảng cáo ẩn.");
+                    // Không làm gì cả vì CSS đã ẩn rồi
+                } else {
+                    console.log("👤 FREE: Bật quảng cáo.");
+                    activateAds();
+                }
+
             } else {
-                // KHI CHƯA ĐĂNG NHẬP
+                // === KHÁCH (CHƯA ĐĂNG NHẬP) ===
                 window.currentUser = null;
-                window.isCurrentVip = false; // Reset VIP
+                currentUser = null;
+                window.isCurrentVip = false;
 
                 if(btnLogin) btnLogin.style.display = 'block';
                 if(userAvatar) userAvatar.style.display = 'none';
-                // Hiện lại quảng cáo Banner
-                adPanels.forEach(p => p.style.display = 'flex');
+                if(drawerLogout) drawerLogout.style.display = 'none';
+
+                // Khách thì bật quảng cáo luôn
+                activateAds();
+            }
+
+            // 🔥 LOAD PHIM SAU KHI ĐÃ XỬ LÝ XONG QUẢNG CÁO 🔥
+            if (!window.isMovieInitialized) {
+                loadMovie();
+                window.isMovieInitialized = true;
             }
         });
+
+        // Hàm phụ trợ cập nhật Header (Để code trên gọn hơn)
+        function updateHeaderUI(user, data, isVip) {
+            const name = user.displayName || "Thành viên";
+            const balance = data.coinBalance || 0;
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const userAvatar = document.getElementById('userAvatar');
+            const vipStatusLabel = document.getElementById('vipStatus');
+            const mobileMemberBtn = document.getElementById('mobileMemberBtn');
+
+            if (isVip) {
+                userAvatar.classList.add('vip-glow');
+                userNameDisplay.innerHTML = `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>`;
+                const d = new Date(data.vipExpiration);
+                vipStatusLabel.innerHTML = `<span style="color:#FFD700; font-weight:bold;"><i class="fas fa-gem"></i> VIP đến: ${d.getDate()}/${d.getMonth()+1}</span>`;
+            } else {
+                userAvatar.classList.remove('vip-glow');
+                userNameDisplay.innerText = name;
+                vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free Plan`;
+            }
+            // Badge coin
+            if(!userNameDisplay.innerHTML.includes('balance-badge')) {
+                userNameDisplay.innerHTML += ` <span class="balance-badge"><i class="fas fa-coins"></i> ${balance.toLocaleString()}</span>`;
+            }
+            // Mobile Btn
+            if(mobileMemberBtn) {
+                 const nameHtmlMobile = isVip ? `<span class="vip-name">${name}</span>` : `<span>${name}</span>`;
+                 mobileMemberBtn.innerHTML = `<img src="${user.photoURL||'/Guest.webp'}" style="width:30px;height:30px;border-radius:50%;border:2px solid #fff;" class="${isVip?'vip-glow':''}"> ${nameHtmlMobile}`;
+                 mobileMemberBtn.onclick = () => window.location.href = '/profile.html';
+            }
+        }
         
         // 5. GLOBAL FUNCTIONS (Logout, Toast...)
         window.logout = async () => {
@@ -1870,91 +1893,66 @@ window.closeMobileSearch = () => {
             document.getElementById('episodeListDesktop').innerHTML = html;
         }
 
-        // --- LOGIC PHÁT VIDEO (ĐÃ FIX CHECK VIP) ---
+        // --- LOGIC ĐỔI TẬP (FIXED VIP CHECK) ---
         window.changeEp = async function(link, type, btn, epName = null, time = 0) {
             if (btn) {
                 document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 if(epName) currentEpName = epName;
-                
-                const playerBox = document.querySelector('.player-box');
-                if(playerBox) playerBox.scrollIntoView({behavior: "smooth", block: "center"});
+                document.querySelector('.player-box')?.scrollIntoView({behavior: "smooth", block: "center"});
             }
 
-            console.log("Đang đổi tập. Trạng thái VIP:", window.isCurrentVip);
-
-            // Dùng biến toàn cục window.isCurrentVip để check
+            // Dùng biến toàn cục đã check ở bước 2
             if (window.isCurrentVip) {
-                // VIP -> Gọi thẳng hàm phát, bỏ qua quảng cáo
-                if (typeof window.startActualPlayer === 'function') {
-                    window.startActualPlayer(link, type, time);
-                    window.showToast("VIP: Đã bỏ qua quảng cáo!", "success");
-                } else {
-                    // Fallback
-                    initPlayer(type, link, currentMovieData?.poster_url, time);
-                }
+                console.log("💎 VIP: Bỏ qua Preroll Ad");
+                window.startActualPlayer(link, type, time);
+                window.showToast("VIP: Đã bỏ qua quảng cáo!", "success");
             } else {
-                // Thường -> Hiện quảng cáo Preroll
+                console.log("👤 FREE: Hiện Preroll Ad");
                 showPrerollAd(link, type, time);
             }
         }
 
-// --- HÀM HIỆN QUẢNG CÁO YOUTUBE STYLE ---
-function showPrerollAd(link, type, time) {
-    const container = document.getElementById('player-container');
-    
-    // Inject HTML giao diện mới
-    container.innerHTML = `
-        <div class="preroll-container">
-            <img src="https://hopvan.netlify.app/IMG/hero-video.gif" class="preroll-gif">
+        // --- QUẢNG CÁO VIDEO (PREROLL) ---
+        function showPrerollAd(link, type, time) {
+            const container = document.getElementById('player-container');
+            container.innerHTML = `
+                <div class="preroll-container">
+                    <img src="https://hopvan.netlify.app/IMG/hero-video.gif" class="preroll-gif">
+                    <div class="preroll-info-box"><p>Quảng cáo</p><div>hopvan.netlify.app</div></div>
+                    <div class="preroll-skip-area">
+                        <button id="skip-ad-btn" class="btn-skip-preroll" disabled>Bỏ qua sau <span id="ad-timer" style="margin-left:5px;">5</span>s</button>
+                    </div>
+                </div>`;
             
-            <div class="preroll-info-box">
-                <p>Quảng cáo</p>
-                <div>hopvan.netlify.app</div>
-            </div>
-
-            <div class="preroll-skip-area">
-                <button id="skip-ad-btn" class="btn-skip-preroll" disabled>
-                    Bỏ qua sau <span id="ad-timer" style="margin-left:5px; width:15px; text-align:center;">5</span>s
-                </button>
-            </div>
-        </div>
-    `;
-
-    let timeLeft = 5;
-    const skipBtn = document.getElementById('skip-ad-btn');
-    const timerText = document.getElementById('ad-timer');
-
-    const countdown = setInterval(() => {
-        timeLeft--;
-        if (timerText) timerText.innerText = timeLeft;
-
-        if (timeLeft <= 0) {
-            clearInterval(countdown);
-            if (skipBtn) {
-                skipBtn.disabled = false;
-                skipBtn.classList.add('ready');
-                skipBtn.innerHTML = 'Bỏ qua quảng cáo <i class="fas fa-step-forward"></i>';
-                skipBtn.onclick = () => {
-                    // Gọi hàm phát phim
-                    if (typeof window.startActualPlayer === 'function') {
-                        window.startActualPlayer(link, type, time);
+            let timeLeft = 5;
+            const timerText = document.getElementById('ad-timer');
+            const skipBtn = document.getElementById('skip-ad-btn');
+            
+            const cd = setInterval(() => {
+                timeLeft--;
+                if(timerText) timerText.innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    clearInterval(cd);
+                    if(skipBtn) {
+                        skipBtn.disabled = false;
+                        skipBtn.classList.add('ready');
+                        skipBtn.innerHTML = 'Bỏ qua quảng cáo <i class="fas fa-step-forward"></i>';
+                        skipBtn.onclick = () => window.startActualPlayer(link, type, time);
                     }
-                };
+                }
+            }, 1000);
+        }
+
+        // --- HÀM PHÁT PLAYER THẬT ---
+        window.startActualPlayer = function(link, type, startTime) {
+            const container = document.getElementById('player-container');
+            if (type === 'iframe') {
+                container.innerHTML = `<div class="aspect-ratio-16-9"><iframe src="${link}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe></div>`;
+            } else {
+                initPlayer(type, link, currentMovieData?.poster_url, startTime);
             }
         }
-    }, 1000);
-}
-
-// 🔥 ĐỔI TÊN HÀM NÀY ĐỂ FIX LỖI MẤT KHUNG CHIẾU 🔥
-window.startActualPlayer = function(link, type, startTime) {
-    const container = document.getElementById('player-container');
-    if (type === 'iframe') {
-        container.innerHTML = `<div style="position:relative; width:100%; height:100%; padding-top:56.25%;"><iframe src="${link}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe></div>`;
-    } else {
-        initPlayer(type, link, currentMovieData?.poster_url, startTime);
-    }
-}
         
         // --- CẤU HÌNH ĐỀ XUẤT ---
         const MANUAL_RELATED = ["con-ra-the-thong-gi-nua-2026", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "duong-cung-ky-an-thanh-vu-phong-minh", "su-tro-lai-cua-tham-phan", "tuoi-tre-tai-cao", "con-say-mua-xuan", "trao-em-ca-vu-tru", "thu-hut-manh-liet", "truong-nguyet-tan-minh"];
@@ -2049,8 +2047,6 @@ window.startActualPlayer = function(link, type, startTime) {
             return Math.floor(hours / 24) + " ngày trước";
         }
 
-        // Start App
-        loadMovie();
     </script>
     
     <script>
