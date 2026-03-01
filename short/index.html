@@ -191,9 +191,16 @@
         }
         .back-btn:hover { background: var(--primary); border-color: var(--primary); }
         
-        .logo-box { display: flex; align-items: center; gap: 8px; }
-        .logo-box img { height: 32px; }
-        .logo-box span { font-weight: 900; font-size: 1.2rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-box { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            /* Thêm 2 dòng này để chuẩn thẻ a */
+            text-decoration: none; 
+            cursor: pointer;
+        }
+        .logo-box img { height: 38px; }
+        .logo-box span { font-weight: 900; font-size: 1.6rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         /* ==================================================================
            1. PC LAYOUT (Stardust Grid Style)
@@ -476,11 +483,10 @@
 
     <div class="top-nav">
         <div class="nav-content">
-            <a href="/" class="back-btn"><i class="fas fa-chevron-left"></i></a>
-            <div class="logo-box">
+            <a href="/" class="logo-box" style="text-decoration: none;">
                 <img src="/LOGO.WEBP" alt="Logo">
                 <span>WIBUPHIM</span>
-            </div>
+            </a>
         </div>
     </div>
 
