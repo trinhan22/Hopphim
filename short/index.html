@@ -126,14 +126,14 @@
             margin-left: 0;
         }
 
-        :root {
+        :root {           
             /* Palette WibuPhim */
             --primary: #FF5E62;
             --secondary: #FF8F50;
             --gradient: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%);
-            --bg-body: #000000;
-            --bg-panel: #101010; /* Màu nền sidebar tối hơn cho giống Stardust */
-            --bg-card: #1f1f1f;
+            --bg-body: #191b24;
+            --bg-panel: #191b24; /* Màu nền sidebar tối hơn cho giống Stardust */
+            --bg-card: #23252f;
             --text-main: #ffffff;
             --text-sub: #a1a1a1;
             --border: 1px solid rgba(255,255,255,0.08);
@@ -142,13 +142,37 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { background: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; width: 100vw; }
         
-        /* Loading Spinner */
-        #loader {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
-            display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 15px;
+        /* ==========================================================================
+           LOADING SCREEN (XỊN XÒ TỪ XEMPHIM)
+           ========================================================================== */
+        #loadingScreen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
+            background: #191b24; /* Nền đen trùng với body của Short */
+            z-index: 9999; display: flex; 
+            justify-content: center; align-items: center; 
         }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .loading-img { 
+            width: 800px; /* Kích thước ảnh */
+            max-width: 90vw; height: auto; object-fit: contain; 
+            /* Animation mặc định: Hiện ra -> Bay lơ lửng */
+            animation: zoomIn 0.8s ease-out forwards, floatIdle 3s ease-in-out infinite 0.8s; 
+        }
+        
+        /* Class này sẽ được JS thêm vào khi tải xong để hút vào trong */
+        .loading-img.zoom-out { 
+            animation: zoomOut 0.5s ease-in forwards !important; 
+        }
+
+        /* Hiệu ứng lúc mới vào trang */
+        @keyframes zoomIn { 0% { transform: scale(1.36); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes floatIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        
+        /* Hiệu ứng zoom out biến mất */
+        @keyframes zoomOut { 
+            36% { transform: scale(1); opacity: 1; } 
+            100% { transform: scale(0.36); opacity: 0; } 
+        }
 
         /* --- HEADER FIXED --- */
         .top-nav {
@@ -178,7 +202,7 @@
 
         /* Cột Trái: Player */
         .pc-player-area {
-            flex: 1; background: #000; position: relative;
+            flex: 1; background: #14161d; position: relative;
             display: flex; align-items: center; justify-content: center;
         }
 
@@ -446,9 +470,8 @@
 </head>
 <body>
 
-    <div id="loader">
-        <div class="spinner"></div>
-        <div style="font-size:0.8rem; color:#aaa;">Đang tải phim...</div>
+    <div id="loadingScreen">
+        <img src="/Loading.png" class="loading-img" alt="WibuPhim">
     </div>
 
     <div class="top-nav">
@@ -476,7 +499,6 @@
 
         <div class="pc-sidebar">
             <div class="info-box">
-                <div class="bread-crumb"><span id="bcTitle"></span></div>
                 <h1 class="movie-title" id="mTitle"></h1>
                 
                 <div class="tags-row">
@@ -500,7 +522,7 @@
             <div class="ep-box">
                 <div class="ep-header">
                     <h3>Danh sách tập</h3>
-                    <span style="font-size:0.8rem; color:var(--secondary);" id="epTotal"></span>
+                    <span style="font-size:0.8rem; color:var(--primary);" id="epTotal"></span>
                 </div>
 
                 <div class="ep-tabs-container" id="pcEpTabs"></div> 
@@ -654,7 +676,9 @@
                     document.getElementById('pcBgBlur').style.backgroundImage = `url('${movieData.poster_url}')`;
                     window.playPC(resumeIndex);
                 }
-                document.getElementById('loader').style.display = 'none';
+
+                hideLoadingState();
+
             } else { 
                 document.getElementById('loader').innerHTML = '<div style="color:white; text-align:center;">Phim không tồn tại!</div>';
             }
@@ -986,7 +1010,6 @@
 
     function renderInfo() {
         document.title = `${movieData.name} - Wibu Shorts`;
-        document.getElementById('bcTitle').innerText = movieData.name;
         document.getElementById('mTitle').innerText = movieData.name;
         document.getElementById('mYear').innerText = movieData.year;
         document.getElementById('statLike').innerText = (Math.random()*20+5).toFixed(1) + 'K';
@@ -1092,6 +1115,28 @@
                 break;
         }
     });
+
+
+    // --- HÀM ẨN LOADING (HIỆU ỨNG ZOOM OUT) ---
+    function hideLoadingState() {
+        setTimeout(() => {
+            const screen = document.getElementById('loadingScreen');
+            const img = screen?.querySelector('.loading-img');
+            
+            if(img) {
+                // Thêm class để chạy animation hút vào
+                img.classList.add('zoom-out');
+                
+                // Đợi 480ms (gần hết animation 0.5s) thì ẩn hẳn div
+                setTimeout(() => { 
+                    if(screen) screen.style.display = 'none'; 
+                }, 480);
+            } else {
+                // Phòng trường hợp không tìm thấy ảnh
+                if(screen) screen.style.display = 'none';
+            }
+        }, 500); // Đợi tối thiểu 0.5s để người dùng kịp nhìn thấy logo
+    }
 </script>
 </body>
 </html>
