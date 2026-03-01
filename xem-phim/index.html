@@ -1338,11 +1338,7 @@ footer {
                             // Ẩn các banner quảng cáo
                             adPanels.forEach(p => p.style.setProperty('display', 'none', 'important'));
                         } else {
-                            // Nếu không phải VIP thì hiện lại
-                            // (Mặc định CSS đã hiện, nhưng set lại cho chắc nếu user hết hạn VIP lúc đang xem)
-                            if (adOverlay && adOverlay.style.opacity === '0') {
-                                // Không tự hiện lại popup (tránh phiền), chỉ hiện banner
-                            }
+                            // Nếu không phải VIP thì hiện lại banner
                             adPanels.forEach(p => p.style.display = 'flex');
                         }
 
@@ -1398,7 +1394,6 @@ footer {
                 
                 // Hiện quảng cáo nếu chưa đăng nhập
                 adPanels.forEach(p => p.style.display = 'flex');
-                // Không auto bật popup ad nếu chưa đăng nhập để tránh spam, chỉ hiện banner
             }
         });
         
@@ -1885,7 +1880,7 @@ window.closeMobileSearch = () => {
             document.getElementById('episodeListDesktop').innerHTML = html;
         }
 
-        // --- LOGIC PHÁT VIDEO KÈM QUẢNG CÁO 5 GIÂY (ĐÃ FIX LỖI VIP) ---
+        // --- LOGIC PHÁT VIDEO KÈM QUẢNG CÁO 5 GIÂY (ĐÃ FIX LỖI TÊN HÀM) ---
         window.changeEp = async function(link, type, btn, epName = null, time = 0) {
             if (btn) {
                 document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
@@ -1899,9 +1894,8 @@ window.closeMobileSearch = () => {
             // Kiểm tra user có phải VIP không
             let isVip = false;
             
-            // Cách 1: Check nhanh từ biến toàn cục (nếu đã load xong)
+            // Check nhanh từ biến toàn cục
             if (window.currentUser) {
-                 // Chúng ta fetch lại 1 lần nữa cho chắc chắn real-time
                  try {
                      const userRef = doc(db, "users", window.currentUser.uid);
                      const userSnap = await getDoc(userRef);
@@ -1910,22 +1904,29 @@ window.closeMobileSearch = () => {
                          isVip = (userData.vipExpiration || 0) > Date.now();
                      }
                  } catch(e) {
-                     console.log("Lỗi check VIP khi đổi tập: ", e);
+                     console.log("Lỗi check VIP: ", e);
                  }
             }
 
-            console.log("Trạng thái VIP khi xem phim:", isVip);
+            console.log("Trạng thái VIP:", isVip);
 
             // Nếu là VIP: Xem luôn. Nếu thường: Xem quảng cáo 5s
             if (isVip) {
-                // 🔥 FIX LỖI: Gọi đúng tên hàm window.startActualPlayer
-                window.startActualPlayer(link, type, time);
-                window.showToast("VIP: Đã bỏ qua quảng cáo!", "success");
+                // 🔥 FIX QUAN TRỌNG: Gọi đúng tên hàm window.startActualPlayer
+                // (Code cũ gọi startPlayer bị lỗi undefined)
+                if (typeof window.startActualPlayer === 'function') {
+                    window.startActualPlayer(link, type, time);
+                    window.showToast("VIP: Đã bỏ qua quảng cáo!", "success");
+                } else {
+                    console.error("Hàm startActualPlayer chưa được khởi tạo!");
+                    // Fallback
+                    initPlayer(type, link, currentMovieData?.poster_url, time);
+                }
             } else {
                 showPrerollAd(link, type, time);
             }
         }
-        
+
 // --- HÀM HIỆN QUẢNG CÁO YOUTUBE STYLE ---
 function showPrerollAd(link, type, time) {
     const container = document.getElementById('player-container');
