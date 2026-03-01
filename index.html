@@ -2639,7 +2639,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             return "Vừa xong";
         }
 
-        // --- RENDER CARD (ĐÃ FIX LINK SHORT/NORMAL) ---
+        // --- RENDER CARD (FIX LỖI CHỮ THẤP + UNDEFINED) ---
         window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
             // 1. Xử lý link ảnh
             const imgWide = m.poster_url 
@@ -2649,39 +2649,32 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             const imgPortrait = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
 
             // 2. Xử lý tên & class
-            const nameFixed = m.name.replace(/'/g, "\\'");
+            const nameFixed = (m.name || "").replace(/'/g, "\\'");
             const historyClass = isHistory ? `history-card-${m.slug}` : '';
             
+            // 🔥 FIX UNDEFINED: Kiểm tra tên gốc
+            let originName = m.origin_name;
+            if (!originName || originName === "undefined" || originName === "null") originName = "";
+
+            // 🔥 FIX CHỮ THẤP: Nếu là History thì padding dưới to hơn (40px) để đẩy chữ lên
+            const paddingStyle = isHistory ? "padding: 12px 12px 40px 12px;" : "padding: 12px;";
+
             // 3. Logic Độ tuổi
             let ageTag = 'T13';
-            // ... (Logic màu sắc giữ nguyên) ...
-            let ageColor = '#2ed573'; 
             if (m.category) {
                 const cats = m.category.map(c => c.slug);
-                if (cats.some(s => s === 'kinh-di' || s === 'toi-pham' || s === '18')) {
-                    ageTag = 'T18'; ageColor = '#ff4757'; 
-                } else if (cats.some(s => s === 'hanh-dong' || s === 'vo-thuat' || s === 'chien-tranh')) {
-                    ageTag = 'T16'; ageColor = '#ffa502'; 
-                } else if (cats.some(s => s === 'hoat-hinh' || s === 'gia-dinh')) {
-                    ageTag = 'P'; ageColor = '#00d2ff'; 
-                }
+                if (cats.some(s => s === 'kinh-di' || s === 'toi-pham' || s === '18')) ageTag = 'T18'; 
+                else if (cats.some(s => s === 'hanh-dong' || s === 'vo-thuat')) ageTag = 'T16'; 
+                else if (cats.some(s => s === 'hoat-hinh')) ageTag = 'P'; 
             }
 
-            // 4. Lấy danh sách thể loại
             const genres = m.category ? m.category.slice(0, 2).map(c => c.name).join(' • ') : '';
-
-            // 5. Badge tập phim
             const epBadge = (isHistory && m.epName) 
                 ? `<div style="position:absolute; top:10px; left:10px; background:var(--primary-color); color:#fff; padding:3px 8px; border-radius:5px; font-size:10px; font-weight:800; z-index:5; box-shadow:0 4px 10px rgba(0,0,0,0.5);">${m.epName.toUpperCase()}</div>` 
                 : '';
 
-            // 🔥 XỬ LÝ LINK CHUYỂN HƯỚNG MỚI
             let redirectUrl = `/xem-phim/${m.slug}`; 
-
-            if (m.type === 'short' || (m.category && m.category.some(c => c.slug === 'short-drama'))) {
-                // Link mới: không dùng dấu ? nữa
-                redirectUrl = `/short/${m.slug}`; 
-            }
+            if (m.type === 'short' || (m.category && m.category.some(c => c.slug === 'short-drama'))) redirectUrl = `/short/${m.slug}`; 
 
             return `
             <div class="n-card ${historyClass}" onclick="window.location.href='${redirectUrl}'">
@@ -2689,41 +2682,30 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                 <img src="${imgWide}" class="n-poster-wide" loading="lazy">
                 <img src="${imgPortrait}" class="n-poster-portrait" loading="lazy">
                 
-                <div class="n-info-layer" style="padding: 12px;"> 
-                    <div class="n-title-in" style="margin-bottom: 0px; line-height: 1.1;">${m.name}</div>
+                <div class="n-info-layer" style="${paddingStyle} display: flex; flex-direction: column; justify-content: flex-end;"> 
                     
-                    <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 4px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">
-                        ${m.origin_name}
-                    </div>
+                    <div class="n-title-in" style="margin-bottom: 0px; line-height: 1.2;">${m.name}</div>
+                    
+                    ${originName ? `<div style="font-size: 0.75rem; color: #aaa; margin-bottom: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">${originName}</div>` : ''}
 
                     <div class="n-meta-in" style="flex-wrap: wrap; gap: 5px; margin-top: -4px;">
                         ${isHistory 
-                            ? `<span style="color:#FF8F50; font-size: 0.8rem;"><i class="fas fa-history"></i> ${timeString}</span>` 
+                            ? `<span style="color:#FF8F50; font-size: 0.8rem; font-weight: 700;"><i class="fas fa-history"></i> ${timeString}</span>` 
                             : `
-                                <span style="background: #ccc; color:#181818; padding: 0px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 500; line-height: 16px; display: inline-block; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-                                    ${ageTag}
-                                </span>
-                                <span style="background: rgba(255,255,255,0.1); color: #ccc; padding: 0px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 500; height: 16px; line-height: 16px; display: inline-block;">
-                                    ${m.year}
-                                </span>
-                                <span style="background: rgba(70, 211, 105, 0.1); color: #46d369; padding: 0px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 500; height: 16px; line-height: 16px; display: inline-block;">
-                                    ${m.episode_current}
-                                </span>
+                                <span style="background: #ccc; color:#181818; padding: 0px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 500; line-height: 16px; display: inline-block;">${ageTag}</span>
+                                <span style="background: rgba(255,255,255,0.1); color: #ccc; padding: 0px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 500; height: 16px; line-height: 16px; display: inline-block;">${m.year}</span>
+                                <span style="background: rgba(70, 211, 105, 0.1); color: #46d369; padding: 0px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 500; height: 16px; line-height: 16px; display: inline-block;">${m.episode_current || 'Full'}</span>
                             `
                         }
                     </div>
                     
-                    ${!isHistory ? `<div style="font-size: 0.7rem; color: #777; margin-top: 0px; line-height: 1.2;">${genres}</div>` : ''}
+                    ${!isHistory ? `<div style="font-size: 0.7rem; color: #777; margin-top: 2px; line-height: 1.2;">${genres}</div>` : ''}
 
-                    <div class="n-actions-in" style="margin-top: 0px;">
+                    <div class="n-actions-in" style="margin-top: 3px;">
                         <button class="btn-mini-play">
                             <i class="fas fa-play"></i> ${isHistory ? 'TIẾP TỤC' : 'XEM NGAY'}
                         </button>
-                        
-                        <button class="btn-mini-add" title="Thêm vào yêu thích" onclick="event.stopPropagation(); addToMyList('${m.slug}', '${nameFixed}', '${imgPortrait}')">
-                            <i class="fas fa-plus"></i>
-                        </button>
-
+                        <button class="btn-mini-add" title="Thêm vào yêu thích" onclick="event.stopPropagation(); addToMyList('${m.slug}', '${nameFixed}', '${imgPortrait}')"><i class="fas fa-plus"></i></button>
                         ${isHistory ? `<button class="btn-mini-remove" title="Xoá" onclick="event.stopPropagation(); removeFromHistory('${m.slug}', this)"><i class="fas fa-minus"></i></button>` : ''}
                     </div>
                 </div>
