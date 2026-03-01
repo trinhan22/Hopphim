@@ -282,7 +282,24 @@
 
         .episode-block { background: var(--bg-card); padding: 25px; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
         .section-header { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; border-left: 4px solid var(--primary-color); padding-left: 10px; color: #fff; display: flex; justify-content: space-between; align-items: center; }
-        .episode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto; }
+        /* --- TÙY CHỈNH THANH CUỘN RIÊNG CHO DANH SÁCH TẬP --- */
+        .episode-grid::-webkit-scrollbar {
+            width: 4px; /* Độ rộng: 4px là rất mảnh và đẹp */
+        }
+
+        .episode-grid::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2); /* Màu nền rãnh cuộn tối mờ */
+            border-radius: 10px;
+        }
+
+        .episode-grid::-webkit-scrollbar-thumb {
+            background: #444; /* Màu thanh kéo (xám tối) */
+            border-radius: 10px;
+        }
+
+        .episode-grid::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color); /* Di chuột vào sẽ sáng màu chủ đạo */
+        }
         .ep-btn { background: #191b24; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 10px 0; text-align: center; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
         .ep-btn:hover, .ep-btn.active { background: var(--gradient-main); border-color: transparent; }
 
@@ -1690,6 +1707,9 @@ footer {
 
             // Cấu hình Player
             const plyrOptions = {
+                // 🔥 SỬA DÒNG NÀY: Tắt phím mặc định để tránh xung đột với code bên dưới
+                keyboard: { focused: false, global: false }, 
+                
                 controls: [
                     'play-large', 'rewind', 'play', 'fast-forward', 
                     'progress', 'current-time', 'mute', 'volume', 
@@ -2314,6 +2334,48 @@ window.closeMobileSearch = () => {
             if (hours < 24) return hours + " giờ trước";
             return Math.floor(hours / 24) + " ngày trước";
         }
+
+        // --- 9. XỬ LÝ PHÍM TẮT (ĐÃ FIX LỖI MUTE & TẮT TOAST) ---
+        document.addEventListener('keydown', (e) => {
+            // 1. Kiểm tra: Nếu đang gõ chữ trong ô Tìm kiếm hoặc Bình luận thì KHÔNG chạy phím tắt
+            const tag = document.activeElement.tagName.toUpperCase();
+            const isInput = tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement.isContentEditable;
+            
+            if (isInput) return; // Dừng lại, cho người dùng gõ chữ bình thường
+
+            // 2. Kiểm tra: Nếu Player chưa khởi tạo thì thôi
+            if (!player) return;
+
+            const key = e.key.toLowerCase();
+
+            switch (key) {
+                case ' ': // Phím SPACE (Khoảng trắng)
+                case 'k': // Phím K (Kiểu Youtube)
+                    e.preventDefault(); // Chặn trang web bị cuộn xuống khi bấm Space
+                    player.togglePlay();
+                    break;
+
+                case 'f': // Phím F: Toàn màn hình
+                    player.fullscreen.toggle();
+                    break;
+
+                case 'm': // Phím M: Tắt/Bật tiếng
+                    // 🔥 Đã fix xung đột và tắt ShowToast
+                    player.muted = !player.muted;
+                    // (Đã xóa dòng window.showToast)
+                    break;
+
+                case 'arrowleft': // Mũi tên TRÁI: Lùi 10s
+                case 'j': // Phím J
+                    player.rewind(10);
+                    break;
+
+                case 'arrowright': // Mũi tên PHẢI: Tiến 10s
+                case 'l': // Phím L
+                    player.forward(10);
+                    break;
+            }
+        });
 
     </script>
     

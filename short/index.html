@@ -476,8 +476,8 @@
 
         <div class="pc-sidebar">
             <div class="info-box">
-                <div class="bread-crumb">Trang chủ / Short Drama / <span id="bcTitle">...</span></div>
-                <h1 class="movie-title" id="mTitle">Đang tải...</h1>
+                <div class="bread-crumb"><span id="bcTitle"></span></div>
+                <h1 class="movie-title" id="mTitle"></h1>
                 
                 <div class="tags-row">
                     <span class="tag main">Short Drama</span>
@@ -491,8 +491,8 @@
                 </div>
 
                 <div class="stats-row">
-                    <div class="stat"><i class="fas fa-heart"></i> <span id="statLike">--</span></div>
-                    <div class="stat"><i class="fas fa-eye"></i> <span id="statView">--</span></div>
+                    <div class="stat"><i class="fas fa-heart"></i> <span id="statLike"></span></div>
+                    <div class="stat"><i class="fas fa-eye"></i> <span id="statView"></span></div>
                     <div class="stat"><i class="fas fa-share-alt"></i> Share</div>
                 </div>
             </div>
@@ -849,7 +849,7 @@
 
     // --- 8. HELPERS & GLOBAL FUNCTIONS ---
 
-    window.playPC = (index) => {
+    window.playPC = (index, startTime = 0) => {
         if (index < 0 || index >= episodes.length) return;
         currentEpIndex = index;
         window.updateActiveBtn(index);
@@ -857,8 +857,9 @@
         const video = document.getElementById('pcVideo');
         const link = episodes[index].link_m3u8;
 
-        // Cấu hình Plyr (Nút tua 10s)
+        // Cấu hình Plyr (Đã tắt phím mặc định để dùng code riêng)
         const plyrOptions = {
+            keyboard: { focused: false, global: false }, // 👈 THÊM DÒNG NÀY
             controls: ['play-large', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
             seekTime: 10
         };
@@ -1053,6 +1054,44 @@
             if(label) label.innerText = `ĐANG PHÁT: TẬP ${idx + 1}`;
         };
     }
+
+    // --- XỬ LÝ PHÍM TẮT CHO PC (HOTKEYS) ---
+    document.addEventListener('keydown', (e) => {
+        // 1. Nếu đang ở Mobile hoặc chưa có Player PC thì thôi
+        if (isMobile || !pcPlyr) return;
+
+        // 2. Nếu đang gõ chữ (input, textarea) thì bỏ qua để người dùng gõ phím bình thường
+        const tag = document.activeElement.tagName.toUpperCase();
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement.isContentEditable) return;
+
+        const key = e.key.toLowerCase();
+
+        switch (key) {
+            case ' ': // Phím SPACE (Khoảng trắng)
+            case 'k': // Phím K (Kiểu Youtube)
+                e.preventDefault(); // Chặn trang web bị cuộn xuống
+                pcPlyr.togglePlay();
+                break;
+            
+            case 'f': // Phím F: Toàn màn hình
+                pcPlyr.fullscreen.toggle();
+                break;
+
+            case 'm': // Phím M: Tắt/Bật tiếng
+                pcPlyr.muted = !pcPlyr.muted;
+                break;
+
+            case 'arrowleft': // Mũi tên TRÁI: Lùi 10s
+            case 'j': // Phím J
+                pcPlyr.rewind(10);
+                break;
+
+            case 'arrowright': // Mũi tên PHẢI: Tiến 10s
+            case 'l': // Phím L
+                pcPlyr.forward(10);
+                break;
+        }
+    });
 </script>
 </body>
 </html>
