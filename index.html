@@ -1602,6 +1602,108 @@ footer {
     border: 1px solid rgba(255, 215, 0, 0.3);
     color: #fff;
 }
+
+        /* =========================================
+           SHORT DRAMA SECTION (SLIDER 7 ITEMS)
+           ========================================= */
+        .short-section { 
+            padding: 0 4% 60px; 
+            position: relative; 
+            z-index: 20; 
+        }
+
+        .short-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+        }
+        .sh-title-group { display: flex; align-items: center; gap: 10px; }
+        .short-header h2 { font-size: 1.8rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 15px; }
+        .short-header h2 i { font-size: 1rem; width: 32px; height: 32px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #aaa; }
+
+        .short-nav-group { display: flex; align-items: center; gap: 20px; }
+        .view-all-link { font-size: 0.9rem; color: #aaa; font-weight: 600; transition: 0.3s; }
+        .view-all-link:hover { color: #ff8f50; }
+
+        /* Nút điều hướng tròn */
+        .short-arrows { display: flex; gap: 10px; }
+        .short-arrows button {
+            width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.5); color: #fff; cursor: pointer; transition: 0.3s;
+        }
+        .short-arrows button:hover { background: #ff8f50; border-color: transparent; }
+
+        /* CONTAINER SLIDER */
+        .short-slider-wrapper {
+            position: relative;
+            margin: 0 -10px; /* Bù trừ padding của card */
+            overflow: hidden;
+        }
+
+        .short-grid { 
+            display: flex; /* Xếp ngang */
+            gap: 15px; 
+            overflow-x: auto; 
+            scroll-behavior: smooth;
+            padding: 15px 10px; /* Padding để shadow không bị cắt */
+            scrollbar-width: none; /* Ẩn thanh cuộn Firefox */
+        }
+        .short-grid::-webkit-scrollbar { display: none; } /* Ẩn thanh cuộn Chrome */
+
+        /* CARD STYLE (DỌC, NHỎ - 7 CARD/HÀNG) */
+        .short-card {
+            /* Tính toán: (100% / 7) trừ đi khoảng cách gap */
+            flex: 0 0 calc(14.28% - 13px); 
+            
+            position: relative; cursor: pointer; border-radius: 12px; overflow: hidden;
+            aspect-ratio: 2/3;
+            transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: #1a1c24;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .short-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(255, 161, 94, 0.3);
+            border-color: #FF8F50;
+            z-index: 5;
+        }
+
+        .short-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
+        .short-card:hover img { filter: brightness(0.6); transform: scale(1.1); }
+
+        /* Thông tin đè lên ảnh */
+        .short-info {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 12px 8px;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 10%, transparent);
+            transform: translateY(10px); opacity: 0;
+            transition: 0.3s;
+            display: flex; flex-direction: column; justify-content: flex-end;
+        }
+        .short-card:hover .short-info { transform: translateY(0); opacity: 1; }
+
+        .short-title {
+            font-size: 0.8rem; font-weight: 700; color: #fff;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            line-height: 1.3; margin-bottom: 4px; text-align: center;
+        }
+        .short-ep-badge {
+            position: absolute; top: 8px; right: 8px;
+            font-size: 0.6rem; color: #ffffff; font-weight: 800;
+            background: #FF8F50; padding: 2px 6px; border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1600px) { .short-card { flex: 0 0 calc(16.66% - 13px); } } /* 6 cột */
+        @media (max-width: 1400px) { .short-card { flex: 0 0 calc(20% - 12px); } } /* 5 cột */
+        @media (max-width: 1024px) { .short-card { flex: 0 0 calc(25% - 12px); } } /* 4 cột */
+        @media (max-width: 768px) {
+            .short-arrows, .view-all-link { display: none; } /* Mobile ẩn nút, vuốt tay */
+            .short-header { margin-bottom: 10px; }
+            .short-grid { gap: 10px; padding: 10px; }
+            .short-card { flex: 0 0 130px; border-radius: 8px; } /* Mobile cố định px */
+            .short-info { transform: translateY(0); opacity: 1; padding: 8px 5px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); } /* Mobile luôn hiện info */
+        }
     </style>
 </head>
 <body>
@@ -1733,7 +1835,7 @@ footer {
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="https://wibuteam.netlify.app" target="_blank">Về WibuTeam</a>
+                    <a class="nav-link" href="#" onclick="loadCategory('short-drama', 'Short Drama')">Short Drama</a>
                 </li>
             </ul>
         </div>
@@ -1852,6 +1954,28 @@ footer {
             <img src="https://wibuphim.netlify.app/WIBUANIMEADS.PNG" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
+
+    <section class="short-section">
+        <div class="short-header">
+            <div class="sh-title-group">
+                <h2>Short Drama<i class="fas fa-chevron-right"></i></h2>
+            </div>
+            
+            <div class="short-nav-group">
+                <a href="#" onclick="loadCategory('short-drama', 'Short Drama')" class="view-all-link">Xem tất cả</a>
+                <div class="short-arrows">
+                    <button onclick="scrollShorts(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <button onclick="scrollShorts(1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="short-slider-wrapper">
+            <div class="short-grid" id="shortDramaContainer">
+                <div style="color:#888; padding: 20px;">Đang tải phim ngắn...</div>
+            </div>
+        </div>
+    </section>
 
     <section class="top-10-wrapper">
         <div class="top-10-header"><i class="" style="color:var(--primary-color); font-size: 2.5rem;"></i><h2>Top 5 phim bộ hôm nay <i class="fas fa-chevron-right"></i></h2></div>
@@ -2295,20 +2419,26 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
         if (modalContent) modalContent.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#888;"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Đang tải...</div>`;
     }
 
-    // 2. Hàm Fetch API và Render ra Modal
+    // 2. Hàm Fetch API và Render ra Modal (Đã nâng cấp logic link)
     async function fetchAndRender(apiUrl) {
         try {
             const res = await fetch(apiUrl);
             const data = await res.json();
             const container = document.getElementById('modalContent');
             
+            // 👇 Kiểm tra xem API này có phải là của Short Drama không
+            const isShortDrama = apiUrl.includes('short-drama'); 
+            
             if (data.data && data.data.items) {
                 let html = '';
                 data.data.items.forEach(m => {
-                    // Xử lý ảnh: Vì đang ở trong Modal nên ép hiển thị (display:block) để không bị CSS trang chủ ẩn mất
                     const img = m.thumb_url.startsWith('http') ? m.thumb_url : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
+                    
+                    // Nếu là Short Drama -> Link dạng /short/ten-phim
+                    const linkUrl = isShortDrama ? `/short/${m.slug}` : `/xem-phim/${m.slug}`;
+
                     html += `
-                    <div class="n-card" onclick="window.location.href='/xem-phim/${m.slug}'">
+                    <div class="n-card" onclick="window.location.href='${linkUrl}'">
                         <img src="${img}" style="width:100%; height:100%; object-fit:cover; border-radius:12px; display:block !important;">
                         <div class="n-info-layer" style="padding:10px;"> 
                             <div class="n-title-in" style="font-size:0.9rem; font-weight:700; color:#fff;">${m.name}</div>
@@ -2508,7 +2638,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             return "Vừa xong";
         }
 
-        // --- RENDER CARD ---
+        // --- RENDER CARD (ĐÃ FIX LINK SHORT/NORMAL) ---
         window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
             // 1. Xử lý link ảnh
             const imgWide = m.poster_url 
@@ -2523,6 +2653,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             
             // 3. Logic Độ tuổi
             let ageTag = 'T13';
+            // ... (Logic màu sắc giữ nguyên) ...
             let ageColor = '#2ed573'; 
             if (m.category) {
                 const cats = m.category.map(c => c.slug);
@@ -2530,12 +2661,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                     ageTag = 'T18'; ageColor = '#ff4757'; 
                 } else if (cats.some(s => s === 'hanh-dong' || s === 'vo-thuat' || s === 'chien-tranh')) {
                     ageTag = 'T16'; ageColor = '#ffa502'; 
-                } else if (cats.some(s => s === 'hoạt-hinh' || s === 'gia-dinh')) {
+                } else if (cats.some(s => s === 'hoat-hinh' || s === 'gia-dinh')) {
                     ageTag = 'P'; ageColor = '#00d2ff'; 
                 }
             }
 
-            // 4. Lấy danh sách thể loại (2 cái đầu)
+            // 4. Lấy danh sách thể loại
             const genres = m.category ? m.category.slice(0, 2).map(c => c.name).join(' • ') : '';
 
             // 5. Badge tập phim
@@ -2543,13 +2674,22 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                 ? `<div style="position:absolute; top:10px; left:10px; background:var(--primary-color); color:#fff; padding:3px 8px; border-radius:5px; font-size:10px; font-weight:800; z-index:5; box-shadow:0 4px 10px rgba(0,0,0,0.5);">${m.epName.toUpperCase()}</div>` 
                 : '';
 
+            // 🔥 6. XỬ LÝ LINK CHUYỂN HƯỚNG (QUAN TRỌNG) 🔥
+            let redirectUrl = `/xem-phim/${m.slug}`; // Mặc định là phim thường
+
+            // Nếu trong lịch sử có đánh dấu là 'short' HOẶC thể loại chứa 'short-drama'
+            if (m.type === 'short' || (m.category && m.category.some(c => c.slug === 'short-drama'))) {
+                redirectUrl = `/short/?slug=${m.slug}`;
+            }
+
             return `
-            <div class="n-card ${historyClass}" onclick="window.location.href='/xem-phim/${m.slug}'">
+            <div class="n-card ${historyClass}" onclick="window.location.href='${redirectUrl}'">
                 ${epBadge}
                 <img src="${imgWide}" class="n-poster-wide" loading="lazy">
                 <img src="${imgPortrait}" class="n-poster-portrait" loading="lazy">
                 
-                <div class="n-info-layer" style="padding: 12px;"> <div class="n-title-in" style="margin-bottom: 0px; line-height: 1.1;">${m.name}</div>
+                <div class="n-info-layer" style="padding: 12px;"> 
+                    <div class="n-title-in" style="margin-bottom: 0px; line-height: 1.1;">${m.name}</div>
                     
                     <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 4px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">
                         ${m.origin_name}
@@ -2588,7 +2728,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                 </div>
             </div>`;
         };
-
+        
         // --- RENDER HISTORY ROW ---
         window.renderHistoryRow = (movies) => {
             const container = document.getElementById('history-container');
@@ -3055,6 +3195,60 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
         
         window.loadHome = () => window.location.href = '/';
 
+        // --- HÀM LOAD SHORT DRAMA (SLIDER) ---
+        async function loadShortDramaSection() {
+            const container = document.getElementById('shortDramaContainer');
+            if(!container) return;
+
+            try {
+                // Lấy 24 phim để có đủ nội dung mà trượt
+                const res = await fetch(`${API_BASE}/the-loai/short-drama?page=1`);
+                const data = await res.json();
+
+                if (data.data && data.data.items) {
+                    let html = '';
+                    const items = data.data.items.slice(0, 24); 
+
+                    items.forEach(m => {
+                        const img = m.thumb_url.startsWith('http') ? m.thumb_url : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
+                        const cleanName = m.name.replace('Phim', '').trim();
+                        
+                        // Logic số tập
+                        let epText = m.episode_current || '';
+                        if (epText.includes('(') && epText.includes(')')) {
+                            let match = epText.match(/\((.*?)\)/);
+                            if (match) epText = match[1];
+                        }
+                        if (!epText || epText.toLowerCase() === 'full') epText = 'Full';
+
+                        html += `
+                            <div class="short-card" onclick="window.location.href='/short/?slug=${m.slug}'" title="${m.name}">
+                                <div class="short-ep-badge">${epText}</div>
+                                <img src="${img}" loading="lazy" alt="${m.name}">
+                                <div class="short-info">
+                                    <div class="short-title">${cleanName}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                }
+            } catch (e) {
+                console.error("Lỗi Short Drama:", e);
+                container.innerHTML = `<div style="padding:20px; color:#ff4757">Lỗi tải dữ liệu.</div>`;
+            }
+        }
+
+        // --- HÀM ĐIỀU HƯỚNG SHORT DRAMA ---
+        window.scrollShorts = (direction) => {
+            const container = document.getElementById('shortDramaContainer');
+            if (container) {
+                // Cuộn một khoảng bằng 70% chiều rộng container (trượt gần hết màn hình)
+                const scrollAmount = container.clientWidth * 0.7;
+                container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            }
+        }
+
         // --- INIT & EVENT LISTENERS ---
         window.addEventListener('load', () => {
             loadTop5();
@@ -3063,7 +3257,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             loadCountrySection('han-quoc', 'koreaList');
             loadCountrySection('trung-quoc', 'chinaList');
             loadCountrySection('thai-lan', 'thaiList');
-            
+            loadShortDramaSection();
+
             // --- 🔥 LOGIC ZOOM OUT (ĐÃ SỬA) ---
             const screen = document.getElementById('loadingScreen');
             const img = screen.querySelector('.loading-img');

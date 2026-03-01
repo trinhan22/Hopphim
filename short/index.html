@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wibu Shorts - Xem Phim Ngắn</title>
+    <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <style>
+        :root {
+            /* Palette WibuPhim */
+            --primary: #FF5E62;
+            --secondary: #FF8F50;
+            --gradient: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%);
+            --bg-body: #000000;
+            --bg-panel: #101010; /* Màu nền sidebar tối hơn cho giống Stardust */
+            --bg-card: #1f1f1f;
+            --text-main: #ffffff;
+            --text-sub: #a1a1a1;
+            --border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { background: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; width: 100vw; }
+        
+        /* Loading Spinner */
+        #loader {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 15px;
+        }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- HEADER FIXED --- */
+        .top-nav {
+            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+            display: flex; align-items: center; padding: 0 20px; z-index: 100;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+            pointer-events: none; /* Để click xuyên qua video */
+        }
+        .nav-content { pointer-events: auto; display: flex; align-items: center; gap: 15px; }
+        .back-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; cursor: pointer; transition: 0.2s; border: var(--border);
+            text-decoration: none;
+        }
+        .back-btn:hover { background: var(--primary); border-color: var(--primary); }
+        
+        .logo-box { display: flex; align-items: center; gap: 8px; }
+        .logo-box img { height: 32px; }
+        .logo-box span { font-weight: 900; font-size: 1.2rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* ==================================================================
+           1. PC LAYOUT (Stardust Grid Style)
+           ================================================================== */
+        .app-container { display: flex; height: 100%; width: 100%; }
+
+        /* Cột Trái: Player */
+        .pc-player-area {
+            flex: 1; background: #000; position: relative;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Nền mờ phía sau video */
+        .pc-bg-blur {
+            position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+            filter: blur(100px) brightness(0.3); opacity: 0.8; z-index: 0;
+        }
+
+        /* Khung Video Chính */
+        .pc-video-wrapper {
+            position: relative; z-index: 2;
+            height: 95vh; /* Cao gần hết màn hình */
+            aspect-ratio: 9/16; /* Tỉ lệ dọc */
+            background: #000;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        video { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Nút điều hướng Slide */
+        .nav-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+            width: 50px; height: 50px; border-radius: 50%;
+            background: rgba(30,30,30,0.6); backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; cursor: pointer; transition: 0.3s;
+        }
+        .nav-arrow:hover { background: var(--primary); border-color: var(--primary); }
+        .prev-arrow { left: 40px; } .next-arrow { right: 40px; }
+
+        /* Cột Phải: Thông tin & Danh sách tập */
+        .pc-sidebar {
+            width: 450px; min-width: 450px;
+            background: var(--bg-panel); border-left: var(--border);
+            display: flex; flex-direction: column; z-index: 5;
+        }
+
+        .info-box { padding: 30px 25px; border-bottom: var(--border); }
+        .bread-crumb { font-size: 0.8rem; color: var(--text-sub); margin-bottom: 8px; }
+        .movie-title { font-size: 1.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 15px; }
+        
+        .tags-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        .tag { font-size: 0.75rem; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 4px; font-weight: 600; color: #ddd; }
+        .tag.main { background: linear-gradient(135deg, #FF8F50, #FF5E62); color: #fff; }
+
+        .movie-desc { font-size: 0.9rem; color: #ccc; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 15px; }
+        
+        .stats-row { display: flex; gap: 20px; font-size: 0.9rem; font-weight: 700; color: #fff; }
+        .stat i { color: var(--primary); margin-right: 5px; }
+
+        /* Danh sách tập */
+        .ep-box { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .ep-header { padding: 15px 25px; border-bottom: var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .ep-header h3 { font-size: 1rem; font-weight: 700; border-left: 3px solid var(--primary); padding-left: 10px; margin: 0; }
+        
+        .ep-list-wrapper { flex: 1; overflow-y: auto; padding: 20px 25px; }
+        .ep-grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); /* 5 tập 1 hàng giống ảnh */
+            gap: 10px; 
+        }
+
+        .ep-item {
+            aspect-ratio: 1/1;
+            background: var(--bg-card);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem; color: #aaa;
+            cursor: pointer; transition: 0.2s;
+            border: 1px solid transparent;
+        }
+        .ep-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        
+        .ep-item.active { 
+            background: linear-gradient(135deg, #FF8F50, #FF5E62); 
+            color: #fff; 
+            box-shadow: 0 5px 15px rgba(255, 94, 98, 0.4);
+            border-color: transparent;
+        }
+        
+        /* Icon sóng nhạc khi đang play */
+        .wave { display: none; width: 16px; height: 16px; filter: brightness(200%); }
+        .ep-item.active .wave { display: block; }
+        .ep-item.active span { display: none; }
+
+        /* ==================================================================
+           2. MOBILE LAYOUT (TikTok Style)
+           ================================================================== */
+        .mobile-container { display: none; width: 100%; height: 100dvh; overflow-y: scroll; scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        .mobile-container::-webkit-scrollbar { display: none; }
+
+        /* Ẩn hiện theo thiết bị */
+        @media (max-width: 1024px) {
+            .pc-player-area, .pc-sidebar { display: none !important; } /* Ẩn PC */
+            .mobile-container { display: block; } /* Hiện Mobile */
+            
+            .m-slide {
+                width: 100%; height: 100dvh;
+                scroll-snap-align: start; scroll-snap-stop: always;
+                position: relative; background: #000;
+            }
+            .m-slide video { width: 100%; height: 100%; object-fit: cover; }
+            
+            /* Thông tin đè lên video */
+            .m-info {
+                position: absolute; bottom: 0; left: 0; width: 100%;
+                padding: 20px 70px 80px 20px; /* Padding phải để né nút action */
+                background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+                pointer-events: none; z-index: 5;
+            }
+            .m-badge { background: var(--secondary); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; margin-right: 5px; }
+            .m-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; text-shadow: 0 1px 2px #000; line-height: 1.3; }
+            .m-desc { font-size: 0.85rem; color: #ddd; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+            /* Nút Action bên phải (Chỉ còn Tim & Share) */
+            .m-actions {
+                position: absolute; right: 10px; bottom: 120px;
+                display: flex; flex-direction: column; gap: 20px;
+                z-index: 10; pointer-events: auto; align-items: center;
+            }
+            .m-btn-icon {
+                width: 45px; height: 45px; border-radius: 50%;
+                background: rgba(255,255,255,0.15); backdrop-filter: blur(5px);
+                border: 1px solid rgba(255,255,255,0.2);
+                display: flex; align-items: center; justify-content: center;
+                color: #fff; font-size: 1.4rem; transition: 0.2s;
+                margin-bottom: 5px;
+            }
+            .m-btn-icon:active { transform: scale(0.9); background: var(--primary); border-color: var(--primary); }
+            .m-btn-text { font-size: 0.7rem; font-weight: 700; text-shadow: 0 1px 2px #000; }
+
+            /* Nút mở danh sách tập Mobile */
+            .m-playlist-btn {
+                position: absolute; bottom: 20px; left: 20px; z-index: 10;
+                background: rgba(30,30,30,0.7); backdrop-filter: blur(10px);
+                padding: 10px 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2);
+                display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.9rem;
+                color: #fff; pointer-events: auto;
+            }
+        }
+
+        /* Drawer Mobile */
+        .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .drawer-overlay.active { opacity: 1; visibility: visible; }
+        .drawer-panel {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 70vh;
+            background: #151515; border-radius: 20px 20px 0 0; z-index: 2001;
+            transform: translateY(100%); transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .drawer-panel.active { transform: translateY(0); }
+        .d-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .d-title { font-weight: 800; font-size: 1.1rem; }
+        .d-close { font-size: 1.5rem; color: #888; }
+        .d-body { flex: 1; overflow-y: auto; padding: 20px; }
+
+        /* Custom Scroller */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FF5E62; }
+
+        /* Style cho phần mô tả và nút Xem thêm */
+        .movie-desc-container { margin-bottom: 20px; }
+        .movie-desc { 
+            font-size: 0.9rem; color: #ccc; line-height: 1.5; 
+        }
+        .read-more-btn {
+            color: var(--primary); font-size: 0.85rem; font-weight: 700;
+            cursor: pointer; margin-top: 5px; display: inline-block;
+        }
+        .read-more-btn:hover { text-decoration: underline; }
+        
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <div style="font-size:0.8rem; color:#aaa;">Đang tải phim...</div>
+    </div>
+
+    <div class="top-nav">
+        <div class="nav-content">
+            <a href="/" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+            <div class="logo-box">
+                <img src="/LOGO.WEBP" alt="Logo">
+                <span>WIBUPHIM</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        
+        <div class="pc-player-area">
+            <div class="pc-bg-blur" id="pcBgBlur"></div>
+            
+            <div class="pc-video-wrapper">
+                <video id="pcVideo" controls autoplay playsinline></video>
+            </div>
+
+            <div class="nav-arrow prev-arrow" onclick="playNext(-1)"><i class="fas fa-chevron-up"></i></div>
+            <div class="nav-arrow next-arrow" onclick="playNext(1)"><i class="fas fa-chevron-down"></i></div>
+        </div>
+
+        <div class="pc-sidebar">
+            <div class="info-box">
+                <div class="bread-crumb">Trang chủ / Short Drama / <span id="bcTitle">...</span></div>
+                <h1 class="movie-title" id="mTitle">Đang tải...</h1>
+                
+                <div class="tags-row">
+                    <span class="tag main">Short Drama</span>
+                    <span class="tag">HD Vietsub</span>
+                    <span class="tag" id="mYear">2025</span>
+                </div>
+
+                <div class="movie-desc-container">
+                    <div class="movie-desc" id="mDescText"></div>
+                    <span class="read-more-btn" id="readMoreBtn" onclick="toggleDescription()" style="display:none;">Xem thêm</span>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat"><i class="fas fa-heart"></i> <span id="statLike">--</span></div>
+                    <div class="stat"><i class="fas fa-eye"></i> <span id="statView">--</span></div>
+                    <div class="stat"><i class="fas fa-share-alt"></i> Share</div>
+                </div>
+            </div>
+
+            <div class="ep-box">
+                <div class="ep-header">
+                    <h3>Danh sách tập</h3>
+                    <span style="font-size:0.8rem; color:var(--secondary);" id="epTotal"></span>
+                </div>
+                <div class="ep-list-wrapper">
+                    <div class="ep-grid" id="pcEpGrid">
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mobile-container" id="mobileSwiper">
+            </div>
+        
+        <div class="m-playlist-btn pc-hidden" onclick="toggleDrawer()" style="display:none;" id="mPlaylistBtn">
+            <i class="fas fa-layer-group"></i> <span id="mCurEp">Danh sách tập</span>
+        </div>
+
+    </div>
+
+    <div class="drawer-overlay" onclick="toggleDrawer()"></div>
+    <div class="drawer-panel">
+        <div class="d-header">
+            <div class="d-title">Chọn tập phim</div>
+            <i class="fas fa-times d-close" onclick="toggleDrawer()"></i>
+        </div>
+        <div class="d-body">
+            <div class="ep-grid" id="mobileEpGrid"></div>
+        </div>
+    </div>
+
+<script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // --- 1. CONFIG FIREBASE ---
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc", 
+            authDomain: "hopphim-29e1c.firebaseapp.com", 
+            projectId: "hopphim-29e1c", 
+            storageBucket: "hopphim-29e1c.firebasestorage.app", 
+            messagingSenderId: "1076044580405", 
+            appId: "1:1076044580405:web:a3485f8533604f305e537c", 
+            measurementId: "G-6RT4CX2NR0" 
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- 2. STATE ---
+        const API_BASE = 'https://ophim1.com/v1/api/phim';
+        let movieData = null;
+        let episodes = [];
+        let currentEpIndex = 0;
+        let fullDesc = "";
+        let isMobile = window.innerWidth <= 1024;
+        
+        // Icon
+        const waveSvg = `<svg class="wave" viewBox="0 0 24 24" fill="#fff"><path d="M10 20H14V4H10V20ZM4 20H8V9H4V20ZM16 9V20H20V9H16Z"/></svg>`;
+
+        // --- 3. KHỞI CHẠY (LOGIC MỚI CHO URL ĐẸP) ---
+        window.onload = async () => {
+            // Logic lấy Slug từ đường dẫn (VD: /short/ten-phim.html)
+            const path = window.location.pathname; // Lấy "/short/ten-phim.html"
+            
+            // Lấy phần cuối cùng của đường dẫn
+            let slug = path.split('/').pop(); 
+            
+            // Xóa đuôi .html nếu có
+            slug = slug.replace('.html', '');
+
+            // Nếu slug rỗng hoặc là 'short' (vào trang chủ short) -> Lấy phim mặc định
+            if (!slug || slug.toLowerCase() === 'short' || slug === 'index') {
+                const params = new URLSearchParams(window.location.search);
+                slug = params.get('slug') || 'gio-nam-biet-long-toi';
+            }
+
+            console.log("Current Slug:", slug); // Kiểm tra xem lấy đúng chưa
+            await loadData(slug);
+        };
+
+        // Sau đó mới check login để lấy lịch sử xem
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                window.currentUser = user;
+                // Nếu phim đã load xong, thử resume lại từ lịch sử
+                if (movieData) checkHistoryAndResume();
+            }
+        });
+
+        // --- 4. HÀM LOAD DATA ---
+        async function loadData(slug) {
+            try {
+                const res = await fetch(`${API_BASE}/${slug}`);
+                if (!res.ok) throw new Error("API Error");
+                const data = await res.json();
+                
+                if (data.status) {
+                    movieData = data.data.item;
+                    episodes = movieData.episodes[0].server_data;
+                    
+                    if (!episodes.length) { alert('Phim chưa có tập nào!'); return; }
+
+                    renderInfo();
+                    renderGrids();
+
+                    // Mặc định play tập 1 trước
+                    if (isMobile) {
+                        document.getElementById('mPlaylistBtn').style.display = 'flex';
+                        renderMobileSlides();
+                    } else {
+                        document.getElementById('pcBgBlur').style.backgroundImage = `url('${movieData.poster_url}')`;
+                        window.playPC(0);
+                    }
+                    
+                    // Nếu đã login từ trước thì check history ngay
+                    if (window.currentUser) checkHistoryAndResume();
+                    
+                    document.getElementById('loader').style.display = 'none';
+
+                } else { 
+                    document.getElementById('loader').innerHTML = '<div style="color:white">Không tìm thấy phim!</div>';
+                }
+            } catch (e) { 
+                console.error(e); 
+                document.getElementById('loader').innerHTML = '<div style="color:white">Lỗi kết nối server!</div>';
+            }
+        }
+
+        // --- 5. HÀM RESUME TỪ LỊCH SỬ ---
+        async function checkHistoryAndResume() {
+            try {
+                const snap = await getDoc(doc(db, "users", window.currentUser.uid));
+                if (snap.exists()) {
+                    const history = snap.data().watchHistory || [];
+                    const found = history.find(h => h.slug === movieData.slug);
+                    
+                    if (found && found.epIndex !== undefined && found.epIndex !== 0) {
+                        console.log(`Resume to index: ${found.epIndex}`);
+                        if (isMobile) {
+                            setTimeout(() => {
+                                const slide = document.getElementById(`m-slide-${found.epIndex}`);
+                                if(slide) slide.scrollIntoView({ behavior: 'auto' });
+                            }, 1000);
+                        } else {
+                            window.playPC(found.epIndex);
+                        }
+                    }
+                }
+            } catch(e) { console.log("History check failed"); }
+        }
+
+        // --- 6. RENDER GIAO DIỆN ---
+        function renderInfo() {
+            document.title = `${movieData.name} - Wibu Shorts`;
+            
+            // Text Info
+            document.getElementById('bcTitle').innerText = movieData.name;
+            document.getElementById('mTitle').innerText = movieData.name;
+            document.getElementById('mYear').innerText = movieData.year;
+            document.getElementById('statLike').innerText = (Math.random()*20+5).toFixed(1) + 'K';
+            document.getElementById('statView').innerText = (Math.random()*100+20).toFixed(1) + 'K';
+            document.getElementById('epTotal').innerText = `(${episodes.length} Tập)`;
+            
+            // Xử lý Mô tả (Cắt 36 từ)
+            fullDesc = movieData.content || "Đang cập nhật...";
+            // Xóa tag HTML để đếm từ chuẩn
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = fullDesc;
+            const plainText = tempDiv.innerText;
+
+            const words = plainText.split(" ");
+            const descBox = document.getElementById('mDescText');
+            const btn = document.getElementById('readMoreBtn');
+
+            if (words.length > 36) {
+                descBox.innerHTML = words.slice(0, 36).join(" ") + "...";
+                btn.style.display = "inline-block";
+                btn.innerText = "Xem thêm";
+            } else {
+                descBox.innerHTML = plainText;
+                btn.style.display = "none";
+            }
+        }
+
+        // --- 7. CÁC HÀM GÁN VÀO WINDOW (ĐỂ HTML GỌI ĐƯỢC) ---
+
+        // Toggle Mô tả
+        window.toggleDescription = () => {
+            const descBox = document.getElementById('mDescText');
+            const btn = document.getElementById('readMoreBtn');
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = fullDesc;
+            const plainText = tempDiv.innerText;
+
+            if (btn.innerText === "Xem thêm") {
+                descBox.innerHTML = plainText; 
+                btn.innerText = "Thu gọn";
+            } else {
+                const words = plainText.split(" ");
+                descBox.innerHTML = words.slice(0, 36).join(" ") + "..."; 
+                btn.innerText = "Xem thêm";
+            }
+        };
+
+        // Play trên PC
+        window.playPC = (index) => {
+            if (index < 0 || index >= episodes.length) return;
+            currentEpIndex = index;
+            
+            updateActiveBtn(index);
+            const video = document.getElementById('pcVideo');
+            loadHls(video, episodes[index].link_m3u8);
+            
+            window.saveShortHistory(index); // Lưu lịch sử
+            video.onended = () => window.playNext(1);
+        };
+
+        // Next/Prev
+        window.playNext = (step) => window.playPC(currentEpIndex + step);
+
+        // Click tập phim (Chung)
+        window.handleEpClick = (index) => {
+            if (isMobile) {
+                const slide = document.getElementById(`m-slide-${index}`);
+                if(slide) {
+                    slide.scrollIntoView({ behavior: 'auto' });
+                    window.toggleDrawer();
+                }
+            } else {
+                window.playPC(index);
+            }
+        };
+
+        // Bật tắt tiếng
+        window.toggleMute = (vid) => { vid.muted = !vid.muted; };
+
+        // Bật tắt Drawer
+        window.toggleDrawer = () => {
+            document.querySelector('.drawer-panel').classList.toggle('active');
+            document.querySelector('.drawer-overlay').classList.toggle('active');
+        };
+
+        // --- 8. LOGIC MOBILE & RENDER GRID ---
+
+        function renderGrids() {
+            let html = '';
+            episodes.forEach((ep, idx) => {
+                let name = ep.name.replace(/tập/ig, '').trim();
+                html += `
+                <div class="ep-item" id="btn-${idx}" onclick="handleEpClick(${idx})">
+                    <span>${name}</span>
+                    ${waveSvg}
+                </div>`;
+            });
+            document.getElementById('pcEpGrid').innerHTML = html;
+            document.getElementById('mobileEpGrid').innerHTML = html;
+        }
+
+        function renderMobileSlides() {
+            const container = document.getElementById('mobileSwiper');
+            let html = '';
+            
+            episodes.forEach((ep, idx) => {
+                // Lazy load: Chỉ load tập 1, còn lại data-src
+                const srcAttr = idx === 0 ? `src="${ep.link_m3u8}"` : `data-src="${ep.link_m3u8}"`;
+                let name = ep.name.replace(/tập/ig, '').trim();
+
+                html += `
+                <div class="m-slide" id="m-slide-${idx}">
+                    <video ${srcAttr} playsinline loop muted onclick="toggleMute(this)"></video>
+                    
+                    <div class="m-info">
+                        <div class="m-title">
+                            <span class="m-badge">Tập ${name}</span> ${movieData.name}
+                        </div>
+                        <div class="m-desc">${movieData.origin_name}</div>
+                    </div>
+
+                    <div class="m-actions">
+                         <div class="m-btn-icon" style="color:#ff4757; border-color:#ff4757;"><i class="fas fa-heart"></i></div>
+                         <span class="m-btn-text">${(Math.random()*10).toFixed(1)}K</span>
+                         
+                         <div class="m-btn-icon" style="margin-top:15px;"><i class="fas fa-share"></i></div>
+                         <span class="m-btn-text">Share</span>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+
+            // Init Video 1
+            const v1 = document.getElementById('m-slide-0').querySelector('video');
+            loadHls(v1, episodes[0].link_m3u8);
+            v1.play().catch(()=>{});
+
+            initObserver();
+            updateActiveBtn(0);
+        }
+
+        function initObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const video = entry.target.querySelector('video');
+                    const index = parseInt(entry.target.id.split('-')[1]);
+
+                    if (entry.isIntersecting) {
+                        const lazySrc = video.getAttribute('data-src');
+                        if (lazySrc) {
+                            loadHls(video, lazySrc);
+                            video.removeAttribute('data-src');
+                        }
+                        video.muted = false; 
+                        video.play().catch(() => video.muted = true);
+                        
+                        currentEpIndex = index;
+                        updateActiveBtn(index);
+                        document.getElementById('mCurEp').innerText = `Tập ${episodes[index].name.replace(/tập/ig,'').trim()} / ${episodes.length}`;
+
+                        // Debounce Save History
+                        clearTimeout(window.saveTimeout);
+                        window.saveTimeout = setTimeout(() => {
+                            window.saveShortHistory(index);
+                        }, 2000);
+
+                    } else {
+                        video.pause();
+                        video.currentTime = 0;
+                    }
+                });
+            }, { threshold: 0.6 });
+
+            document.querySelectorAll('.m-slide').forEach(s => observer.observe(s));
+        }
+
+        // --- 9. HÀM LƯU FIREBASE ---
+        window.saveShortHistory = async (epIndex) => {
+            if (!window.currentUser || !movieData) return;
+            const ep = episodes[epIndex];
+            const shortEpName = ep.name.replace(/tập/ig, '').trim(); 
+            
+            const historyItem = {
+                slug: movieData.slug,
+                name: movieData.name,
+                origin_name: movieData.origin_name,
+                thumb_url: movieData.thumb_url,
+                poster_url: movieData.poster_url,
+                epName: `Tập ${shortEpName}`, 
+                epIndex: epIndex,             
+                type: 'short',                
+                timestamp: Date.now()
+            };
+
+            const userRef = doc(db, "users", window.currentUser.uid);
+            try {
+                const snap = await getDoc(userRef);
+                let history = snap.exists() ? (snap.data().watchHistory || []) : [];
+                history = history.filter(h => h.slug !== movieData.slug);
+                history.push(historyItem);
+                if (history.length > 20) history.shift(); 
+                await setDoc(userRef, { watchHistory: history }, { merge: true });
+                console.log("Saved:", historyItem.epName);
+            } catch (e) { console.error(e); }
+        };
+
+        // --- HELPERS ---
+        function updateActiveBtn(index) {
+            document.querySelectorAll('.ep-item').forEach(b => b.classList.remove('active'));
+            const btns = document.querySelectorAll(`#btn-${index}`);
+            btns.forEach(b => {
+                b.classList.add('active');
+                b.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            });
+        }
+
+        function loadHls(video, src) {
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(src);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = src;
+                video.addEventListener('loadedmetadata', () => video.play().catch(()=>{}));
+            }
+        }
+    </script>
+</body>
+</html>
