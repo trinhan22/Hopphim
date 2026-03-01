@@ -360,6 +360,24 @@
         // Icon
         const waveSvg = `<svg class="wave" viewBox="0 0 24 24" fill="#fff"><path d="M10 20H14V4H10V20ZM4 20H8V9H4V20ZM16 9V20H20V9H16Z"/></svg>`;
 
+        // --- HÀM HIỂN THỊ THÔNG BÁO (TOAST) ---
+        window.showToast = (msg) => {
+            const box = document.getElementById('toast-box');
+            if (!box) {
+                const b = document.createElement('div');
+                b.id = 'toast-box';
+                document.body.appendChild(b);
+            }
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fas fa-check-circle" style="color:#2ecc71"></i> ${msg}`;
+            document.getElementById('toast-box').appendChild(toast);
+            setTimeout(() => {
+                toast.style.transform = "translateX(100%)";
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         // --- 3. KHỞI CHẠY (FIX LỖI KHÔNG ĐỔI SLUG) ---
         window.onload = async () => {
             const path = window.location.pathname; // Lấy ví dụ: "/short/nhat-dai-quyen-vuong"
@@ -631,10 +649,14 @@
             document.querySelectorAll('.m-slide').forEach(s => observer.observe(s));
         }
 
-        // --- 9. HÀM LƯU FIREBASE ---
+        // --- HÀM LƯU LỊCH SỬ (ĐÃ FIX) ---
         window.saveShortHistory = async (epIndex) => {
-            if (!window.currentUser || !movieData) return;
+            // Kiểm tra kỹ: Phải có User, có Dữ liệu phim và tập phim tồn tại
+            if (!window.currentUser) return; 
+            if (!movieData || !episodes || !episodes[epIndex]) return;
+
             const ep = episodes[epIndex];
+            // Lấy tên tập gọn (vd: "1", "2")
             const shortEpName = ep.name.replace(/tập/ig, '').trim(); 
             
             const historyItem = {
@@ -645,20 +667,36 @@
                 poster_url: movieData.poster_url,
                 epName: `Tập ${shortEpName}`, 
                 epIndex: epIndex,             
-                type: 'short',                
+                type: 'short', // Đánh dấu loại để trang chủ biết đường dẫn link
                 timestamp: Date.now()
             };
+
+            console.log("Đang lưu lịch sử:", historyItem.epName);
 
             const userRef = doc(db, "users", window.currentUser.uid);
             try {
                 const snap = await getDoc(userRef);
                 let history = snap.exists() ? (snap.data().watchHistory || []) : [];
+                
+                // Lọc bỏ phim trùng (để đưa phim mới nhất lên đầu)
+                // Lưu ý: So sánh slug chính xác
                 history = history.filter(h => h.slug !== movieData.slug);
+                
+                // Thêm vào đầu danh sách
                 history.push(historyItem);
+                
+                // Giới hạn 20 phim
                 if (history.length > 20) history.shift(); 
+
+                // Lưu lên Firebase
                 await setDoc(userRef, { watchHistory: history }, { merge: true });
-                console.log("Saved:", historyItem.epName);
-            } catch (e) { console.error(e); }
+                
+                // Hiện thông báo cho người dùng biết
+                window.showToast(`Đã lưu: ${historyItem.epName}`);
+                
+            } catch (e) { 
+                console.error("Lỗi lưu lịch sử:", e); 
+            }
         };
 
         // --- HELPERS ---

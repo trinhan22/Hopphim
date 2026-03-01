@@ -1758,6 +1758,14 @@ window.closeMobileSearch = () => {
 
                 if (data.status) {
                     const movie = data.data.item;
+
+                    // Nếu phát hiện phim này thuộc thể loại Short Drama -> Chuyển hướng ngay
+                    if (movie.category && movie.category.some(c => c.slug === 'short-drama')) {
+                        console.log("Phát hiện Short Drama, đang chuyển hướng...");
+                        window.location.replace(`/short/${movie.slug}`); // Dùng replace để không lưu lịch sử lùi lại
+                        return; // Dừng, không chạy code bên dưới nữa
+                    }
+                    
                     currentMovieData = movie; // Lưu lại global để dùng cho player
                     
                     renderInfo(movie);
