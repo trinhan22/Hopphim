@@ -360,24 +360,21 @@
         // Icon
         const waveSvg = `<svg class="wave" viewBox="0 0 24 24" fill="#fff"><path d="M10 20H14V4H10V20ZM4 20H8V9H4V20ZM16 9V20H20V9H16Z"/></svg>`;
 
-        // --- 3. KHỞI CHẠY (LOGIC MỚI CHO URL ĐẸP) ---
+        // --- 3. KHỞI CHẠY (FIX LỖI KHÔNG ĐỔI SLUG) ---
         window.onload = async () => {
-            // Logic lấy Slug từ đường dẫn (VD: /short/ten-phim.html)
-            const path = window.location.pathname; // Lấy "/short/ten-phim.html"
+            const path = window.location.pathname; // Lấy ví dụ: "/short/nhat-dai-quyen-vuong"
+            const pathParts = path.split('/').filter(p => p !== ""); // Cắt ra mảng: ["short", "nhat-dai-quyen-vuong"]
             
-            // Lấy phần cuối cùng của đường dẫn
-            let slug = path.split('/').pop(); 
+            // Lấy phần tử cuối cùng làm slug
+            let slug = pathParts[pathParts.length - 1]; 
             
-            // Xóa đuôi .html nếu có
-            slug = slug.replace('.html', '');
-
-            // Nếu slug rỗng hoặc là 'short' (vào trang chủ short) -> Lấy phim mặc định
-            if (!slug || slug.toLowerCase() === 'short' || slug === 'index') {
+            // Nếu slug bị rỗng, hoặc chỉ là chữ "short" (vào trang chủ short)
+            if (!slug || slug === 'short' || slug === 'index.html') {
                 const params = new URLSearchParams(window.location.search);
-                slug = params.get('slug') || 'gio-nam-biet-long-toi';
+                slug = params.get('slug') || 'gio-nam-biet-long-toi'; // Phim mặc định
             }
 
-            console.log("Current Slug:", slug); // Kiểm tra xem lấy đúng chưa
+            console.log("🔥 Đang tải phim với Slug:", slug);
             await loadData(slug);
         };
 

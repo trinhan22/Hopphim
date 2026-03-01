@@ -2674,12 +2674,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                 ? `<div style="position:absolute; top:10px; left:10px; background:var(--primary-color); color:#fff; padding:3px 8px; border-radius:5px; font-size:10px; font-weight:800; z-index:5; box-shadow:0 4px 10px rgba(0,0,0,0.5);">${m.epName.toUpperCase()}</div>` 
                 : '';
 
-            // 🔥 6. XỬ LÝ LINK CHUYỂN HƯỚNG (QUAN TRỌNG) 🔥
-            let redirectUrl = `/xem-phim/${m.slug}`; // Mặc định là phim thường
+            // 🔥 XỬ LÝ LINK CHUYỂN HƯỚNG MỚI
+            let redirectUrl = `/xem-phim/${m.slug}`; 
 
-            // Nếu trong lịch sử có đánh dấu là 'short' HOẶC thể loại chứa 'short-drama'
             if (m.type === 'short' || (m.category && m.category.some(c => c.slug === 'short-drama'))) {
-                redirectUrl = `/short/?slug=${m.slug}`;
+                // Link mới: không dùng dấu ? nữa
+                redirectUrl = `/short/${m.slug}`; 
             }
 
             return `
@@ -3222,7 +3222,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                         if (!epText || epText.toLowerCase() === 'full') epText = 'Full';
 
                         html += `
-                            <div class="short-card" onclick="window.location.href='/short/?slug=${m.slug}'" title="${m.name}">
+                            <div class="short-card" onclick="window.location.href='/short/${m.slug}'" title="${m.name}">
                                 <div class="short-ep-badge">${epText}</div>
                                 <img src="${img}" loading="lazy" alt="${m.name}">
                                 <div class="short-info">
