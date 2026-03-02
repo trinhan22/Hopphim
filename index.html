@@ -1746,6 +1746,204 @@ footer {
         @media (max-width: 900px) {
             .modal-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 15px; }
         }
+
+        /* ==========================================================================
+           🔥 GÓC CỘNG ĐỒNG (LUXURY STYLES)
+           ========================================================================== */
+        .community-dashboard { padding: 0 4%; margin-bottom: 80px; position: relative; z-index: 20; }
+        
+        .comm-dash-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px;
+        }
+        .comm-dash-header h2 { font-size: 1.8rem; font-weight: 900; margin: 0; display: flex; align-items: center; gap: 12px; }
+        .comm-dash-header h2 i { color: #f1c40f; filter: drop-shadow(0 0 10px rgba(241, 196, 15, 0.4)); }
+        
+        .comm-stats { display: flex; gap: 15px; }
+        .c-stat-item { 
+            font-size: 0.85rem; color: #aaa; font-weight: 600; display: flex; align-items: center; gap: 6px; 
+            background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .c-stat-item i { color: #FF8F50; }
+
+        .slider-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .comm-sub-title { font-size: 1.1rem; color: #FFD700; margin: 0; font-weight: 800; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .carousel-controls { display: flex; gap: 10px; }
+        .carousel-controls button {
+            width: 32px; height: 32px; border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05);
+            color: #fff; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .carousel-controls button:hover { background: var(--primary-color); border-color: transparent; }
+
+        /* --- CAROUSEL SLIDER --- */
+        .comm-carousel-viewport {
+            width: 100%; overflow: hidden; margin-bottom: 40px;
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+        }
+        .comm-carousel-track {
+            display: flex; gap: 20px;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            width: max-content;
+        }
+
+        /* Review Card (Ngang) */
+        .review-card {
+            flex: 0 0 320px; height: 180px;
+            position: relative; border-radius: 14px; overflow: hidden; cursor: pointer;
+            background: #1a1c24; border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s; user-select: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .review-card:hover {
+            transform: translateY(-5px); border-color: var(--primary-color);
+            box-shadow: 0 15px 40px rgba(255, 94, 98, 0.2);
+        }
+        .review-bg-blur {
+            position: absolute; inset: 0; background-size: cover; background-position: center;
+            opacity: 0.4; filter: blur(4px) brightness(0.6); transition: 0.5s;
+        }
+        .review-card:hover .review-bg-blur { filter: blur(2px) brightness(0.8); opacity: 0.7; transform: scale(1.1); }
+        .review-overlay { position: absolute; inset: 0; background: linear-gradient(to top, #090a0f 10%, rgba(9, 10, 15, 0.6) 60%, transparent 100%); }
+
+        .rc-content-wrapper {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px; z-index: 2;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        
+        /* User Info Top */
+        .rc-user-info { display: flex; align-items: center; gap: 12px; }
+        .rc-avatar-img { 
+            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
+            border: 2px solid rgba(255,255,255,0.2); 
+        }
+        .rc-user-text { display: flex; flex-direction: column; justify-content: center; }
+
+        /* Tên User thường */
+        .rc-username { font-size: 0.95rem; font-weight: 700; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); line-height: 1.1; }
+        
+        /* 🔥 VIP USERNAME: VÀNG KIM LOẠI */
+        .vip-username {
+            color: #FFD700 !important;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            font-weight: 800;
+        }
+
+        /* 🔥 VIP LABEL: THIN & BRIGHT (MỚI) */
+        .rc-user-role {
+            font-size: 0.65rem;
+            color: #FFFACD; /* LemonChiffon - Vàng nhạt sáng */
+            font-weight: 400; /* Thin */
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+            margin-top: 3px;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .normal-user-role { font-size: 0.65rem; color: #888; margin-top: 3px; font-weight: 500; }
+
+        .rc-comment-text {
+            font-size: 0.9rem; color: #ddd; font-style: italic; line-height: 1.4;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            margin-top: 4px;
+        }
+        
+        /* Mini Poster (Góc phải) */
+        .rc-mini-poster {
+            width: 45px; height: 68px; border-radius: 4px; object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+        .review-card:hover .rc-mini-poster { transform: scale(1.1) rotate(5deg); border-color: var(--primary-color); }
+
+        /* --- 2. BOTTOM GRID --- */
+        .comm-bottom-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
+
+        .comm-col-box {
+            background: #181a24; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05); overflow: hidden;
+            display: flex; flex-direction: column; height: 100%;
+        }
+
+        .comm-box-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.03); padding: 12px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .comm-box-header h3 { font-size: 1rem; margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #fff; text-transform: uppercase; }
+        .view-all { font-size: 0.75rem; color: #888; font-weight: 700; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; }
+
+        .leaderboard-list, .recent-comments-list { display: flex; flex-direction: column; flex: 1; }
+
+        /* --- A. LEADERBOARD LIST --- */
+        .lb-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.03); transition: 0.2s;
+            height: 68px; 
+        }
+        .lb-item:last-child { border-bottom: none; }
+        .lb-item:hover { background: rgba(255,255,255,0.03); padding-left: 25px; }
+        
+        .lb-left { display: flex; align-items: center; gap: 15px; }
+        
+        /* Rank Number */
+        .lb-rank { 
+            width: 24px; font-weight: 900; font-size: 1.1rem; text-align: center; color: #666;
+            font-family: 'Impact', sans-serif; letter-spacing: 1px;
+        }
+        .lb-item:nth-child(1) .lb-rank { font-size: 1.6rem; color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); transform: scale(1.1); }
+        .lb-item:nth-child(2) .lb-rank { font-size: 1.4rem; color: #C0C0C0; text-shadow: 0 0 8px rgba(192, 192, 192, 0.4); }
+        .lb-item:nth-child(3) .lb-rank { font-size: 1.4rem; color: #CD7F32; text-shadow: 0 0 8px rgba(205, 127, 50, 0.4); }
+
+        .lb-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); background: #333; }
+        .lb-name { font-size: 0.9rem; font-weight: 700; color: #fff; }
+        .lb-coin { font-weight: 700; color: #FFD700; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; background: rgba(255,215,0,0.08); padding: 4px 8px; border-radius: 4px; }
+
+        /* --- B. RECENT COMMENTS --- */
+        .rc-item {
+            display: flex; gap: 15px; padding: 0 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.03); transition: 0.2s; cursor: pointer;
+            height: 85px; align-items: center;
+        }
+        .rc-item:last-child { border-bottom: none; }
+        .rc-item:hover { background: rgba(255,255,255,0.03); }
+        .rc-avatar-small { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); background: #333; }
+        
+        .rc-content { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+        .rc-header { display: flex; justify-content: space-between; align-items: center; }
+        .rc-user-small { font-size: 0.9rem; font-weight: 700; color: #fff; }
+        .rc-time { font-size: 0.7rem; color: #666; }
+        .rc-text { 
+            font-size: 0.85rem; color: #ccc; 
+            display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .rc-movie-tag { 
+            font-size: 0.75rem; color: var(--primary-color); font-weight: 600; 
+            display: flex; align-items: center; gap: 6px; margin-top: 3px;
+        }
+        .rc-item:hover .rc-movie-tag { color: #fff; }
+
+        .loading-placeholder { padding: 20px; text-align: center; color: #666; width: 100%; }
+
+        /* VIP Glow Border */
+        .is-vip-user .rc-avatar-img, .is-vip-user .lb-avatar, .is-vip-user .rc-avatar-small {
+            border: 2px solid #FFD700 !important;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+            animation: pulseGold 2s infinite;
+        }
+        .is-vip-user .rc-username, .is-vip-user .lb-name, .is-vip-user .rc-user-small {
+            /* Tên ở list thường dùng gradient */
+            background: linear-gradient(to right, #FFD700, #FFFACD, #FFD700);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900;
+        }
+        @keyframes pulseGold { 0% { box-shadow: 0 0 5px #FFD700; } 50% { box-shadow: 0 0 15px #FFD700; } 100% { box-shadow: 0 0 5px #FFD700; } }
+
+        @media (max-width: 900px) {
+            .comm-bottom-grid { grid-template-columns: 1fr; gap: 30px; }
+            .lb-item, .rc-item { height: auto; padding: 15px; } 
+        }
     </style>
 </head>
 <body>
@@ -1997,6 +2195,53 @@ footer {
         </a>
     </div>
 
+    <section class="community-dashboard">
+        
+        <div class="comm-dash-header">
+            <div class="comm-stats">
+                <div class="c-stat-item"><i class="fas fa-users"></i> <span id="totalUsers"></span> Thành viên</div>
+                <div class="c-stat-item"><i class="fas fa-comments"></i> <span id="totalComments"></span> Bình luận</div>
+            </div>
+        </div>
+
+        <div class="slider-header-row">
+            <h3 class="comm-sub-title"><i class="fas fa-star"></i> TOP BÌNH LUẬN</h3>
+            <div class="carousel-controls">
+                <button id="btnPrevComm"><i class="fas fa-chevron-left"></i></button>
+                <button id="btnNextComm"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="comm-carousel-viewport">
+            <div class="comm-carousel-track" id="featuredTrack">
+                <div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>
+            </div>
+        </div>
+
+        <div class="comm-bottom-grid">
+            
+            <div class="comm-col-box">
+                <div class="comm-box-header">
+                    <h3><i class="fas fa-trophy" style="color:#FFD700;"></i> Bảng Xếp Hạng</h3>
+                    <span class="view-all">Top 5</span>
+                </div>
+                <div class="leaderboard-list" id="coinLeaderboard">
+                    <div class="loading-placeholder">Đang tải...</div>
+                </div>
+            </div>
+
+            <div class="comm-col-box">
+                <div class="comm-box-header">
+                    <h3><i class="fas fa-bolt" style="color:#ff4757;"></i> Bình Luận Mới</h3>
+                </div>
+                <div class="recent-comments-list" id="recentCommentsList">
+                    <div class="loading-placeholder">Đang tải...</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
     <section class="short-section">
         <div class="short-header">
             <div class="sh-title-group">
@@ -2124,398 +2369,472 @@ footer {
 </footer>
 
     <script src="chatbot.js"></script>
-    <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, setDoc, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    // 🔥 QUAN TRỌNG: Đã thêm đầy đủ các hàm cần thiết vào dòng này
+    import { getFirestore, doc, getDoc, updateDoc, setDoc, addDoc, collection, query, where, orderBy, limit, getDocs, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // 1. CẤU HÌNH FIREBASE
-        const firebaseConfig = { 
-            apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc", 
-            authDomain: "hopphim-29e1c.firebaseapp.com", 
-            projectId: "hopphim-29e1c", 
-            storageBucket: "hopphim-29e1c.firebasestorage.app", 
-            messagingSenderId: "1076044580405", 
-            appId: "1:1076044580405:web:a3485f8533604f305e537c", 
-            measurementId: "G-6RT4CX2NR0" 
-        };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+    // 1. CONFIG FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc",
+        authDomain: "hopphim-29e1c.firebaseapp.com",
+        projectId: "hopphim-29e1c",
+        storageBucket: "hopphim-29e1c.firebasestorage.app",
+        messagingSenderId: "1076044580405",
+        appId: "1:1076044580405:web:a3485f8533604f305e537c",
+        measurementId: "G-6RT4CX2NR0"
+    };
 
-        // --- 2. HÀM MUA GÓI VIP (GÁN VÀO WINDOW ĐỂ HTML GỌI ĐƯỢC) ---
-        window.buyVipPackage = async () => {
-            if (!window.currentUser) {
-                window.showToast("Vui lòng đăng nhập để mua VIP!", "error");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // 🔥 HÀM TIME HELPER (Đưa vào đây để module dùng được)
+    function timeAgo(timestamp) {
+        if (!timestamp) return '';
+        const seconds = Math.floor((Date.now() - timestamp) / 1000);
+        if (seconds < 60) return "Vừa xong";
+        const intervals = { năm: 31536000, tháng: 2592000, ngày: 86400, giờ: 3600, phút: 60 };
+        for (const [unit, sec] of Object.entries(intervals)) {
+            const val = Math.floor(seconds / sec);
+            if (val >= 1) return val + " " + unit + " trước";
+        }
+        return "Vừa xong";
+    }
+
+    // ============================================================
+    // 🔥 LOGIC GÓC CỘNG ĐỒNG (V9 - FINAL LUXURY)
+    // ============================================================
+    
+    let sliderIndex = 0;
+    let sliderInterval;
+
+    async function loadCommunityDashboard() {
+        console.log("🚀 Loading Community Data...");
+        
+        // --- 1. TẢI BXH ĐẠI GIA (TOP 5) ---
+        try {
+            const usersRef = collection(db, "users");
+            const q = query(usersRef, orderBy("coinBalance", "desc"), limit(5));
+            const snapshot = await getDocs(q);
+            
+            const lbContainer = document.getElementById('coinLeaderboard');
+            if (snapshot.empty) {
+                if(lbContainer) lbContainer.innerHTML = '<div class="loading-placeholder">Chưa có dữ liệu.</div>';
+            } else {
+                let lbHtml = '';
+                let rank = 1;
+                snapshot.forEach(doc => {
+                    const u = doc.data();
+                    const isVip = (u.vipExpiration && u.vipExpiration > Date.now());
+                    const vipClass = isVip ? 'is-vip-user' : '';
+                    
+                    const avatar = (u.photoURL && u.photoURL.startsWith('http')) ? u.photoURL : 'https://wibuphim.netlify.app/Guest.webp';
+                    const name = u.displayName || 'Thành viên';
+                    const coin = u.coinBalance || 0;
+                    
+                    lbHtml += `
+                        <div class="lb-item ${vipClass}">
+                            <div class="lb-left">
+                                <div class="lb-rank">${rank}</div>
+                                <img src="${avatar}" class="lb-avatar" onerror="this.src='https://wibuphim.netlify.app/Guest.webp'">
+                                <div class="lb-info">
+                                    <div class="lb-name">${name} ${isVip ? '<i class="fas fa-check-circle" style="font-size:0.7rem; color:#FFD700;"></i>' : ''}</div>
+                                </div>
+                            </div>
+                            <div class="lb-coin"><i class="fas fa-coins"></i> ${coin.toLocaleString()}</div>
+                        </div>
+                    `;
+                    rank++;
+                });
+                if(lbContainer) lbContainer.innerHTML = lbHtml;
+                document.getElementById('totalUsers').innerText = (snapshot.size * 50 + "+"); 
+            }
+        } catch (e) { console.error("Lỗi BXH:", e); }
+
+        // --- 2. TẢI BÌNH LUẬN ---
+        try {
+            const commentsRef = collection(db, "comments");
+            const q = query(commentsRef, orderBy("timestamp", "desc"), limit(10)); 
+            const snapshot = await getDocs(q);
+            
+            const sliderTrackEl = document.getElementById('featuredTrack');
+            const recentContainer = document.getElementById('recentCommentsList');
+            
+            if (snapshot.empty) {
+                if(sliderTrackEl) sliderTrackEl.innerHTML = '<div class="loading-placeholder">Chưa có bình luận.</div>';
+                if(recentContainer) recentContainer.innerHTML = '<div class="loading-placeholder">Chưa có bình luận.</div>';
                 return;
             }
-            
-            const confirmBuy = await window.customConfirm("Gia hạn VIP 30 ngày với 50 Coin?");
-            if (!confirmBuy) return;
 
-            const userRef = doc(db, "users", window.currentUser.uid);
-            
-            try {
-                const snap = await getDoc(userRef);
-                // Nếu User chưa từng có dữ liệu trong Firestore, tạo mới document với balance = 0
-                let data = snap.exists() ? snap.data() : { coinBalance: 0 };
+            const commentsData = [];
+            snapshot.forEach(doc => commentsData.push(doc.data()));
+
+            // Tải ảnh phim
+            const enriched = await Promise.all(commentsData.map(async (c) => {
+                let img = "https://wibuphim.netlify.app/panel.webp";
+                let title = "Phim Hay"; 
                 
-                const currentBalance = data.coinBalance || 0;
+                const isYT = c.movieId && c.movieId.startsWith('yt_');
+                const realSlug = c.movieId;
 
-                if (currentBalance < 50) {
-                    window.showToast("Số dư không đủ! Cần 50 Coin.", "error");
-                    setTimeout(() => window.location.href = '/nap-coin.html', 1500);
-                    return;
-                }
-
-                const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
-                let newExpiration = Date.now() + thirtyDaysMs;
-
-                if (data.vipExpiration && data.vipExpiration > Date.now()) {
-                    newExpiration = data.vipExpiration + thirtyDaysMs;
-                }
-
-                // 🔥 Dùng setDoc thay vì updateDoc để an toàn hơn
-                await setDoc(userRef, {
-                    coinBalance: increment(-50),
-                    vipExpiration: newExpiration
-                }, { merge: true });
-
-                window.showToast("Mua VIP thành công! Hệ thống đang cập nhật...", "success");
-            } catch (e) {
-                console.error("Lỗi giao dịch:", e);
-                window.showToast("Lỗi hệ thống, vui lòng thử lại sau!", "error");
-            }
-        };
-
-        // --- 3. QUẢN LÝ TRẠNG THÁI NGƯỜI DÙNG & GIAO DIỆN ---
-        onAuthStateChanged(auth, async (user) => {
-            const btnLogin = document.getElementById('btnLogin');
-            const userAvatar = document.getElementById('userAvatar');
-            const userNameDisplay = document.getElementById('userNameDisplay');
-            const mobileMemberBtn = document.getElementById('mobileMemberBtn');
-            const drawerLogout = document.getElementById('drawerLogout');
-            const vipStatusLabel = document.getElementById('vipStatus'); // ID Free Plan
-            const adPanels = document.querySelectorAll('.ad-panel-wrapper');
-            const adOverlay = document.getElementById('ad-overlay');
-
-            if (user) {
-                window.currentUser = user;
-                
-                if(btnLogin) btnLogin.style.display = 'none';
-                if(userAvatar) { 
-                    userAvatar.style.display = 'block'; 
-                    userAvatar.src = user.photoURL || '/Guest.webp'; 
-                }
-
-                // LẮNG NGHE DỮ LIỆU USER REAL-TIME
-                onSnapshot(doc(db, "users", user.uid), (docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        const balance = data.coinBalance || 0;
-                        const vipExp = data.vipExpiration || 0;
-                        const isVip = vipExp > Date.now(); 
-                        const name = user.displayName || "Thành viên";
-                        
-                        // 1. Xử lý Hiệu ứng Nhà Vua (VIP King)
-                        if (isVip) {
-                            if(userAvatar) userAvatar.classList.add('vip-glow');
-                            if(userNameDisplay) userNameDisplay.innerHTML = `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>`;
-                        } else {
-                            if(userAvatar) userAvatar.classList.remove('vip-glow');
-                            if(userNameDisplay) userNameDisplay.innerText = name;
+                if (isYT) {
+                    const yId = realSlug.split('yt_')[1];
+                    img = `https://img.youtube.com/vi/${yId}/hqdefault.jpg`;
+                    title = "Phim Youtube";
+                } else if (realSlug) {
+                    try {
+                        const res = await fetch(`https://ophim1.com/v1/api/phim/${realSlug}`);
+                        const json = await res.json();
+                        if(json.status) {
+                            const m = json.data.item;
+                            title = m.name;
+                            if(m.episode_current) title += ` - ${m.episode_current}`; 
+                            img = m.thumb_url.startsWith('http') ? m.thumb_url : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
                         }
-
-                        // 🔥 2. HIỂN THỊ THỜI HẠN VIP THAY CHO FREE PLAN 🔥
-                        if (vipStatusLabel) {
-                            if (isVip) {
-                            const d = new Date(vipExp);
-                            const dateStr = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
-                            vipStatusLabel.innerHTML = `<span style="color:#FFD700; font-weight:bold;"><i class="fas fa-gem"></i> VIP đến: ${dateStr}</span>`;
-                        } else {
-                                vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free Plan`;
-                            }
-                        }
-
-                        // 3. Thêm Badge số dư
-                        const balanceHTML = `<span class="balance-badge"><i class="fas fa-coins"></i> ${balance.toLocaleString()}</span>`;
-                        if(userNameDisplay) userNameDisplay.innerHTML += " " + balanceHTML;
-
-                        // 4. Logic ẩn quảng cáo
-                        if (isVip) {
-                            adPanels.forEach(p => p.style.display = 'none');
-                            if(adOverlay) adOverlay.style.display = 'none';
-                        } else {
-                            adPanels.forEach(p => p.style.display = 'flex');
-                        }
-                        
-                        // 5. Cập nhật Mobile Menu
-                        if(mobileMemberBtn) {
-                             const photo = user.photoURL || '/Guest.webp';
-                             const nameHtmlMobile = isVip ? `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>` : `<span>${name}</span>`;
-                             mobileMemberBtn.innerHTML = `
-                                <img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #fff;" class="${isVip ? 'vip-glow' : ''}"> 
-                                ${nameHtmlMobile} ${balanceHTML}
-                            `;
-                        }
-                    }
-                });
-
-                if(drawerLogout) drawerLogout.style.display = 'flex';
-                loadHistory(user.uid);
-
-            } else {
-                // KHI CHƯA ĐĂNG NHẬP
-                window.currentUser = null;
-                if(btnLogin) btnLogin.style.display = 'block';
-                if(userAvatar) userAvatar.style.display = 'none';
-                if(mobileMemberBtn) {
-                    mobileMemberBtn.innerHTML = `<i class="fas fa-user-circle"></i> <span>Đăng nhập / Đăng ký</span>`;
-                    mobileMemberBtn.onclick = () => window.location.href = '/login.html';
+                    } catch(err) { title = realSlug; }
                 }
-                if(drawerLogout) drawerLogout.style.display = 'none';
-                adPanels.forEach(p => p.style.display = 'flex');
-            }
-        });
-        
-        // ... (Giữ nguyên các hàm phụ trợ khác như search, modal...)
-        // (Bạn không cần copy lại các hàm bên dưới onAuthStateChanged nếu chúng đã có trong file gốc)
+                return { ...c, movieName: title, movieImg: img };
+            }));
 
-        // --- 2. HÀM THÔNG BÁO (TOAST) - Gán vào Window để dùng toàn cục ---
-        window.showToast = (msg, type = 'success') => {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            const icon = type === 'success' ? '<i class="fas fa-check-circle" style="color:#2ecc71"></i>' : '<i class="fas fa-exclamation-triangle" style="color:#ff4757"></i>';
-            toast.innerHTML = `${icon} <span>${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.transition = "0.4s";
-                toast.style.opacity = "0";
-                toast.style.transform = "translateX(100%)";
-                setTimeout(() => toast.remove(), 400);
-            }, 3000);
-        }
+            let sliderHtml = '';
+            let listHtml = '';
 
-        // --- 3. HÀM HỘP THOẠI XÁC NHẬN (CONFIRM) ---
-        window.customConfirm = (msg) => {
-            return new Promise((resolve) => {
-                const modal = document.getElementById('confirmModal');
-                const msgEl = document.getElementById('confirmMsg');
-                const btnYes = document.getElementById('btnConfirmYes');
-                const btnNo = document.getElementById('btnConfirmNo');
+            enriched.forEach((c, index) => {
+                const isVip = c.isVip || false;
+                const vipClass = isVip ? 'is-vip-user' : '';
+                const nameClass = isVip ? 'vip-username' : 'rc-username';
+                const timeStr = timeAgo(c.timestamp);
+                const avatar = (c.userAvatar && c.userAvatar.startsWith('http')) ? c.userAvatar : 'https://wibuphim.netlify.app/Guest.webp';
 
-                msgEl.innerText = msg;
-                modal.classList.add('active');
+                // 🔥 Label VIP Member (Thin, Bright)
+                const roleLabel = isVip 
+                    ? `<div class="rc-user-role"><i class="fas fa-gem"></i> VIP MEMBER</div>` 
+                    : `<div class="normal-user-role">Thành viên</div>`;
 
-                // Xử lý sự kiện click
-                const handleYes = () => { cleanup(); resolve(true); };
-                const handleNo = () => { cleanup(); resolve(false); };
+                // --- TOP 6 -> SLIDER ---
+                if (index < 6) {
+                    sliderHtml += `
+                        <div class="review-card ${vipClass}" onclick="window.location.href='/xem-phim/${c.movieId}'">
+                            <div class="review-bg-blur" style="background-image: url('${c.movieImg}');"></div>
+                            <div class="review-overlay"></div>
+                            
+                            <div style="position:absolute; top:15px; right:15px; z-index:3;">
+                                <img src="${c.movieImg}" class="rc-mini-poster" onerror="this.style.display='none'">
+                            </div>
 
-                const cleanup = () => {
-                    modal.classList.remove('active');
-                    btnYes.onclick = null;
-                    btnNo.onclick = null;
+                            <div class="rc-content-wrapper">
+                                <div class="rc-user-info">
+                                    <img src="${avatar}" class="rc-avatar-img" onerror="this.src='https://wibuphim.netlify.app/Guest.webp'">
+                                    <div class="rc-user-text">
+                                        <div class="${nameClass}">${c.userName} ${isVip ? '<i class="fas fa-crown" style="color:#FFD700; font-size:0.7rem;"></i>' : ''}</div>
+                                        ${roleLabel}
+                                    </div>
+                                </div>
+                                <div class="rc-comment-text">"${c.content}"</div>
+                            </div>
+                        </div>
+                    `;
+                } 
+                // --- 4 TIẾP THEO -> LIST ---
+                else if (index < 10) {
+                    listHtml += `
+                        <div class="rc-item ${vipClass}" onclick="window.location.href='/xem-phim/${c.movieId}'">
+                            <img src="${avatar}" class="rc-avatar-small" onerror="this.src='https://wibuphim.netlify.app/Guest.webp'">
+                            <div class="rc-content">
+                                <div class="rc-header">
+                                    <span class="${nameClass}" style="font-size:0.9rem;">${c.userName} ${isVip ? '<i class="fas fa-check-circle" style="font-size:0.7rem;"></i>' : ''}</span>
+                                    <span class="rc-time">${timeStr}</span>
+                                </div>
+                                <div class="rc-text">${c.content}</div>
+                                <div class="rc-movie-tag">
+                                    <i class="fas fa-film"></i> ${c.movieName}
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 }
-
-                btnYes.onclick = handleYes;
-                btnNo.onclick = handleNo;
             });
-        }
 
-        // --- 4. CHỨC NĂNG ĐĂNG XUẤT (ĐÃ FIX) ---
-        window.logout = async () => {
-            const ok = await window.customConfirm("Bạn có chắc chắn muốn đăng xuất?");
-            if(ok) {
-                try {
-                    await signOut(auth);
-                    window.showToast("Đã đăng xuất thành công!");
-                    
-                    // Đóng các menu thủ công để tránh lỗi phụ thuộc
-                    document.getElementById('mobileMenuOverlay').classList.remove('active');
-                    document.getElementById('userMenu').classList.remove('active');
-                } catch (e) {
-                    console.error(e);
-                    window.showToast("Lỗi đăng xuất", "error");
-                }
-            }
-        }
+            if(sliderTrackEl) sliderTrackEl.innerHTML = sliderHtml;
+            if(recentContainer) recentContainer.innerHTML = listHtml;
+            document.getElementById('totalComments').innerText = snapshot.size + "+";
 
-        // --- 5. LOGIC DỮ LIỆU (LỊCH SỬ & DANH SÁCH) ---
-        
-        // Lưu lịch sử
-        window.saveToHistory = async (slug, name, thumb) => {
-            if (!window.currentUser) return;
-            const ref = doc(db, "users", window.currentUser.uid);
-            try {
-                const snap = await getDoc(ref);
-                let history = snap.exists() ? (snap.data().watchHistory || []) : [];
-                history = history.filter(m => m.slug !== slug);
-                history.push({ slug, name, thumb_url: thumb, timestamp: Date.now() });
-                if (history.length > 15) history.shift();
-                
-                if(snap.exists()) await updateDoc(ref, { watchHistory: history });
-                else await setDoc(ref, { email: window.currentUser.email, watchHistory: history });
-                
-                loadHistory(window.currentUser.uid);
-            } catch (e) {}
-        };
+            setupCarousel();
 
-        // Load lịch sử
-        async function loadHistory(uid) {
-            try {
-                const snap = await getDoc(doc(db, "users", uid));
-                if(snap.exists() && snap.data().watchHistory && snap.data().watchHistory.length > 0) {
-                    window.renderHistoryRow(snap.data().watchHistory.reverse().slice(0, 8));
-                } else {
-                    document.getElementById('history-container').innerHTML = '';
-                }
-            } catch(e) {}
-        }
-
-        // Xoá phim khỏi lịch sử (Đã Fix: Tìm Card Chính Xác + Toast Ngay)
-        window.removeFromHistory = async (slug, btnElement) => {
-            if (!window.currentUser) { 
-                window.showToast("Bạn chưa đăng nhập!", "error"); 
-                return; 
-            }
-
-            // 1. Xác định Card phim để xóa ngay trên giao diện cho nhanh
-            const card = btnElement.closest('.n-card');
-            if (card) {
-                card.style.transition = 'all 0.3s ease';
-                card.style.opacity = '0';
-                card.style.transform = 'scale(0.5)';
-                setTimeout(() => card.remove(), 300);
-            }
-
-            // 2. Xử lý trên Firebase
-            const ref = doc(db, "users", window.currentUser.uid);
-            try {
-                const snap = await getDoc(ref);
-                if (snap.exists()) {
-                    let history = snap.data().watchHistory || [];
-                    
-                    // GIẢI MÃ SLUG ĐỂ SO SÁNH CHÍNH XÁC (Tránh lỗi YouTube slug)
-                    const targetSlug = decodeURIComponent(slug);
-                    
-                    const newHistory = history.filter(m => {
-                        const currentSlug = decodeURIComponent(m.slug);
-                        return currentSlug !== targetSlug;
-                    });
-
-                    // Ghi đè lại danh sách mới
-                    await updateDoc(ref, { watchHistory: newHistory });
-                    
-                    window.showToast("Đã xóa khỏi danh sách xem tiếp", "success");
-
-                    // Nếu xóa hết sạch phim thì ẩn luôn khung "Xem tiếp"
-                    const historyList = document.getElementById('historyList');
-                    if (historyList && historyList.children.length <= 1) {
-                        document.getElementById('history-container').innerHTML = '';
-                    }
-                }
-            } catch (e) { 
-                console.error("Lỗi xóa:", e);
-                window.showToast("Không thể xóa lúc này, vui lòng thử lại!", "error");
-            }
-        };
-
-        // Lưu phim yêu thích
-        window.addToMyList = async (slug, name, thumb) => {
-            if (!window.currentUser) { 
-                window.showToast("Vui lòng đăng nhập để lưu phim!", "error"); 
-                return; 
-            }
-            const ref = doc(db, "users", window.currentUser.uid);
-            const snap = await getDoc(ref);
-            let list = snap.exists() ? (snap.data().myList || []) : [];
-            if (list.some(m => m.slug === slug)) { window.showToast("Phim đã có trong danh sách!", "error"); return; }
-            
-            list.push({ slug, name, thumb_url: thumb, timestamp: Date.now() });
-            
-            if(snap.exists()) await updateDoc(ref, { myList: list }); 
-            else await setDoc(ref, { email: window.currentUser.email, myList: list });
-            
-            window.showToast(`Đã thêm "${name}" vào danh sách!`, "success");
-        };
-        
-        // Helper UI
-        window.toggleUserDropdown = () => document.getElementById('userMenu').classList.toggle('active');
-        window.handleUserClick = () => { window.location.href = window.currentUser ? '/profile.html' : '/login.html'; }
-
-
-// ============================================================
-    // 🔥 BỔ SUNG CÁC HÀM XỬ LÝ MENU & MODAL (CÒN THIẾU)
-    // ============================================================
-
-    // 1. Hàm hiển thị Modal chung
-    function showModal(title) {
-        const modal = document.getElementById('modalPopup');
-        const modalContent = document.getElementById('modalContent');
-        const modalTitle = document.getElementById('modalTitle');
-        
-        if (modalTitle) modalTitle.innerText = title;
-        if (modal) modal.classList.add('active');
-        if (modalContent) modalContent.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#888;"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Đang tải...</div>`;
+        } catch (e) { console.error("Lỗi tải comment:", e); }
     }
 
-    // --- RENDER MODAL (CARD DỌC) ---
-    async function fetchAndRender(apiUrl) {
-        try {
-            const res = await fetch(apiUrl);
-            const data = await res.json();
-            const container = document.getElementById('modalContent');
-            const isShortDrama = apiUrl.includes('short-drama'); 
-            
-            if (data.data && data.data.items) {
-                let html = '';
-                data.data.items.forEach(m => {
-                    const img = m.thumb_url.startsWith('http') ? m.thumb_url : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
-                    const linkUrl = isShortDrama ? `/short/${m.slug}` : `/xem-phim/${m.slug}`;
+    // --- CAROUSEL LOGIC ---
+    function setupCarousel() {
+        const track = document.getElementById('featuredTrack');
+        if (!track || track.children.length === 0) return;
 
-                    // HTML Card Dọc (Modal Vertical Card)
-                    html += `
-                    <div class="modal-card-vertical" onclick="window.location.href='${linkUrl}'" title="${m.name}">
-                        <div style="position:absolute; top:8px; right:8px; background:#FF8F50; color:#fff; font-size:0.6rem; font-weight:800; padding:2px 6px; border-radius:4px; z-index:2;">
-                            ${m.lang}
-                        </div>
-                        <img src="${img}" loading="lazy">
-                        <div class="modal-info-overlay"> 
-                            <div class="modal-title">${m.name}</div>
-                            <div class="modal-meta">${m.year}</div>
-                        </div>
-                    </div>`;
-                });
-                container.innerHTML = html;
-            } else {
-                if(container) container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ccc;">Không tìm thấy phim.</div>';
+        const cards = track.children;
+        const cardWidth = 320 + 20; // 320px width + 20px gap
+
+        const moveSlide = () => {
+            track.style.transform = `translateX(-${sliderIndex * cardWidth}px)`;
+        };
+
+        const next = () => {
+            sliderIndex++;
+            const itemsVisible = window.innerWidth > 900 ? 3 : 1; 
+            if (sliderIndex > cards.length - itemsVisible) {
+                sliderIndex = 0; // Loop về đầu
             }
+            moveSlide();
+        };
+
+        const prev = () => {
+            sliderIndex--;
+            const itemsVisible = window.innerWidth > 900 ? 3 : 1;
+            if (sliderIndex < 0) {
+                sliderIndex = Math.max(0, cards.length - itemsVisible); // Loop về cuối
+            }
+            moveSlide();
+        };
+
+        const btnNext = document.getElementById('btnNextComm');
+        const btnPrev = document.getElementById('btnPrevComm');
+        
+        if(btnNext) btnNext.onclick = () => { next(); resetTimer(); };
+        if(btnPrev) btnPrev.onclick = () => { prev(); resetTimer(); };
+
+        function startTimer() { sliderInterval = setInterval(next, 4000); }
+        function resetTimer() { clearInterval(sliderInterval); startTimer(); }
+        
+        startTimer();
+    }
+
+    // --- 3. HÀM MUA GÓI VIP ---
+    window.buyVipPackage = async () => {
+        if (!window.currentUser) {
+            window.showToast("Vui lòng đăng nhập!", "error");
+            return;
+        }
+        const confirmBuy = await window.customConfirm("Gia hạn VIP 30 ngày với 50 Coin?");
+        if (!confirmBuy) return;
+
+        const userRef = doc(db, "users", window.currentUser.uid);
+        try {
+            const snap = await getDoc(userRef);
+            if (!snap.exists()) return;
+            
+            const data = snap.data();
+            if ((data.coinBalance || 0) < 50) {
+                window.showToast("Số dư không đủ 50 Coin!", "error");
+                setTimeout(() => window.location.href = '/nap-coin.html', 1500);
+                return;
+            }
+
+            const thirtyDays = 2592000000;
+            let newExpiration = Date.now() + thirtyDays;
+            if (data.vipExpiration && data.vipExpiration > Date.now()) {
+                newExpiration = data.vipExpiration + thirtyDays;
+            }
+
+            await updateDoc(userRef, {
+                coinBalance: increment(-50),
+                vipExpiration: newExpiration
+            });
+            window.showToast("Đã mua VIP thành công!", "success");
         } catch (e) {
             console.error(e);
-            const container = document.getElementById('modalContent');
-            if(container) container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ff4757;">Lỗi kết nối server!</div>';
+            window.showToast("Lỗi giao dịch!", "error");
+        }
+    };
+
+    // --- 4. BIẾN TOÀN CỤC ---
+    window.isCurrentVip = false;
+
+    // --- 5. AUTH STATE CHANGED ---
+    onAuthStateChanged(auth, async (user) => {
+        const btnLogin = document.getElementById('btnLogin');
+        const userAvatar = document.getElementById('userAvatar');
+        const userNameDisplay = document.getElementById('userNameDisplay');
+        const drawerLogout = document.getElementById('drawerLogout');
+        const mobileMemberBtn = document.getElementById('mobileMemberBtn');
+        const vipStatusLabel = document.getElementById('vipStatus');
+        const adPanels = document.querySelectorAll('.ad-panel-wrapper');
+
+        if (user) {
+            window.currentUser = user;
+            if(btnLogin) btnLogin.style.display = 'none';
+            if(userAvatar) { userAvatar.style.display = 'block'; userAvatar.src = user.photoURL || '/Guest.webp'; }
+
+            // Lắng nghe dữ liệu
+            onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const balance = data.coinBalance || 0;
+                    const vipExp = data.vipExpiration || 0;
+                    const isVip = vipExp > Date.now(); 
+                    window.isCurrentVip = isVip;
+                    const name = user.displayName || "Thành viên";
+                    
+                    // UI Update
+                    if (isVip) {
+                        if(userAvatar) userAvatar.classList.add('vip-glow');
+                        if(userNameDisplay) userNameDisplay.innerHTML = `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>`;
+                    } else {
+                        if(userAvatar) userAvatar.classList.remove('vip-glow');
+                        if(userNameDisplay) userNameDisplay.innerText = name;
+                    }
+
+                    if (vipStatusLabel) {
+                        if (isVip) {
+                            const d = new Date(vipExp);
+                            vipStatusLabel.innerHTML = `<span style="color:#FFD700; font-weight:bold;"><i class="fas fa-gem"></i> VIP đến: ${d.getDate()}/${d.getMonth()+1}</span>`;
+                        } else {
+                            vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free Plan`;
+                        }
+                    }
+
+                    const balanceHTML = `<span class="balance-badge"><i class="fas fa-coins"></i> ${balance.toLocaleString()}</span>`;
+                    if(userNameDisplay) userNameDisplay.innerHTML += " " + balanceHTML;
+
+                    // Ẩn quảng cáo nếu VIP
+                    if (isVip) {
+                        adPanels.forEach(p => p.style.display = 'none');
+                    } else {
+                        adPanels.forEach(p => p.style.display = 'flex');
+                    }
+                    
+                    // Mobile Btn
+                    if(mobileMemberBtn) {
+                         const photo = user.photoURL || '/Guest.webp';
+                         const nameHtmlMobile = isVip ? `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>` : `<span>${name}</span>`;
+                         mobileMemberBtn.innerHTML = `<img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #fff;" class="${isVip ? 'vip-glow' : ''}"> ${nameHtmlMobile} ${balanceHTML}`;
+                         mobileMemberBtn.onclick = () => window.location.href = '/profile.html';
+                    }
+                }
+            });
+
+            if(drawerLogout) drawerLogout.style.display = 'flex';
+            loadHistory(user.uid);
+
+        } else {
+            window.currentUser = null;
+            if(btnLogin) btnLogin.style.display = 'block';
+            if(userAvatar) userAvatar.style.display = 'none';
+            if(mobileMemberBtn) {
+                mobileMemberBtn.innerHTML = `<i class="fas fa-user-circle"></i> <span>Đăng nhập / Đăng ký</span>`;
+                mobileMemberBtn.onclick = () => window.location.href = '/login.html';
+            }
+            if(drawerLogout) drawerLogout.style.display = 'none';
+            adPanels.forEach(p => p.style.display = 'flex');
+        }
+    });
+
+    // --- 6. CÁC HÀM KHÁC (LOGOUT, CONFIRM, TOAST) ---
+    window.logout = async () => {
+        const ok = await window.customConfirm("Bạn có chắc chắn muốn đăng xuất?");
+        if(ok) {
+            try {
+                await signOut(auth);
+                window.showToast("Đã đăng xuất thành công!");
+                document.getElementById('mobileMenuOverlay').classList.remove('active');
+                document.getElementById('userMenu').classList.remove('active');
+            } catch (e) { console.error(e); }
         }
     }
+    
+    window.toggleUserDropdown = () => document.getElementById('userMenu').classList.toggle('active');
 
-    // 3. Hàm gọi từ Menu Thể Loại (Gán vào window để HTML gọi được)
-    window.loadCategory = async (slug, title) => {
-        showModal(title);
-        fetchAndRender(`https://ophim1.com/v1/api/the-loai/${slug}`);
+    window.showToast = (msg, type = 'success') => {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        const icon = type === 'success' ? '<i class="fas fa-check-circle" style="color:#2ecc71"></i>' : '<i class="fas fa-exclamation-triangle" style="color:#ff4757"></i>';
+        toast.innerHTML = `${icon} <span>${msg}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.transition = "0.4s"; toast.style.opacity = "0"; toast.style.transform = "translateX(100%)";
+            setTimeout(() => toast.remove(), 400);
+        }, 3000);
+    }
+
+    window.customConfirm = (msg) => {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('confirmModal');
+            document.getElementById('confirmMsg').innerText = msg;
+            modal.classList.add('active');
+            document.getElementById('btnConfirmYes').onclick = () => { modal.classList.remove('active'); resolve(true); };
+            document.getElementById('btnConfirmNo').onclick = () => { modal.classList.remove('active'); resolve(false); };
+        });
+    }
+
+    // --- 7. LOAD HISTORY & SAVE HISTORY ---
+    window.saveToHistory = async (slug, name, thumb) => {
+        if (!window.currentUser) return;
+        const ref = doc(db, "users", window.currentUser.uid);
+        try {
+            const snap = await getDoc(ref);
+            let history = snap.exists() ? (snap.data().watchHistory || []) : [];
+            history = history.filter(m => m.slug !== slug);
+            history.push({ slug, name, thumb_url: thumb, timestamp: Date.now() });
+            if (history.length > 15) history.shift();
+            await setDoc(ref, { watchHistory: history }, { merge: true });
+            loadHistory(window.currentUser.uid);
+        } catch (e) {}
     };
 
-    // 4. Hàm gọi từ Menu Quốc Gia
-    window.openModal = async (slug, title) => {
-        showModal(title);
-        fetchAndRender(`https://ophim1.com/v1/api/quoc-gia/${slug}`);
+    async function loadHistory(uid) {
+        try {
+            const snap = await getDoc(doc(db, "users", uid));
+            if(snap.exists() && snap.data().watchHistory && snap.data().watchHistory.length > 0) {
+                window.renderHistoryRow(snap.data().watchHistory.reverse().slice(0, 8));
+            } else {
+                document.getElementById('history-container').innerHTML = '';
+            }
+        } catch(e) {}
+    }
+
+    window.removeFromHistory = async (slug, btnElement) => {
+        if (!window.currentUser) return window.showToast("Bạn chưa đăng nhập!", "error");
+        const card = btnElement.closest('.n-card');
+        if (card) {
+            card.style.transition = 'all 0.3s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.5)';
+            setTimeout(() => card.remove(), 300);
+        }
+        const ref = doc(db, "users", window.currentUser.uid);
+        try {
+            const snap = await getDoc(ref);
+            if (snap.exists()) {
+                let history = snap.data().watchHistory || [];
+                const targetSlug = decodeURIComponent(slug);
+                const newHistory = history.filter(m => decodeURIComponent(m.slug) !== targetSlug);
+                await updateDoc(ref, { watchHistory: newHistory });
+                window.showToast("Đã xóa khỏi danh sách xem tiếp", "success");
+                const historyList = document.getElementById('historyList');
+                if (historyList && historyList.children.length <= 1) {
+                    document.getElementById('history-container').innerHTML = '';
+                }
+            }
+        } catch (e) { console.error("Lỗi xóa:", e); }
     };
 
-    // 5. Hàm đóng Modal
-    window.closeModal = () => {
-        const modal = document.getElementById('modalPopup');
-        if(modal) modal.classList.remove('active');
+    window.addToMyList = async (slug, name, thumb) => {
+        if (!window.currentUser) return window.showToast("Vui lòng đăng nhập để lưu phim!", "error");
+        const ref = doc(db, "users", window.currentUser.uid);
+        const snap = await getDoc(ref);
+        let list = snap.exists() ? (snap.data().myList || []) : [];
+        if (list.some(m => m.slug === slug)) { window.showToast("Phim đã có trong danh sách!", "error"); return; }
+        list.push({ slug, name, thumb_url: thumb, timestamp: Date.now() });
+        await setDoc(ref, { myList: list }, { merge: true });
+        window.showToast(`Đã thêm "${name}" vào danh sách!`, "success");
     };
-    </script>
+
+    // 🔥 GỌI HÀM LOAD CỘNG ĐỒNG KHI TRANG TẢI XONG
+    window.addEventListener('load', () => {
+        loadCommunityDashboard();
+    });
+
+</script>
 
     <script>
         // --- CẤU HÌNH PHIM CỦA BẠN ---
@@ -2660,6 +2979,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
         window.addEventListener('load', () => {
             renderHero();
         });
+        
     </script>
 
     <script>
@@ -2783,7 +3103,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                 <div class="merged-block" style="margin-top:0; padding-bottom:30px;">
                     <div class="country-section" style="border:none;">
                         <div class="country-header">
-                            <div class="ch-title"><i class="fas fa-clock" style="color:var(--primary-color); margin-right:10px;"></i> Xem tiếp</div>
+                            <div class="ch-title"><i class="fas fa-clock" style="color: #FF8F50; margin-right:10px;"></i> Xem tiếp</div>
                         </div>
                         <div class="grid-wrapper">
                             <button class="nav-arrow arrow-prev" onclick="scrollGrid('${historyGridId}', -1)"><i class="fas fa-chevron-left"></i></button>
