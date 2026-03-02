@@ -54,6 +54,87 @@
             height: auto !important;
         }
         .plyr__video-embed iframe { top: -50%; height: 200%; }
+        
+        /* ==========================================================================
+           🔥 CUSTOM VOLUME SLIDER (THANH DỌC - FIX LỖI THANH TIẾN TRÌNH) 
+           ========================================================================== */
+        
+        /* 1. Thiết lập container loa */
+        .plyr__volume {
+            position: relative !important;
+            overflow: visible !important; /* Để thanh trượt thò ra ngoài không bị cắt */
+            width: 32px !important;       /* Cố định chiều rộng */
+            min-width: 32px !important;
+        }
+
+        /* 2. Ẩn nút Mute mặc định nếu nó chiếm chỗ (tuỳ phiên bản plyr) */
+        /* .plyr__volume button { margin-right: 0 !important; } */
+
+        /* 3. BIẾN HÌNH THANH ÂM LƯỢNG (CHỈ TÁC ĐỘNG VÀO VOLUME) */
+        .plyr__volume input[type=range] {
+            display: block !important;
+            
+            /* Tách ra khỏi dòng chảy layout để không đẩy các nút khác */
+            position: absolute !important; 
+            
+            /* Vị trí: Nằm trên icon loa */
+            bottom: 35px !important; 
+            left: 50% !important;
+            
+            /* Xoay dọc 90 độ */
+            transform: translateX(-50%) rotate(-90deg) !important;
+            transform-origin: center bottom !important;
+            
+            /* Kích thước thanh trượt */
+            width: 80px !important; 
+            height: 6px !important;
+            
+            /* Mặc định ẩn */
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Style giao diện */
+            background: rgba(20, 20, 20, 0.95) !important;
+            border-radius: 10px;
+            padding: 12px 10px !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            
+            z-index: 9999;
+            cursor: pointer;
+            margin: 0 !important; /* Reset margin */
+        }
+
+        /* 4. HIỆN KHI HOVER */
+        /* Khi di chuột vào icon loa HOẶC bản thân thanh trượt */
+        .plyr__volume:hover input[type=range],
+        .plyr__volume input[type=range]:hover,
+        .plyr__volume input[type=range]:active,
+        .plyr__volume input[type=range]:focus {
+            opacity: 1;
+            visibility: visible;
+            bottom: 45px !important; /* Hiệu ứng trượt lên nhẹ */
+        }
+
+        /* 5. MÀU SẮC */
+        .plyr__volume input[type=range] {
+            color: var(--plyr-color-main);
+        }
+        
+        /* 🔥 QUAN TRỌNG: Đảm bảo thanh tiến trình (Timeline) không bị ảnh hưởng */
+        .plyr__progress input[type=range] {
+            display: block !important;
+            position: relative !important;
+            transform: none !important;
+            width: 100% !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            bottom: auto !important;
+            left: auto !important;
+        }
     </style>
 
     <style>
@@ -559,26 +640,87 @@ footer {
     }
 }
         
+        /* --- MOBILE RESPONSIVE (ĐÃ TỐI ƯU PLAYER TRÀN VIỀN & STICKY) --- */
         @media (max-width: 900px) {
-            header { height: 60px; padding: 0 4%; justify-content: space-between; }
-            .header-left-group { gap: 25px; order: 1; }
-            .menu-toggle { display: block; font-size: 1.5rem; }
-            .logo { order: 2; margin: 0; } .logo img { height: 32px; } .logo-text { display: block; font-size: 1.2rem; }
+            /* 1. Header & Menu */
+            header { height: 60px; padding: 0 15px; justify-content: space-between; }
+            .header-left-group { gap: 20px; order: 1; }
+            .menu-toggle { display: block; font-size: 1.4rem; }
+            .logo { order: 2; margin: 0; } 
+            .logo img { height: 30px; } 
+            .logo-text { display: block; font-size: 1.1rem; }
             .right-elements { order: 3; gap: 15px; }
             .mobile-search-trigger { display: block; font-size: 1.2rem; }
             .nav-links, .search-box, .desktop-auth { display: none !important; }
             #mobileMenuOverlay, #mobileSearchOverlay { display: block; }
-            .watch-wrapper { grid-template-columns: 1fr; padding-top: 80px; gap: 20px; }
-            .movie-title-large { font-size: 1.8rem; }
-            .movie-info-block { padding: 20px; }
-            .player-box { order: 1; }
-            .episode-block-mobile { order: 2; display: block !important; margin-bottom: 20px; }
-            .comment-section { order: 4; }
+            
+            /* 2. Container chính: Bỏ padding để Player tràn viền */
+            .container { 
+                padding: 0 !important; 
+                max-width: 100% !important; 
+                overflow-x: hidden;
+            }
+
+            /* 3. Wrapper: Đẩy sát lên Header */
+            .watch-wrapper { 
+                grid-template-columns: 1fr; 
+                padding-top: 60px !important; /* Bằng chiều cao header */
+                gap: 0 !important; 
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* 4. PLAYER BOX: TRÀN VIỀN & DÍNH TRÊN ĐẦU (STICKY) */
+            .player-box { 
+                order: 1; 
+                border-radius: 0 !important; /* Vuông góc */
+                width: 100% !important;
+                margin-bottom: 0 !important;
+                box-shadow: none !important;
+                
+                /* 🔥 Hiệu ứng dính video khi cuộn */
+                position: sticky;
+                top: 60px; /* Dính ngay dưới Header */
+                z-index: 900; 
+            }
+
+            /* 5. Các thành phần bên dưới: Thêm padding lại vì container đã bỏ */
+            .episode-block-mobile,
+            .movie-info-block,
+            .comment-section,
+            .sidebar-right {
+                margin: 15px !important; /* Tạo khoảng cách 2 bên */
+                width: auto !important;
+            }
+
+            /* Info Phim gọn hơn */
+            .movie-title-large { font-size: 1.6rem; margin-top: 5px; }
+            .movie-info-block { padding: 15px; border-radius: 12px; }
+            
+            /* Danh sách tập (Mobile) */
+            .episode-block-mobile { order: 2; display: block !important; padding: 15px; }
+            .section-header { margin-bottom: 15px; font-size: 1rem; }
+            
+            /* Grid tập phim nhỏ gọn hơn */
+            .episode-grid { 
+                grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)) !important; 
+                gap: 8px !important;
+                max-height: 250px; /* Giới hạn chiều cao để không chiếm hết màn hình */
+            }
+            .ep-btn { padding: 8px 0; font-size: 0.85rem; }
+
+            /* Các phần khác */
+            .comment-section { order: 4; padding: 15px; }
             .sidebar-right { order: 5; position: static; }
             .episode-block-desktop { display: none; }
-            .footer-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+            
+            /* Footer */
+            .footer-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
             .footer-col ul { display: flex; flex-direction: column; align-items: center; }
             .footer-brand { justify-content: center; }
+            
+            /* Mobile Ad Panel */
+            .ad-img-728 { height: auto; aspect-ratio: 728/90; }
         }
         @media (min-width: 901px) { .episode-block-mobile { display: none; } }
 
@@ -902,146 +1044,196 @@ footer {
     box-shadow: 0 0 10px #FFD700 !important;
 }
 
-/* --- CSS CHO NÚT BỎ QUA GIỚI THIỆU (NETFLIX STYLE) --- */
+/* ==========================================================================
+           🔥 FIX NÚT BỎ QUA GIỚI THIỆU (MOBILE & PC)
+           ========================================================================== */
+        
         .skip-intro-btn {
             position: absolute;
-            bottom: 70px; /* Nằm trên thanh điều khiển một chút */
+            bottom: 70px; /* PC: Nằm trên thanh điều khiển */
             right: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(20, 20, 20, 0.85);
             color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 10px 20px;
-            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 24px;
+            border-radius: 6px;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             cursor: pointer;
-            z-index: 50; /* Đảm bảo nằm trên video */
+            z-index: 9999; /* Đảm bảo nằm trên mọi layer khác */
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
         }
 
-        /* Khi hover vào nút */
+        .skip-intro-btn i { font-size: 0.9rem; }
+
         .skip-intro-btn:hover {
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: #fff;
             color: #000;
-            border-color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,255,255,0.3);
         }
 
-        /* Class để hiện nút */
+        /* Class kích hoạt hiện nút */
         .skip-intro-btn.show {
             opacity: 1;
             visibility: visible;
+            transform: translateY(0);
         }
 
-        /* Mobile chỉnh lại vị trí chút cho đỡ che */
+        /* --- MOBILE ADJUSTMENT --- */
         @media (max-width: 768px) {
             .skip-intro-btn {
-                bottom: 60px;
-                padding: 8px 15px;
+                bottom: 65px; /* Mobile: Nằm ngay trên thanh progress bar */
+                right: 15px;
+                padding: 8px 16px;
                 font-size: 0.8rem;
+                background-color: rgba(255, 255, 255, 0.9); /* Mobile cho nền sáng để dễ thấy */
+                color: #000;
+                border: none;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            }
+            
+            /* Đảm bảo nút này không bị ẩn khi Pause */
+            .plyr--paused .skip-intro-btn.show {
+                opacity: 1 !important;
+                visibility: visible !important;
             }
         }
 
 
-        /* --- CSS CHO PAUSE OVERLAY (NETFLIX PREMIUM STYLE) --- */
-.pause-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* Gradient tối ở bên trái để nổi bật thông tin, mờ dần về bên phải */
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
-    z-index: 40;
-    
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-left: 6%; 
-    
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Hiệu ứng mượt hơn */
-    pointer-events: none;
-}
+/* ==========================================================================
+           NETFLIX PAUSE OVERLAY (SUPER BIG FULLSCREEN FIX)
+           ========================================================================== */
 
-/* Khi active */
-.pause-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
+        /* --- 1. CẤU TRÚC CHUNG --- */
+        .pause-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            /* Gradient đen đậm bên trái để làm nền cho chữ */
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 50%, transparent 100%);
+            z-index: 40;
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 6%; 
+            
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            pointer-events: none;
+        }
 
-/* Khung nội dung */
-.pause-info-content {
-    max-width: 500px;
-    transform: translateX(-20px); /* Trượt từ trái qua thay vì dưới lên cho hiện đại */
-    transition: transform 0.5s ease-out;
-}
+        .pause-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
 
-.pause-overlay.active .pause-info-content {
-    transform: translateX(0);
-}
+        .pause-info-content {
+            max-width: 500px;
+            transform: translateX(-30px);
+            transition: transform 0.4s ease-out;
+        }
 
-/* Badge "Đang phát" */
-.pause-ep-title {
-    color: #fff;
-    background: var(--primary-color);
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    margin-bottom: 15px;
-    letter-spacing: 1px;
-    box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3);
-}
+        .pause-overlay.active .pause-info-content {
+            transform: translateX(0);
+        }
 
-/* Tên phim */
-.pause-movie-title {
-    color: #fff;
-    font-size: 3.5rem; /* To và rõ */
-    font-weight: 900;
-    line-height: 1.1;
-    margin-bottom: 18px;
-    text-transform: capitalize;
-    letter-spacing: -1px;
-    text-shadow: 2px 4px 20px rgba(0,0,0,0.5);
-}
+        /* --- 2. STYLE MẶC ĐỊNH (CHẾ ĐỘ CỬA SỔ - NHỎ GỌN) --- */
+        .pause-ep-title {
+            color: #fff;
+            background: var(--primary-color);
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem; 
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3);
+        }
 
-/* Mô tả phim */
-.pause-desc {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1.05rem;
-    line-height: 1.6;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    max-width: 90%;
-    border-left: 3px solid rgba(255, 255, 255, 0.2); /* Vạch kẻ dọc nhẹ bên trái */
-    padding-left: 20px;
-}
+        .pause-movie-title {
+            color: #fff;
+            font-size: 2.5rem; 
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 15px;
+            text-transform: capitalize;
+            text-shadow: 2px 4px 15px rgba(0,0,0,0.8);
+        }
 
-/* --- RESPONSIVE CHO MOBILE --- */
-@media (max-width: 768px) {
-    .pause-overlay { 
-        padding-left: 30px; 
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.2) 100%); /* Mobile đổi hướng gradient từ dưới lên */
-        justify-content: flex-end; /* Đẩy xuống dưới cho dễ nhìn */
-        padding-bottom: 100px;
-    }
-    .pause-info-content { max-width: 90%; transform: translateY(20px); }
-    .pause-overlay.active .pause-info-content { transform: translateY(0); }
-    
-    .pause-movie-title { font-size: 2rem; margin-bottom: 10px; }
-    .pause-ep-title { font-size: 0.75rem; padding: 3px 8px; }
-    .pause-desc { font-size: 0.9rem; -webkit-line-clamp: 2; padding-left: 15px; }
-}
+        .pause-desc {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            border-left: 3px solid rgba(255, 255, 255, 0.3);
+            padding-left: 15px;
+        }
+
+        /* --- 3. 🔥 STYLE KHI TOÀN MÀN HÌNH (SỬ DỤNG ĐƠN VỊ vh ĐỂ TO THEO MÀN HÌNH) --- */
+        .plyr--fullscreen-active .pause-overlay {
+            background: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.9) 40%, transparent 100%);
+            padding-left: 8%; /* Đẩy nội dung vào sâu hơn */
+        }
+
+        .plyr--fullscreen-active .pause-info-content {
+            max-width: 70%; /* Cho phép nội dung dài ra hơn */
+        }
+
+        .plyr--fullscreen-active .pause-ep-title {
+            /* 2.5vh nghĩa là cao bằng 2.5% chiều cao màn hình -> Rất to */
+            font-size: 2.5vh !important; 
+            padding: 0.8vh 2vh;
+            border-radius: 0.8vh;
+            margin-bottom: 2vh;
+        }
+
+        .plyr--fullscreen-active .pause-movie-title {
+            /* 10vh -> Tên phim to đùng bằng 10% chiều cao màn hình */
+            font-size: 10vh !important; 
+            line-height: 1;
+            margin-bottom: 3vh;
+            text-shadow: 0.5vh 0.5vh 2vh rgba(0,0,0,0.8);
+        }
+
+        .plyr--fullscreen-active .pause-desc {
+            /* 2.8vh -> Mô tả to rõ để đọc từ xa */
+            font-size: 2.8vh !important; 
+            line-height: 1.5;
+            border-left-width: 0.8vh; /* Viền trái dày hơn */
+            padding-left: 2vh;
+            max-width: 60%; /* Giới hạn chiều rộng để không tràn hết màn hình */
+            -webkit-line-clamp: 4; /* Hiện nhiều dòng hơn */
+        }
+
+        /* --- 4. RESPONSIVE CHO MOBILE (GIỮ NGUYÊN) --- */
+        @media (max-width: 768px) {
+            .pause-overlay { 
+                padding-left: 20px; 
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.3) 70%, transparent 100%);
+                justify-content: flex-end; 
+                padding-bottom: 80px;
+            }
+            .pause-info-content { max-width: 100%; transform: translateY(20px); }
+            .pause-overlay.active .pause-info-content { transform: translateY(0); }
+            
+            .pause-movie-title { font-size: 1.8rem; margin-bottom: 8px; }
+            .pause-ep-title { font-size: 0.7rem; padding: 3px 8px; margin-bottom: 8px; }
+            .pause-desc { font-size: 0.9rem; -webkit-line-clamp: 2; padding-left: 10px; border-left-width: 3px; }
+        }
+        
         
     </style>
 </head>
@@ -1843,7 +2035,7 @@ footer {
 
             overlay.innerHTML = `
                 <div class="pause-info-content">
-                    <div class="pause-ep-title">ĐANG PHÁT: ${currentEpName || "Tập 1"}</div>
+                    <div class="pause-ep-title">ĐANG PHÁT: TẬP ${currentEpName || "Tập 1"}</div>
                     <div class="pause-movie-title">${currentMovieData.name}</div>
                     <div class="pause-desc">${rawDesc}</div>
                 </div>
@@ -1997,7 +2189,7 @@ window.closeMobileSearch = () => {
                 // Hiển thị thông tin phim giả lập
                 const fakeInfo = {
                     name: finalName,
-                    origin_name: 'YouTube Premium',
+                    origin_name: 'Phim Độc Quyền',
                     year: '2026',
                     quality: '4K',
                     lang: 'Vietsub',
