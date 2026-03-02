@@ -2680,13 +2680,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             return "Vừa xong";
         }
 
-        // --- RENDER CARD NGANG (TRANG CHỦ & HISTORY) ---
+        // --- RENDER CARD (ĐÃ CẬP NHẬT: HIỆN THỂ LOẠI TRONG LỊCH SỬ) ---
         window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
-            // 1. Xử lý ảnh: Ưu tiên Poster. Nếu ko có (như Short), dùng Thumb.
+            // 1. Xử lý link ảnh
             let imgSource = m.poster_url;
             if (!imgSource || imgSource === "") imgSource = m.thumb_url;
 
-            // Link ảnh đầy đủ
             const imgFull = imgSource.startsWith('http') ? imgSource : IMG_BASE + imgSource;
             const imgPortrait = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
 
@@ -2694,31 +2693,39 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             const nameFixed = (m.name || "").replace(/'/g, "\\'");
             const historyClass = isHistory ? `history-card-${m.slug}` : '';
             
-            // 3. Xử lý tên gốc
             let originName = m.origin_name;
             if (!originName || originName === "undefined" || originName === "null") originName = "";
 
-            // 4. Style Padding
-            // History cần padding đáy lớn hơn (40px) để đẩy chữ lên
-            const paddingStyle = isHistory ? "padding: 12px 12px 32px 12px;" : "padding: 12px;";
+            // Padding
+            const paddingStyle = isHistory ? "padding: 12px 12px 10px 12px;" : "padding: 12px;";
 
-            // 5. Logic Độ tuổi
+            // 3. Logic Độ tuổi & Thể loại
             let ageTag = 'T13';
-            if (m.category) {
+            let genreText = ""; // Biến lưu tên thể loại
+
+            if (m.category && m.category.length > 0) {
+                // Lấy độ tuổi
                 const cats = m.category.map(c => c.slug);
                 if (cats.some(s => s === 'kinh-di' || s === 'toi-pham' || s === '18')) ageTag = 'T18'; 
                 else if (cats.some(s => s === 'hanh-dong' || s === 'vo-thuat')) ageTag = 'T16'; 
                 else if (cats.some(s => s === 'hoat-hinh')) ageTag = 'P'; 
+                
+                // 🔥 Lấy tên thể loại (Lấy cái đầu tiên cho gọn, vd: "Tình Cảm")
+                genreText = m.category[0].name;
+            } else {
+                genreText = "Phim Hay Ngất Ngây";
+            }
+            
+            // Nếu là phim thường (không phải lịch sử), hiện nhiều thể loại hơn
+            if (!isHistory && m.category) {
+                 genreText = m.category.slice(0, 2).map(c => c.name).join(' • ');
             }
 
-            const genres = m.category ? m.category.slice(0, 2).map(c => c.name).join(' • ') : '';
-            // 1. Xử lý tên tập: Nếu chưa có chữ "TẬP" và không phải "FULL" thì thêm vào
+            // 4. Badge Tập
             let badgeText = (m.epName || "").toUpperCase();
             if (badgeText && !badgeText.includes("TẬP") && !badgeText.includes("FULL") && !badgeText.includes("TRỌN BỘ")) {
                 badgeText = "TẬP " + badgeText;
             }
-
-            // 2. Render Badge
             const epBadge = (isHistory && badgeText) 
                 ? `<div style="position:absolute; top:10px; left:10px; background:var(--primary-color); color:#fff; padding:3px 8px; border-radius:5px; font-size:10px; font-weight:800; z-index:5; box-shadow:0 4px 10px rgba(0,0,0,0.5);">${badgeText}</div>` 
                 : '';
@@ -2737,7 +2744,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                     
                     <div class="n-title-in" style="margin-bottom: 0px; line-height: 1.2;">${m.name}</div>
                     
-                    ${originName ? `<div style="font-size: 0.75rem; color: #aaa; margin-bottom: 3px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">${originName}</div>` : ''}
+                    ${originName ? `<div style="font-size: 0.75rem; color: #aaa; margin-bottom: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">${originName}</div>` : ''}
 
                     <div class="n-meta-in" style="flex-wrap: wrap; gap: 5px; margin-top: -4px;">
                         ${isHistory 
@@ -2750,9 +2757,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                         }
                     </div>
                     
-                    ${!isHistory ? `<div style="font-size: 0.7rem; color: #777; margin-top: 2px; line-height: 1.2;">${genres}</div>` : ''}
+                    <div style="font-size: 0.75rem; color: #999; margin-top: 1px; font-weight: 500;">
+                        ${genreText}
+                    </div>
 
-                    <div class="n-actions-in" style="margin-top: 4px;">
+                    <div class="n-actions-in" style="margin-top: 3px;">
                         <button class="btn-mini-play">
                             <i class="fas fa-play"></i> ${isHistory ? 'TIẾP TỤC' : 'XEM NGAY'}
                         </button>
