@@ -1767,16 +1767,14 @@ footer {
         .c-stat-item i { color: #FF8F50; }
 
         .slider-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .comm-sub-title { font-size: 1.1rem; color: #FFD700; margin: 0; font-weight: 800; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .comm-sub-title { font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #fff; text-transform: uppercase; }
 
         .carousel-controls { display: flex; gap: 10px; }
         .carousel-controls button {
-            width: 32px; height: 32px; border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05);
-            color: #fff; cursor: pointer; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.5); color: #fff; cursor: pointer; transition: 0.3s;
         }
-        .carousel-controls button:hover { background: var(--primary-color); border-color: transparent; }
+        .carousel-controls button:hover { background: #ff8f50; border-color: transparent; }
 
         /* --- CAROUSEL SLIDER --- */
         .comm-carousel-viewport {
@@ -2205,7 +2203,8 @@ footer {
         </div>
 
         <div class="slider-header-row">
-            <h3 class="comm-sub-title"><i class="fas fa-star"></i> TOP BÌNH LUẬN</h3>
+            <h3 class="comm-sub-title">
+                <i class="fas fa-star"  style="color:#FF8F50;"></i></i> TOP BÌNH LUẬN</h3>
             <div class="carousel-controls">
                 <button id="btnPrevComm"><i class="fas fa-chevron-left"></i></button>
                 <button id="btnNextComm"><i class="fas fa-chevron-right"></i></button>
@@ -2222,7 +2221,7 @@ footer {
             
             <div class="comm-col-box">
                 <div class="comm-box-header">
-                    <h3><i class="fas fa-trophy" style="color:#FFD700;"></i> Bảng Xếp Hạng</h3>
+                    <h3><i class="fas fa-trophy" style="color:#FF8F50;"></i> Bảng Xếp Hạng</h3>
                     <span class="view-all">Top 5</span>
                 </div>
                 <div class="leaderboard-list" id="coinLeaderboard">
@@ -2232,7 +2231,7 @@ footer {
 
             <div class="comm-col-box">
                 <div class="comm-box-header">
-                    <h3><i class="fas fa-bolt" style="color:#FFD700;"></i> Bình Luận Mới</h3>
+                    <h3><i class="fas fa-bolt" style="color:#FF8F50;"></i> Bình Luận Mới</h3>
                 </div>
                 <div class="recent-comments-list" id="recentCommentsList">
                     <div class="loading-placeholder">Đang tải...</div>
