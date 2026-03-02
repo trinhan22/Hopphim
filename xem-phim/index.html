@@ -1130,132 +1130,145 @@ footer {
             }
         }
 /* ==========================================================================
-           NETFLIX PAUSE OVERLAY (SUPER BIG FULLSCREEN FIX)
+           NETFLIX PAUSE OVERLAY (PERFECT SCALE EDITION)
            ========================================================================== */
 
-        /* --- 1. CẤU TRÚC CHUNG --- */
+        /* --- 1. KHUNG CHỨA (OVERLAY) --- */
         .pause-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            /* Gradient đen đậm bên trái để làm nền cho chữ */
-            background: linear-gradient(90deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 50%, transparent 100%);
-            z-index: 40;
-            
+            z-index: 50;
+            background: 
+                radial-gradient(circle at 75% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.9) 100%),
+                linear-gradient(90deg, #000 0%, rgba(0,0,0,0.7) 45%, transparent 100%);
+            backdrop-filter: blur(5px);
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding-left: 6%; 
-            
+            padding-left: 8%;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             pointer-events: none;
         }
 
-        .pause-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .pause-overlay.active { opacity: 1; visibility: visible; }
 
+        /* --- 2. CONTAINER NỘI DUNG --- */
         .pause-info-content {
-            max-width: 500px;
-            transform: translateX(-30px);
-            transition: transform 0.4s ease-out;
+            max-width: 650px; /* Tăng nhẹ chiều ngang */
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Giãn nhẹ */
         }
 
-        .pause-overlay.active .pause-info-content {
-            transform: translateX(0);
+        /* ANIMATION KEYFRAMES */
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- 2. STYLE MẶC ĐỊNH (CHẾ ĐỘ CỬA SỔ - NHỎ GỌN) --- */
+        /* --- 3. CÁC THÀNH PHẦN --- */
+        
+        /* A. Dòng trạng thái (ĐANG PHÁT...) */
         .pause-ep-title {
-            color: #fff;
-            background: var(--primary-color);
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.85rem; 
+            color: #FF5E62;
+            font-size: 0.95rem; /* Tăng 1 xíu */
             font-weight: 800;
             text-transform: uppercase;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3);
+            letter-spacing: 2px;
+            display: flex; align-items: center; gap: 10px;
+            opacity: 0; 
+        }
+        .pause-ep-title::before {
+            content: ''; display: block; width: 35px; height: 2.5px;
+            background: linear-gradient(90deg, transparent, #FF5E62);
         }
 
+        /* B. Tên phim */
         .pause-movie-title {
             color: #fff;
-            font-size: 2.5rem; 
+            font-size: 3.3rem; /* Tăng từ 3rem lên 3.3rem */
             font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 15px;
+            line-height: 1.1; 
             text-transform: capitalize;
-            text-shadow: 2px 4px 15px rgba(0,0,0,0.8);
+            background: linear-gradient(180deg, #ffffff 0%, #d1d1d1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.6));
+            margin-bottom: 8px; 
+            opacity: 0; 
         }
 
+        /* C. Mô tả nội dung */
         .pause-desc {
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 0.95rem;
-            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.15rem; /* Tăng từ 1.05rem lên 1.15rem */
+            line-height: 1.6;
+            font-weight: 400;
+            max-width: 95%;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            border-left: 3px solid rgba(255, 255, 255, 0.3);
-            padding-left: 15px;
+            border-left: 4px solid rgba(255, 94, 98, 0.7);
+            padding-left: 18px;
+            opacity: 0;
         }
 
-        /* --- 3. 🔥 STYLE KHI TOÀN MÀN HÌNH (SỬ DỤNG ĐƠN VỊ vh ĐỂ TO THEO MÀN HÌNH) --- */
+        /* --- KÍCH HOẠT ANIMATION --- */
+        .pause-overlay.active .pause-ep-title { animation: slideInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+        .pause-overlay.active .pause-movie-title { animation: slideInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards; }
+        .pause-overlay.active .pause-desc { animation: slideInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards; }
+
+        /* --- 4. 🔥 CHẾ ĐỘ FULLSCREEN (NHÍCH NHẸ SIZE) --- */
+        
         .plyr--fullscreen-active .pause-overlay {
-            background: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.9) 40%, transparent 100%);
-            padding-left: 8%; /* Đẩy nội dung vào sâu hơn */
+            padding-left: 8%; 
+            background: 
+                radial-gradient(circle at 80% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%),
+                linear-gradient(90deg, #000 15%, rgba(0,0,0,0.85) 55%, transparent 100%);
         }
 
         .plyr--fullscreen-active .pause-info-content {
-            max-width: 70%; /* Cho phép nội dung dài ra hơn */
+            max-width: 75%;
+            gap: 3vh; 
         }
 
         .plyr--fullscreen-active .pause-ep-title {
-            /* 2.5vh nghĩa là cao bằng 2.5% chiều cao màn hình -> Rất to */
-            font-size: 2.5vh !important; 
-            padding: 0.8vh 2vh;
-            border-radius: 0.8vh;
-            margin-bottom: 2vh;
+            font-size: clamp(1.1rem, 2.2vh, 1.8rem) !important;
+            letter-spacing: 0.3vh;
         }
 
         .plyr--fullscreen-active .pause-movie-title {
-            /* 10vh -> Tên phim to đùng bằng 10% chiều cao màn hình */
-            font-size: 10vh !important; 
-            line-height: 1;
-            margin-bottom: 3vh;
-            text-shadow: 0.5vh 0.5vh 2vh rgba(0,0,0,0.8);
+            font-size: clamp(4rem, 10vh, 8.5rem) !important; /* Tăng nhẹ trần trên lên 8.5vh */
+            line-height: 1; 
+            filter: drop-shadow(0 1vh 2vh rgba(0,0,0,0.7));
+            margin-bottom: 1vh; 
         }
 
         .plyr--fullscreen-active .pause-desc {
-            /* 2.8vh -> Mô tả to rõ để đọc từ xa */
-            font-size: 2.8vh !important; 
-            line-height: 1.5;
-            border-left-width: 0.8vh; /* Viền trái dày hơn */
-            padding-left: 2vh;
-            max-width: 60%; /* Giới hạn chiều rộng để không tràn hết màn hình */
-            -webkit-line-clamp: 4; /* Hiện nhiều dòng hơn */
+            font-size: clamp(1.25rem, 2.8vh, 2.1rem) !important; /* Nhích size mô tả */
+            line-height: 1.6;
+            max-width: 65%;
+            border-left-width: 0.7vh;
+            padding-left: 2.5vh;
+            -webkit-line-clamp: 4; 
         }
 
-        /* --- 4. RESPONSIVE CHO MOBILE (GIỮ NGUYÊN) --- */
+        /* --- 5. RESPONSIVE MOBILE (GIỮ NGUYÊN) --- */
         @media (max-width: 768px) {
-            .pause-overlay { 
-                padding-left: 20px; 
-                background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.3) 70%, transparent 100%);
-                justify-content: flex-end; 
-                padding-bottom: 80px;
+            .pause-overlay {
+                padding: 0 20px 80px; 
+                justify-content: flex-end;
+                background: linear-gradient(to top, #000 10%, rgba(0,0,0,0.7) 60%, transparent 100%);
+                backdrop-filter: none;
             }
-            .pause-info-content { max-width: 100%; transform: translateY(20px); }
-            .pause-overlay.active .pause-info-content { transform: translateY(0); }
-            
-            .pause-movie-title { font-size: 1.8rem; margin-bottom: 8px; }
-            .pause-ep-title { font-size: 0.7rem; padding: 3px 8px; margin-bottom: 8px; }
-            .pause-desc { font-size: 0.9rem; -webkit-line-clamp: 2; padding-left: 10px; border-left-width: 3px; }
+            .pause-info-content { gap: 10px; }
+            .pause-ep-title { font-size: 0.75rem; }
+            .pause-movie-title { font-size: 2.2rem; }
+            .pause-desc { font-size: 0.95rem; }
         }
-        
-        
     </style>
 </head>
 <body>
@@ -2060,11 +2073,12 @@ footer {
             const overlay = document.createElement('div');
             overlay.className = 'pause-overlay';
             
-            // Lấy mô tả ngắn gọn (loại bỏ HTML tag nếu có)
+            // Lấy mô tả ngắn gọn
             const div = document.createElement("div");
-            div.innerHTML = currentMovieData.content || "Đang cập nhật...";
+            div.innerHTML = currentMovieData.content || "Nội dung đang cập nhật...";
             const rawDesc = div.innerText;
 
+            // HTML MỚI: Đơn giản hơn, bỏ div thừa
             overlay.innerHTML = `
                 <div class="pause-info-content">
                     <div class="pause-ep-title">ĐANG PHÁT: TẬP ${currentEpName || "Tập 1"}</div>
