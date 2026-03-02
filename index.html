@@ -2712,8 +2712,15 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             }
 
             const genres = m.category ? m.category.slice(0, 2).map(c => c.name).join(' • ') : '';
-            const epBadge = (isHistory && m.epName) 
-                ? `<div style="position:absolute; top:10px; left:10px; background:var(--primary-color); color:#fff; padding:3px 8px; border-radius:5px; font-size:10px; font-weight:800; z-index:5; box-shadow:0 4px 10px rgba(0,0,0,0.5);">${m.epName.toUpperCase()}</div>` 
+            // 1. Xử lý tên tập: Nếu chưa có chữ "TẬP" và không phải "FULL" thì thêm vào
+            let badgeText = (m.epName || "").toUpperCase();
+            if (badgeText && !badgeText.includes("TẬP") && !badgeText.includes("FULL") && !badgeText.includes("TRỌN BỘ")) {
+                badgeText = "TẬP " + badgeText;
+            }
+
+            // 2. Render Badge
+            const epBadge = (isHistory && badgeText) 
+                ? `<div style="position:absolute; top:10px; left:10px; background:var(--primary-color); color:#fff; padding:3px 8px; border-radius:5px; font-size:10px; font-weight:800; z-index:5; box-shadow:0 4px 10px rgba(0,0,0,0.5);">${badgeText}</div>` 
                 : '';
 
             let redirectUrl = `/xem-phim/${m.slug}`; 
