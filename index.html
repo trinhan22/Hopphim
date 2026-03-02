@@ -1705,6 +1705,47 @@ footer {
             .short-card { flex: 0 0 130px; border-radius: 8px; } /* Mobile cố định px */
             .short-info { transform: translateY(0); opacity: 1; padding: 8px 5px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); } /* Mobile luôn hiện info */
         }
+
+        /* --- CSS RIÊNG CHO MODAL CARD DỌC --- */
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+            gap: 20px;
+        }
+
+        .modal-card-vertical {
+            position: relative;
+            aspect-ratio: 2/3; /* Tỉ lệ dọc */
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #1a1c24;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-card-vertical:hover {
+            transform: scale(1.05);
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 5;
+        }
+
+        .modal-card-vertical img { width: 100%; height: 100%; object-fit: cover; }
+
+        .modal-info-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 40px 10px 10px 10px;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 20%, transparent);
+            display: flex; flex-direction: column; justify-content: flex-end;
+        }
+
+        .modal-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 3px; line-height: 1.3; }
+        .modal-meta { font-size: 0.8rem; color: #ccc; }
+        
+        @media (max-width: 900px) {
+            .modal-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 15px; }
+        }
     </style>
 </head>
 <body>
@@ -2420,30 +2461,30 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
         if (modalContent) modalContent.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#888;"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Đang tải...</div>`;
     }
 
-    // 2. Hàm Fetch API và Render ra Modal (Đã nâng cấp logic link)
+    // --- RENDER MODAL (CARD DỌC) ---
     async function fetchAndRender(apiUrl) {
         try {
             const res = await fetch(apiUrl);
             const data = await res.json();
             const container = document.getElementById('modalContent');
-            
-            // 👇 Kiểm tra xem API này có phải là của Short Drama không
             const isShortDrama = apiUrl.includes('short-drama'); 
             
             if (data.data && data.data.items) {
                 let html = '';
                 data.data.items.forEach(m => {
                     const img = m.thumb_url.startsWith('http') ? m.thumb_url : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
-                    
-                    // Nếu là Short Drama -> Link dạng /short/ten-phim
                     const linkUrl = isShortDrama ? `/short/${m.slug}` : `/xem-phim/${m.slug}`;
 
+                    // HTML Card Dọc (Modal Vertical Card)
                     html += `
-                    <div class="n-card" onclick="window.location.href='${linkUrl}'">
-                        <img src="${img}" style="width:100%; height:100%; object-fit:cover; border-radius:12px; display:block !important;">
-                        <div class="n-info-layer" style="padding:10px;"> 
-                            <div class="n-title-in" style="font-size:0.9rem; font-weight:700; color:#fff;">${m.name}</div>
-                            <div style="font-size:0.75rem; color:#aaa;">${m.year} • ${m.lang}</div>
+                    <div class="modal-card-vertical" onclick="window.location.href='${linkUrl}'" title="${m.name}">
+                        <div style="position:absolute; top:8px; right:8px; background:#FF8F50; color:#fff; font-size:0.6rem; font-weight:800; padding:2px 6px; border-radius:4px; z-index:2;">
+                            ${m.lang}
+                        </div>
+                        <img src="${img}" loading="lazy">
+                        <div class="modal-info-overlay"> 
+                            <div class="modal-title">${m.name}</div>
+                            <div class="modal-meta">${m.year}</div>
                         </div>
                     </div>`;
                 });
@@ -2639,27 +2680,29 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             return "Vừa xong";
         }
 
-        // --- RENDER CARD (FIX LỖI CHỮ THẤP + UNDEFINED) ---
+        // --- RENDER CARD NGANG (TRANG CHỦ & HISTORY) ---
         window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
-            // 1. Xử lý link ảnh
-            const imgWide = m.poster_url 
-                ? (m.poster_url.startsWith('http') ? m.poster_url : IMG_BASE + m.poster_url) 
-                : (m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url);
+            // 1. Xử lý ảnh: Ưu tiên Poster. Nếu ko có (như Short), dùng Thumb.
+            let imgSource = m.poster_url;
+            if (!imgSource || imgSource === "") imgSource = m.thumb_url;
 
+            // Link ảnh đầy đủ
+            const imgFull = imgSource.startsWith('http') ? imgSource : IMG_BASE + imgSource;
             const imgPortrait = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
 
-            // 2. Xử lý tên & class
+            // 2. Tên & Class
             const nameFixed = (m.name || "").replace(/'/g, "\\'");
             const historyClass = isHistory ? `history-card-${m.slug}` : '';
             
-            // 🔥 FIX UNDEFINED: Kiểm tra tên gốc
+            // 3. Xử lý tên gốc
             let originName = m.origin_name;
             if (!originName || originName === "undefined" || originName === "null") originName = "";
 
-            // 🔥 FIX CHỮ THẤP: Nếu là History thì padding dưới to hơn (40px) để đẩy chữ lên
+            // 4. Style Padding
+            // History cần padding đáy lớn hơn (40px) để đẩy chữ lên
             const paddingStyle = isHistory ? "padding: 12px 12px 40px 12px;" : "padding: 12px;";
 
-            // 3. Logic Độ tuổi
+            // 5. Logic Độ tuổi
             let ageTag = 'T13';
             if (m.category) {
                 const cats = m.category.map(c => c.slug);
@@ -2679,14 +2722,15 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             return `
             <div class="n-card ${historyClass}" onclick="window.location.href='${redirectUrl}'">
                 ${epBadge}
-                <img src="${imgWide}" class="n-poster-wide" loading="lazy">
+                
+                <img src="${imgFull}" class="n-poster-wide" loading="lazy" style="object-position: top;">
                 <img src="${imgPortrait}" class="n-poster-portrait" loading="lazy">
                 
                 <div class="n-info-layer" style="${paddingStyle} display: flex; flex-direction: column; justify-content: flex-end;"> 
                     
                     <div class="n-title-in" style="margin-bottom: 0px; line-height: 1.2;">${m.name}</div>
                     
-                    ${originName ? `<div style="font-size: 0.75rem; color: #aaa; margin-bottom: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">${originName}</div>` : ''}
+                    ${originName ? `<div style="font-size: 0.75rem; color: #aaa; margin-bottom: 3px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">${originName}</div>` : ''}
 
                     <div class="n-meta-in" style="flex-wrap: wrap; gap: 5px; margin-top: -4px;">
                         ${isHistory 
@@ -2701,7 +2745,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                     
                     ${!isHistory ? `<div style="font-size: 0.7rem; color: #777; margin-top: 2px; line-height: 1.2;">${genres}</div>` : ''}
 
-                    <div class="n-actions-in" style="margin-top: 3px;">
+                    <div class="n-actions-in" style="margin-top: 4px;">
                         <button class="btn-mini-play">
                             <i class="fas fa-play"></i> ${isHistory ? 'TIẾP TỤC' : 'XEM NGAY'}
                         </button>
@@ -2837,11 +2881,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
         // --- LOAD TOP 5 PHIM BỘ (ĐÃ THÊM TÊN TIẾNG ANH) ---
         async function loadTop5() {
             const MANUAL_TOP_5 = [
-                "dai-chien-van-menh", 
-                "trao-em-ca-vu-tru", 
                 "con-ra-the-thong-gi-nua-2026", 
+                "mua-ruc-ro-cua-em", 
                 "tieng-yeu-nay-anh-dich-duoc-khong", 
-                "nghe-thuat-lua-doi-cua-sarah"
+                "dai-chien-van-menh", 
+                "hoa-mau-2026"
             ];
             
             const container = document.getElementById('top5List');
@@ -2908,12 +2952,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
         async function loadCinemaMovies() {
             // 👇 DANH SÁCH SLUG (Bạn thêm bao nhiêu phim cũng được)
             const CINEMA_SLUGS = [
-                "tu-chien-tren-khong",
-                "co-hau-gai-2025",
-                "ho-den-tu-than",
+                "an-danh-phan-3",
                 "avatar-3-lua-va-tro-tan",
-                "linh-truong",
-                "phi-vu-dong-troi-2"
+                "deadpool-va-wolverine",
+                "godzilla-x-kong-de-che-moi",
+                "exhuma-quat-mo-trung-ma",
+                "co-hau-gai-2025"
             ]; 
             
             const container = document.getElementById('cinemaList');
@@ -3005,7 +3049,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             const MANUAL_TOP_MOVIES = [
                 "avatar-3-lua-va-tro-tan", 
                 "quai-vat-nho-nui-lang-lang", 
-                "tro-lai-qua-khu", 
+                "doi-cam-lang-ac-mong-trong-suong", 
                 "ke-an-dat", 
                 "phi-vu-dong-troi-2"
             ];
