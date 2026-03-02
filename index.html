@@ -1798,8 +1798,8 @@ footer {
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         .review-card:hover {
-            transform: translateY(-5px); border-color: var(--primary-color);
-            box-shadow: 0 15px 40px rgba(255, 94, 98, 0.2);
+            transform: translateY(-5px); border-color: #FF8F50;
+            box-shadow: 0 15px 40px rgba(255, 161, 94, 0.3);
         }
         .review-bg-blur {
             position: absolute; inset: 0; background-size: cover; background-position: center;
@@ -1920,7 +1920,7 @@ footer {
             display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
         }
         .rc-movie-tag { 
-            font-size: 0.75rem; color: var(--primary-color); font-weight: 600; 
+            font-size: 0.75rem; color: #FF8F50; font-weight: 600; 
             display: flex; align-items: center; gap: 6px; margin-top: 3px;
         }
         .rc-item:hover .rc-movie-tag { color: #fff; }
@@ -2232,7 +2232,7 @@ footer {
 
             <div class="comm-col-box">
                 <div class="comm-box-header">
-                    <h3><i class="fas fa-bolt" style="color:#ff4757;"></i> Bình Luận Mới</h3>
+                    <h3><i class="fas fa-bolt" style="color:#FFD700;"></i> Bình Luận Mới</h3>
                 </div>
                 <div class="recent-comments-list" id="recentCommentsList">
                     <div class="loading-placeholder">Đang tải...</div>
@@ -2431,7 +2431,7 @@ footer {
                     const vipClass = isVip ? 'is-vip-user' : '';
                     
                     const avatar = (u.photoURL && u.photoURL.startsWith('http')) ? u.photoURL : 'https://wibuphim.netlify.app/Guest.webp';
-                    const name = u.displayName || 'Thành viên';
+                    const name = u.displayName || 'Ẩn danh';
                     const coin = u.coinBalance || 0;
                     
                     lbHtml += `
@@ -2440,7 +2440,7 @@ footer {
                                 <div class="lb-rank">${rank}</div>
                                 <img src="${avatar}" class="lb-avatar" onerror="this.src='https://wibuphim.netlify.app/Guest.webp'">
                                 <div class="lb-info">
-                                    <div class="lb-name">${name} ${isVip ? '<i class="fas fa-check-circle" style="font-size:0.7rem; color:#FFD700;"></i>' : ''}</div>
+                                    <div class="lb-name">${name} ${isVip ? '<i class="fas fa-crown" style="font-size:0.7rem; color:#FFD700;"></i>' : ''}</div>
                                 </div>
                             </div>
                             <div class="lb-coin"><i class="fas fa-coins"></i> ${coin.toLocaleString()}</div>
@@ -2544,7 +2544,7 @@ footer {
                             <img src="${avatar}" class="rc-avatar-small" onerror="this.src='https://wibuphim.netlify.app/Guest.webp'">
                             <div class="rc-content">
                                 <div class="rc-header">
-                                    <span class="${nameClass}" style="font-size:0.9rem;">${c.userName} ${isVip ? '<i class="fas fa-check-circle" style="font-size:0.7rem;"></i>' : ''}</span>
+                                    <span class="${nameClass}" style="font-size:0.9rem;">${c.userName} ${isVip ? '<i class="fas fa-crown" style="font-size:0.7rem;"></i>' : ''}</span>
                                     <span class="rc-time">${timeStr}</span>
                                 </div>
                                 <div class="rc-text">${c.content}</div>
@@ -2566,12 +2566,17 @@ footer {
         } catch (e) { console.error("Lỗi tải comment:", e); }
     }
 
-    // --- CAROUSEL LOGIC ---
+    // --- CAROUSEL LOGIC (FIXED WHITESPACE - GIỮ NGUYÊN SIZE) ---
     function setupCarousel() {
         const track = document.getElementById('featuredTrack');
-        if (!track || track.children.length === 0) return;
+        // Lấy thêm cái khung bao ngoài để đo chiều rộng
+        const viewport = document.querySelector('.comm-carousel-viewport');
+
+        if (!track || !viewport || track.children.length === 0) return;
 
         const cards = track.children;
+        
+        // --- GIỮ NGUYÊN KÍCH THƯỚC CŨ THEO YÊU CẦU ---
         const cardWidth = 320 + 20; // 320px width + 20px gap
 
         const moveSlide = () => {
@@ -2580,18 +2585,37 @@ footer {
 
         const next = () => {
             sliderIndex++;
-            const itemsVisible = window.innerWidth > 900 ? 3 : 1; 
-            if (sliderIndex > cards.length - itemsVisible) {
-                sliderIndex = 0; // Loop về đầu
+
+            // 🔥 LOGIC FIX DƯ KHOẢNG TRẮNG:
+            // 1. Lấy chiều rộng thực tế của khung nhìn
+            const containerWidth = viewport.offsetWidth;
+            
+            // 2. Tính xem màn hình hiện tại chứa được bao nhiêu card nguyên vẹn
+            // Ví dụ: Màn 1000px chứa được khoảng 2.9 card -> Lấy 2 card
+            const visibleItems = Math.floor(containerWidth / cardWidth);
+
+            // 3. Tính chỉ số tối đa được phép trượt tới
+            // (Tổng số card) trừ đi (Số card đang nhìn thấy)
+            const maxIndex = Math.max(0, cards.length - visibleItems);
+
+            // Nếu index vượt quá giới hạn -> Quay về đầu (Loop)
+            if (sliderIndex > maxIndex) {
+                sliderIndex = 0; 
             }
             moveSlide();
         };
 
         const prev = () => {
             sliderIndex--;
-            const itemsVisible = window.innerWidth > 900 ? 3 : 1;
+
+            // Tính toán tương tự cho nút Prev
+            const containerWidth = viewport.offsetWidth;
+            const visibleItems = Math.floor(containerWidth / cardWidth);
+            const maxIndex = Math.max(0, cards.length - visibleItems);
+
+            // Nếu lùi quá 0 -> Nhảy tới vị trí cuối cùng (không bị lòi khoảng trắng)
             if (sliderIndex < 0) {
-                sliderIndex = Math.max(0, cards.length - itemsVisible); // Loop về cuối
+                sliderIndex = maxIndex; 
             }
             moveSlide();
         };
@@ -2599,8 +2623,18 @@ footer {
         const btnNext = document.getElementById('btnNextComm');
         const btnPrev = document.getElementById('btnPrevComm');
         
-        if(btnNext) btnNext.onclick = () => { next(); resetTimer(); };
-        if(btnPrev) btnPrev.onclick = () => { prev(); resetTimer(); };
+        // Reset event cũ để tránh click đúp
+        if(btnNext) {
+            btnNext.onclick = null;
+            btnNext.onclick = () => { next(); resetTimer(); };
+        }
+        if(btnPrev) {
+            btnPrev.onclick = null;
+            btnPrev.onclick = () => { prev(); resetTimer(); };
+        }
+
+        // Xóa timer cũ nếu có
+        if (sliderInterval) clearInterval(sliderInterval);
 
         function startTimer() { sliderInterval = setInterval(next, 4000); }
         function resetTimer() { clearInterval(sliderInterval); startTimer(); }
