@@ -947,117 +947,101 @@ footer {
         }
 
 
- /* --- CSS CHO PAUSE OVERLAY (ULTRA BIG FULLSCREEN VERSION) --- */
-        .pause-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            /* Gradient đậm đà hơn */
-            background: linear-gradient(90deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 60%, transparent 100%);
-            z-index: 40;
-            display: flex; flex-direction: column; justify-content: center;
-            padding-left: 6%; 
-            opacity: 0; visibility: hidden;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            pointer-events: none;
-        }
+        /* --- CSS CHO PAUSE OVERLAY (NETFLIX PREMIUM STYLE) --- */
+.pause-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Gradient tối ở bên trái để nổi bật thông tin, mờ dần về bên phải */
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+    z-index: 40;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 6%; 
+    
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Hiệu ứng mượt hơn */
+    pointer-events: none;
+}
 
-        .pause-overlay.active { opacity: 1; visibility: visible; }
+/* Khi active */
+.pause-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
 
-        .pause-info-content {
-            max-width: 85%; 
-            transform: translateX(-20px);
-            transition: transform 0.5s ease-out;
-        }
-        .pause-overlay.active .pause-info-content { transform: translateX(0); }
+/* Khung nội dung */
+.pause-info-content {
+    max-width: 500px;
+    transform: translateX(-20px); /* Trượt từ trái qua thay vì dưới lên cho hiện đại */
+    transition: transform 0.5s ease-out;
+}
 
-        /* --- 1. CHẾ ĐỘ CỬA SỔ (GIỮ NGUYÊN NHƯ CŨ - ĐANG ĐẸP) --- */
-        .pause-ep-title {
-            color: #fff;
-            background: var(--primary-color);
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.9rem; 
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3);
-        }
+.pause-overlay.active .pause-info-content {
+    transform: translateX(0);
+}
 
-        .pause-movie-title {
-            color: #fff;
-            font-size: 2.5rem; 
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 15px;
-            text-transform: capitalize;
-            letter-spacing: -1px;
-            text-shadow: 2px 4px 15px rgba(0,0,0,0.6); 
-        }
+/* Badge "Đang phát" */
+.pause-ep-title {
+    color: #fff;
+    background: var(--primary-color);
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3);
+}
 
-        .pause-desc {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            border-left: 4px solid rgba(255, 255, 255, 0.3);
-            padding-left: 18px;
-        }
+/* Tên phim */
+.pause-movie-title {
+    color: #fff;
+    font-size: 3.5rem; /* To và rõ */
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 18px;
+    text-transform: capitalize;
+    letter-spacing: -1px;
+    text-shadow: 2px 4px 20px rgba(0,0,0,0.5);
+}
 
-        /* --- 2. CHẾ ĐỘ TOÀN MÀN HÌNH (SUPER CINEMA MODE) --- */
-        .plyr--fullscreen-active .pause-overlay {
-            padding-left: 10%; /* Đẩy nội dung vào sâu hơn */
-            background: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.9) 40%, rgba(0, 0, 0, 0.4) 100%);
-        }
+/* Mô tả phim */
+.pause-desc {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: 90%;
+    border-left: 3px solid rgba(255, 255, 255, 0.2); /* Vạch kẻ dọc nhẹ bên trái */
+    padding-left: 20px;
+}
 
-        .plyr--fullscreen-active .pause-info-content { 
-            max-width: 80%; /* Mở rộng khung chứa để chữ to không bị xuống dòng bậy */
-            transform: translateX(0); /* Đảm bảo vị trí chuẩn */
-        }
-
-        .plyr--fullscreen-active .pause-ep-title {
-            font-size: 2rem; /* 🔥 Badge Tập phim siêu to */
-            padding: 12px 30px;
-            margin-bottom: 40px;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(255, 94, 98, 0.4);
-        }
-
-        .plyr--fullscreen-active .pause-movie-title {
-            font-size: 9rem; /* 🔥 TÊN PHIM KHỔNG LỒ (9rem) */
-            margin-bottom: 40px;
-            letter-spacing: -4px; /* Dồn chữ lại cho chặt & ngầu */
-            line-height: 0.9;
-            text-shadow: 5px 10px 30px rgba(0,0,0,0.8); /* Bóng đổ sâu hơn */
-        }
-
-        .plyr--fullscreen-active .pause-desc {
-            font-size: 2.2rem; /* 🔥 Mô tả rất to, dễ đọc từ xa */
-            line-height: 1.5;
-            padding-left: 50px;
-            border-left-width: 10px; /* Viền trái dày hơn */
-            max-width: 100%;
-            -webkit-line-clamp: 5; /* Hiện tối đa 5 dòng */
-        }
-
-        /* --- 3. MOBILE (GIỮ NGUYÊN) --- */
-        @media (max-width: 768px) {
-            .pause-overlay { 
-                padding-left: 20px; padding-bottom: 70px;
-                justify-content: flex-end;
-                background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.3) 70%, transparent 100%);
-            }
-            .pause-info-content { max-width: 100%; transform: translateY(20px); }
-            .pause-overlay.active .pause-info-content { transform: translateY(0); }
-            
-            .pause-movie-title { font-size: 1.8rem; margin-bottom: 8px; }
-            .pause-ep-title { font-size: 0.7rem; padding: 2px 8px; margin-bottom: 8px; }
-            .pause-desc { font-size: 0.9rem; -webkit-line-clamp: 2; padding-left: 10px; border-left-width: 3px; }
-        }
+/* --- RESPONSIVE CHO MOBILE --- */
+@media (max-width: 768px) {
+    .pause-overlay { 
+        padding-left: 30px; 
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.2) 100%); /* Mobile đổi hướng gradient từ dưới lên */
+        justify-content: flex-end; /* Đẩy xuống dưới cho dễ nhìn */
+        padding-bottom: 100px;
+    }
+    .pause-info-content { max-width: 90%; transform: translateY(20px); }
+    .pause-overlay.active .pause-info-content { transform: translateY(0); }
+    
+    .pause-movie-title { font-size: 2rem; margin-bottom: 10px; }
+    .pause-ep-title { font-size: 0.75rem; padding: 3px 8px; }
+    .pause-desc { font-size: 0.9rem; -webkit-line-clamp: 2; padding-left: 15px; }
+}
         
     </style>
 </head>
@@ -1438,6 +1422,8 @@ footer {
         let player; 
         let currentMovieData = null; 
         let currentEpName = "Tập 1";
+        // 🔥 THÊM DÒNG NÀY: Biến để quản lý thời gian lưu (chống ghi đè)
+        let saveHistoryTimeout = null;
 
         // --- 3. PHÂN LOẠI NGUỒN PHIM (LOGIC QUAN TRỌNG) ---
         const urlParams = new URLSearchParams(window.location.search);
@@ -1827,12 +1813,12 @@ footer {
 
             // 4. Xử lý ẩn/hiện nút (Chỉ hiện trong 120s đầu phim)
             player.on('timeupdate', () => {
-                const t = player.currentTime;
-                // Hiện nút nếu đang ở giây thứ 0 đến giây thứ 120
-                if (t > 0 && t < 120 && player.playing) {
-                    btn.classList.add('show');
-                } else {
-                    btn.classList.remove('show');
+                const t = Math.floor(player.currentTime);
+                
+                // 🔥 FIX: Chỉ lưu khi đã xem được hơn 10 giây (t > 10)
+                // Và lưu mỗi 15 giây một lần (t % 15 === 0)
+                if (t > 10 && t % 15 === 0) {
+                    window.saveToHistory(currentMovieData, currentEpName, t);
                 }
             });
             
@@ -2061,11 +2047,17 @@ window.closeMobileSearch = () => {
                         
                         epHtml += `<div class="ep-btn" id="btn-ep-${idx}" onclick="window.changeEp('${link}', '${type}', this, '${ep.name}')">${ep.name}</div>`;
 
-                        // 🔥 LOGIC TỰ TÌM TẬP CŨ
-                        // Nếu có lịch sử -> So sánh tên tập
-                        if (savedEpName && ep.name === savedEpName) {
-                            targetEpToPlay = { link, type, name: ep.name };
-                            targetIndex = idx;
+                        // 🔥 LOGIC TÌM TẬP (MỚI): So sánh thông minh hơn
+                        if (savedEpName) {
+                            // Xóa chữ "Tập", xóa số 0 ở đầu (Ví dụ: "Tập 01" thành "1", "Tập 1" thành "1")
+                            const n1 = ep.name.toLowerCase().replace(/tập\s*/g, '').replace(/^0+/, '').trim();
+                            const n2 = savedEpName.toLowerCase().replace(/tập\s*/g, '').replace(/^0+/, '').trim();
+
+                            // So sánh 2 tên đã chuẩn hóa hoặc so sánh nguyên bản
+                            if (n1 === n2 || ep.name === savedEpName) {
+                                targetEpToPlay = { link, type, name: ep.name };
+                                targetIndex = idx;
+                            }
                         }
                     });
 
@@ -2199,23 +2191,32 @@ window.closeMobileSearch = () => {
             document.getElementById('episodeListDesktop').innerHTML = html;
         }
 
-        // --- LOGIC ĐỔI TẬP (FIXED VIP CHECK) ---
-        window.changeEp = async function(link, type, btn, epName = null, time = 0) {
+        // --- 5. HÀM ĐỔI TẬP (ĐÃ FIX: Đợi 10s mới lưu để tránh ghi đè tập 1) ---
+        window.changeEp = function(link, type, btn, epName, startTime = 0) {
             if (btn) {
                 document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                if(epName) currentEpName = epName;
-                document.querySelector('.player-box')?.scrollIntoView({behavior: "smooth", block: "center"});
+            }
+            if (epName) currentEpName = epName;
+
+            // Xử lý Player
+            if (window.isCurrentVip) {
+                window.startActualPlayer(link, type, startTime);
+            } else {
+                showPrerollAd(link, type, startTime);
             }
 
-            // Dùng biến toàn cục đã check ở bước 2
-            if (window.isCurrentVip) {
-                console.log("💎 VIP: Bỏ qua Preroll Ad");
-                window.startActualPlayer(link, type, time);
-            } else {
-                console.log("👤 FREE: Hiện Preroll Ad");
-                showPrerollAd(link, type, time);
-            }
+            // 🔥 FIX QUAN TRỌNG: Hủy lệnh lưu cũ ngay lập tức
+            if (saveHistoryTimeout) clearTimeout(saveHistoryTimeout);
+            
+            // 🔥 CHỈ LƯU SAU 10 GIÂY: 
+            // Giúp code có thời gian nhận diện tập cũ và nhảy tới đó trước khi bị lưu đè tập 1
+            saveHistoryTimeout = setTimeout(() => {
+                if(window.currentUser) {
+                    window.saveToHistory(currentMovieData, currentEpName, 0); 
+                    console.log("💾 Bắt đầu lưu lịch sử cho:", currentEpName);
+                }
+            }, 10000); 
         }
 
         // --- QUẢNG CÁO VIDEO (PREROLL) - Đã sửa thành MP4 ---
