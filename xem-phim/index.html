@@ -78,8 +78,8 @@
             position: absolute !important; 
             
             /* Vị trí: Nằm trên icon loa */
-            bottom: 35px !important; 
-            left: 50% !important;
+            bottom: 28px !important; 
+            left: 28px !important;
             
             /* Xoay dọc 90 độ */
             transform: translateX(-50%) rotate(-90deg) !important;
@@ -95,7 +95,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             
             /* Style giao diện */
-            background: rgba(20, 20, 20, 0.95) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
             border-radius: 10px;
             padding: 12px 10px !important; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
@@ -113,7 +113,7 @@
         .plyr__volume input[type=range]:focus {
             opacity: 1;
             visibility: visible;
-            bottom: 45px !important; /* Hiệu ứng trượt lên nhẹ */
+            bottom: 77px !important; /* Hiệu ứng trượt lên nhẹ */
         }
 
         /* 5. MÀU SẮC */
@@ -1045,69 +1045,90 @@ footer {
 }
 
 /* ==========================================================================
-           🔥 FIX NÚT BỎ QUA GIỚI THIỆU (MOBILE & PC)
+           🔥 NÚT BỎ QUA GIỚI THIỆU (GHOST STYLE -> SOLID WHITE)
            ========================================================================== */
         
         .skip-intro-btn {
-            position: absolute;
-            bottom: 70px; /* PC: Nằm trên thanh điều khiển */
-            right: 20px;
-            background-color: rgba(20, 20, 20, 0.85);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 10px 24px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            z-index: 9999; /* Đảm bảo nằm trên mọi layer khác */
+            position: absolute !important;
+            right: 25px !important;
+            
+            /* Vị trí ẩn (để tạo hiệu ứng trượt lên) */
+            bottom: 60px !important; 
+            
+            /* Giao diện lúc đầu: Trong suốt + Mờ nền */
+            background-color: rgba(0, 0, 0, 0.3) !important; /* Đen mờ nhẹ để dễ đọc chữ */
+            backdrop-filter: blur(5px) !important; /* Hiệu ứng làm mờ video bên dưới */
+            border: 1px solid rgba(255, 255, 255, 0.6) !important; /* Viền trắng mờ */
+            color: #fff !important;
+            
+            padding: 10px 24px !important;
+            border-radius: 50px !important; /* Bo tròn kiểu viên thuốc */
+            
+            font-family: 'Inter', sans-serif !important;
+            font-weight: 700 !important;
+            font-size: 0.9rem !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            
+            cursor: pointer !important;
+            z-index: 2147483647 !important; /* Luôn nổi trên cùng */
+            
+            /* Trạng thái ẩn */
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
+            pointer-events: none;
+            
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            
+            /* Hiệu ứng chuyển đổi mượt mà */
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
         }
 
-        .skip-intro-btn i { font-size: 0.9rem; }
-
-        .skip-intro-btn:hover {
-            background-color: #fff;
-            color: #000;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255,255,255,0.3);
+        /* Icon mũi tên */
+        .skip-intro-btn i {
+            font-size: 1rem !important;
+            transition: transform 0.3s ease !important;
         }
 
-        /* Class kích hoạt hiện nút */
+        /* --- TRẠNG THÁI HIỆN (JS thêm class này vào) --- */
         .skip-intro-btn.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            bottom: 80px !important; /* Trượt lên vị trí chuẩn */
         }
 
-        /* --- MOBILE ADJUSTMENT --- */
+        /* --- TRẠNG THÁI HOVER (Rê chuột vào) --- */
+        .skip-intro-btn:hover {
+            background-color: #ffffff !important; /* Nền trắng đục */
+            border-color: #ffffff !important;
+            color: #FF5E62 !important; /* Chữ đen tương phản */
+            
+            /* Hiệu ứng bay lên và đổ bóng sáng */
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.4) !important;
+        }
+
+        /* Mũi tên dịch chuyển khi hover */
+        .skip-intro-btn:hover i {
+            transform: translateX(5px);
+        }
+
+        /* --- MOBILE RESPONSIVE --- */
         @media (max-width: 768px) {
             .skip-intro-btn {
-                bottom: 65px; /* Mobile: Nằm ngay trên thanh progress bar */
-                right: 15px;
-                padding: 8px 16px;
-                font-size: 0.8rem;
-                background-color: rgba(255, 255, 255, 0.9); /* Mobile cho nền sáng để dễ thấy */
-                color: #000;
-                border: none;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                right: 15px !important;
+                padding: 8px 16px !important;
+                font-size: 0.75rem !important;
+                border-radius: 30px !important;
             }
             
-            /* Đảm bảo nút này không bị ẩn khi Pause */
-            .plyr--paused .skip-intro-btn.show {
-                opacity: 1 !important;
-                visibility: visible !important;
+            .skip-intro-btn.show {
+                bottom: 70px !important; /* Mobile thấp hơn xíu */
             }
         }
-
-
 /* ==========================================================================
            NETFLIX PAUSE OVERLAY (SUPER BIG FULLSCREEN FIX)
            ========================================================================== */
@@ -1983,40 +2004,51 @@ footer {
             }, 1000);
         }
 
-        // --- 🔥 HÀM TẠO NÚT BỎ QUA GIỚI THIỆU (ĐÃ TẮT TOAST) ---
+        // --- 🔥 HÀM TẠO NÚT BỎ QUA GIỚI THIỆU (FIXED) ---
         function setupSkipIntro(player) {
+            // Xóa nút cũ nếu có để tránh trùng lặp
+            const oldBtn = document.querySelector('.skip-intro-btn');
+            if (oldBtn) oldBtn.remove();
+
             // 1. Tạo nút HTML
             const btn = document.createElement('div');
             btn.className = 'skip-intro-btn';
             btn.innerHTML = 'Bỏ qua giới thiệu <i class="fas fa-forward"></i>';
             
-            // 2. Chèn nút vào khung Player
-            const container = player.elements.container; 
-            container.appendChild(btn);
+            // 2. Chèn nút vào khung Player (Lớp controls hoặc container)
+            // Thay đổi: Chèn vào player.elements.wrapper để chắc chắn nằm trong khung video
+            const targetContainer = player.elements.wrapper || player.elements.container;
+            targetContainer.appendChild(btn);
 
             // 3. Xử lý sự kiện Click
-            btn.addEventListener('click', () => {
-                player.forward(120); // Nhảy cóc 120 giây
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Ngăn sự kiện nổi bọt làm pause video
+                e.preventDefault();
                 
-                // Đã xóa dòng window.showToast ở đây
-                
+                player.forward(60); // Nhảy cóc 60 giây
                 btn.classList.remove('show'); // Ẩn nút sau khi bấm
+                console.log("⏩ Đã bỏ qua giới thiệu!");
             });
 
-            // 4. Xử lý ẩn/hiện nút (Chỉ hiện trong 120s đầu phim)
+            // 4. Xử lý ẩn/hiện nút (Chỉ hiện trong 60s đầu phim)
             player.on('timeupdate', () => {
-                const t = Math.floor(player.currentTime);
-                
-                // 🔥 FIX: Chỉ lưu khi đã xem được hơn 10 giây (t > 10)
-                // Và lưu mỗi 15 giây một lần (t % 15 === 0)
-                if (t > 10 && t % 15 === 0) {
-                    window.saveToHistory(currentMovieData, currentEpName, t);
+                const t = player.currentTime;
+                // Hiện nút nếu đang ở giây thứ 0 đến giây thứ 60 VÀ đang phát
+                if (t > 0 && t < 60 && player.playing) {
+                    btn.classList.add('show');
+                } else {
+                    btn.classList.remove('show');
                 }
             });
             
-            // Ẩn khi pause hoặc seek
+            // Ẩn khi seek
             player.on('seeking', () => btn.classList.remove('show'));
-            player.on('pause', () => btn.classList.remove('show'));
+            
+            // 🔥 QUAN TRỌNG: Đảm bảo nút hiện lại khi Play nếu đang trong vùng thời gian Intro
+            player.on('play', () => {
+                 const t = player.currentTime;
+                 if (t > 0 && t < 120) btn.classList.add('show');
+            });
         }
 
 // --- 🔥 HÀM TẠO GIAO DIỆN KHI PAUSE (NETFLIX STYLE) ---
