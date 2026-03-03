@@ -1338,14 +1338,24 @@ footer {
            ========================================================================== */
         
         /* Ép khung Player bung toàn màn hình, đè lên tất cả */
+        /* ==========================================================================
+           🔥 FIX FULLSCREEN MOBILE & SAFARI (BUNG LỤA 100%)
+           ========================================================================== */
+        
+        /* Khi Plyr kích hoạt chế độ toàn màn hình */
         .plyr--fullscreen-active {
             position: fixed !important;
             top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
             width: 100vw !important; height: 100vh !important;
             background: #000 !important;
-            z-index: 2147483647 !important; /* Cao nhất server :)) */
+            z-index: 2147483647 !important; /* Cao nhất server */
             border-radius: 0 !important;
             margin: 0 !important; padding: 0 !important;
+        }
+
+        /* Ẩn tất cả các thành phần khác để tránh xung đột */
+        body.plyr--fullscreen-active > *:not(.plyr) {
+            display: none !important;
         }
 
         /* Ẩn Header, Footer và các thành phần khác khi đang Fullscreen */
@@ -1699,336 +1709,308 @@ footer {
 
 <script src="../chatbot.js"></script>
 <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, setDoc, addDoc, collection, query, where, orderBy, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, setDoc, addDoc, collection, query, where, orderBy, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // 1. CONFIG FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc",
-            authDomain: "hopphim-29e1c.firebaseapp.com",
-            projectId: "hopphim-29e1c",
-            storageBucket: "hopphim-29e1c.firebasestorage.app",
-            messagingSenderId: "1076044580405",
-            appId: "1:1076044580405:web:a3485f8533604f305e537c",
-            measurementId: "G-6RT4CX2NR0"
-        };
+    // 1. CONFIG FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc",
+        authDomain: "hopphim-29e1c.firebaseapp.com",
+        projectId: "hopphim-29e1c",
+        storageBucket: "hopphim-29e1c.firebasestorage.app",
+        messagingSenderId: "1076044580405",
+        appId: "1:1076044580405:web:a3485f8533604f305e537c",
+        measurementId: "G-6RT4CX2NR0"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-        // 🔥 THÊM DÒNG NÀY: Biến toàn cục để check VIP siêu nhanh
-        window.isCurrentVip = false;
+    window.isCurrentVip = false;
 
-        // 2. CONSTANTS & UI ELEMENTS
-        const API_BASE = 'https://ophim1.com/v1/api/phim';
-        const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
-        
-        // UI Elements
-        const loadingScreen = document.getElementById('loadingScreen');
-        const btnLogin = document.getElementById('btnLogin');
-        const userAvatar = document.getElementById('userAvatar');
-        const userMenu = document.getElementById('userMenu');
-        const mobileMemberBtn = document.getElementById('mobileMemberBtn');
-        const mobileMemberText = document.getElementById('mobileMemberText');
-        const cmtMyAvatar = document.getElementById('cmtMyAvatar');
+    // 2. CONSTANTS & UI ELEMENTS
+    const API_BASE = 'https://ophim1.com/v1/api/phim';
+    const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
+    
+    // UI Elements
+    const loadingScreen = document.getElementById('loadingScreen');
+    const btnLogin = document.getElementById('btnLogin');
+    const userAvatar = document.getElementById('userAvatar');
+    const userMenu = document.getElementById('userMenu');
+    const mobileMemberBtn = document.getElementById('mobileMemberBtn');
+    const mobileMemberText = document.getElementById('mobileMemberText');
+    const cmtMyAvatar = document.getElementById('cmtMyAvatar');
 
-        let currentUser = null;
-        let player; 
-        let currentMovieData = null; 
-        let currentEpName = "Tập 1";
-        // 🔥 THÊM DÒNG NÀY: Biến để quản lý thời gian lưu (chống ghi đè)
-        let saveHistoryTimeout = null;
+    let currentUser = null;
+    let player; 
+    let currentMovieData = null; 
+    let currentEpName = "Tập 1";
+    let saveHistoryTimeout = null;
+    let isGlobalVip = false; 
+    window.isCurrentVip = false; 
+    window.isMovieInitialized = false;
 
-        // --- 3. PHÂN LOẠI NGUỒN PHIM (LOGIC QUAN TRỌNG) ---
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        // Kiểm tra xem có phải phim Youtube Custom không?
-        const isCustomYoutube = urlParams.get('custom') === 'youtube';
-        const ytId = urlParams.get('id');
-        const customName = urlParams.get('name');
+    // --- 3. PHÂN LOẠI NGUỒN PHIM ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const isCustomYoutube = urlParams.get('custom') === 'youtube';
+    const ytId = urlParams.get('id');
+    const customName = urlParams.get('name');
 
-        // Lấy Slug cho phim thường (Ophim)
-        let movieSlug = urlParams.get('slug');
-        if (!movieSlug && !isCustomYoutube) {
-            const path = window.location.pathname;
-            const parts = path.split('/').filter(part => part !== '');
-            const lastPart = parts[parts.length - 1];
-            // Loại trừ các file html để không bị nhầm
-            if (lastPart && !lastPart.includes('.html')) {
-                movieSlug = lastPart;
-            }
+    let movieSlug = urlParams.get('slug');
+    if (!movieSlug && !isCustomYoutube) {
+        const path = window.location.pathname;
+        const parts = path.split('/').filter(part => part !== '');
+        const lastPart = parts[parts.length - 1];
+        if (lastPart && !lastPart.includes('.html')) {
+            movieSlug = lastPart;
         }
+    }
 
-        // Nếu không phải Youtube và cũng không có Slug -> Về trang chủ
-        if (!movieSlug && !isCustomYoutube) {
-            alert('Không tìm thấy phim!');
-            window.location.href = '/'; 
+    if (!movieSlug && !isCustomYoutube) {
+        alert('Không tìm thấy phim!');
+        window.location.href = '/'; 
+    }
+
+    // --- HÀM MUA GÓI VIP ---
+    window.buyVipPackage = async () => {
+        if (!window.currentUser) {
+            window.showToast("Vui lòng đăng nhập!", "error");
+            return;
         }
+        const confirmBuy = await window.customConfirm("Gia hạn VIP 30 ngày với 50 Coin?");
+        if (!confirmBuy) return;
 
-        // --- HÀM MUA GÓI VIP ---
-        window.buyVipPackage = async () => {
-            if (!window.currentUser) {
-                window.showToast("Vui lòng đăng nhập!", "error");
+        const userRef = doc(db, "users", window.currentUser.uid);
+        try {
+            const snap = await getDoc(userRef);
+            if (!snap.exists()) return;
+            
+            const data = snap.data();
+            if ((data.coinBalance || 0) < 50) {
+                window.showToast("Số dư không đủ 50 Coin!", "error");
+                setTimeout(() => window.location.href = '/nap-coin.html', 1500);
                 return;
             }
-            const confirmBuy = await window.customConfirm("Gia hạn VIP 30 ngày với 50 Coin?");
-            if (!confirmBuy) return;
 
-            const userRef = doc(db, "users", window.currentUser.uid);
-            try {
-                const snap = await getDoc(userRef);
-                if (!snap.exists()) return;
-                
-                const data = snap.data();
-                if ((data.coinBalance || 0) < 50) {
-                    window.showToast("Số dư không đủ 50 Coin!", "error");
-                    setTimeout(() => window.location.href = '/nap-coin.html', 1500);
-                    return;
-                }
-
-                const thirtyDays = 2592000000;
-                let newExpiration = Date.now() + thirtyDays;
-                if (data.vipExpiration && data.vipExpiration > Date.now()) {
-                    newExpiration = data.vipExpiration + thirtyDays;
-                }
-
-                await updateDoc(userRef, {
-                    coinBalance: increment(-50),
-                    vipExpiration: newExpiration
-                });
-                window.showToast("Đã mua VIP thành công!", "success");
-            } catch (e) {
-                console.error(e);
-                window.showToast("Lỗi giao dịch!", "error");
+            const thirtyDays = 2592000000;
+            let newExpiration = Date.now() + thirtyDays;
+            if (data.vipExpiration && data.vipExpiration > Date.now()) {
+                newExpiration = data.vipExpiration + thirtyDays;
             }
+
+            await updateDoc(userRef, {
+                coinBalance: increment(-50),
+                vipExpiration: newExpiration
+            });
+            window.showToast("Đã mua VIP thành công!", "success");
+        } catch (e) {
+            console.error(e);
+            window.showToast("Lỗi giao dịch!", "error");
+        }
+    };
+
+    // --- 3. QUẢN LÝ TRẠNG THÁI NGƯỜI DÙNG & QUẢNG CÁO ---
+    onAuthStateChanged(auth, async (user) => {
+        const btnLogin = document.getElementById('btnLogin');
+        const userAvatar = document.getElementById('userAvatar');
+        const userNameDisplay = document.getElementById('userNameDisplay');
+        const drawerLogout = document.getElementById('drawerLogout');
+        const mobileMemberBtn = document.getElementById('mobileMemberBtn');
+        const vipStatusLabel = document.getElementById('vipStatus');
+        const cmtMyAvatar = document.getElementById('cmtMyAvatar');
+        
+        const adOverlay = document.getElementById('ad-overlay');
+        const adPanels = document.querySelectorAll('.ad-panel-wrapper');
+
+        const activateAds = () => {
+            if(adOverlay) adOverlay.style.display = 'flex';
+            adPanels.forEach(p => p.style.display = 'flex');
         };
 
-        // --- KHAI BÁO BIẾN TOÀN CỤC ĐỂ CHECK VIP CỰC NHANH ---
-        let isGlobalVip = false; // Biến này sẽ lưu trạng thái VIP luôn, không cần fetch lại
+        if (user) {
+            window.currentUser = user;
+            currentUser = user;
 
-        // --- BIẾN TOÀN CỤC ---
-        window.isCurrentVip = false; 
-        window.isMovieInitialized = false;
+            if(btnLogin) btnLogin.style.display = 'none';
+            if(userAvatar) { userAvatar.style.display = 'block'; userAvatar.src = user.photoURL || '/Guest.webp'; }
+            if(cmtMyAvatar) cmtMyAvatar.src = user.photoURL || '/Guest.webp';
+            if(drawerLogout) drawerLogout.style.display = 'flex';
 
-        // --- 3. QUẢN LÝ TRẠNG THÁI NGƯỜI DÙNG & QUẢNG CÁO ---
-        onAuthStateChanged(auth, async (user) => {
-            // Lấy lại element
-            const btnLogin = document.getElementById('btnLogin');
-            const userAvatar = document.getElementById('userAvatar');
-            const userNameDisplay = document.getElementById('userNameDisplay');
-            const drawerLogout = document.getElementById('drawerLogout');
-            const mobileMemberBtn = document.getElementById('mobileMemberBtn');
-            const vipStatusLabel = document.getElementById('vipStatus');
-            const cmtMyAvatar = document.getElementById('cmtMyAvatar');
-            
-            // Element Quảng Cáo
-            const adOverlay = document.getElementById('ad-overlay');
-            const adPanels = document.querySelectorAll('.ad-panel-wrapper');
-
-            // Hàm bật quảng cáo (Chỉ dùng cho user thường)
-            const activateAds = () => {
-                if(adOverlay) adOverlay.style.display = 'flex';
-                adPanels.forEach(p => p.style.display = 'flex');
-            };
-
-            if (user) {
-                // === ĐÃ ĐĂNG NHẬP ===
-                window.currentUser = user;
-                currentUser = user;
-
-                // Update UI cơ bản
-                if(btnLogin) btnLogin.style.display = 'none';
-                if(userAvatar) { userAvatar.style.display = 'block'; userAvatar.src = user.photoURL || '/Guest.webp'; }
-                if(cmtMyAvatar) cmtMyAvatar.src = user.photoURL || '/Guest.webp';
-                if(drawerLogout) drawerLogout.style.display = 'flex';
-
-                // 🔥 CHECK VIP TỪ FIRESTORE 🔥
-                try {
-                    const snap = await getDoc(doc(db, "users", user.uid));
-                    if (snap.exists()) {
-                        const data = snap.data();
-                        const vipExp = data.vipExpiration || 0;
-                        window.isCurrentVip = vipExp > Date.now();
-                        
-                        // Cập nhật UI Header (Tên, Coin, Glow...)
-                        updateHeaderUI(user, data, window.isCurrentVip);
-                    }
-                } catch(e) { console.log("Lỗi check VIP:", e); }
-
-                // 🔥 QUYẾT ĐỊNH QUẢNG CÁO 🔥
-                if (window.isCurrentVip) {
-                    console.log("💎 VIP: Giữ quảng cáo ẩn.");
-                    // Không làm gì cả vì CSS đã ẩn rồi
-                } else {
-                    console.log("👤 FREE: Bật quảng cáo.");
-                    activateAds();
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (snap.exists()) {
+                    const data = snap.data();
+                    const vipExp = data.vipExpiration || 0;
+                    window.isCurrentVip = vipExp > Date.now();
+                    updateHeaderUI(user, data, window.isCurrentVip);
                 }
+            } catch(e) { console.log("Lỗi check VIP:", e); }
 
+            if (window.isCurrentVip) {
+                console.log("💎 VIP: Giữ quảng cáo ẩn.");
             } else {
-                // === KHÁCH (CHƯA ĐĂNG NHẬP) ===
-                window.currentUser = null;
-                currentUser = null;
-                window.isCurrentVip = false;
-
-                if(btnLogin) btnLogin.style.display = 'block';
-                if(userAvatar) userAvatar.style.display = 'none';
-                if(drawerLogout) drawerLogout.style.display = 'none';
-
-                // Khách thì bật quảng cáo luôn
+                console.log("👤 FREE: Bật quảng cáo.");
                 activateAds();
             }
 
-            // 🔥 LOAD PHIM SAU KHI ĐÃ XỬ LÝ XONG QUẢNG CÁO 🔥
-            if (!window.isMovieInitialized) {
-                loadMovie();
-                window.isMovieInitialized = true;
-            }
-        });
+        } else {
+            window.currentUser = null;
+            currentUser = null;
+            window.isCurrentVip = false;
 
-        // Hàm phụ trợ cập nhật Header (Để code trên gọn hơn)
-        function updateHeaderUI(user, data, isVip) {
-            const name = user.displayName || "Thành viên";
-            const balance = data.coinBalance || 0;
-            const userNameDisplay = document.getElementById('userNameDisplay');
-            const userAvatar = document.getElementById('userAvatar');
-            const vipStatusLabel = document.getElementById('vipStatus');
-            const mobileMemberBtn = document.getElementById('mobileMemberBtn');
+            if(btnLogin) btnLogin.style.display = 'block';
+            if(userAvatar) userAvatar.style.display = 'none';
+            if(drawerLogout) drawerLogout.style.display = 'none';
 
-            if (isVip) {
-                userAvatar.classList.add('vip-glow');
-                userNameDisplay.innerHTML = `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>`;
-                const d = new Date(data.vipExpiration);
-                vipStatusLabel.innerHTML = `<span style="color:#FFD700; font-weight:bold;"><i class="fas fa-gem"></i> VIP đến: ${d.getDate()}/${d.getMonth()+1}</span>`;
-            } else {
-                userAvatar.classList.remove('vip-glow');
-                userNameDisplay.innerText = name;
-                vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free Plan`;
-            }
-            // Badge coin
-            if(!userNameDisplay.innerHTML.includes('balance-badge')) {
-                userNameDisplay.innerHTML += ` <span class="balance-badge"><i class="fas fa-coins"></i> ${balance.toLocaleString()}</span>`;
-            }
-            // Mobile Btn
-            if(mobileMemberBtn) {
-                 const nameHtmlMobile = isVip ? `<span class="vip-name">${name}</span>` : `<span>${name}</span>`;
-                 mobileMemberBtn.innerHTML = `<img src="${user.photoURL||'/Guest.webp'}" style="width:30px;height:30px;border-radius:50%;border:2px solid #fff;" class="${isVip?'vip-glow':''}"> ${nameHtmlMobile}`;
-                 mobileMemberBtn.onclick = () => window.location.href = '/profile.html';
-            }
+            activateAds();
         }
-        
-        // 5. GLOBAL FUNCTIONS (Logout, Toast...)
-        window.logout = async () => {
-            const ok = await window.customConfirm("Bạn có chắc chắn muốn đăng xuất?");
-            if(ok) {
+
+        if (!window.isMovieInitialized) {
+            loadMovie();
+            window.isMovieInitialized = true;
+        }
+    });
+
+    function updateHeaderUI(user, data, isVip) {
+        const name = user.displayName || "Thành viên";
+        const balance = data.coinBalance || 0;
+        const userNameDisplay = document.getElementById('userNameDisplay');
+        const userAvatar = document.getElementById('userAvatar');
+        const vipStatusLabel = document.getElementById('vipStatus');
+        const mobileMemberBtn = document.getElementById('mobileMemberBtn');
+
+        if (isVip) {
+            userAvatar.classList.add('vip-glow');
+            userNameDisplay.innerHTML = `<span class="vip-name"><i class="fas fa-crown"></i> ${name}</span>`;
+            const d = new Date(data.vipExpiration);
+            vipStatusLabel.innerHTML = `<span style="color:#FFD700; font-weight:bold;"><i class="fas fa-gem"></i> VIP đến: ${d.getDate()}/${d.getMonth()+1}</span>`;
+        } else {
+            userAvatar.classList.remove('vip-glow');
+            userNameDisplay.innerText = name;
+            vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free Plan`;
+        }
+        if(!userNameDisplay.innerHTML.includes('balance-badge')) {
+            userNameDisplay.innerHTML += ` <span class="balance-badge"><i class="fas fa-coins"></i> ${balance.toLocaleString()}</span>`;
+        }
+        if(mobileMemberBtn) {
+             const nameHtmlMobile = isVip ? `<span class="vip-name">${name}</span>` : `<span>${name}</span>`;
+             mobileMemberBtn.innerHTML = `<img src="${user.photoURL||'/Guest.webp'}" style="width:30px;height:30px;border-radius:50%;border:2px solid #fff;" class="${isVip?'vip-glow':''}"> ${nameHtmlMobile}`;
+             mobileMemberBtn.onclick = () => window.location.href = '/profile.html';
+        }
+    }
+    
+    // --- GLOBAL FUNCTIONS ---
+    window.logout = async () => {
+        const ok = await window.customConfirm("Bạn có chắc chắn muốn đăng xuất?");
+        if(ok) {
+            try {
                 await signOut(auth);
                 window.showToast("Đã đăng xuất!", "success");
+            } catch (e) { console.error(e); }
+        }
+    }
+    window.toggleUserDropdown = () => document.getElementById('userMenu').classList.toggle('active');
+
+    window.showToast = (msg, type = 'success') => {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    window.customConfirm = (message) => {
+        return new Promise((resolve) => {
+            const overlay = document.getElementById('confirmModal');
+            document.getElementById('confirmMsg').innerText = message;
+            overlay.classList.add('active');
+            document.getElementById('btnConfirmYes').onclick = () => { overlay.classList.remove('active'); resolve(true); };
+            document.getElementById('btnConfirmNo').onclick = () => { overlay.classList.remove('active'); resolve(false); };
+        });
+    }
+
+    // --- GỬI BÌNH LUẬN ---
+    window.sendComment = async () => {
+        if(!currentUser) return window.showToast("Vui lòng đăng nhập!", "error");
+        const text = document.getElementById('cmtInput').value.trim();
+        if(!text) return;
+
+        const userRef = doc(db, "users", currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        const isVip = userSnap.exists() && (userSnap.data().vipExpiration || 0) > Date.now();
+        const currentMovieId = isCustomYoutube ? ('yt_' + ytId) : movieSlug;
+
+        try {
+            await addDoc(collection(db, "comments"), {
+                movieId: currentMovieId,
+                userId: currentUser.uid,
+                userName: currentUser.displayName || "Thành viên",
+                userAvatar: currentUser.photoURL || "/Guest.webp",
+                content: text,
+                isVip: isVip,
+                timestamp: Date.now()
+            });
+            document.getElementById('cmtInput').value = '';
+            window.showToast("Đã gửi bình luận!", "success");
+        } catch(e) { window.showToast("Lỗi: " + e.message, "error"); }
+    }
+
+    // --- HIỂN THỊ BÌNH LUẬN ---
+    const cId = isCustomYoutube ? ('yt_' + ytId) : movieSlug;
+    if(cId) {
+        const q = query(collection(db, "comments"), where("movieId", "==", cId), orderBy("timestamp", "desc"));
+        onSnapshot(q, (snapshot) => {
+            const list = document.getElementById('commentList');
+            if(snapshot.empty) {
+                list.innerHTML = `<div class="empty-comment"><i class="fas fa-comment-slash"></i> Chưa có bình luận nào.</div>`;
+                return;
             }
-        }
-        window.toggleUserDropdown = () => document.getElementById('userMenu').classList.toggle('active');
+            let html = '';
+            snapshot.forEach(doc => {
+                const c = doc.data();
+                const timeAgo = timeSince(c.timestamp);
+                const badge = (c.userName === 'Admin') ? '<span class="badge-role">QTV</span>' : '';
+                const vipClass = c.isVip ? 'is-vip' : '';
+                const avatarGlow = c.isVip ? 'vip-glow' : ''; 
+                const nameHtml = c.isVip 
+                    ? `<span class="vip-name" style="font-size:0.95rem;"><i class="fas fa-crown"></i> ${c.userName}</span>` 
+                    : `<span class="comment-author">${c.userName}</span>`;
 
-        window.showToast = (msg, type = 'success') => {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-            toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
-        }
-
-        window.customConfirm = (message) => {
-            return new Promise((resolve) => {
-                const overlay = document.getElementById('confirmModal');
-                document.getElementById('confirmMsg').innerText = message;
-                overlay.classList.add('active');
-                document.getElementById('btnConfirmYes').onclick = () => { overlay.classList.remove('active'); resolve(true); };
-                document.getElementById('btnConfirmNo').onclick = () => { overlay.classList.remove('active'); resolve(false); };
+                html += `
+                    <div class="comment-item ${vipClass}">
+                        <img src="${c.userAvatar}" class="comment-avatar ${avatarGlow}">
+                        <div class="comment-body">
+                            <div class="comment-meta">${nameHtml} ${badge} <span class="comment-time">• ${timeAgo}</span></div>
+                            <div class="comment-text">${c.content}</div>
+                        </div>
+                    </div>`;
             });
-        }
+            list.innerHTML = html;
+        });
+    }
 
-        // --- COMMENT LOGIC ---
-        // --- GỬI BÌNH LUẬN (CÓ CHECK VIP) ---
-        window.sendComment = async () => {
-            if(!currentUser) return window.showToast("Vui lòng đăng nhập!", "error");
-            
-            const text = document.getElementById('cmtInput').value.trim();
-            if(!text) return;
-
-            // Check xem user hiện tại có phải VIP không
-            const userRef = doc(db, "users", currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            const isVip = userSnap.exists() && (userSnap.data().vipExpiration || 0) > Date.now();
-
-            const currentMovieId = isCustomYoutube ? ('yt_' + ytId) : movieSlug;
-
-            try {
-                await addDoc(collection(db, "comments"), {
-                    movieId: currentMovieId,
-                    userId: currentUser.uid,
-                    userName: currentUser.displayName || "Thành viên",
-                    userAvatar: currentUser.photoURL || "/Guest.webp",
-                    content: text,
-                    isVip: isVip, // 🔥 Lưu trạng thái VIP vào comment
-                    timestamp: Date.now()
-                });
-                document.getElementById('cmtInput').value = '';
-                window.showToast("Đã gửi bình luận!", "success");
-            } catch(e) { window.showToast("Lỗi: " + e.message, "error"); }
-        }
-
-        // --- HIỂN THỊ BÌNH LUẬN (RENDER) ---
-        const cId = isCustomYoutube ? ('yt_' + ytId) : movieSlug;
-        if(cId) {
-            const q = query(collection(db, "comments"), where("movieId", "==", cId), orderBy("timestamp", "desc"));
-            onSnapshot(q, (snapshot) => {
-                const list = document.getElementById('commentList');
-                if(snapshot.empty) {
-                    list.innerHTML = `<div class="empty-comment"><i class="fas fa-comment-slash"></i> Chưa có bình luận nào.</div>`;
-                    return;
-                }
-                let html = '';
-                snapshot.forEach(doc => {
-                    const c = doc.data();
-                    const timeAgo = timeSince(c.timestamp);
-                    const badge = (c.userName === 'Admin') ? '<span class="badge-role">QTV</span>' : '';
-                    
-                    // 🔥 XỬ LÝ STYLE VIP CHO BÌNH LUẬN 🔥
-                    const vipClass = c.isVip ? 'is-vip' : '';
-                    const avatarGlow = c.isVip ? 'vip-glow' : ''; // Thêm hào quang cho avatar comment
-                    const nameHtml = c.isVip 
-                        ? `<span class="vip-name" style="font-size:0.95rem;"><i class="fas fa-crown"></i> ${c.userName}</span>` 
-                        : `<span class="comment-author">${c.userName}</span>`;
-
-                    html += `
-                        <div class="comment-item ${vipClass}">
-                            <img src="${c.userAvatar}" class="comment-avatar ${avatarGlow}">
-                            <div class="comment-body">
-                                <div class="comment-meta">${nameHtml} ${badge} <span class="comment-time">• ${timeAgo}</span></div>
-                                <div class="comment-text">${c.content}</div>
-                            </div>
-                        </div>`;
-                });
-                list.innerHTML = html;
-            });
-        }
-
-// --- 1. HÀM TẠO 3 NÚT ĐIỀU KHIỂN (MOBILE) ---
+    // --- 🔥 1. MOBILE CONTROLS (ĐÃ FIX LỖI ĐỨNG MÀN HÌNH) ---
     function setupMobileControls(player) {
+        // Chỉ chạy trên Mobile/Tablet
+        if (window.innerWidth >= 1024) return;
+
         const container = player.elements.container;
         
-        // Tạo layer chứa nút
+        // Xóa layer cũ nếu có (để tránh trùng lặp khi đổi tập)
+        const oldLayer = container.querySelector('.center-controls-layer');
+        if (oldLayer) oldLayer.remove();
+
         const layer = document.createElement('div');
         layer.className = 'center-controls-layer';
-        
-        // HTML 3 nút: Lùi - Play/Pause - Tiến
         layer.innerHTML = `
             <div class="cc-btn cc-btn-small" id="cc-rewind"><i class="fas fa-undo-alt"></i></div>
             <div class="cc-btn cc-btn-large" id="cc-play"><i class="fas fa-play"></i></div>
             <div class="cc-btn cc-btn-small" id="cc-forward"><i class="fas fa-redo-alt"></i></div>
         `;
-        
         container.appendChild(layer);
 
         const btnRewind = layer.querySelector('#cc-rewind');
@@ -2036,794 +2018,516 @@ footer {
         const btnForward = layer.querySelector('#cc-forward');
         const iconPlay = btnPlay.querySelector('i');
 
-        // Logic Click
-        btnRewind.onclick = (e) => { e.stopPropagation(); player.rewind(10); showControls(); };
-        btnForward.onclick = (e) => { e.stopPropagation(); player.forward(10); showControls(); };
-        btnPlay.onclick = (e) => { 
-            e.stopPropagation(); 
-            player.togglePlay(); 
-        };
-
-        // Logic ẩn/hiện Controls
         let hideTimeout;
+
+        // Hàm hiện controls
         const showControls = () => {
             layer.classList.remove('hidden');
             clearTimeout(hideTimeout);
+            
+            // Nếu đang phát thì tự ẩn sau 2.5s
             if (player.playing) {
-                hideTimeout = setTimeout(() => layer.classList.add('hidden'), 2500); // Ẩn sau 2.5s nếu đang xem
+                hideTimeout = setTimeout(() => layer.classList.add('hidden'), 2500);
             }
         };
 
-        // Lắng nghe sự kiện Player để đổi icon
-        player.on('play', () => {
-            iconPlay.className = 'fas fa-pause';
-            showControls();
+        // --- XỬ LÝ CLICK NÚT ---
+        // Sử dụng e.preventDefault() và e.stopImmediatePropagation() để chặn triệt để
+        btnRewind.onclick = (e) => { 
+            e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+            player.rewind(10); 
+            showControls(); 
+        };
+
+        btnForward.onclick = (e) => { 
+            e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+            player.forward(10); 
+            showControls(); 
+        };
+
+        btnPlay.onclick = (e) => { 
+            e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+            player.togglePlay();
+            // Không cần gọi showControls ở đây vì sự kiện play/pause bên dưới sẽ lo
+        };
+
+        // --- LẮNG NGHE TRẠNG THÁI PLAYER ---
+        player.on('play', () => { 
+            iconPlay.className = 'fas fa-pause'; 
+            showControls(); 
         });
-        
-        player.on('pause', () => {
-            iconPlay.className = 'fas fa-play';
-            layer.classList.remove('hidden'); // Pause thì luôn hiện
+
+        player.on('pause', () => { 
+            iconPlay.className = 'fas fa-play'; 
+            layer.classList.remove('hidden'); // Pause thì LUÔN HIỆN
             clearTimeout(hideTimeout);
         });
 
-        // Khi chạm vào màn hình thì hiện nút
-        player.elements.container.addEventListener('touchstart', () => {
-             showControls();
-        });
+        // --- XỬ LÝ CHẠM MÀN HÌNH ---
+        // Chạm vào vùng trống của container -> Hiện/Ẩn Controls
+        // (Chứ không toggle Play/Pause, việc đó để nút giữa làm)
+        const wrapper = player.elements.wrapper;
         
-        // Khởi tạo trạng thái
+        wrapper.onclick = (e) => {
+            // Nếu click trúng nút điều khiển (của Plyr hoặc của mình) -> Bỏ qua
+            if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.center-controls-layer')) return;
+
+            // Nếu controls đang hiện -> Ẩn đi
+            // Nếu đang ẩn -> Hiện lên
+            if (layer.classList.contains('hidden')) {
+                showControls();
+            } else {
+                // Nếu đang Pause thì không cho ẩn
+                if (player.playing) {
+                    layer.classList.add('hidden');
+                }
+            }
+        };
+
+        // Khởi tạo
         showControls();
     }
 
-    // --- 2. HÀM TỰ XOAY MÀN HÌNH (AUTO ROTATE - FIXED ANDROID) ---
+    // --- 2. AUTO ROTATION (ANDROID & IOS NATIVE) ---
     function setupAutoRotation(player) {
         player.on('enterfullscreen', async () => {
             try {
-                // Chỉ chạy trên Mobile/Tablet
                 if (window.innerWidth < 1024) {
-                    // API này chỉ hoạt động trên Android (Chrome/Samsung)
+                    // Android
                     if (screen.orientation && screen.orientation.lock) {
                         await screen.orientation.lock('landscape');
+                    } 
+                    // iOS (Native Player)
+                    else if (player.media.webkitEnterFullscreen) {
+                        player.media.webkitEnterFullscreen();
                     }
                 }
-            } catch (err) {
-                // iOS sẽ vào đây (không hỗ trợ lock), ta kệ nó để nó dùng Native Player
-                console.log('Thiết bị này tự quản lý xoay màn hình.');
-            }
+            } catch (err) { console.log('Tự xoay không hỗ trợ trên thiết bị này'); }
         });
 
         player.on('exitfullscreen', async () => {
-            try {
-                if (screen.orientation && screen.orientation.unlock) {
-                    await screen.orientation.unlock();
-                }
-            } catch (err) {}
+            try { if (screen.orientation && screen.orientation.unlock) await screen.orientation.unlock(); } catch (err) {}
         });
     }
 
-        // --- HÀM KHỞI TẠO PLAYER (ĐÃ TẮT TOAST KHI RESUME) ---
-        function initPlayer(sourceType, sourceLink, poster = '', startTime = 0) {
-            if (player) {
-                player.destroy();
-                player = null;
-            }
+    // --- 3. KHỞI TẠO PLAYER (ĐÃ FIX TOÀN DIỆN) ---
+    function initPlayer(sourceType, sourceLink, poster = '', startTime = 0) {
+        if (player) {
+            player.destroy();
+            player = null;
+        }
 
-            const container = document.getElementById('player-container');
-            container.innerHTML = `<video id="player" playsinline controls data-poster="${poster}" style="width:100%;"></video>`;
-            const videoElement = document.getElementById('player');
+        const container = document.getElementById('player-container');
+        container.innerHTML = `<video id="player" playsinline controls data-poster="${poster}" style="width:100%;"></video>`;
+        const videoElement = document.getElementById('player');
 
-            // Cấu hình Player
-            // Cấu hình Player (Đã tối ưu cho iOS & PC)
-            const plyrOptions = {
-                // Giữ nguyên phím tắt cho PC
-                keyboard: { focused: true, global: true },
-                
-                controls: [
-                    'play-large', 'rewind', 'play', 'fast-forward', 
-                    'progress', 'current-time', 'mute', 'volume', 
-                    'captions', 'settings', 'pip', 'airplay', 'fullscreen'
-                ],
-                seekTime: 10,
-                youtube: { noCookie: true, rel: 0, modestbranding: 1 },
-
-                // 🔥 QUAN TRỌNG CHO IPHONE:
-                // Bắt buộc dùng trình phát gốc của iOS khi Fullscreen để tự xoay & tràn tai thỏ
-                iosNative: true,
-                
-                // Tỉ lệ khung hình chuẩn
-                ratio: '16:9'
-            };
-
-            // Hàm xử lý khi Player đã sẵn sàng
-            const onPlayerReady = (plyrInstance) => {
-                // Thêm các nút chức năng cũ
-                setupSkipIntro(plyrInstance);
-                setupPauseOverlay(plyrInstance);
-
-                // 🔥 THÊM MỚI 2 DÒNG NÀY:
-                setupMobileControls(plyrInstance); // 3 nút giữa màn hình
-                setupAutoRotation(plyrInstance);   // Tự xoay ngang
-
-                // ... (Phần logic Resume cũ giữ nguyên) ...
-                 if (startTime > 0) {
-                    console.log("⚡ Đang nhảy tới giây:", startTime);
-                    
-                    // Đợi 0.5s cho Player ổn định rồi nhảy
-                    setTimeout(() => {
-                        plyrInstance.currentTime = startTime;
-                        
-                        // Tự động phát luôn
-                        var playPromise = plyrInstance.play();
-                        if (playPromise !== undefined) {
-                            playPromise.catch(() => { plyrInstance.muted = true; plyrInstance.play(); });
-                        }
-
-                        // ❌ Đã xóa dòng window.showToast ở đây theo yêu cầu
-                        
-                    }, 500); 
-                }
-            };
-
-            if (sourceType === 'youtube') {
-                player = new Plyr(videoElement, plyrOptions);
-                player.source = { type: 'video', sources: [{ src: sourceLink, provider: 'youtube' }] };
-                
-                // Youtube có sự kiện ready riêng
-                player.on('ready', () => onPlayerReady(player));
-            } 
-            else if (sourceType === 'hls') {
-                if (Hls.isSupported()) {
-                    const hls = new Hls();
-                    hls.loadSource(sourceLink);
-                    hls.attachMedia(videoElement);
-                    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                        player = new Plyr(videoElement, plyrOptions);
-                        // HLS load xong manifest thì coi như ready
-                        onPlayerReady(player);
-                    });
-                } else {
-                    videoElement.src = sourceLink;
-                    player = new Plyr(videoElement, plyrOptions);
-                    // Native player
-                    player.on('ready', () => onPlayerReady(player));
-                }
-            }
+        // Cấu hình Player
+        const plyrOptions = {
+            // 🔥 BẬT phím tắt mặc định (Space, F, M, Arrow) cho PC
+            keyboard: { focused: true, global: true },
             
-            // --- BỘ THEO DÕI ĐỂ LƯU TIẾN TRÌNH (GIỮ NGUYÊN) ---
-            setTimeout(() => {
-                if (player) {
-                    player.on('pause', () => {
+            // 🔥 TẮT clickToPlay để tránh xung đột trên Mobile
+            clickToPlay: false, 
+
+            controls: [
+                'play-large', 'rewind', 'play', 'fast-forward', 
+                'progress', 'current-time', 'mute', 'volume', 
+                'captions', 'settings', 'pip', 'airplay', 'fullscreen'
+            ],
+            seekTime: 10,
+            youtube: { noCookie: true, rel: 0, modestbranding: 1 },
+            
+            iosNative: true, 
+            ratio: '16:9'
+        };
+
+        const onPlayerReady = (plyrInstance) => {
+            setupSkipIntro(plyrInstance);
+            setupPauseOverlay(plyrInstance);
+            setupMobileControls(plyrInstance); 
+            setupAutoRotation(plyrInstance);   
+
+            // 🔥 SỰ KIỆN CLICK RIÊNG CHO PC (Mobile đã có hàm setupMobileControls lo)
+            if (window.innerWidth >= 1024) {
+                const wrapper = plyrInstance.elements.wrapper;
+                wrapper.addEventListener('click', (e) => {
+                    if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.plyr__controls')) return;
+                    plyrInstance.togglePlay();
+                });
+            }
+
+            // 🔥 LOGIC RESUME
+             if (startTime > 0) {
+                setTimeout(() => {
+                    plyrInstance.currentTime = startTime;
+                    var playPromise = plyrInstance.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(() => { plyrInstance.muted = true; plyrInstance.play(); });
+                    }
+                }, 500); 
+             }
+        };
+
+        if (sourceType === 'youtube') {
+            player = new Plyr(videoElement, plyrOptions);
+            player.source = { type: 'video', sources: [{ src: sourceLink, provider: 'youtube' }] };
+            player.on('ready', () => onPlayerReady(player));
+        } 
+        else if (sourceType === 'hls') {
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(sourceLink);
+                hls.attachMedia(videoElement);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    player = new Plyr(videoElement, plyrOptions);
+                    onPlayerReady(player);
+                });
+            } else {
+                videoElement.src = sourceLink;
+                player = new Plyr(videoElement, plyrOptions);
+                player.on('ready', () => onPlayerReady(player));
+            }
+        }
+        
+        // Lưu tiến trình
+        setTimeout(() => {
+            if (player) {
+                player.on('pause', () => {
+                    const currentTime = Math.floor(player.currentTime);
+                    window.saveToHistory(currentMovieData, currentEpName, currentTime);
+                });
+                setInterval(() => {
+                    if (player && player.playing) {
                         const currentTime = Math.floor(player.currentTime);
                         window.saveToHistory(currentMovieData, currentEpName, currentTime);
-                    });
-                    setInterval(() => {
-                        if (player && player.playing) {
-                            const currentTime = Math.floor(player.currentTime);
-                            window.saveToHistory(currentMovieData, currentEpName, currentTime);
-                        }
-                    }, 30000);
-                }
-            }, 1000);
-        }
-
-        // --- 🔥 HÀM TẠO NÚT BỎ QUA GIỚI THIỆU (FIXED) ---
-        function setupSkipIntro(player) {
-            // Xóa nút cũ nếu có để tránh trùng lặp
-            const oldBtn = document.querySelector('.skip-intro-btn');
-            if (oldBtn) oldBtn.remove();
-
-            // 1. Tạo nút HTML
-            const btn = document.createElement('div');
-            btn.className = 'skip-intro-btn';
-            btn.innerHTML = 'Bỏ qua giới thiệu <i class="fas fa-forward"></i>';
-            
-            // 2. Chèn nút vào khung Player (Lớp controls hoặc container)
-            // Thay đổi: Chèn vào player.elements.wrapper để chắc chắn nằm trong khung video
-            const targetContainer = player.elements.wrapper || player.elements.container;
-            targetContainer.appendChild(btn);
-
-            // 3. Xử lý sự kiện Click
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation(); // Ngăn sự kiện nổi bọt làm pause video
-                e.preventDefault();
-                
-                player.forward(60); // Nhảy cóc 60 giây
-                btn.classList.remove('show'); // Ẩn nút sau khi bấm
-                console.log("⏩ Đã bỏ qua giới thiệu!");
-            });
-
-            // 4. Xử lý ẩn/hiện nút (Chỉ hiện trong 60s đầu phim)
-            player.on('timeupdate', () => {
-                const t = player.currentTime;
-                // Hiện nút nếu đang ở giây thứ 0 đến giây thứ 60 VÀ đang phát
-                if (t > 0 && t < 60 && player.playing) {
-                    btn.classList.add('show');
-                } else {
-                    btn.classList.remove('show');
-                }
-            });
-            
-            // Ẩn khi seek
-            player.on('seeking', () => btn.classList.remove('show'));
-            
-            // 🔥 QUAN TRỌNG: Đảm bảo nút hiện lại khi Play nếu đang trong vùng thời gian Intro
-            player.on('play', () => {
-                 const t = player.currentTime;
-                 if (t > 0 && t < 120) btn.classList.add('show');
-            });
-        }
-
-// --- 🔥 HÀM TẠO GIAO DIỆN KHI PAUSE (NETFLIX STYLE) ---
-        function setupPauseOverlay(player) {
-            // Lấy thông tin phim hiện tại (Biến toàn cục currentMovieData và currentEpName)
-            if (!currentMovieData) return;
-
-            // 1. Tạo khung HTML
-            const overlay = document.createElement('div');
-            overlay.className = 'pause-overlay';
-            
-            // Lấy mô tả ngắn gọn
-            const div = document.createElement("div");
-            div.innerHTML = currentMovieData.content || "Nội dung đang cập nhật...";
-            const rawDesc = div.innerText;
-
-            // HTML MỚI: Đơn giản hơn, bỏ div thừa
-            overlay.innerHTML = `
-                <div class="pause-info-content">
-                    <div class="pause-ep-title">ĐANG PHÁT: TẬP ${currentEpName || "Tập 1"}</div>
-                    <div class="pause-movie-title">${currentMovieData.name}</div>
-                    <div class="pause-desc">${rawDesc}</div>
-                </div>
-            `;
-
-            // 2. Chèn vào Player
-            const container = player.elements.container;
-            // Chèn trước nút Skip Intro (nếu có) để không bị đè
-            container.appendChild(overlay);
-
-            // 3. Xử lý sự kiện
-            // Khi Pause -> Hiện overlay
-            player.on('pause', () => {
-                // Chỉ hiện khi chưa hết phim
-                if (!player.ended) {
-                    overlay.classList.add('active');
-                }
-            });
-
-            // Khi Play hoặc Tua -> Ẩn overlay
-            player.on('play', () => overlay.classList.remove('active'));
-            player.on('seeking', () => overlay.classList.remove('active'));
-        }
-        /* ==============================================
-           🔥 FIX SEARCH LOGIC (TÌM KIẾM)
-           ============================================== */
-// --- LOGIC TÌM KIẾM ĐỒNG BỘ INDEX ---
-let searchTimeout;
-const IMG_BASE_URL = 'https://img.ophim1.com/uploads/movies/';
-
-async function performSearch(keyword, containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    if (!keyword || keyword.trim().length < 2) {
-        container.innerHTML = '';
-        container.classList.remove('active');
-        return;
+                    }
+                }, 30000);
+            }
+        }, 1000);
     }
 
-    container.classList.add('active');
-    container.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;"><i class="fas fa-spinner fa-spin"></i></div>';
+    // --- SKIP INTRO ---
+    function setupSkipIntro(player) {
+        const oldBtn = document.querySelector('.skip-intro-btn');
+        if (oldBtn) oldBtn.remove();
 
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(async () => {
-        try {
-            const res = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`);
-            const data = await res.json();
-
-            if (data.data && data.data.items && data.data.items.length > 0) {
-                let html = '';
-                data.data.items.slice(0, 10).forEach(m => {
-                    const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE_URL + m.thumb_url;
-                    html += `
-                        <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
-                            <img src="${img}" alt="${m.name}" loading="lazy">
-                            <div class="search-result-info">
-                                <div class="search-result-title">${m.name}</div>
-                                <div class="search-result-meta">${m.year} • ${m.origin_name}</div>
-                            </div>
-                        </div>`;
-                });
-                container.innerHTML = html;
-            } else {
-                container.innerHTML = '<div style="color:#666; padding:20px; text-align:center;">Không tìm thấy phim nào...</div>';
-            }
-        } catch (e) {
-            container.innerHTML = '<div style="color:#ff4757; padding:20px; text-align:center;">Lỗi kết nối server!</div>';
-        }
-    }, 500);
-}
-
-// Gán sự kiện cho Desktop
-const desktopSearch = document.getElementById('searchInput');
-if(desktopSearch) {
-    desktopSearch.addEventListener('input', (e) => performSearch(e.target.value, 'desktopSearchResults'));
-}
-
-// Gán sự kiện cho Mobile
-const mobileSearch = document.getElementById('mobileSearchInput');
-if(mobileSearch) {
-    mobileSearch.addEventListener('input', (e) => performSearch(e.target.value, 'mobileSearchResults'));
-}
-
-// Click ra ngoài để ẩn kết quả Desktop
-document.addEventListener('click', (e) => {
-    const box = document.querySelector('.search-box');
-    const res = document.getElementById('desktopSearchResults');
-    if (box && !box.contains(e.target) && res) {
-        res.classList.remove('active');
-    }
-});
-
-// Hàm mở/đóng search mobile (Dùng chung cho toàn web)
-window.openMobileSearch = () => {
-    document.getElementById('mobileSearchOverlay').classList.add('active');
-    setTimeout(() => document.getElementById('mobileSearchInput').focus(), 300);
-}
-window.closeMobileSearch = () => {
-    document.getElementById('mobileSearchOverlay').classList.remove('active');
-}
+        const btn = document.createElement('div');
+        btn.className = 'skip-intro-btn';
+        btn.innerHTML = 'Bỏ qua giới thiệu <i class="fas fa-forward"></i>';
         
-        // --- 6. HÀM LOAD PHIM CHÍNH (ĐÃ CẬP NHẬT LOGIC TÌM TẬP CŨ) ---
-        async function loadMovie() {
-            // 1. Lấy thông tin từ URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const isYT = urlParams.get('custom') === 'youtube';
-            const ytId = urlParams.get('id');
-            const customName = urlParams.get('name');
-            const movieSlug = urlParams.get('slug') || window.location.pathname.split('/').pop().replace('.html', '');
+        const targetContainer = player.elements.wrapper || player.elements.container;
+        targetContainer.appendChild(btn);
 
-            // ID duy nhất
-            const currentSlugId = isYT ? `?custom=youtube&id=${ytId}&name=${encodeURIComponent(customName)}` : movieSlug;
-
-            let savedEpName = null;
-            let savedTime = 0;
-
-            // 2. LẤY LỊCH SỬ TỪ FIREBASE
-            if (currentUser) {
-                try {
-                    const snap = await getDoc(doc(db, "users", currentUser.uid));
-                    if (snap.exists() && snap.data().watchHistory) {
-                        const history = snap.data().watchHistory;
-                        // Tìm phim trùng slug
-                        const oldData = history.find(m => decodeURIComponent(m.slug) === decodeURIComponent(currentSlugId));
-                        
-                        if (oldData) {
-                            savedEpName = oldData.epName;
-                            savedTime = oldData.duration || 0;
-                            // Reset về 0 nếu đã xem gần hết (tránh việc vào xem lại credits)
-                            // Ví dụ: còn 5% cuối thì coi như xem hết -> reset về 0
-                            // Nhưng ở đây ta cứ giữ nguyên để tua cho chính xác
-                        }
-                    }
-                } catch (e) { console.error("Lỗi lấy lịch sử:", e); }
-            }
-
-            // --- TRƯỜNG HỢP A: PHIM YOUTUBE ---
-            if (isYT && ytId) {
-                const finalName = decodeURIComponent(customName || "Phim Youtube");
-                const posterUrl = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
-
-                // Tạo object dữ liệu phim
-                currentMovieData = {
-                    slug: currentSlugId,
-                    name: finalName,
-                    thumb_url: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`,
-                    poster_url: posterUrl
-                };
-
-                // Hiển thị thông tin phim giả lập
-                const fakeInfo = {
-                    name: finalName,
-                    origin_name: 'Phim Độc Quyền',
-                    year: '2026',
-                    quality: '4K',
-                    lang: 'Vietsub',
-                    content: 'Phim được phát độc quyền trên hệ thống WibuPhim. Chúc bạn xem phim vui vẻ!',
-                    poster_url: posterUrl,
-                    thumb_url: currentMovieData.thumb_url
-                };
-                renderInfo(fakeInfo);
-                
-                // Ẩn block tập phim vì Youtube chỉ có 1 video
-                document.querySelectorAll('.episode-block').forEach(e => e.style.display = 'none');
-
-                // Gọi hàm phát (Kèm thời gian đã xem)
-                window.changeEp(ytId, 'youtube', null, 'Full Video', savedTime);
-                
-                loadRelated(); // Load đề xuất
-                hideLoadingState(); 
-                return;
-            }
-            
-            // --- TRƯỜNG HỢP B: PHIM TỪ OPHIM ---
-            if (!movieSlug) { hideLoadingState(); return; }
-
-            try {
-                const res = await fetch(`${API_BASE}/${movieSlug}`);
-                const data = await res.json();
-
-                if (data.status) {
-                    const movie = data.data.item;
-                    if (movie.category && movie.category.some(c => c.slug === 'short-drama')) {
-                        window.location.replace(`/short/${movie.slug}`);
-                        return;
-                    }
-                    
-                    currentMovieData = movie;
-                    renderInfo(movie);
-
-                    const svData = movie.episodes[0].server_data;
-                    let epHtml = '';
-                    
-                    let targetEpToPlay = null; 
-                    let targetIndex = 0;
-
-                    svData.forEach((ep, idx) => {
-                        const type = ep.link_m3u8 ? 'hls' : 'iframe';
-                        const link = ep.link_m3u8 || ep.link_embed;
-                        
-                        epHtml += `<div class="ep-btn" id="btn-ep-${idx}" onclick="window.changeEp('${link}', '${type}', this, '${ep.name}')">${ep.name}</div>`;
-
-                        // 🔥 LOGIC TÌM TẬP (MỚI): So sánh thông minh hơn
-                        if (savedEpName) {
-                            // Xóa chữ "Tập", xóa số 0 ở đầu (Ví dụ: "Tập 01" thành "1", "Tập 1" thành "1")
-                            const n1 = ep.name.toLowerCase().replace(/tập\s*/g, '').replace(/^0+/, '').trim();
-                            const n2 = savedEpName.toLowerCase().replace(/tập\s*/g, '').replace(/^0+/, '').trim();
-
-                            // So sánh 2 tên đã chuẩn hóa hoặc so sánh nguyên bản
-                            if (n1 === n2 || ep.name === savedEpName) {
-                                targetEpToPlay = { link, type, name: ep.name };
-                                targetIndex = idx;
-                            }
-                        }
-                    });
-
-                    // Nếu không có lịch sử -> Chọn tập đầu tiên
-                    if (!targetEpToPlay && svData.length > 0) {
-                        const firstEp = svData[0];
-                        targetEpToPlay = { 
-                            link: firstEp.link_m3u8 || firstEp.link_embed, 
-                            type: firstEp.link_m3u8 ? 'hls' : 'iframe', 
-                            name: firstEp.name 
-                        };
-                        targetIndex = 0;
-                        savedTime = 0; 
-                    }
-
-                    // Render danh sách tập
-                    const mobileList = document.getElementById('episodeListMobile');
-                    const desktopList = document.getElementById('episodeListDesktop');
-                    if (mobileList) mobileList.innerHTML = epHtml;
-                    if (desktopList) desktopList.innerHTML = epHtml;
-
-                    // Phát tập đã chọn
-                    if (targetEpToPlay) {
-                        setTimeout(() => {
-                            const mobileBtn = document.querySelector(`#episodeListMobile #btn-ep-${targetIndex}`);
-                            const desktopBtn = document.querySelector(`#episodeListDesktop #btn-ep-${targetIndex}`);
-                            if (mobileBtn) mobileBtn.classList.add('active');
-                            if (desktopBtn) desktopBtn.classList.add('active');
-                        }, 100);
-
-                        // 🔥 QUAN TRỌNG: Gọi hàm phát và truyền savedTime
-                        window.changeEp(targetEpToPlay.link, targetEpToPlay.type, null, targetEpToPlay.name, savedTime);
-                    }
-
-                    loadRelated();
-                }
-            } catch (e) {
-                console.error("Lỗi:", e);
-                window.showToast("Lỗi tải phim!", "error");
-            }
-            
-            hideLoadingState();
-        }
-
-        // Hàm hỗ trợ tắt loading + Hiện Chatbot
-        function hideLoadingState() {
-            setTimeout(() => {
-                const screen = document.getElementById('loadingScreen');
-                const img = screen?.querySelector('.loading-img');
-                if(img) img.classList.add('zoom-out');
-                
-                setTimeout(() => { 
-                    if(screen) screen.style.display = 'none'; 
-
-                    // 🔥 KÍCH HOẠT CHATBOT SAU KHI LOAD XONG 🔥
-                    if (window.showChatbot) window.showChatbot();
-
-                }, 480);
-            }, 500);
-        }
-
-        // Các hàm render phụ trợ (Giữ nguyên của OPhim)
-        function renderInfo(movie) {
-            document.title = `${movie.name} - WibuPhim`;
-            document.getElementById('breadCrumbTitle').innerText = movie.name;
-            document.getElementById('mName').innerText = movie.name;
-            document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
-            
-            // --- 1. XỬ LÝ RÚT GỌN NỘI DUNG (36 TỪ) ---
-            const contentBox = document.getElementById('mContent');
-            const rawContent = movie.content || "Đang cập nhật nội dung...";
-            
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = rawContent;
-            const plainText = tempDiv.innerText || tempDiv.textContent;
-            const words = plainText.trim().split(/\s+/);
-
-            if (words.length > 36) {
-                const shortContent = words.slice(0, 36).join(' ') + '...';
-                contentBox.innerHTML = `
-                    <span id="shortText">${shortContent}</span>
-                    <span id="fullText" style="display: none;">${rawContent}</span>
-                    <a href="javascript:void(0)" id="toggleBtn" onclick="window.toggleContent()" 
-                    style="color: var(--primary-color); font-weight: 700; text-decoration: none; margin-left: 5px; cursor: pointer;">
-                    Xem thêm
-                    </a>
-                `;
-            } else {
-                contentBox.innerHTML = rawContent;
-            }
-
-            // --- 2. HÌNH NỀN ---
-            let bgImg = movie.poster_url || movie.thumb_url;
-            if (!bgImg.startsWith('http')) bgImg = `https://img.ophim1.com/uploads/movies/${bgImg}`;
-            document.getElementById('movieInfoBg').style.backgroundImage = `url('${bgImg}')`;
-
-            // --- 3. HIỂN THỊ TAGS (CHẤT LƯỢNG, NĂM, THỂ LOẠI, QUỐC GIA) ---
-            let tagsHtml = `<span class="tag-item tag-highlight">${movie.quality || 'HD'}</span>`;
-            tagsHtml += `<span class="tag-item">${movie.lang || 'Vietsub'}</span>`;
-            tagsHtml += `<span class="tag-item">${movie.year}</span>`;
-            
-            // Hiện Thể loại
-            if (movie.category) {
-                movie.category.forEach(cat => { tagsHtml += `<span class="tag-item">${cat.name}</span>`; });
-            }
-            
-            // HIỆN QUỐC GIA (Dòng này mình đã thêm lại nè!)
-            if (movie.country && movie.country[0]) {
-                tagsHtml += `<span class="tag-item"><i class="fas fa-globe"></i> ${movie.country[0].name}</span>`;
-            }
-            
-            document.getElementById('mTags').innerHTML = tagsHtml;
-            
-            // Lưu lịch sử
-            setTimeout(() => { if (currentUser) saveToHistory(movie, currentEpName, Math.floor(player?.currentTime || 0)); }, 3000);
-        }
-
-        function renderEpisodes(episodes) {
-            if (!episodes || episodes.length === 0) return;
-            const svData = movie.episodes[0].server_data;
-            let epHtml = ''; // 🔥 THÊM DÒNG NÀY ĐỂ KHÔNG BỊ LỖI
-            svData.forEach((ep, idx) => {
-                const link = ep.link_m3u8 || ep.link_embed;
-                const type = ep.link_m3u8 ? 'hls' : 'iframe';
-                const active = index === 0 ? 'active' : '';
-                // Truyền thêm biến 'type' vào hàm
-                html += `<div class="ep-btn ${active}" onclick="window.changeEp('${link}', '${type}', this)">${ep.name}</div>`;
-            });
-            
-            document.getElementById('episodeListMobile').innerHTML = html;
-            document.getElementById('episodeListDesktop').innerHTML = html;
-        }
-
-        // --- 5. HÀM ĐỔI TẬP (ĐÃ FIX: Đợi 10s mới lưu để tránh ghi đè tập 1) ---
-        window.changeEp = function(link, type, btn, epName, startTime = 0) {
-            if (btn) {
-                document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            }
-            if (epName) currentEpName = epName;
-
-            // Xử lý Player
-            if (window.isCurrentVip) {
-                window.startActualPlayer(link, type, startTime);
-            } else {
-                showPrerollAd(link, type, startTime);
-            }
-
-            // 🔥 FIX QUAN TRỌNG: Hủy lệnh lưu cũ ngay lập tức
-            if (saveHistoryTimeout) clearTimeout(saveHistoryTimeout);
-            
-            // 🔥 CHỈ LƯU SAU 10 GIÂY: 
-            // Giúp code có thời gian nhận diện tập cũ và nhảy tới đó trước khi bị lưu đè tập 1
-            saveHistoryTimeout = setTimeout(() => {
-                if(window.currentUser) {
-                    window.saveToHistory(currentMovieData, currentEpName, 0); 
-                    console.log("💾 Bắt đầu lưu lịch sử cho:", currentEpName);
-                }
-            }, 10000); 
-        }
-
-        // --- QUẢNG CÁO VIDEO (PREROLL) - Đã sửa thành MP4 ---
-        function showPrerollAd(link, type, time) {
-            const container = document.getElementById('player-container');
-            container.innerHTML = `
-                <div class="preroll-container">
-                    <video src="https://hopvan.netlify.app/HOPVAN.mp4" class="preroll-gif" autoplay loop playsinline></video>
-                    
-                    <div class="preroll-info-box"><p>Quảng cáo</p><div>hopvan.netlify.app</div></div>
-                    <div class="preroll-skip-area">
-                        <button id="skip-ad-btn" class="btn-skip-preroll" disabled>Bỏ qua sau <span id="ad-timer" style="margin-left:5px;">5</span>s</button>
-                    </div>
-                </div>`;
-            
-            let timeLeft = 5;
-            const timerText = document.getElementById('ad-timer');
-            const skipBtn = document.getElementById('skip-ad-btn');
-            
-            const cd = setInterval(() => {
-                timeLeft--;
-                if(timerText) timerText.innerText = timeLeft;
-                if(timeLeft <= 0) {
-                    clearInterval(cd);
-                    if(skipBtn) {
-                        skipBtn.disabled = false;
-                        skipBtn.classList.add('ready');
-                        skipBtn.innerHTML = 'Bỏ qua quảng cáo <i class="fas fa-step-forward"></i>';
-                        skipBtn.onclick = () => window.startActualPlayer(link, type, time);
-                    }
-                }
-            }, 1000);
-        }
-
-        // --- HÀM PHÁT PLAYER THẬT ---
-        window.startActualPlayer = function(link, type, startTime) {
-            const container = document.getElementById('player-container');
-            if (type === 'iframe') {
-                container.innerHTML = `<div class="aspect-ratio-16-9"><iframe src="${link}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe></div>`;
-            } else {
-                initPlayer(type, link, currentMovieData?.poster_url, startTime);
-            }
-        }
-        
-        // --- CẤU HÌNH ĐỀ XUẤT ---
-        const MANUAL_RELATED = ["con-ra-the-thong-gi-nua-2026", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "duong-cung-ky-an-thanh-vu-phong-minh", "su-tro-lai-cua-tham-phan", "tuoi-tre-tai-cao", "con-say-mua-xuan", "trao-em-ca-vu-tru", "thu-hut-manh-liet", "truong-nguyet-tan-minh"];
-        async function loadRelated() {
-            try {
-                const promises = MANUAL_RELATED.map(slug => fetch(`${API_BASE}/${slug}`));
-                const results = await Promise.all(promises);
-                const jsonResults = await Promise.all(results.map(res => res.json()));
-                const validMovies = jsonResults.filter(d => d.status).map(d => d.data.item);
-
-                if (validMovies.length > 0) {
-                    let html = '';
-                    validMovies.forEach(m => {
-                        let img = m.thumb_url;
-                        if (!img.startsWith('http')) img = `https://img.ophim1.com/uploads/movies/${img}`;
-                        html += `
-                            <div class="sidebar-card" onclick="window.location.href='/xem-phim/${m.slug}'">
-                                <div class="sb-thumb"><img src="${img}" loading="lazy"></div>
-                                <div class="sb-info">
-                                    <div class="sb-title">${m.name}</div>
-                                    <div class="sb-meta">${m.origin_name} (${m.year})</div>
-                                    <div class="sb-views"><i class="fas fa-eye"></i> ${Math.floor(Math.random()*10000)}</div>
-                                </div>
-                            </div>`;
-                    });
-                    document.getElementById('relatedList').innerHTML = html;
-                }
-            } catch(e) {}
-        }
-
-        // Hàm bật/tắt nội dung phim
-        window.toggleContent = () => {
-            const shortText = document.getElementById('shortText');
-            const fullText = document.getElementById('fullText');
-            const btn = document.getElementById('toggleBtn');
-            
-            // Nếu bản FULL đang ẩn -> thì HIỆN bản FULL, ẨN bản NGẮN
-            if (fullText.style.display === 'none') {
-                fullText.style.display = 'inline';
-                shortText.style.display = 'none';
-                btn.innerHTML = 'Thu gọn';
-            } 
-            // Ngược lại: HIỆN bản NGẮN, ẨN bản FULL
-            else {
-                fullText.style.display = 'none';
-                shortText.style.display = 'inline';
-                btn.innerHTML = 'Xem thêm';
-            }
-        };
-
-        // Thêm tham số poster vào hàm
-        window.saveToHistory = async (movie, epName = "Tập 1", duration = 0) => { 
-            if (!window.currentUser || !movie) return;
-            const ref = doc(db, "users", window.currentUser.uid);
-            try {
-                const snap = await getDoc(ref);
-                let history = snap.exists() ? (snap.data().watchHistory || []) : [];
-                
-                // Chuẩn hóa Slug trước khi lưu/lọc
-                const currentSlug = decodeURIComponent(movie.slug);
-                
-                // Loại bỏ bản ghi cũ của phim này
-                history = history.filter(m => decodeURIComponent(m.slug) !== currentSlug);
-                
-                // Thêm bản mới lên đầu
-                history.push({ 
-                    slug: movie.slug, 
-                    name: movie.name, 
-                    thumb_url: movie.thumb_url,   
-                    poster_url: movie.poster_url || movie.thumb_url, 
-                    epName: epName,
-                    duration: duration,
-                    timestamp: Date.now() 
-                });
-                
-                if (history.length > 20) history.shift();
-                await setDoc(ref, { watchHistory: history }, { merge: true });
-                console.log("Đã lưu tiến trình!");
-            } catch (e) { console.error("Lỗi lưu:", e); }
-        };
-
-        function loadHistory(uid) { /* Logic load history nếu cần hiển thị ở đâu đó */ }
-        
-        function timeSince(date) {
-            if (!date) return "Gần đây";
-            const seconds = Math.floor((Date.now() - date) / 1000);
-            if (seconds < 60) return "Vừa xong";
-            const minutes = Math.floor(seconds / 60);
-            if (minutes < 60) return minutes + " phút trước";
-            const hours = Math.floor(minutes / 60);
-            if (hours < 24) return hours + " giờ trước";
-            return Math.floor(hours / 24) + " ngày trước";
-        }
-
-        // --- 9. XỬ LÝ PHÍM TẮT (ĐÃ FIX LỖI MUTE & TẮT TOAST) ---
-        document.addEventListener('keydown', (e) => {
-            // 1. Kiểm tra: Nếu đang gõ chữ trong ô Tìm kiếm hoặc Bình luận thì KHÔNG chạy phím tắt
-            const tag = document.activeElement.tagName.toUpperCase();
-            const isInput = tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement.isContentEditable;
-            
-            if (isInput) return; // Dừng lại, cho người dùng gõ chữ bình thường
-
-            // 2. Kiểm tra: Nếu Player chưa khởi tạo thì thôi
-            if (!player) return;
-
-            const key = e.key.toLowerCase();
-
-            switch (key) {
-                case ' ': // Phím SPACE (Khoảng trắng)
-                case 'k': // Phím K (Kiểu Youtube)
-                    e.preventDefault(); // Chặn trang web bị cuộn xuống khi bấm Space
-                    player.togglePlay();
-                    break;
-
-                case 'f': // Phím F: Toàn màn hình
-                    player.fullscreen.toggle();
-                    break;
-
-                case 'm': // Phím M: Tắt/Bật tiếng
-                    // 🔥 Đã fix xung đột và tắt ShowToast
-                    player.muted = !player.muted;
-                    // (Đã xóa dòng window.showToast)
-                    break;
-
-                case 'arrowleft': // Mũi tên TRÁI: Lùi 10s
-                case 'j': // Phím J
-                    player.rewind(10);
-                    break;
-
-                case 'arrowright': // Mũi tên PHẢI: Tiến 10s
-                case 'l': // Phím L
-                    player.forward(10);
-                    break;
-            }
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); e.preventDefault();
+            player.forward(60); 
+            btn.classList.remove('show');
         });
 
-    </script>
+        player.on('timeupdate', () => {
+            const t = player.currentTime;
+            if (t > 0 && t < 60 && player.playing) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        });
+        player.on('seeking', () => btn.classList.remove('show'));
+        player.on('play', () => {
+             const t = player.currentTime;
+             if (t > 0 && t < 120) btn.classList.add('show');
+        });
+    }
+
+    // --- PAUSE OVERLAY (Chỉ hiện trên PC) ---
+    function setupPauseOverlay(player) {
+        // Mobile không hiện overlay này để tránh rối
+        if (window.innerWidth < 1024) return;
+        
+        if (!currentMovieData) return;
+        const overlay = document.createElement('div');
+        overlay.className = 'pause-overlay';
+        const div = document.createElement("div");
+        div.innerHTML = currentMovieData.content || "Nội dung đang cập nhật...";
+        const rawDesc = div.innerText;
+
+        overlay.innerHTML = `
+            <div class="pause-info-content">
+                <div class="pause-ep-title">ĐANG PHÁT: TẬP ${currentEpName || "Tập 1"}</div>
+                <div class="pause-movie-title">${currentMovieData.name}</div>
+                <div class="pause-desc">${rawDesc}</div>
+            </div>`;
+
+        player.elements.container.appendChild(overlay);
+
+        player.on('pause', () => { if (!player.ended) overlay.classList.add('active'); });
+        player.on('play', () => overlay.classList.remove('active'));
+        player.on('seeking', () => overlay.classList.remove('active'));
+    }
+    
+    // --- LOAD MOVIE & LOGIC CHÍNH ---
+    async function loadMovie() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isYT = urlParams.get('custom') === 'youtube';
+        const ytId = urlParams.get('id');
+        const customName = urlParams.get('name');
+        const movieSlug = urlParams.get('slug') || window.location.pathname.split('/').pop().replace('.html', '');
+        const currentSlugId = isYT ? `?custom=youtube&id=${ytId}&name=${encodeURIComponent(customName)}` : movieSlug;
+
+        let savedEpName = null;
+        let savedTime = 0;
+
+        if (currentUser) {
+            try {
+                const snap = await getDoc(doc(db, "users", currentUser.uid));
+                if (snap.exists() && snap.data().watchHistory) {
+                    const history = snap.data().watchHistory;
+                    const oldData = history.find(m => decodeURIComponent(m.slug) === decodeURIComponent(currentSlugId));
+                    if (oldData) { savedEpName = oldData.epName; savedTime = oldData.duration || 0; }
+                }
+            } catch (e) { console.error("Lỗi lấy lịch sử:", e); }
+        }
+
+        if (isYT && ytId) {
+            const finalName = decodeURIComponent(customName || "Phim Youtube");
+            const posterUrl = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+            currentMovieData = { slug: currentSlugId, name: finalName, thumb_url: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`, poster_url: posterUrl };
+            const fakeInfo = { name: finalName, origin_name: 'Phim Độc Quyền', year: '2026', quality: '4K', lang: 'Vietsub', content: 'Phim được phát độc quyền trên hệ thống WibuPhim. Chúc bạn xem phim vui vẻ!', poster_url: posterUrl, thumb_url: currentMovieData.thumb_url };
+            renderInfo(fakeInfo);
+            document.querySelectorAll('.episode-block').forEach(e => e.style.display = 'none');
+            window.changeEp(ytId, 'youtube', null, 'Full Video', savedTime);
+            loadRelated(); 
+            hideLoadingState(); 
+            return;
+        }
+        
+        if (!movieSlug) { hideLoadingState(); return; }
+
+        try {
+            const res = await fetch(`${API_BASE}/${movieSlug}`);
+            const data = await res.json();
+            if (data.status) {
+                const movie = data.data.item;
+                if (movie.category && movie.category.some(c => c.slug === 'short-drama')) {
+                    window.location.replace(`/short/${movie.slug}`);
+                    return;
+                }
+                currentMovieData = movie;
+                renderInfo(movie);
+
+                const svData = movie.episodes[0].server_data;
+                let epHtml = '';
+                let targetEpToPlay = null; 
+                let targetIndex = 0;
+
+                svData.forEach((ep, idx) => {
+                    const type = ep.link_m3u8 ? 'hls' : 'iframe';
+                    const link = ep.link_m3u8 || ep.link_embed;
+                    epHtml += `<div class="ep-btn" id="btn-ep-${idx}" onclick="window.changeEp('${link}', '${type}', this, '${ep.name}')">${ep.name}</div>`;
+
+                    if (savedEpName) {
+                        const n1 = ep.name.toLowerCase().replace(/tập\s*/g, '').replace(/^0+/, '').trim();
+                        const n2 = savedEpName.toLowerCase().replace(/tập\s*/g, '').replace(/^0+/, '').trim();
+                        if (n1 === n2 || ep.name === savedEpName) {
+                            targetEpToPlay = { link, type, name: ep.name };
+                            targetIndex = idx;
+                        }
+                    }
+                });
+
+                if (!targetEpToPlay && svData.length > 0) {
+                    const firstEp = svData[0];
+                    targetEpToPlay = { link: firstEp.link_m3u8 || firstEp.link_embed, type: firstEp.link_m3u8 ? 'hls' : 'iframe', name: firstEp.name };
+                    targetIndex = 0; savedTime = 0; 
+                }
+
+                document.getElementById('episodeListMobile').innerHTML = epHtml;
+                document.getElementById('episodeListDesktop').innerHTML = epHtml;
+
+                if (targetEpToPlay) {
+                    setTimeout(() => {
+                        const mobileBtn = document.querySelector(`#episodeListMobile #btn-ep-${targetIndex}`);
+                        const desktopBtn = document.querySelector(`#episodeListDesktop #btn-ep-${targetIndex}`);
+                        if (mobileBtn) mobileBtn.classList.add('active');
+                        if (desktopBtn) desktopBtn.classList.add('active');
+                    }, 100);
+                    window.changeEp(targetEpToPlay.link, targetEpToPlay.type, null, targetEpToPlay.name, savedTime);
+                }
+                loadRelated();
+            }
+        } catch (e) {
+            console.error("Lỗi:", e);
+            window.showToast("Lỗi tải phim!", "error");
+        }
+        hideLoadingState();
+    }
+
+    // --- CÁC HÀM HỖ TRỢ KHÁC ---
+    function hideLoadingState() {
+        setTimeout(() => {
+            const screen = document.getElementById('loadingScreen');
+            const img = screen?.querySelector('.loading-img');
+            if(img) img.classList.add('zoom-out');
+            setTimeout(() => { 
+                if(screen) screen.style.display = 'none'; 
+                if (window.showChatbot) window.showChatbot();
+            }, 480);
+        }, 500);
+    }
+    
+    // Hàm Change Ep
+    window.changeEp = function(link, type, btn, epName, startTime = 0) {
+        if (btn) {
+            document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        if (epName) currentEpName = epName;
+
+        if (window.isCurrentVip) {
+            window.startActualPlayer(link, type, startTime);
+        } else {
+            showPrerollAd(link, type, startTime);
+        }
+
+        if (saveHistoryTimeout) clearTimeout(saveHistoryTimeout);
+        saveHistoryTimeout = setTimeout(() => {
+            if(window.currentUser) {
+                window.saveToHistory(currentMovieData, currentEpName, 0); 
+                console.log("💾 Bắt đầu lưu lịch sử cho:", currentEpName);
+            }
+        }, 10000); 
+    }
+
+    function showPrerollAd(link, type, time) {
+        const container = document.getElementById('player-container');
+        container.innerHTML = `
+            <div class="preroll-container">
+                <video src="https://hopvan.netlify.app/HOPVAN.mp4" class="preroll-gif" autoplay loop playsinline></video>
+                <div class="preroll-info-box"><p>Quảng cáo</p><div>hopvan.netlify.app</div></div>
+                <div class="preroll-skip-area">
+                    <button id="skip-ad-btn" class="btn-skip-preroll" disabled>Bỏ qua sau <span id="ad-timer" style="margin-left:5px;">5</span>s</button>
+                </div>
+            </div>`;
+        
+        let timeLeft = 5;
+        const timerText = document.getElementById('ad-timer');
+        const skipBtn = document.getElementById('skip-ad-btn');
+        
+        const cd = setInterval(() => {
+            timeLeft--;
+            if(timerText) timerText.innerText = timeLeft;
+            if(timeLeft <= 0) {
+                clearInterval(cd);
+                if(skipBtn) {
+                    skipBtn.disabled = false;
+                    skipBtn.classList.add('ready');
+                    skipBtn.innerHTML = 'Bỏ qua quảng cáo <i class="fas fa-step-forward"></i>';
+                    skipBtn.onclick = () => window.startActualPlayer(link, type, time);
+                }
+            }
+        }, 1000);
+    }
+
+    window.startActualPlayer = function(link, type, startTime) {
+        const container = document.getElementById('player-container');
+        if (type === 'iframe') {
+            container.innerHTML = `<div class="aspect-ratio-16-9"><iframe src="${link}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe></div>`;
+        } else {
+            initPlayer(type, link, currentMovieData?.poster_url, startTime);
+        }
+    }
+
+    window.saveToHistory = async (movie, epName = "Tập 1", duration = 0) => { 
+        if (!window.currentUser || !movie) return;
+        const ref = doc(db, "users", window.currentUser.uid);
+        try {
+            const snap = await getDoc(ref);
+            let history = snap.exists() ? (snap.data().watchHistory || []) : [];
+            const currentSlug = decodeURIComponent(movie.slug);
+            history = history.filter(m => decodeURIComponent(m.slug) !== currentSlug);
+            history.push({ 
+                slug: movie.slug, name: movie.name, thumb_url: movie.thumb_url,    
+                poster_url: movie.poster_url || movie.thumb_url, epName: epName,
+                duration: duration, timestamp: Date.now() 
+            });
+            if (history.length > 20) history.shift();
+            await setDoc(ref, { watchHistory: history }, { merge: true });
+            console.log("Đã lưu tiến trình!");
+        } catch (e) { console.error("Lỗi lưu:", e); }
+    };
+
+    function timeSince(date) {
+        if (!date) return "Gần đây";
+        const seconds = Math.floor((Date.now() - date) / 1000);
+        if (seconds < 60) return "Vừa xong";
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return minutes + " phút trước";
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return hours + " giờ trước";
+        return Math.floor(hours / 24) + " ngày trước";
+    }
+
+    const MANUAL_RELATED = ["con-ra-the-thong-gi-nua-2026", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "duong-cung-ky-an-thanh-vu-phong-minh", "su-tro-lai-cua-tham-phan", "tuoi-tre-tai-cao", "con-say-mua-xuan", "trao-em-ca-vu-tru", "thu-hut-manh-liet", "truong-nguyet-tan-minh"];
+    async function loadRelated() {
+        try {
+            const promises = MANUAL_RELATED.map(slug => fetch(`${API_BASE}/${slug}`));
+            const results = await Promise.all(promises);
+            const jsonResults = await Promise.all(results.map(res => res.json()));
+            const validMovies = jsonResults.filter(d => d.status).map(d => d.data.item);
+
+            if (validMovies.length > 0) {
+                let html = '';
+                validMovies.forEach(m => {
+                    let img = m.thumb_url;
+                    if (!img.startsWith('http')) img = `https://img.ophim1.com/uploads/movies/${img}`;
+                    html += `<div class="sidebar-card" onclick="window.location.href='/xem-phim/${m.slug}'"><div class="sb-thumb"><img src="${img}" loading="lazy"></div><div class="sb-info"><div class="sb-title">${m.name}</div><div class="sb-meta">${m.origin_name} (${m.year})</div><div class="sb-views"><i class="fas fa-eye"></i> ${Math.floor(Math.random()*10000)}</div></div></div>`;
+                });
+                document.getElementById('relatedList').innerHTML = html;
+            }
+        } catch(e) {}
+    }
+
+    window.toggleContent = () => {
+        const shortText = document.getElementById('shortText');
+        const fullText = document.getElementById('fullText');
+        const btn = document.getElementById('toggleBtn');
+        if (fullText.style.display === 'none') {
+            fullText.style.display = 'inline'; shortText.style.display = 'none'; btn.innerHTML = 'Thu gọn';
+        } else {
+            fullText.style.display = 'none'; shortText.style.display = 'inline'; btn.innerHTML = 'Xem thêm';
+        }
+    };
+    
+    function renderInfo(movie) {
+        document.title = `${movie.name} - WibuPhim`;
+        document.getElementById('breadCrumbTitle').innerText = movie.name;
+        document.getElementById('mName').innerText = movie.name;
+        document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
+        
+        const contentBox = document.getElementById('mContent');
+        const rawContent = movie.content || "Đang cập nhật nội dung...";
+        const tempDiv = document.createElement("div"); tempDiv.innerHTML = rawContent;
+        const plainText = tempDiv.innerText || tempDiv.textContent;
+        const words = plainText.trim().split(/\s+/);
+
+        if (words.length > 36) {
+            const shortContent = words.slice(0, 36).join(' ') + '...';
+            contentBox.innerHTML = `<span id="shortText">${shortContent}</span><span id="fullText" style="display: none;">${rawContent}</span><a href="javascript:void(0)" id="toggleBtn" onclick="window.toggleContent()" style="color: var(--primary-color); font-weight: 700; text-decoration: none; margin-left: 5px; cursor: pointer;">Xem thêm</a>`;
+        } else {
+            contentBox.innerHTML = rawContent;
+        }
+
+        let bgImg = movie.poster_url || movie.thumb_url;
+        if (!bgImg.startsWith('http')) bgImg = `https://img.ophim1.com/uploads/movies/${bgImg}`;
+        document.getElementById('movieInfoBg').style.backgroundImage = `url('${bgImg}')`;
+
+        let tagsHtml = `<span class="tag-item tag-highlight">${movie.quality || 'HD'}</span><span class="tag-item">${movie.lang || 'Vietsub'}</span><span class="tag-item">${movie.year}</span>`;
+        if (movie.category) { movie.category.forEach(cat => { tagsHtml += `<span class="tag-item">${cat.name}</span>`; }); }
+        if (movie.country && movie.country[0]) { tagsHtml += `<span class="tag-item"><i class="fas fa-globe"></i> ${movie.country[0].name}</span>`; }
+        document.getElementById('mTags').innerHTML = tagsHtml;
+        setTimeout(() => { if (currentUser) saveToHistory(movie, currentEpName, Math.floor(player?.currentTime || 0)); }, 3000);
+    }
+</script>
     
     <script>
         // CẤU HÌNH QUẢNG CÁO GIF POPUP (BỎ ĐẾM GIỜ)
