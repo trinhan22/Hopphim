@@ -1332,6 +1332,33 @@ footer {
             /* Tắt icon Play to mặc định của Plyr để dùng bộ nút mới */
             .plyr__control--overlaid { display: none !important; }
         }
+
+        /* ==========================================================================
+           🔥 FIX FULLSCREEN MOBILE (BUNG LỤA 100% & ẨN GIAO DIỆN THỪA)
+           ========================================================================== */
+        
+        /* Ép khung Player bung toàn màn hình, đè lên tất cả */
+        .plyr--fullscreen-active {
+            position: fixed !important;
+            top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+            width: 100vw !important; height: 100vh !important;
+            background: #000 !important;
+            z-index: 2147483647 !important; /* Cao nhất server :)) */
+            border-radius: 0 !important;
+            margin: 0 !important; padding: 0 !important;
+        }
+
+        /* Ẩn Header, Footer và các thành phần khác khi đang Fullscreen */
+        body.plyr--fullscreen-active header,
+        body.plyr--fullscreen-active footer,
+        body.plyr--fullscreen-active .episode-block,
+        body.plyr--fullscreen-active .movie-info-block,
+        body.plyr--fullscreen-active .comment-section,
+        body.plyr--fullscreen-active .sidebar-right,
+        body.plyr--fullscreen-active .ad-panel-wrapper,
+        body.plyr--fullscreen-active .community-section {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -2048,22 +2075,26 @@ footer {
         showControls();
     }
 
-    // --- 2. HÀM TỰ XOAY MÀN HÌNH (AUTO ROTATE) ---
+    // --- 2. HÀM TỰ XOAY MÀN HÌNH (AUTO ROTATE - FIXED ANDROID) ---
     function setupAutoRotation(player) {
         player.on('enterfullscreen', async () => {
             try {
-                // Chỉ xoay trên điện thoại
-                if (screen.orientation && window.innerWidth < 900) {
-                    await screen.orientation.lock('landscape');
+                // Chỉ chạy trên Mobile/Tablet
+                if (window.innerWidth < 1024) {
+                    // API này chỉ hoạt động trên Android (Chrome/Samsung)
+                    if (screen.orientation && screen.orientation.lock) {
+                        await screen.orientation.lock('landscape');
+                    }
                 }
             } catch (err) {
-                console.log('Thiết bị không hỗ trợ khóa xoay:', err);
+                // iOS sẽ vào đây (không hỗ trợ lock), ta kệ nó để nó dùng Native Player
+                console.log('Thiết bị này tự quản lý xoay màn hình.');
             }
         });
 
         player.on('exitfullscreen', async () => {
             try {
-                if (screen.orientation) {
+                if (screen.orientation && screen.orientation.unlock) {
                     await screen.orientation.unlock();
                 }
             } catch (err) {}
@@ -2082,17 +2113,25 @@ footer {
             const videoElement = document.getElementById('player');
 
             // Cấu hình Player
+            // Cấu hình Player (Đã tối ưu cho iOS & PC)
             const plyrOptions = {
-                // 🔥 SỬA DÒNG NÀY: Tắt phím mặc định để tránh xung đột với code bên dưới
-                keyboard: { focused: false, global: false }, 
+                // Giữ nguyên phím tắt cho PC
+                keyboard: { focused: true, global: true },
                 
                 controls: [
                     'play-large', 'rewind', 'play', 'fast-forward', 
                     'progress', 'current-time', 'mute', 'volume', 
                     'captions', 'settings', 'pip', 'airplay', 'fullscreen'
                 ],
-                seekTime: 10, 
-                youtube: { noCookie: true, rel: 0, modestbranding: 1 }
+                seekTime: 10,
+                youtube: { noCookie: true, rel: 0, modestbranding: 1 },
+
+                // 🔥 QUAN TRỌNG CHO IPHONE:
+                // Bắt buộc dùng trình phát gốc của iOS khi Fullscreen để tự xoay & tràn tai thỏ
+                iosNative: true,
+                
+                // Tỉ lệ khung hình chuẩn
+                ratio: '16:9'
             };
 
             // Hàm xử lý khi Player đã sẵn sàng
