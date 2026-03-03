@@ -1948,6 +1948,87 @@ footer {
             .comm-bottom-grid { grid-template-columns: 1fr; gap: 30px; }
             .lb-item, .rc-item { height: auto; padding: 15px; } 
         }
+
+/* =========================================
+   🔥 APP INSTALL BANNER (FIXED BOTTOM)
+   ========================================= */
+.app-install-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99990;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: none;
+    padding: 20px;
+    
+    /* 🔥 MẶC ĐỊNH ẨN (Chờ Load xong mới hiện) */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(50px); /* Đẩy xuống dưới một chút */
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1); /* Hiệu ứng trượt mượt */
+}
+
+/* Class này được JS thêm vào để hiện banner */
+.app-install-banner.show-banner {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.aib-content {
+    position: relative;
+    width: 100%;
+    max-width: 700px; /* Thu gọn chiều rộng tối đa lại chút cho đẹp */
+    pointer-events: auto;
+    filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+}
+
+.aib-content img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* 🔥 NÚT TẮT NHỎ XÍU (22px) */
+.aib-close {
+    position: absolute;
+    top: 7px;  /* Nhích vào gần hơn */
+    right: 7px;
+    width: 26px; /* Kích thước nhỏ */
+    height: 23px;
+    color: #646464;
+    background-color: #242424;
+    border-radius: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid #646464;
+    z-index: 10;
+    font-size: 0.7rem; /* Icon nhỏ lại */
+    transition: 0.3s;
+}
+.aib-close:hover { background: #181818; color: #fff; border: 1px solid #fff;}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .app-install-banner { padding: 10px; bottom: 0; }
+    .aib-content img { border-radius: 10px; }
+    
+    /* Nút tắt trên mobile nằm gọn trong góc */
+    .aib-close { 
+        top: -6px; 
+        right: -6px; 
+        width: 24px;
+        height: 24px;
+    }
+}
     </style>
 </head>
 <body>
@@ -2384,6 +2465,16 @@ footer {
         <span>&copy; 2026 WibuPhim. All Rights Reserved By WibuTeam.</span>
     </div>
 </footer>
+
+<div id="app-install-banner" class="app-install-banner">
+    <div class="aib-content">
+        <i class="fas fa-times aib-close" onclick="closeAppBanner()"></i>
+        
+        <a href="/WibuPhim.apk" download>
+            <img src="https://wibuphim.netlify.app/WIBUPHIMAPP.png" alt="Tải App WibuPhim">
+        </a>
+    </div>
+</div>
 
     <script src="chatbot.js"></script>
 <script type="module">
@@ -3678,22 +3769,36 @@ footer {
 
             // --- TRONG PHẦN SCRIPT CỦA INDEX.HTML ---
             setTimeout(() => {
+                const screen = document.getElementById('loadingScreen');
+                const img = screen ? screen.querySelector('.loading-img') : null;
+
                 if(img) {
                     img.classList.add('zoom-out');
+                    
+                    // Đợi ảnh zoom xong (480ms) thì tắt màn hình đen và hiện mọi thứ
                     setTimeout(() => {
-                        screen.style.display = 'none';
+                        if(screen) screen.style.display = 'none';
                         
-                        // 🔥 GỌI HÀM HIỆN CHATBOT TẠI ĐÂY 🔥
+                        // 1. HIỆN CHATBOT
                         if (window.showChatbot) {
                             window.showChatbot();
                         }
-                        
-                    }, 480); 
+
+                        // 2. HIỆN BANNER APP CÙNG LÚC (Trượt lên)
+                        const banner = document.getElementById('app-install-banner');
+                        if(banner) banner.classList.add('show-banner');
+
+                    }, 480);
                 } else {
-                    screen.style.display = 'none';
-                    if (window.showChatbot) window.showChatbot(); // Phòng trường hợp ko có ảnh
+                    // Fallback nếu không có ảnh loading
+                    if(screen) screen.style.display = 'none';
+                    if (window.showChatbot) window.showChatbot();
+                    
+                    const banner = document.getElementById('app-install-banner');
+                    if(banner) banner.classList.add('show-banner');
                 }
-            }, 1000);
+            }, 1000); // Đợi 1 giây sau khi load trang rồi mới bắt đầu zoom
+            
 
             // --- 🔥 GÁN SỰ KIỆN TÌM KIẾM ---
             const mobileInput = document.getElementById('mobileSearchInput');
@@ -3719,6 +3824,19 @@ footer {
         window.addEventListener('scroll', () => {
             document.getElementById('siteHeader').classList.toggle('scrolled', window.scrollY > 50);
         });
+
+
+        // --- HÀM ĐÓNG BANNER APP ---
+    window.closeAppBanner = () => {
+        const banner = document.getElementById('app-install-banner');
+        if (banner) {
+            // Hiệu ứng mờ dần trước khi mất
+            banner.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+            banner.style.opacity = "0";
+            banner.style.transform = "translateY(50px)";
+            setTimeout(() => { banner.style.display = 'none'; }, 300);
+        }
+    }
     </script>
 
     <script src="backtotop.js"></script>
