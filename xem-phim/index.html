@@ -1269,6 +1269,69 @@ footer {
             .pause-movie-title { font-size: 2.2rem; }
             .pause-desc { font-size: 0.95rem; }
         }
+
+        /* ==========================================================================
+           🔥 MOBILE CENTER CONTROLS (3 NÚT GIỮA MÀN HÌNH)
+           ========================================================================== */
+        
+        /* 1. Container chứa 3 nút */
+        .center-controls-layer {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 60; /* Cao hơn Overlay nhưng thấp hơn quảng cáo */
+            display: flex;
+            align-items: center;
+            gap: 40px; /* Khoảng cách giữa các nút */
+            pointer-events: none; /* Mặc định không chặn click */
+            transition: opacity 0.3s ease;
+        }
+
+        /* 2. Style cho từng nút (Solid - Tròn - Nền đen mờ) */
+        .cc-btn {
+            background: rgba(0, 0, 0, 0.6); /* Nền đen mờ */
+            border: 2px solid rgba(255,255,255,0.1);
+            color: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto; /* Bật click cho nút */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Nút nhỏ (Tua) */
+        .cc-btn-small {
+            width: 50px; height: 50px; font-size: 1.2rem;
+        }
+
+        /* Nút to (Play/Pause) */
+        .cc-btn-large {
+            width: 70px; height: 70px; font-size: 2rem;
+            background: rgba(255, 94, 98, 0.8); /* Màu chủ đạo */
+            border-color: transparent;
+            box-shadow: 0 0 20px rgba(255, 94, 98, 0.4);
+        }
+        
+        /* Hiệu ứng khi nhấn */
+        .cc-btn:active { transform: scale(0.9); background: #fff; color: #000; }
+
+        /* Ẩn hiện controls */
+        .center-controls-layer.hidden { opacity: 0; pointer-events: none; }
+        
+        /* Chỉ hiện trên Mobile/Tablet */
+        @media (min-width: 901px) {
+            .center-controls-layer { display: none !important; }
+        }
+
+        /* --- ẨN PAUSE OVERLAY (NETFLIX STYLE) TRÊN MOBILE --- */
+        @media (max-width: 900px) {
+            .pause-overlay { display: none !important; }
+            
+            /* Tắt icon Play to mặc định của Plyr để dùng bộ nút mới */
+            .plyr__control--overlaid { display: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -1924,6 +1987,89 @@ footer {
             });
         }
 
+// --- 1. HÀM TẠO 3 NÚT ĐIỀU KHIỂN (MOBILE) ---
+    function setupMobileControls(player) {
+        const container = player.elements.container;
+        
+        // Tạo layer chứa nút
+        const layer = document.createElement('div');
+        layer.className = 'center-controls-layer';
+        
+        // HTML 3 nút: Lùi - Play/Pause - Tiến
+        layer.innerHTML = `
+            <div class="cc-btn cc-btn-small" id="cc-rewind"><i class="fas fa-undo-alt"></i></div>
+            <div class="cc-btn cc-btn-large" id="cc-play"><i class="fas fa-play"></i></div>
+            <div class="cc-btn cc-btn-small" id="cc-forward"><i class="fas fa-redo-alt"></i></div>
+        `;
+        
+        container.appendChild(layer);
+
+        const btnRewind = layer.querySelector('#cc-rewind');
+        const btnPlay = layer.querySelector('#cc-play');
+        const btnForward = layer.querySelector('#cc-forward');
+        const iconPlay = btnPlay.querySelector('i');
+
+        // Logic Click
+        btnRewind.onclick = (e) => { e.stopPropagation(); player.rewind(10); showControls(); };
+        btnForward.onclick = (e) => { e.stopPropagation(); player.forward(10); showControls(); };
+        btnPlay.onclick = (e) => { 
+            e.stopPropagation(); 
+            player.togglePlay(); 
+        };
+
+        // Logic ẩn/hiện Controls
+        let hideTimeout;
+        const showControls = () => {
+            layer.classList.remove('hidden');
+            clearTimeout(hideTimeout);
+            if (player.playing) {
+                hideTimeout = setTimeout(() => layer.classList.add('hidden'), 2500); // Ẩn sau 2.5s nếu đang xem
+            }
+        };
+
+        // Lắng nghe sự kiện Player để đổi icon
+        player.on('play', () => {
+            iconPlay.className = 'fas fa-pause';
+            showControls();
+        });
+        
+        player.on('pause', () => {
+            iconPlay.className = 'fas fa-play';
+            layer.classList.remove('hidden'); // Pause thì luôn hiện
+            clearTimeout(hideTimeout);
+        });
+
+        // Khi chạm vào màn hình thì hiện nút
+        player.elements.container.addEventListener('touchstart', () => {
+             showControls();
+        });
+        
+        // Khởi tạo trạng thái
+        showControls();
+    }
+
+    // --- 2. HÀM TỰ XOAY MÀN HÌNH (AUTO ROTATE) ---
+    function setupAutoRotation(player) {
+        player.on('enterfullscreen', async () => {
+            try {
+                // Chỉ xoay trên điện thoại
+                if (screen.orientation && window.innerWidth < 900) {
+                    await screen.orientation.lock('landscape');
+                }
+            } catch (err) {
+                console.log('Thiết bị không hỗ trợ khóa xoay:', err);
+            }
+        });
+
+        player.on('exitfullscreen', async () => {
+            try {
+                if (screen.orientation) {
+                    await screen.orientation.unlock();
+                }
+            } catch (err) {}
+        });
+    }
+
         // --- HÀM KHỞI TẠO PLAYER (ĐÃ TẮT TOAST KHI RESUME) ---
         function initPlayer(sourceType, sourceLink, poster = '', startTime = 0) {
             if (player) {
@@ -1951,12 +2097,16 @@ footer {
 
             // Hàm xử lý khi Player đã sẵn sàng
             const onPlayerReady = (plyrInstance) => {
-                // Thêm các nút chức năng (Skip Intro, Pause Overlay)
+                // Thêm các nút chức năng cũ
                 setupSkipIntro(plyrInstance);
                 setupPauseOverlay(plyrInstance);
 
-                // 🔥 LOGIC RESUME (TỰ NHẢY SỐ PHÚT - KHÔNG HIỆN TOAST)
-                if (startTime > 0) {
+                // 🔥 THÊM MỚI 2 DÒNG NÀY:
+                setupMobileControls(plyrInstance); // 3 nút giữa màn hình
+                setupAutoRotation(plyrInstance);   // Tự xoay ngang
+
+                // ... (Phần logic Resume cũ giữ nguyên) ...
+                 if (startTime > 0) {
                     console.log("⚡ Đang nhảy tới giây:", startTime);
                     
                     // Đợi 0.5s cho Player ổn định rồi nhảy
