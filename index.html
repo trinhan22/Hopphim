@@ -201,7 +201,7 @@
             color: #fff; /* Ví dụ: Sáng lên khi bấm vào */
         }
         
-        .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
+        .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 8.5px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary-color); cursor: pointer; display: none; object-fit: cover; }
         .user-dropdown { position: absolute; top: 100%; right: 0; width: 220px; margin-top: 15px; background: #23252f; border-radius: 8px; padding: 5px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); display: none; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); }
         .user-dropdown.active { display: flex; }
@@ -2152,6 +2152,37 @@ footer {
 
 /* Ẩn trên điện thoại */
 @media (max-width: 900px) { .download-nav-item { display: none !important; } }
+
+/* --- Badge BETA treo trên đầu (Tiết kiệm diện tích) --- */
+.badge-beta-sup {
+    position: absolute;
+    top: -8px;       /* Treo lên trên */
+    right: -10px;    /* Lệch sang phải một chút */
+    
+    background: linear-gradient(135deg, #FFD700 0%, #FF8F50 100%);
+    color: #000;
+    font-size: 0.5rem; /* Chữ siêu nhỏ */
+    font-weight: 900;
+    padding: 1px 4px;
+    border-radius: 4px;
+    line-height: 1;
+    z-index: 10;
+    pointer-events: none; /* Để bấm xuyên qua vào nút */
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    animation: pulseBadge 2s infinite;
+}
+
+/* Cần thêm class này vào thẻ a để badge định vị đúng */
+.nav-link.has-badge {
+    position: relative; 
+    overflow: visible; /* Để badge không bị cắt */
+}
+
+@keyframes pulseBadge {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.9; }
+    100% { transform: scale(1); opacity: 1; }
+}
     </style>
 </head>
 <body>
@@ -2280,6 +2311,13 @@ footer {
                             <a class="dropdown-item-link" onclick="openModal('viet-nam', 'Phim Việt Nam')">Việt Nam</a>
                         </div>
                     </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link has-badge" href="javascript:void(0)" onclick="window.showToast('Tính năng Xem Chung đang phát triển!', 'error')">
+                        Xem Chung 
+                        <span class="badge-beta-sup">BETA</span>
+                    </a>
                 </li>
             </ul>
         </div>
