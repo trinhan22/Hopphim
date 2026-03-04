@@ -1369,6 +1369,118 @@ footer {
         body.plyr--fullscreen-active .community-section {
             display: none !important;
         }
+
+        
+/* =========================================
+   🔥 WIBUPHIM DOWNLOAD - MINIMALIST VERSION
+   ========================================= */
+
+.download-nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-right: 12px;
+}
+
+/* Nút bấm gọn gàng */
+.download-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 50px; /* Bo tròn viên thuốc */
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: 0.3s;
+}
+
+.download-trigger:hover {
+    background: var(--gradient-main);
+    border-color: transparent;
+}
+
+.download-trigger i {
+    font-size: 0.9rem;
+    color: #FFD166;
+}
+.download-trigger:hover i { color: #fff; }
+
+.download-trigger span {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+}
+
+/* Ô Dropdown gọn nhẹ */
+.dl-dropdown-panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 260px; /* Thu hẹp lại */
+    background: #FFFFFF;
+    border-radius: 18px;
+    padding: 15px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    z-index: 999999 !important;
+    display: none;
+    transform-origin: top right;
+    animation: dl-mini-in 0.25s ease-out;
+}
+.dl-dropdown-panel.active { display: block; }
+
+/* Mũi tên nhỏ */
+.dl-dropdown-panel::after {
+    content: '';
+    position: absolute;
+    top: -6px; right: 25px;
+    width: 12px; height: 12px;
+    background: #fff;
+    transform: rotate(45deg);
+}
+
+@keyframes dl-mini-in {
+    from { opacity: 0; transform: translateY(-5px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Label tiêu đề nhỏ trong panel */
+.dl-mini-label {
+    font-size: 0.75rem;
+    color: #888;
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-left: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Nút danh sách thiết bị */
+.dl-device-list { display: flex; flex-direction: column; gap: 8px; }
+
+.dl-item-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.dl-item-btn:hover {
+    background: #f0f2f5;
+    border-color: #3F4A74;
+}
+
+.dl-item-btn i { font-size: 1.1rem; color: #3F4A74; width: 20px; text-align: center; }
+.dl-item-btn span { font-size: 0.85rem; color: #333; font-weight: 700; }
+
+/* Ẩn trên điện thoại */
+@media (max-width: 900px) { .download-nav-item { display: none !important; } }
     </style>
 </head>
 <body>
@@ -1495,10 +1607,6 @@ footer {
                         </div>
                     </div>
                 </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="https://wibuteam.netlify.app" target="_blank">Về WibuTeam</a>
-                </li>
             </ul>
         </div>
         <div class="right-elements">
@@ -1509,6 +1617,29 @@ footer {
                 <input type="text" id="searchInput" placeholder="Tìm kiếm phim..." autocomplete="off">
                 <div id="desktopSearchResults"></div> 
             </div>
+
+<div class="download-nav-item" id="dlContainer">
+        <div class="download-trigger" onclick="toggleDlPanel(event)">
+            <i class="fas fa-mobile-alt"></i>
+            <span>Tải App</span>
+        </div>
+
+        <div class="dl-dropdown-panel" id="dlPanel">
+            <div class="dl-mini-label">Chọn thiết bị</div>
+            
+            <div class="dl-device-list">
+                <a href="javascript:void(0)" class="dl-item-btn" onclick="window.showToast('Bản Android TV đang phát triển!', 'error')">
+                    <i class="fas fa-tv"></i>
+                    <span>Android TV</span>
+                </a>
+
+                <a href="/WibuPhim.apk" class="dl-item-btn" download>
+                    <i class="fas fa-mobile-screen-button"></i>
+                    <span>Smartphone</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
             <div class="desktop-auth" style="position: relative;">
                 <button id="btnLogin" class="btn-login" onclick="window.location.href='/login.html'">Đăng nhập</button>
@@ -2573,6 +2704,26 @@ footer {
                 setTimeout(() => { adOverlay.style.display = 'none'; }, 500);
             }
         }
+
+
+        // --- LOGIC DROPDOWN TẢI APP GỌN NHẸ ---
+    window.toggleDlPanel = (event) => {
+        event.stopPropagation();
+        const panel = document.getElementById('dlPanel');
+        panel.classList.toggle('active');
+        
+        // Đóng menu user nếu đang mở
+        const userMenu = document.getElementById('userMenu');
+        if (userMenu) userMenu.classList.remove('active');
+    }
+
+    document.addEventListener('click', (e) => {
+        const container = document.getElementById('dlContainer');
+        const panel = document.getElementById('dlPanel');
+        if (container && !container.contains(e.target)) {
+            if(panel) panel.classList.remove('active');
+        }
+    });
     </script>
 
 <script src="../backtotop.js"></script>
