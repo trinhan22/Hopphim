@@ -312,6 +312,17 @@
         .search-box input { background: transparent; border: none; color: #fff; margin-left: 10px; font-family: var(--font-main); font-size: 14px; width: 150px; }
         .menu-toggle, .mobile-search-trigger { display: none; font-size: 1.5rem; color: #fff; cursor: pointer; }
         
+        /* --- MÀU CHỮ GỢI Ý (PLACEHOLDER) --- */
+        .search-box input::placeholder {
+            color: #ccc;  /* 👉 Thay mã màu bạn thích vào đây */
+            opacity: 1;      /* Giúp màu hiển thị rõ hơn trên Firefox */
+        }
+
+        /* (Tùy chọn) Màu khi bấm vào ô tìm kiếm */
+        .search-box input:focus::placeholder {
+            color: #fff; /* Ví dụ: Sáng lên khi bấm vào */
+        }
+
         .btn-login { background: var(--gradient-main); color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary-color); cursor: pointer; display: none; object-fit: cover; }
         .user-dropdown { position: absolute; top: 100%; right: 0; width: 200px; margin-top: 15px; background: #23252f; border-radius: 8px; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); }
@@ -1379,7 +1390,7 @@ footer {
     position: relative;
     display: flex;
     align-items: center;
-    margin-right: 12px;
+    margin-right: 5px;
 }
 
 /* Nút bấm gọn gàng */
@@ -1388,7 +1399,7 @@ footer {
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    padding: 6px 14px;
+    padding: 6.5px 14px;
     border-radius: 50px; /* Bo tròn viên thuốc */
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1402,14 +1413,14 @@ footer {
 
 .download-trigger i {
     font-size: 0.9rem;
-    color: #FFD166;
+    color: #FF8F50;
 }
 .download-trigger:hover i { color: #fff; }
 
 .download-trigger span {
     font-size: 0.85rem;
-    font-weight: 700;
-    color: #fff;
+    font-weight: 500;
+    color: #eaeaea;
     white-space: nowrap;
 }
 
@@ -1613,7 +1624,7 @@ footer {
             <div class="mobile-search-trigger" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
             
             <div class="search-box desktop-auth" style="position: relative;"> 
-                <i class="fas fa-search" style="color: #a0a0a0"></i>
+                <i class="fas fa-search" style="color: #ccc"></i>
                 <input type="text" id="searchInput" placeholder="Tìm kiếm phim..." autocomplete="off">
                 <div id="desktopSearchResults"></div> 
             </div>
@@ -1628,7 +1639,7 @@ footer {
             <div class="dl-mini-label">Chọn thiết bị</div>
             
             <div class="dl-device-list">
-                <a href="javascript:void(0)" class="dl-item-btn" onclick="window.showToast('Bản Android TV đang phát triển!', 'error')">
+                <a href="javascript:void(0)" class="dl-item-btn" onclick="window.showToast('Phiên bản Android TV đang phát triển!', 'error')">
                     <i class="fas fa-tv"></i>
                     <span>Android TV</span>
                 </a>
