@@ -2980,29 +2980,32 @@ footer {
 
 </script>
 
-    <script>
+<script>
         // ============================================================
-        // --- CẤU HÌNH HERO SLIDER (CÓ ẢNH LOGO PNG) ---
+        // --- CẤU HÌNH HERO SLIDER (CÓ ẢNH LOGO + VỊ TRÍ + IMDB) ---
         // ============================================================
         // - slug: Tên phim (bắt buộc)
-        // - titleImage: Link ảnh Logo PNG (Nếu không điền sẽ hiện Tên phim dạng chữ)
-        // - position: Chỉnh vị trí ảnh nền (center top, center bottom...)
+        // - titleImage: Link ảnh Logo PNG
+        // - position: Vị trí ảnh nền (center top, center bottom...)
+        // - imdb: Điểm số IMDb tùy chỉnh (Mặc định là 8.5 nếu không điền)
 
         const HERO_CONFIG = [
             { 
                 slug: "tieng-yeu-nay-anh-dich-duoc-khong",
-                // Đã thêm Logo cho phim này
                 titleImage: "https://image.tmdb.org/t/p/original/2J5Dr4aPm310HgH4q6sIYXUOSgn.png",
-            },
+                imdb: "7.9"
+            }, 
             { 
                 slug: "trao-em-ca-vu-tru",
                 titleImage: "https://image.tmdb.org/t/p/original/vFFP8pU2zkywEhBk84loUAC9SQJ.png",
-                position: "center 20%" 
+                position: "center 20%",
+                imdb: "8.1"
             },
             { 
                 slug: "no-tail",
                 titleImage: "https://image.tmdb.org/t/p/original/uj7y0bzSOoa476djOzdTiMYfFNT.png",
-                position: "center top"
+                position: "center top",
+                imdb: "6.5"
             }
         ];
 
@@ -3054,23 +3057,24 @@ footer {
 
                         const bgPos = config.position || 'center center';
 
-                        // 2. 🔥 XỬ LÝ TIÊU ĐỀ (LOGO PNG HOẶC CHỮ) 🔥
+                        // 2. XỬ LÝ TIÊU ĐỀ
                         let titleHTML = '';
                         if (config.titleImage && config.titleImage.trim() !== '') {
-                            // Nếu có link ảnh PNG -> Dùng thẻ IMG
                             titleHTML = `<img src="${config.titleImage}" class="hero-title-image" alt="${m.name}">`;
                         } else {
-                            // Nếu không có -> Dùng thẻ Text cũ
                             titleHTML = `<div class="hero-title-main">${m.name}</div>`;
                         }
 
-                        // 3. Xử lý nội dung
+                        // 3. 🔥 XỬ LÝ ĐIỂM IMDb (Lấy từ Config hoặc mặc định 8.5) 🔥
+                        const imdbScore = config.imdb || "8.5";
+
+                        // 4. Xử lý nội dung
                         const tempDiv = document.createElement("div");
                         tempDiv.innerHTML = m.content;
                         let cleanDesc = tempDiv.textContent || tempDiv.innerText || "";
                         if(cleanDesc.length > 200) cleanDesc = cleanDesc.substring(0, 200) + "...";
 
-                        // 4. RENDER HTML
+                        // 5. RENDER HTML
                         slidesHtml += `
                             <div class="hero-slide ${active}" id="slide-${slideId}" 
                                  style="background-image: url('${finalImage}'); background-position: ${bgPos};">
@@ -3081,7 +3085,7 @@ footer {
                                     <div class="hero-origin-name">${m.origin_name} (${m.year})</div>
 
                                     <div class="hero-meta">
-                                        <span class="imdb-badge">IMDb 8.5</span>
+                                        <span class="imdb-badge">IMDb ${imdbScore}</span>
                                         <span class="quality-badge">${m.quality}</span>
                                         <span>${m.lang}</span>
                                         <span>${m.time}</span>
