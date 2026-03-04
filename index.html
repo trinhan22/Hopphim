@@ -374,12 +374,12 @@
 
         /* Tinh chỉnh lại Logo */
         .hero-title-image {
-            max-width: 270px;
+            max-width: 350px;
             height: auto;
-            max-height: 170px;
+            max-height: 250px;
             object-fit: contain;
             
-            margin-bottom: 0px; 
+            margin-bottom: 18px; 
             
             /* 👇 THÊM DÒNG NÀY: Kéo lùi về bên trái 10px */
             margin-left: -10px; 
@@ -2979,124 +2979,157 @@ footer {
 </script>
 
     <script>
-        // --- CẤU HÌNH PHIM CỦA BẠN ---
-        const MY_MOVIES = [
-            {
-                title: "Thế Hệ Kỳ Tích",
-                origin: "The He Ky Tich",
-                titleImage: "the-he-ky-tich/logo.png",
-                desc: "Chàng sinh viên Tiến (Trần Tú) mang trong mình giấc mơ tạo ra tựa game vươn tầm thế giới, dù liên tục bị xem thường và vấp ngã trên hành trình...",
-                poster: "the-he-ky-tich/thumb.png",
-                thumb: "the-he-ky-tich/thumb.png",
-                ytId: "ONvKBQyfCiY&t=835s", // Thay ID Youtube của bạn vào
-                year: "2025",
-                imdb: "2.1  ",
-                episodes: "Full"
+        // ============================================================
+        // --- CẤU HÌNH HERO SLIDER (CÓ ẢNH LOGO PNG) ---
+        // ============================================================
+        // - slug: Tên phim (bắt buộc)
+        // - titleImage: Link ảnh Logo PNG (Nếu không điền sẽ hiện Tên phim dạng chữ)
+        // - position: Chỉnh vị trí ảnh nền (center top, center bottom...)
+
+        const HERO_CONFIG = [
+            { 
+                slug: "tieng-yeu-nay-anh-dich-duoc-khong",
+                // Đã thêm Logo cho phim này
+                titleImage: "https://image.tmdb.org/t/p/w300/2J5Dr4aPm310HgH4q6sIYXUOSgn.png",
             },
-            {
-                title: "Hố Sâu Ảo Vọng",
-                origin: "The Abyss Of Delusion",
-                titleImage: "ho-sau-ao-vong/logo.png",
-                desc: "Đây là lời cảnh tỉnh mạnh mẽ và sâu sắc gửi đến cộng đồng về hiểm họa khôn lường của Cá độ bóng đá trực tuyến...",
-                poster: "ho-sau-ao-vong/thumb.png",
-                thumb: "ho-sau-ao-vong/thumb.png",
-                ytId: "2x40K6FstAU", // Thay ID Youtube của bạn vào
-                year: "2025",
-                imdb: "3.6",
-                episodes: "Full"
+            { 
+                slug: "trao-em-ca-vu-tru",
+                titleImage: "https://cdn.rophimm.net/file/cm9waGltbQ/images/vFFP8pU2zkywEhBk84loUAC9SQJ.webp",
+                position: "center 20%" 
             },
-            {
-                title: "Áp Lực Học Đường",
-                origin: "School Pressure",
-                titleImage: "ap-luc-hoc-duong/logo.png",
-                desc: "Lần đầu bước vào một môi trường hoàn toàn xa lạ – nội trú, bạn mới, nếp sống mới – cô bé lớp 10...",
-                // Hãy thay bằng link ảnh thật của bạn (Up lên imgur hoặc host ảnh)
-                poster: "ap-luc-hoc-duong/thumb.png", 
-                thumb: "ap-luc-hoc-duong/thumb.png",
-                ytId: "i4RDEnNLbmw", // ID Youtube video
-                year: "2025",
-                imdb: "3.6",
-                episodes: "Full"
+            { 
+                slug: "no-tail",
+                titleImage: "https://cdn.rophimm.net/file/cm9waGltbQ/images/uj7y0bzSOoa476djOzdTiMYfFNT.webp",
+                position: "center top"
             }
         ];
 
+        // ============================================================
+        // --- LOGIC XỬ LÝ ---
+        // ============================================================
         let currentSlide = 0;
         let slideInterval;
+        const IMG_BASE_HERO = 'https://img.ophim1.com/uploads/movies/';
 
-        function renderHero() {
-        const slidesContainer = document.getElementById('heroSlidesContainer');
-        const thumbsContainer = document.getElementById('heroThumbnails');
-        
-        if(!slidesContainer) return;
-
-        let slidesHtml = '';
-        let thumbsHtml = '';
-
-        MY_MOVIES.forEach((movie, index) => {
-            const active = index === 0 ? 'active' : '';
+        async function renderHero() {
+            const slidesContainer = document.getElementById('heroSlidesContainer');
+            const thumbsContainer = document.getElementById('heroThumbnails');
             
-            // --- LOGIC KIỂM TRA LOGO ---
-            // Nếu có titleImage thì dùng thẻ <img>, ngược lại dùng thẻ <div> text cũ
-            const titleContent = movie.titleImage 
-                ? `<img src="${movie.titleImage}" class="hero-title-image" alt="${movie.title}">`
-                : `<div class="hero-title-main">${movie.title}</div>`;
+            if(!slidesContainer) return;
 
-            // Render Slide
-            slidesHtml += `
-                <div class="hero-slide ${active}" id="slide-${index}" style="background-image: url('${movie.poster}');">
-                    <div class="hero-content">
-                        
-                        ${titleContent}
+            const promises = HERO_CONFIG.map(config => 
+                fetch(`https://ophim1.com/v1/api/phim/${config.slug}`)
+                    .then(res => res.json())
+                    .catch(err => ({ status: false }))
+            );
 
-                        <div class="hero-origin-name">${movie.origin}</div>
+            try {
+                const results = await Promise.all(promises);
+                let slidesHtml = '';
+                let thumbsHtml = '';
+                let validIndex = 0; 
 
-                        <div class="hero-meta">
-                            <span class="imdb-badge">IMDb ${movie.imdb}</span>
-                            <span class="quality-badge">4K</span>
-                            <span>${movie.year}</span>
-                            <span>${movie.episodes}</span>
-                        </div>
-                        <div class="hero-desc">${movie.desc}</div>
-                        <div class="hero-actions">
-                            <div class="btn-play-circle" onclick="goToWatchPage('${movie.ytId}', '${movie.title}')">
-                                <i class="fas fa-play"></i>
+                for (let i = 0; i < results.length; i++) {
+                    const data = results[i];
+                    const config = HERO_CONFIG[i]; 
+
+                    if (data.status && data.data && data.data.item) {
+                        const m = data.data.item;
+                        const slideId = validIndex;
+                        const active = slideId === 0 ? 'active' : '';
+
+                        // 1. CHỌN ẢNH NỀN
+                        let finalImage = '';
+                        if (config.customImage && config.customImage.trim() !== '') {
+                            finalImage = config.customImage;
+                        } else {
+                            finalImage = m.poster_url || m.thumb_url;
+                            if (finalImage && !finalImage.startsWith('http')) {
+                                finalImage = IMG_BASE_HERO + finalImage;
+                            }
+                        }
+                        if (!finalImage) finalImage = 'https://wibuphim.netlify.app/panel.webp';
+
+                        const bgPos = config.position || 'center center';
+
+                        // 2. 🔥 XỬ LÝ TIÊU ĐỀ (LOGO PNG HOẶC CHỮ) 🔥
+                        let titleHTML = '';
+                        if (config.titleImage && config.titleImage.trim() !== '') {
+                            // Nếu có link ảnh PNG -> Dùng thẻ IMG
+                            titleHTML = `<img src="${config.titleImage}" class="hero-title-image" alt="${m.name}">`;
+                        } else {
+                            // Nếu không có -> Dùng thẻ Text cũ
+                            titleHTML = `<div class="hero-title-main">${m.name}</div>`;
+                        }
+
+                        // 3. Xử lý nội dung
+                        const tempDiv = document.createElement("div");
+                        tempDiv.innerHTML = m.content;
+                        let cleanDesc = tempDiv.textContent || tempDiv.innerText || "";
+                        if(cleanDesc.length > 200) cleanDesc = cleanDesc.substring(0, 200) + "...";
+
+                        // 4. RENDER HTML
+                        slidesHtml += `
+                            <div class="hero-slide ${active}" id="slide-${slideId}" 
+                                 style="background-image: url('${finalImage}'); background-position: ${bgPos};">
+                                <div class="hero-content">
+                                    
+                                    ${titleHTML}
+
+                                    <div class="hero-origin-name">${m.origin_name} (${m.year})</div>
+
+                                    <div class="hero-meta">
+                                        <span class="imdb-badge">IMDb 8.5</span>
+                                        <span class="quality-badge">${m.quality}</span>
+                                        <span>${m.lang}</span>
+                                        <span>${m.time}</span>
+                                    </div>
+                                    
+                                    <div class="hero-desc">${cleanDesc}</div>
+                                    
+                                    <div class="hero-actions">
+                                        <div class="btn-play-circle" onclick="window.location.href='/xem-phim/${m.slug}'">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div class="btn-action-icon" title="Thêm vào danh sách" onclick="addToMyList('${m.slug}', '${m.name.replace(/'/g, "\\'")}', '${finalImage}')">
+                                            <i class="fas fa-plus"></i>
+                                        </div>
+                                        <div class="btn-action-icon" title="Thông tin" onclick="window.location.href='/xem-phim/${m.slug}'">
+                                            <i class="fas fa-info"></i>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="btn-action-icon" title="Thêm vào danh sách"><i class="fas fa-plus"></i></div>
-                            <div class="btn-action-icon" title="Thông tin"><i class="fas fa-info"></i></div>
-                        </div>
-                    </div>
-                </div>
-            `;
+                        `;
 
-            // Render Thumbnail (Giữ nguyên)
-            thumbsHtml += `
-                <div class="thumb-item ${active}" onclick="changeHeroSlide(${index})">
-                    <img src="${movie.thumb}">
-                </div>
-            `;
-        });
+                        // Render Thumbnail
+                        thumbsHtml += `
+                            <div class="thumb-item ${active}" onclick="changeHeroSlide(${slideId})">
+                                <img src="${finalImage}" loading="lazy" style="object-fit: cover;">
+                            </div>
+                        `;
 
-        slidesContainer.innerHTML = slidesHtml;
-        thumbsContainer.innerHTML = thumbsHtml;
-        
-        // Reset timer để tránh lỗi chồng chéo khi render lại
-        clearInterval(slideInterval);
-        startSlideTimer();
-    }
+                        validIndex++;
+                    }
+                }
 
-        // --- HÀM CHUYỂN HƯỚNG SANG TRANG XEM PHIM ---
-        function goToWatchPage(id, title) {
-            // Chuyển sang xem-phim.html với tham số đặc biệt
-            // custom=youtube: Đánh dấu đây là phim Youtube
-            // id: ID video Youtube
-            // name: Tên phim để hiển thị
-            const url = `/xem-phim/?custom=youtube&id=${id}&name=${encodeURIComponent(title)}`;
-            window.location.href = url;
+                slidesContainer.innerHTML = slidesHtml;
+                thumbsContainer.innerHTML = thumbsHtml;
+                
+                clearInterval(slideInterval);
+                startSlideTimer(validIndex); 
+
+            } catch (e) {
+                console.error("Lỗi Render Hero:", e);
+            }
         }
 
         function changeHeroSlide(index) {
+            const totalSlides = document.querySelectorAll('.hero-slide').length;
+            if(totalSlides === 0) return;
+
             clearInterval(slideInterval);
-            startSlideTimer();
+            startSlideTimer(totalSlides);
 
             document.querySelectorAll('.hero-slide').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.thumb-item').forEach(el => el.classList.remove('active'));
@@ -3104,20 +3137,20 @@ footer {
             const slide = document.getElementById(`slide-${index}`);
             if(slide) slide.classList.add('active');
             
-            const thumb = document.querySelectorAll('.thumb-item')[index];
-            if(thumb) thumb.classList.add('active');
+            const thumbs = document.querySelectorAll('.thumb-item');
+            if(thumbs && thumbs[index]) thumbs[index].classList.add('active');
             
             currentSlide = index;
         }
 
-        function startSlideTimer() {
+        function startSlideTimer(total) {
+            if (!total || total <= 0) return;
             slideInterval = setInterval(() => {
-                let next = (currentSlide + 1) % MY_MOVIES.length;
+                let next = (currentSlide + 1) % total;
                 changeHeroSlide(next);
             }, 6000); 
         }
 
-        // Init
         window.addEventListener('load', () => {
             renderHero();
         });
