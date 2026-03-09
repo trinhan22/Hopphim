@@ -3169,14 +3169,13 @@ footer {
 
         const HERO_CONFIG = [
             { 
-                slug: "tieng-yeu-nay-anh-dich-duoc-khong",
-                titleImage: "https://image.tmdb.org/t/p/original/2J5Dr4aPm310HgH4q6sIYXUOSgn.png",
+                slug: "truc-ngoc",
+                titleImage: "https://cdn.rophimm.net/file/cm9waGltbQ/images/nsWITA9BJOJ7ol3QhX1Vsd04ERL.webp",
                 imdb: "7.9"
             }, 
             { 
                 slug: "trao-em-ca-vu-tru",
                 titleImage: "https://image.tmdb.org/t/p/original/vFFP8pU2zkywEhBk84loUAC9SQJ.png",
-                position: "center 20%",
                 imdb: "8.1"
             },
             { 
@@ -3575,11 +3574,11 @@ footer {
         // --- LOAD TOP 5 PHIM BỘ (ĐÃ THÊM TÊN TIẾNG ANH) ---
         async function loadTop5() {
             const MANUAL_TOP_5 = [
+                "truc-ngoc", 
+                "boyfriend-on-demand", 
                 "con-ra-the-thong-gi-nua-2026", 
-                "mua-ruc-ro-cua-em", 
                 "tieng-yeu-nay-anh-dich-duoc-khong", 
-                "dai-chien-van-menh", 
-                "hoa-mau-2026"
+                "giang-ho-da-vu-thap-nien-dang"
             ];
             
             const container = document.getElementById('top5List');
@@ -3741,11 +3740,11 @@ footer {
         async function loadTop5Movies() {
             // Danh sách phim lẻ của bạn
             const MANUAL_TOP_MOVIES = [
-                "avatar-3-lua-va-tro-tan", 
+                "truy-tim-long-dien-huong",
                 "quai-vat-nho-nui-lang-lang", 
+                "avatar-3-lua-va-tro-tan", 
                 "doi-cam-lang-ac-mong-trong-suong", 
                 "ke-an-dat", 
-                "phi-vu-dong-troi-2"
             ];
             
             const container = document.getElementById('top5MoviesList');
@@ -4113,6 +4112,7 @@ footer {
         }
     });
 </script>
+
     <script src="backtotop.js"></script>
 
     </body>
