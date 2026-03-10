@@ -2495,7 +2495,7 @@ footer {
         player.on('seeking', () => overlay.classList.remove('active'));
     }
     
-    // --- LOAD MOVIE & LOGIC CHÍNH (ĐÃ UPDATE SERVER SELECTION) ---
+    // --- LOAD MOVIE & LOGIC CHÍNH ---
     async function loadMovie() {
         const urlParams = new URLSearchParams(window.location.search);
         const isYT = urlParams.get('custom') === 'youtube';
@@ -2519,10 +2519,11 @@ footer {
         }
 
         if (isYT && ytId) {
+            // ... (Phần Youtube giữ nguyên) ...
             const finalName = decodeURIComponent(customName || "Phim Youtube");
             const posterUrl = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
             currentMovieData = { slug: currentSlugId, name: finalName, thumb_url: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`, poster_url: posterUrl };
-            const fakeInfo = { name: finalName, origin_name: 'Phim Độc Quyền', year: '2026', quality: '4K', lang: 'Vietsub', content: 'Phim được phát độc quyền trên hệ thống WibuPhim. Chúc bạn xem phim vui vẻ!', poster_url: posterUrl, thumb_url: currentMovieData.thumb_url };
+            const fakeInfo = { name: finalName, origin_name: 'Phim Độc Quyền', year: '2026', quality: '4K', lang: 'Vietsub', content: 'Phim được phát độc quyền trên hệ thống WibuPhim.', poster_url: posterUrl, thumb_url: currentMovieData.thumb_url };
             renderInfo(fakeInfo);
             document.querySelectorAll('.episode-block').forEach(e => e.style.display = 'none');
             window.changeEp(ytId, 'youtube', null, 'Full Video', savedTime);
@@ -2545,22 +2546,25 @@ footer {
                 currentMovieData = movie;
                 renderInfo(movie);
 
-                // --- LOGIC XỬ LÝ SERVER (VIETSUB / LỒNG TIẾNG) ---
-                const episodesArray = movie.episodes; // API trả về mảng các server (Vietsub, Thuyết minh)
+                // ==========================================
+                // 🔥 BẮT ĐẦU LOGIC XỬ LÝ SERVER VIETSUB / TM
+                // ==========================================
+                const episodesArray = movie.episodes; // Mảng chứa các server
                 
                 if (episodesArray && episodesArray.length > 0) {
-                    // Nếu có nhiều hơn 1 server (vd: Vietsub và Lồng tiếng)
+                    // Nếu phim có từ 2 server trở lên (Vd: Vietsub, Thuyết Minh)
                     if (episodesArray.length > 1) {
+                        // Hiển thị nút chọn Server
                         renderServerButtons(episodesArray, savedEpName, savedTime);
                     } else {
-                        // Chỉ có 1 server (Mặc định ẩn nút chọn server)
+                        // Nếu chỉ có 1 server thì ẩn nút chọn đi, in tập ra luôn
                         document.getElementById('serverSelectionMobile').style.display = 'none';
                         document.getElementById('serverSelectionDesktop').style.display = 'none';
                         renderEpisodeList(episodesArray[0].server_data, savedEpName, savedTime);
                     }
                 } else {
-                    document.getElementById('episodeListMobile').innerHTML = '<div style="color:#666;">Phim chưa có tập nào.</div>';
-                    document.getElementById('episodeListDesktop').innerHTML = '<div style="color:#666;">Phim chưa có tập nào.</div>';
+                    document.getElementById('episodeListMobile').innerHTML = '<div style="color:#666;">Chưa có tập nào.</div>';
+                    document.getElementById('episodeListDesktop').innerHTML = '<div style="color:#666;">Chưa có tập nào.</div>';
                 }
 
                 loadRelated();
@@ -2572,39 +2576,38 @@ footer {
         hideLoadingState();
     }
 
-    // --- HÀM VẼ NÚT CHỌN SERVER (MỚI THÊM) ---
+    // --- HÀM 1: VẼ NÚT CHỌN SERVER ---
+    window.currentMovieEpisodesData = []; // Lưu biến toàn cục
+    
     function renderServerButtons(episodesArray, savedEpName, savedTime) {
+        window.currentMovieEpisodesData = episodesArray;
         const containerMobile = document.getElementById('serverSelectionMobile');
         const containerDesktop = document.getElementById('serverSelectionDesktop');
         
         let btnHtml = '';
         episodesArray.forEach((server, index) => {
-            // Kiểm tra tên server để gán icon cho đẹp
             let icon = '<i class="fas fa-closed-captioning"></i>';
             if (server.server_name.toLowerCase().includes('thuyết minh') || server.server_name.toLowerCase().includes('lồng tiếng')) {
                 icon = '<i class="fas fa-microphone-alt"></i>';
             }
-
-            // Gắn class active cho server đầu tiên
             const activeClass = index === 0 ? 'active' : '';
-            btnHtml += `<button class="server-btn ${activeClass}" id="btn-sv-${index}" onclick="window.changeServer(${index}, '${savedEpName}', ${savedTime})">${icon} ${server.server_name}</button>`;
+            btnHtml += `<button class="server-btn ${activeClass}" id="btn-sv-mob-${index}" onclick="window.changeServer(${index}, '${savedEpName}', ${savedTime})">${icon} ${server.server_name}</button>`;
         });
 
-        // Hiển thị và nhét nút vào
+        // HTML cho Desktop cần ID khác để dễ query
+        let btnHtmlDesk = btnHtml.replace(/btn-sv-mob-/g, 'btn-sv-desk-');
+
         containerMobile.style.display = 'flex';
         containerMobile.innerHTML = btnHtml;
         
         containerDesktop.style.display = 'flex';
-        containerDesktop.innerHTML = btnHtml;
+        containerDesktop.innerHTML = btnHtmlDesk;
 
-        // Render danh sách tập của server đầu tiên làm mặc định
+        // Khởi tạo danh sách tập của Server đầu tiên
         renderEpisodeList(episodesArray[0].server_data, savedEpName, savedTime);
-
-        // Lưu biến toàn cục để dùng khi bấm đổi server
-        window.currentMovieEpisodesData = episodesArray;
     }
 
-    // --- HÀM VẼ DANH SÁCH TẬP (MỚI THÊM ĐỂ TÁCH LOGIC) ---
+    // --- HÀM 2: VẼ DANH SÁCH TẬP (CỦA SERVER ĐƯỢC CHỌN) ---
     function renderEpisodeList(svData, savedEpName, savedTime) {
         let epHtml = '';
         let targetEpToPlay = null; 
@@ -2631,13 +2634,15 @@ footer {
             targetIndex = 0; savedTime = 0; 
         }
 
+        // Đổ HTML vào UI
         document.getElementById('episodeListMobile').innerHTML = epHtml;
-        document.getElementById('episodeListDesktop').innerHTML = epHtml;
+        // Đổ HTML vào Desktop nhưng thêm ID khác để khỏi trùng
+        document.getElementById('episodeListDesktop').innerHTML = epHtml.replace(/btn-ep-/g, 'btn-ep-desk-');
 
         if (targetEpToPlay) {
             setTimeout(() => {
                 const mobileBtn = document.querySelector(`#episodeListMobile #btn-ep-${targetIndex}`);
-                const desktopBtn = document.querySelector(`#episodeListDesktop #btn-ep-${targetIndex}`);
+                const desktopBtn = document.querySelector(`#episodeListDesktop #btn-ep-desk-${targetIndex}`);
                 if (mobileBtn) mobileBtn.classList.add('active');
                 if (desktopBtn) desktopBtn.classList.add('active');
             }, 100);
@@ -2645,19 +2650,18 @@ footer {
         }
     }
 
-    // --- HÀM XỬ LÝ KHI BẤM CHUYỂN SERVER (MỚI THÊM) ---
+    // --- HÀM 3: SỰ KIỆN KHI BẤM CHUYỂN SERVER ---
     window.changeServer = function(serverIndex, savedEpName, savedTime) {
-        // Đổi màu nút Active
+        // Cập nhật giao diện nút
         document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll(`#btn-sv-${serverIndex}`).forEach(btn => btn.classList.add('active'));
+        document.querySelectorAll(`#btn-sv-mob-${serverIndex}`).forEach(btn => btn.classList.add('active'));
+        document.querySelectorAll(`#btn-sv-desk-${serverIndex}`).forEach(btn => btn.classList.add('active'));
 
-        // Lấy data của server vừa chọn
-        const serverData = window.currentMovieEpisodesData[serverIndex].server_data;
-        
         // Gọi lại hàm vẽ danh sách tập
+        const serverData = window.currentMovieEpisodesData[serverIndex].server_data;
         renderEpisodeList(serverData, savedEpName, savedTime);
         
-        window.showToast(`Đã chuyển sang ${window.currentMovieEpisodesData[serverIndex].server_name}`, "success");
+        window.showToast(`Đã chuyển: ${window.currentMovieEpisodesData[serverIndex].server_name}`, "success");
     }
 
     // --- CÁC HÀM HỖ TRỢ KHÁC ---
