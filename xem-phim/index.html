@@ -2829,6 +2829,87 @@ footer {
         document.getElementById('mTags').innerHTML = tagsHtml;
         setTimeout(() => { if (currentUser) saveToHistory(movie, currentEpName, Math.floor(player?.currentTime || 0)); }, 3000);
     }
+
+
+    // ==============================================
+        // 🔥 LOGIC TÌM KIẾM PHIM (DESKTOP & MOBILE)
+        // ==============================================
+        let searchTimeout;
+
+        async function performSearch(keyword, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (!keyword || keyword.trim().length < 2) {
+                container.innerHTML = '';
+                container.classList.remove('active');
+                return;
+            }
+
+            container.classList.add('active');
+            container.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;"><i class="fas fa-spinner fa-spin"></i></div>';
+
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`);
+                    const data = await res.json();
+
+                    if (data.data && data.data.items && data.data.items.length > 0) {
+                        let html = '';
+                        data.data.items.slice(0, 10).forEach(m => {
+                            const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
+                            // Escape nháy đơn để không bị lỗi thẻ onclick
+                            const safeName = m.name.replace(/'/g, "\\'"); 
+                            
+                            html += `
+                                <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
+                                    <img src="${img}" alt="${safeName}" loading="lazy">
+                                    <div class="search-result-info">
+                                        <div class="search-result-title">${m.name}</div>
+                                        <div class="search-result-meta">${m.year} • ${m.origin_name}</div>
+                                    </div>
+                                </div>`;
+                        });
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div style="color:#666; padding:20px; text-align:center;">Không tìm thấy phim nào...</div>';
+                    }
+                } catch (e) {
+                    container.innerHTML = '<div style="color:#ff4757; padding:20px; text-align:center;">Lỗi kết nối server!</div>';
+                }
+            }, 500); // Delay 500ms chống spam API
+        }
+
+        // 1. Gán sự kiện Gõ phím cho Desktop
+        const desktopSearch = document.getElementById('searchInput');
+        if(desktopSearch) {
+            desktopSearch.addEventListener('input', (e) => performSearch(e.target.value, 'desktopSearchResults'));
+        }
+
+        // 2. Gán sự kiện Gõ phím cho Mobile
+        const mobileSearch = document.getElementById('mobileSearchInput');
+        if(mobileSearch) {
+            mobileSearch.addEventListener('input', (e) => performSearch(e.target.value, 'mobileSearchResults'));
+        }
+
+        // 3. Click ra ngoài để ẩn bảng kết quả (Desktop)
+        document.addEventListener('click', (e) => {
+            const searchBox = document.querySelector('.search-box');
+            const results = document.getElementById('desktopSearchResults');
+            if (searchBox && !searchBox.contains(e.target) && results) {
+                results.classList.remove('active');
+            }
+        });
+
+        // 4. Các hàm Bật/Tắt Search trên Mobile (Gắn vào window để gọi từ HTML)
+        window.openMobileSearch = () => {
+            document.getElementById('mobileSearchOverlay').classList.add('active');
+            setTimeout(() => document.getElementById('mobileSearchInput').focus(), 300);
+        }
+        window.closeMobileSearch = () => {
+            document.getElementById('mobileSearchOverlay').classList.remove('active');
+        }
 </script>
     
     <script>
