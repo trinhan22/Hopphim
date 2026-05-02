@@ -1,1 +1,278 @@
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Liên Hệ Quảng Cáo - Wibey</title><meta property="og:title" content="Liên Hệ Quảng Cáo - Wibey" /><meta property="og:description" content="Liên hệ hợp tác, đặt quảng cáo trên Wibey." /><meta property="og:image" content="https://wibey.netlify.app/panel.webp" /><link rel="icon" type="image/webp" href="LOGO.WEBP" /><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style> :root { --bg-body: #0f111a; --card-bg: rgba(22, 24, 35, 0.7); --primary: #FF5E62; --gradient: linear-gradient(135deg, #FF8F50, #FF5E62); --text-main: #fff; --text-sub: #a0a0a0; } * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; } body { background-color: var(--bg-body); height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; } .bg-glow { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(255, 94, 98, 0.15) 0%, rgba(0,0,0,0) 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: -1; animation: pulse 5s infinite alternate; } .floating-icon { position: absolute; color: rgba(255,255,255,0.03); font-size: 10rem; z-index: -1; animation: float 10s infinite ease-in-out; } .icon-1 { top: 10%; left: 10%; animation-delay: 0s; transform: rotate(-15deg); } .icon-2 { bottom: 10%; right: 10%; animation-delay: -5s; transform: rotate(15deg); } @keyframes pulse { 0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } } @keyframes float { 0%, 100% { transform: translateY(0) rotate(var(--r)); } 50% { transform: translateY(-20px) rotate(var(--r)); } } .contact-card { width: 90%; max-width: 420px; background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 94, 98, 0.2); border-radius: 24px; padding: 45px 30px; text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6); position: relative; overflow: hidden; animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); } .contact-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--gradient); box-shadow: 0 0 15px var(--primary); } .avatar-box { position: relative; margin: 0 auto 25px; width: 90px; height: 90px; } .avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid rgba(255,255,255,0.1); padding: 3px; background: var(--gradient); } .status-dot { position: absolute; bottom: 5px; right: 5px; width: 18px; height: 18px; background: #2ecc71; border: 3px solid #161823; border-radius: 50%; } h1 { color: #fff; font-size: 1.6rem; font-weight: 900; margin-bottom: 8px; letter-spacing: 0.5px; } .role-badge { display: inline-block; padding: 4px 12px; background: rgba(255, 94, 98, 0.15); color: #FF8F50; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px; border: 1px solid rgba(255, 94, 98, 0.3); } .desc { color: var(--text-sub); font-size: 0.95rem; line-height: 1.5; margin-bottom: 30px; } .link-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; cursor: pointer; transition: 0.3s; } .link-box:hover { border-color: var(--primary); background: rgba(255, 94, 98, 0.05); } .fb-icon-box { width: 35px; height: 35px; background: #1877F2; color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-right: 12px; } .link-info { text-align: left; flex: 1; overflow: hidden; } .link-label { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; font-weight: 600; } .link-url { font-size: 0.95rem; color: #fff; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .copy-icon { color: var(--text-sub); font-size: 1.1rem; transition: 0.3s; } .link-box:hover .copy-icon { color: #fff; transform: scale(1.1); } .btn-group { display: flex; gap: 12px; } .btn { flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; transition: 0.3s; cursor: pointer; border: none; } .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 5px 20px rgba(255, 94, 98, 0.3); } .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(255, 94, 98, 0.5); } .btn-secondary { background: rgba(255,255,255,0.05); color: #ccc; border: 1px solid rgba(255,255,255,0.1); } .btn-secondary:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.3); } #toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(50px); background: #23252f; color: #fff; padding: 12px 25px; border-radius: 50px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); border: 1px solid var(--primary); font-weight: 600; opacity: 0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; z-index: 2000; } #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); } @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } } </style></head><body><div class="bg-glow"></div><i class="fas fa-bullhorn floating-icon icon-1" style="--r: -15deg"></i><i class="fab fa-facebook floating-icon icon-2" style="--r: 15deg"></i><div class="contact-card"><div class="avatar-box"><img src="LOGO.WEBP" alt="Wibey" class="avatar-img"><div class="status-dot" title="Online"></div></div><h1>WibeyTeam Support</h1><span class="role-badge">Admin & Quảng Cáo</span><p class="desc"> Bạn muốn đặt banner quảng cáo hoặc hợp tác phát triển?<br> Hãy liên hệ trực tiếp qua Fanpage để được hỗ trợ nhanh nhất nhé! </p><div class="link-box" onclick="copyLink()"><div class="fb-icon-box"><i class="fab fa-facebook-f"></i></div><div class="link-info"><div class="link-label">Fanpage Chính Thức</div><div class="link-url" id="fbLink">facebook.com/wibuteam2026</div></div><i class="far fa-copy copy-icon" id="copyIcon"></i></div><div class="btn-group"><a href="https://www.facebook.com/wibuteam2026" target="_blank" class="btn btn-primary"><i class="fab fa-facebook-messenger"></i> Nhắn tin ngay </a><a href="/" class="btn btn-secondary"><i class="fas fa-home"></i> Trang chủ </a></div></div><div id="toast"><i class="fas fa-check-circle" style="color: #2ecc71;"></i> Đã sao chép liên kết! </div><script> function copyLink() { const link = "https://www.facebook.com/wibuteam2026"; navigator.clipboard.writeText(link).then(() => { const toast = document.getElementById('toast'); toast.classList.add('show'); const icon = document.getElementById('copyIcon'); icon.className = 'fas fa-check'; icon.style.color = '#2ecc71'; setTimeout(() => { toast.classList.remove('show'); icon.className = 'far fa-copy'; icon.style.color = ''; }, 2000); }); } </script><script type="text/javascript"> document.addEventListener('contextmenu', function(e) { e.preventDefault(); }); document.addEventListener('keydown', function(e) { if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; } if (e.ctrlKey) { switch (e.key.toLowerCase()) { case 'u': case 's': case 'p': e.preventDefault(); return false; } if (e.shiftKey) { switch (e.key.toLowerCase()) { case 'i': case 'j': case 'c': e.preventDefault(); return false; } } } });</script></body></html>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên Hệ Quảng Cáo - Wibey</title>
+    
+    <meta property="og:title" content="Liên Hệ Quảng Cáo - Wibey" />
+    <meta property="og:description" content="Liên hệ hợp tác, đặt quảng cáo trên Wibey." />
+    <meta property="og:image" content="https://wibey.netlify.app/panel.webp" />
+
+    <link rel="icon" type="image/webp" href="LOGO.WEBP" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-body: #0f111a;
+            --card-bg: rgba(22, 24, 35, 0.7);
+            --primary: #FF5E62;
+            --gradient: linear-gradient(135deg, #FF8F50, #FF5E62);
+            --text-main: #fff;
+            --text-sub: #a0a0a0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-body);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- BACKGROUND EFFECTS --- */
+        .bg-glow {
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(255, 94, 98, 0.15) 0%, rgba(0,0,0,0) 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            animation: pulse 5s infinite alternate;
+        }
+
+        .floating-icon {
+            position: absolute; color: rgba(255,255,255,0.03);
+            font-size: 10rem; z-index: -1;
+            animation: float 10s infinite ease-in-out;
+        }
+        .icon-1 { top: 10%; left: 10%; animation-delay: 0s; transform: rotate(-15deg); }
+        .icon-2 { bottom: 10%; right: 10%; animation-delay: -5s; transform: rotate(15deg); }
+
+        @keyframes pulse { 0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(var(--r)); } 50% { transform: translateY(-20px) rotate(var(--r)); } }
+
+        /* --- MAIN CARD --- */
+        .contact-card {
+            width: 90%; max-width: 420px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 94, 98, 0.2);
+            border-radius: 24px;
+            padding: 45px 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+            animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Viền sáng trên cùng */
+        .contact-card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--gradient);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        /* Avatar / Logo */
+        .avatar-box {
+            position: relative; margin: 0 auto 25px;
+            width: 90px; height: 90px;
+        }
+        .avatar-img {
+            width: 100%; height: 100%; object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.1);
+            padding: 3px;
+            background: var(--gradient); /* Viền gradient */
+        }
+        .status-dot {
+            position: absolute; bottom: 5px; right: 5px;
+            width: 18px; height: 18px;
+            background: #2ecc71;
+            border: 3px solid #161823;
+            border-radius: 50%;
+        }
+
+        h1 { color: #fff; font-size: 1.6rem; font-weight: 900; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .role-badge { 
+            display: inline-block; padding: 4px 12px; 
+            background: rgba(255, 94, 98, 0.15); color: #FF8F50; 
+            border-radius: 20px; font-size: 0.75rem; font-weight: 700; 
+            text-transform: uppercase; margin-bottom: 20px;
+            border: 1px solid rgba(255, 94, 98, 0.3);
+        }
+
+        .desc { color: var(--text-sub); font-size: 0.95rem; line-height: 1.5; margin-bottom: 30px; }
+
+        /* --- COPY LINK BOX --- */
+        .link-box {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 12px 15px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .link-box:hover { border-color: var(--primary); background: rgba(255, 94, 98, 0.05); }
+        
+        .fb-icon-box {
+            width: 35px; height: 35px; background: #1877F2; color: #fff;
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; margin-right: 12px;
+        }
+        
+        .link-info { text-align: left; flex: 1; overflow: hidden; }
+        .link-label { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; font-weight: 600; }
+        .link-url { font-size: 0.95rem; color: #fff; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .copy-icon { color: var(--text-sub); font-size: 1.1rem; transition: 0.3s; }
+        .link-box:hover .copy-icon { color: #fff; transform: scale(1.1); }
+
+        /* --- BUTTONS --- */
+        .btn-group { display: flex; gap: 12px; }
+        .btn {
+            flex: 1; padding: 14px; border-radius: 12px;
+            font-weight: 700; font-size: 0.95rem;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-decoration: none; transition: 0.3s; cursor: pointer; border: none;
+        }
+        
+        .btn-primary {
+            background: var(--gradient); color: #fff;
+            box-shadow: 0 5px 20px rgba(255, 94, 98, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(255, 94, 98, 0.5); }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.05); color: #ccc;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.3); }
+
+        /* --- TOAST --- */
+        #toast {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(50px);
+            background: #23252f; color: #fff; padding: 12px 25px; border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); border: 1px solid var(--primary);
+            font-weight: 600; opacity: 0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; gap: 10px; z-index: 2000;
+        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+    <i class="fas fa-bullhorn floating-icon icon-1" style="--r: -15deg"></i>
+    <i class="fab fa-facebook floating-icon icon-2" style="--r: 15deg"></i>
+
+    <div class="contact-card">
+        <div class="avatar-box">
+            <img src="LOGO.WEBP" alt="Wibey" class="avatar-img">
+            <div class="status-dot" title="Online"></div>
+        </div>
+
+        <h1>WibeyTeam Support</h1>
+        <span class="role-badge">Admin & Quảng Cáo</span>
+
+        <p class="desc">
+            Bạn muốn đặt banner quảng cáo hoặc hợp tác phát triển?<br>
+            Hãy liên hệ trực tiếp qua Fanpage để được hỗ trợ nhanh nhất nhé!
+        </p>
+
+        <div class="link-box" onclick="copyLink()">
+            <div class="fb-icon-box"><i class="fab fa-facebook-f"></i></div>
+            <div class="link-info">
+                <div class="link-label">Fanpage Chính Thức</div>
+                <div class="link-url" id="fbLink">facebook.com/wibuteam2026</div>
+            </div>
+            <i class="far fa-copy copy-icon" id="copyIcon"></i>
+        </div>
+
+        <div class="btn-group">
+            <a href="https://www.facebook.com/wibuteam2026" target="_blank" class="btn btn-primary">
+                <i class="fab fa-facebook-messenger"></i> Nhắn tin ngay
+            </a>
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Trang chủ
+            </a>
+        </div>
+    </div>
+
+    <div id="toast">
+        <i class="fas fa-check-circle" style="color: #2ecc71;"></i> Đã sao chép liên kết!
+    </div>
+
+    <script>
+        function copyLink() {
+            const link = "https://www.facebook.com/wibuteam2026";
+            navigator.clipboard.writeText(link).then(() => {
+                // Show Toast
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                
+                // Change Icon
+                const icon = document.getElementById('copyIcon');
+                icon.className = 'fas fa-check';
+                icon.style.color = '#2ecc71';
+
+                setTimeout(() => { 
+                    toast.classList.remove('show'); 
+                    icon.className = 'far fa-copy';
+                    icon.style.color = '';
+                }, 2000);
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
+    });
+
+    // 2. Chặn các phím tắt Developer Tools
+    document.addEventListener('keydown', function(e) {
+        // Chặn F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Chặn các tổ hợp phím Ctrl + ...
+        if (e.ctrlKey) {
+            switch (e.key.toLowerCase()) {
+                case 'u': // Chặn Ctrl + U (Xem source code)
+                case 's': // Chặn Ctrl + S (Lưu trang web)
+                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
+                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
+                    e.preventDefault();
+                    return false;
+            }
+
+            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
+            if (e.shiftKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'i': // Inspect Element
+                    case 'j': // Console
+                    case 'c': // Element Inspector
+                        e.preventDefault();
+                        return false;
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

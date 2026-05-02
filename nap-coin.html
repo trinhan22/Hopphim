@@ -1,1 +1,950 @@
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Nạp Coin - Wibey</title><link rel="icon" type="image/webp" href="/LOGO.WEBP" /><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style> :root { --bg-body: #191b24; --bg-card: #23252f; --bg-card-hover: #303341; --primary: #FF5E62; --secondary: #FF8F50; --gradient: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%); --gradient-main: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%); --text-main: #ffffff; --text-sub: #9ca3af; --border-color: rgba(255,255,255,0.08); --gold: #FFD700; --radius: 12px; } * { box-sizing: border-box; margin: 0; padding: 0; outline: none; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; } body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.5; overflow-x: hidden; min-height: 100vh; } .text-gradient { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; font-weight: 800; } .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; } .logo img { height: 35px; } .logo span { font-weight: 900; font-size: 1.2rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } .back-btn { color: #ccc; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; transition: 0.3s; } .back-btn:hover { color: var(--primary); } .main-container { max-width: 1000px; margin: 100px auto 60px; padding: 0 20px; } .user-section { text-align: center; margin-bottom: 50px; } .page-title { font-size: 2rem; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; } .user-card { display: inline-flex; align-items: center; gap: 15px; background: var(--bg-card); padding: 10px 25px 10px 10px; border-radius: 50px; border: 1px solid var(--border-color); } .user-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); } .user-details { text-align: left; } .user-name { font-weight: 700; font-size: 1rem; color: #fff; display: flex; align-items: center; gap: 5px; } .user-balance { font-size: 0.9rem; color: var(--gold); font-weight: 600; display: flex; align-items: center; gap: 5px; } .step-label { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--secondary); display: block; } .pack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 40px; } .pack-item { background: var(--bg-card); border-radius: var(--radius); padding: 20px; border: 2px solid transparent; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; } .pack-item:hover { background: var(--bg-card-hover); transform: translateY(-5px); } .pack-item.active { background: rgba(255, 94, 98, 0.05); border-color: var(--primary); } .pack-coin { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 5px; } .pack-bonus { font-size: 0.8rem; color: var(--gold); font-weight: 600; min-height: 20px; } .pack-price { font-size: 1rem; font-weight: 700; color: #ccc; margin-top: 10px; background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 20px; } .pack-item.active .pack-price { background: var(--gradient); color: #fff; } .method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 40px; } .method-item { background: var(--bg-card); border-radius: var(--radius); padding: 15px; border: 2px solid transparent; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px; } .method-item:hover { background: var(--bg-card-hover); } .method-item.active { border-color: var(--primary); background: rgba(255, 94, 98, 0.05); } .method-icon { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; background: #fff; padding: 5px; } .method-info { flex: 1; } .method-name { font-weight: 700; font-size: 0.95rem; color: #fff; display: block; } .method-desc { font-size: 0.75rem; color: #888; } .action-area { text-align: center; margin-bottom: 60px; } .btn-pay { background: var(--gradient); color: #fff; border: none; padding: 15px 50px; font-size: 1.1rem; font-weight: 800; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(255, 94, 98, 0.3); text-transform: uppercase; letter-spacing: 1px; } .btn-pay:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(255, 94, 98, 0.5); } .btn-pay:disabled { background: #444; cursor: not-allowed; box-shadow: none; transform: none; } .history-section { border-top: 1px solid var(--border-color); padding-top: 40px; } .history-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; } .history-table-wrapper { overflow-x: auto; overflow-y: auto; background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border-color); max-height: 600px; } .history-table-wrapper::-webkit-scrollbar { width: 6px; height: 6px; } .history-table-wrapper::-webkit-scrollbar-track { background: #1a1d26; } .history-table-wrapper::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; } .history-table-wrapper::-webkit-scrollbar-thumb:hover { background: var(--primary); } .history-table { width: 100%; border-collapse: collapse; min-width: 600px; } .history-table th { position: sticky; top: 0; z-index: 5; text-align: left; padding: 18px 20px; color: #ccc; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; background: #23252f; border-bottom: 2px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.2); } .history-table td { padding: 18px 20px; color: #fff; font-size: 0.95rem; border-bottom: 1px solid var(--border-color); } .history-table tr:hover { background: rgba(255,255,255,0.02); } .status-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; } .status-pending { background: rgba(255, 193, 7, 0.15); color: #FFC107; } .status-completed { background: rgba(0, 230, 118, 0.15); color: #00E676; } .status-rejected { background: rgba(255, 82, 82, 0.15); color: #FF5252; } .coin-badge { color: var(--gold); font-weight: 700; display: flex; align-items: center; gap: 5px; } .method-badge { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; } .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); } .modal.open { display: flex; } .modal-content { background: #1a1d26; width: 380px; border-radius: 20px; padding: 30px; border: 1px solid var(--border-color); position: relative; text-align: center; } .qr-img { width: 100%; border-radius: 12px; margin: 15px 0; border: 5px solid #fff; } .copy-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px dashed #555; } .copy-box:hover { border-color: var(--primary); background: rgba(255, 94, 98, 0.05); } #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; } .toast { background: #23252f; color: #fff; padding: 12px 20px; border-radius: 8px; border-left: 4px solid var(--primary); margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); animation: slideIn 0.3s; } @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } } @media (max-width: 768px) { .pack-grid, .method-grid { grid-template-columns: 1fr; } .page-title { font-size: 1.5rem; } .main-container { margin-top: 80px; } } header { height: 70px; padding: 0 4%; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; align-items: center; justify-content: space-between; background: #191b24; border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); } .header-left { display: flex; align-items: center; gap: 25px; } .back-btn { color: #aaa; text-decoration: none; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.3s; padding: 8px 12px; border-radius: 30px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); } .back-btn:hover { color: #fff; background: rgba(255,255,255,0.1); border-color: #fff; } .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; } .logo img { height: 38px; } .logo span { font-weight: 900; font-size: 1.4rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } .header-right { display: flex; align-items: center; gap: 20px; } .balance-box { background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); color: #FFD700; padding: 6px 16px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; } .user-menu-container { position: relative; } .header-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); cursor: pointer; transition: 0.3s; } .header-avatar:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 94, 98, 0.4); } .user-dropdown { position: absolute; top: 120%; right: 0; width: 220px; background: #23252f; border-radius: 12px; padding: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; animation: fadeIn 0.2s ease; } .user-dropdown.active { display: flex; } .ud-item { padding: 10px 15px; color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 10px; border-radius: 8px; transition: 0.2s; cursor: pointer; } .ud-item:hover { background: rgba(255,255,255,0.05); color: #fff; } .ud-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 5px 0; } footer { background: #0b0c12; border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 80px 4% 30px; margin-top: 80px; position: relative; z-index: 100; } .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.2fr; gap: 40px; margin-bottom: 50px; } .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; } .footer-logo img { height: 45px; width: auto; object-fit: contain; } .footer-logo .brand-text { font-size: 1.6rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; } .footer-desc { color: var(--text-sub); line-height: 1.6; font-size: 0.95rem; margin-bottom: 25px; max-width: 90%; } .footer-socials { display: flex; gap: 12px; } .social-link { width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; color: #ccc; transition: 0.3s; text-decoration: none; font-size: 1.1rem; } .social-link:hover { background: var(--gradient-main); color: #fff; border-color: transparent; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 94, 98, 0.3); } .footer-col h4 { color: #fff; font-size: 1rem; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px; } .footer-links { list-style: none; padding: 0; } .footer-links li { margin-bottom: 15px; } .footer-links a { color: var(--text-sub); text-decoration: none; transition: 0.3s; font-size: 0.95rem; display: block; font-weight: 500; } .footer-links a:hover { color: var(--primary-color); transform: translateX(5px); } .download-group { display: flex; flex-direction: column; gap: 12px; } .btn-download-app { background: rgba(255, 255, 255, 0.03); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 16px; border-radius: 10px; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 12px; transition: all 0.3s ease; width: 100%; max-width: 220px; } .btn-download-app i { font-size: 1.6rem; color: #ccc; transition: 0.3s; } .btn-content { line-height: 1.3; } .btn-small-text { font-size: 0.7rem; color: #888; display: block; } .btn-big-text { font-size: 1rem; font-weight: 700; color: #fff; } .btn-download-app:hover { border-color: var(--primary-color); background: rgba(255, 94, 98, 0.05); transform: translateY(-2px); } .btn-download-app:hover i { color: var(--primary-color); } .footer-bottom { border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 30px; text-align: center; color: #555; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; } @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; } .footer-logo, .footer-socials { justify-content: center; } .footer-desc { margin: 0 auto 25px; } .footer-col h4 { margin-bottom: 15px; } .download-group { align-items: center; } .footer-bottom { flex-direction: column; gap: 10px; } } ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: var(--bg-dark); } ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; } ::-webkit-scrollbar-thumb:hover { background: #FF5E62; } .vip-glow { border: 2px solid #FFD700 !important; box-shadow: 0 0 15px #FFD700, 0 0 25px rgba(255, 215, 0, 0.4) !important; animation: vipPulse 2s infinite !important; } .vip-name { background: linear-gradient(to right, #FFD700, #FFF5C3, #FFD700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900 !important; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); } @keyframes vipPulse { 0% { box-shadow: 0 0 5px #FFD700; } 50% { box-shadow: 0 0 20px #FFD700; } 100% { box-shadow: 0 0 5px #FFD700; } } </style></head><body><header><div class="header-left"><a href="/" class="logo"><img src="/LOGO.WEBP" alt="Wibey"><span>Wibey</span></a></div><div class="header-right"><div class="balance-box" id="header-balance-box" style="display: none;"><i class="fas fa-coins"></i><span id="header-coin">0</span></div><div class="user-menu-container"><img src="/Guest.webp" id="header-avatar" class="header-avatar" onclick="toggleDropdown()"><div class="user-dropdown" id="userDropdown"><div class="ud-item" style="pointer-events: none; font-weight: 800; font-size: 1rem; color: #fff; padding-bottom: 5px;"><span id="dropdown-name">Khách</span></div><div class="ud-divider"></div><div class="ud-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user" style="width: 20px;"></i> Tài khoản </div><div class="ud-item" onclick="scrollToHistory()"><i class="fas fa-history" style="width: 20px;"></i> Lịch sử nạp </div><div class="ud-divider"></div><div class="ud-item" id="menuLogout" onclick="logout()" style="color: #ff4757; display: none;"><i class="fas fa-sign-out-alt" style="width: 20px;"></i> Đăng xuất </div></div><button id="header-login-btn" onclick="window.location.href='/login.html'" style="display: block; background: var(--gradient); border: none; color: #fff; padding: 6px 18px; border-radius: 30px; font-weight: 700; cursor: pointer; margin-left: 10px;"> Đăng nhập </button></div></div></header><div class="main-container"><div class="user-section"><h1 class="page-title">Nạp Coin vào tài khoản</h1><div class="user-card" id="userInfoBox" style="display: none;"><img src="/Guest.webp" id="user-avatar-display" class="user-avatar"><div class="user-details"><div class="user-name"><span id="user-name-display"></span><i class="fas fa-check-circle" style="color:#4ade80; font-size:0.8rem;"></i></div><div class="user-balance"><i class="fas fa-coins"></i> Số dư: <span id="user-balance-display">0</span><span style="background:#FFD700; color:#000; font-size:0.6rem; padding:1px 4px; border-radius:4px; font-weight:800;">W</span></div></div></div><div id="login-warning" style="color: #aaa;">Vui lòng đăng nhập để nạp coin.</div></div><label class="step-label">Bước 1: Chọn gói Coin thích hợp</label><div class="pack-grid"><div class="pack-item" onclick="selectPack(this, 20000, 20, 0)"><div class="pack-coin">20 <small>COIN</small></div><div class="pack-bonus"></div><div class="pack-price">20.000đ</div></div><div class="pack-item active" onclick="selectPack(this, 50000, 50, 5)"><div style="position:absolute; top:0; right:0; background:var(--gradient); color:#fff; font-size:0.6rem; padding:3px 8px; border-bottom-left-radius:8px; font-weight:700;">POPULAR</div><div class="pack-coin">50 <small>COIN</small></div><div class="pack-bonus">+5 Coin tặng thêm</div><div class="pack-price">50.000đ</div></div><div class="pack-item" onclick="selectPack(this, 100000, 100, 15)"><div class="pack-coin">100 <small>COIN</small></div><div class="pack-bonus">+15 Coin tặng thêm</div><div class="pack-price">100.000đ</div></div><div class="pack-item" onclick="selectPack(this, 200000, 200, 40)"><div class="pack-coin">200 <small>COIN</small></div><div class="pack-bonus">+40 Coin tặng thêm</div><div class="pack-price">200.000đ</div></div><div class="pack-item" onclick="selectPack(this, 500000, 500, 150)"><div class="pack-coin">500 <small>COIN</small></div><div class="pack-bonus">+150 Coin tặng thêm</div><div class="pack-price">500.000đ</div></div><div class="pack-item" onclick="selectPack(this, 1000000, 1000, 400)"><div style="position:absolute; top:0; right:0; background:linear-gradient(to right, #FFD700, #FDB931); color:#000; font-size:0.6rem; padding:3px 8px; border-bottom-left-radius:8px; font-weight:700;">BEST VALUE</div><div class="pack-coin" style="color:var(--gold)">1.000 <small>COIN</small></div><div class="pack-bonus">+400 Coin tặng thêm</div><div class="pack-price">1.000.000đ</div></div></div><label class="step-label">Bước 2: Chọn phương thức thanh toán</label><div class="method-grid"><div class="method-item" onclick="selectMethod(this, 'Banking')"><img src="https://rophimm.net/images/bank.webp" class="method-icon"><div class="method-info"><span class="method-name">Chuyển khoản</span><span class="method-desc">Quét mã QR</span></div></div><div class="method-item" style="opacity: 0.5; cursor: not-allowed;"><img src="https://rophimm.net/images/momo.webp" class="method-icon"><div class="method-info"><span class="method-name">Ví MoMo</span><span class="method-desc">Đang bảo trì</span></div></div><div class="method-item" style="opacity: 0.5; cursor: not-allowed;"><img src="https://rophimm.net/images/phone.webp" class="method-icon"><div class="method-info"><span class="method-name">Thẻ cào</span><span class="method-desc">Đang bảo trì</span></div></div></div><div class="action-area"><button class="btn-pay" id="btn-submit" onclick="processPayment()"> Thanh Toán <span id="btn-price">50.000đ</span></button><p style="margin-top: 15px; color: #666; font-size: 0.85rem;"><i class="fas fa-shield-alt"></i> Giao dịch an toàn & bảo mật </p></div><div class="history-section"><div class="history-title">Lịch sử thanh toán</div><div class="history-table-wrapper"><table class="history-table"><thead><tr><th>Thời gian</th><th>Coin</th><th>Hình thức</th><th>Số tiền</th><th style="text-align: right;">Trạng thái</th></tr></thead><tbody id="history-list"><tr><td colspan="5" style="text-align:center; padding: 30px; color: #666;">Đang tải dữ liệu...</td></tr></tbody></table></div></div></div><footer><div class="footer-grid"><div class="footer-col"><div class="footer-logo"><img src="/LOGO.WEBP" alt="Wibey"><span class="text-gradient brand-text">Wibey</span></div><p class="footer-desc"> Wibey - Nền tảng xem phim trực tuyến miễn phí chất lượng cao. Cập nhật liên tục, không giật lag, trải nghiệm điện ảnh đỉnh cao ngay tại nhà. </p><div class="footer-socials"><a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-facebook-f"></i></a><a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-discord"></i></a><a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-tiktok"></i></a><a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-telegram-plane"></i></a></div></div><div class="footer-col"><h4>Khám Phá</h4><ul class="footer-links"><li><a href="#" onclick="loadCategory('phim-moi', 'Phim Mới')">Phim Mới Cập Nhật</a></li><li><a href="#" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Chiếu Rạp</a></li><li><a href="#" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ Độc Quyền</a></li><li><a href="#" onclick="loadCategory('tv-shows', 'TV Shows')">TV Shows</a></li></ul></div><div class="footer-col"><h4>Hỗ Trợ</h4><ul class="footer-links"><li><a href="lienhequangcao.html">Liên hệ quảng cáo</a></li><li><a href="baoloi.html">Báo lỗi phim</a></li><li><a href="dieukhoan.html">Điều khoản dịch vụ</a></li><li><a href="wibey.netlify.app">Về WibeyTeam</a></li></ul></div><div class="footer-col"><h4>Tải Ứng Dụng</h4><div class="download-group"><button class="btn-download-app"><i class="fab fa-apple"></i><div class="btn-content"><span class="btn-small-text">Download on the</span><span class="btn-big-text">App Store</span></div></button><button class="btn-download-app"><i class="fab fa-google-play"></i><div class="btn-content"><span class="btn-small-text">Get it on</span><span class="btn-big-text">Google Play</span></div></button></div></div></div><div class="footer-bottom"><span>&copy; 2026 Wibey. All Rights Reserved.</span></div></footer><div class="modal" id="bank-modal"><div class="modal-content"><i class="fas fa-times" onclick="closeModal()" style="position:absolute; top:15px; right:15px; cursor:pointer; font-size:1.2rem; color:#fff;"></i><h3 style="color:var(--primary); margin-bottom:5px; font-weight:800;">QUÉT MÃ QR</h3><p style="font-size:0.85rem; color:#aaa;">Sử dụng App Ngân hàng hoặc MoMo</p><img id="qr-img" src="" class="qr-img"><div style="text-align: left; margin-top: 15px;"><div style="font-size: 0.85rem; color: #aaa; margin-bottom: 5px;">Nội dung chuyển khoản (Bắt buộc):</div><div class="copy-box" onclick="copy(document.getElementById('modal-code').innerText)"><strong id="modal-code" style="font-size: 1.2rem; color: #fff; letter-spacing: 1px;">...</strong><i class="fas fa-copy" style="color: var(--primary);"></i></div></div><p style="margin-top: 20px; font-size: 0.85rem; color: var(--success); font-weight: 600;"><i class="fas fa-sync fa-spin"></i> Hệ thống đang chờ thanh toán... </p></div></div><div id="toast-container"></div><script type="module"> import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"; import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"; import { getFirestore, doc, onSnapshot, addDoc, collection, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"; const firebaseConfig = { apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc", authDomain: "hopphim-29e1c.firebaseapp.com", projectId: "hopphim-29e1c", storageBucket: "hopphim-29e1c.firebasestorage.app", messagingSenderId: "1076044580405", appId: "1:1076044580405:web:a3485f8533604f305e537c", measurementId: "G-6RT4CX2NR0" }; const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); let currentPrice = 50000, currentCoin = 50, currentBonus = 5, currentMethod = 'Momo', userUID = ""; onAuthStateChanged(auth, async (user) => { const btnLogin = document.getElementById('header-login-btn'); const menuLogout = document.getElementById('menuLogout'); const userAvatar = document.getElementById('header-avatar'); const dropdownName = document.getElementById('dropdown-name'); const warning = document.getElementById('login-warning'); const infoBox = document.getElementById('userInfoBox'); if (user) { userUID = user.uid; btnLogin.style.display = 'none'; menuLogout.style.display = 'flex'; warning.style.display = 'none'; infoBox.style.display = 'inline-flex'; const photo = user.photoURL || '/Guest.webp'; userAvatar.src = photo; document.getElementById('user-avatar-display').src = photo; onSnapshot(doc(db, "users", user.uid), (docSnap) => { if (docSnap.exists()) { const data = docSnap.data(); const balance = data.coinBalance || 0; const isVip = (data.vipExpiration || 0) > Date.now(); const name = user.displayName || "Thành viên"; document.getElementById('header-coin').innerText = balance.toLocaleString(); document.getElementById('user-balance-display').innerText = balance.toLocaleString(); if (isVip) { userAvatar.classList.add('vip-glow'); dropdownName.innerHTML = `<span class="vip-name">${name} <i class="fas fa-crown"></i></span>`; document.getElementById('user-name-display').innerHTML = `<span class="vip-name">${name}</span>`; document.getElementById('user-avatar-display').classList.add('vip-glow'); } else { userAvatar.classList.remove('vip-glow'); dropdownName.innerText = name; document.getElementById('user-name-display').innerText = name; document.getElementById('user-avatar-display').classList.remove('vip-glow'); } } }); loadTransactionHistory(user.uid); } else { btnLogin.style.display = 'block'; menuLogout.style.display = 'none'; userAvatar.src = '/Guest.webp'; userAvatar.classList.remove('vip-glow'); dropdownName.innerText = "Khách"; infoBox.style.display = 'none'; warning.style.display = 'block'; } }); window.scrollToHistory = () => { const section = document.querySelector('.history-section'); if(section) { section.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('userDropdown').classList.remove('active'); } }; function loadTransactionHistory(uid) { const list = document.getElementById('history-list'); const q = query(collection(db, "topupRequests"), where("uid", "==", uid)); onSnapshot(q, (snapshot) => { if(snapshot.empty) { list.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#666; font-style:italic;">Bạn chưa có giao dịch nào</td></tr>`; return; } let requests = []; snapshot.forEach(doc => { requests.push(doc.data()); }); requests.sort((a, b) => b.timestamp - a.timestamp); const displayList = requests.slice(0, 50); let html = ''; displayList.forEach(d => { const date = new Date(d.timestamp).toLocaleString('vi-VN'); let statusClass = 'status-pending'; let statusText = 'Đang xử lý'; if(d.status === 'completed') { statusClass = 'status-completed'; statusText = 'Thành công'; } else if(d.status === 'rejected') { statusClass = 'status-rejected'; statusText = 'Thất bại'; } let methodDisplay = d.method; if(methodDisplay === 'Banking') methodDisplay = 'Chuyển khoản NH'; if(methodDisplay === 'Momo') methodDisplay = 'Ví MoMo'; html += ` <tr><td><span style="color:#aaa; font-size:0.85rem;">${date}</span></td><td style="color:#FFD700; font-weight:700;">+${d.coinRequested.toLocaleString()} W</td><td>${methodDisplay}</td><td>${d.amount.toLocaleString()}đ</td><td style="text-align:right;"><span class="status-badge ${statusClass}">${statusText}</span></td></tr> `; }); list.innerHTML = html; }, (error) => { console.error(error); list.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ff4757;">Đang tải dữ liệu...</td></tr>`; }); } window.toggleDropdown = () => { const drop = document.getElementById('userDropdown'); if(drop) drop.classList.toggle('active'); } window.onclick = function(event) { if (!event.target.matches('.header-avatar')) { const drop = document.getElementById('userDropdown'); if (drop && drop.classList.contains('active')) { drop.classList.remove('active'); } } } window.selectPack = (el, price, coin, bonus) => { document.querySelectorAll('.pack-item').forEach(i => i.classList.remove('active')); el.classList.add('active'); currentPrice = price; currentCoin = coin; currentBonus = bonus; document.getElementById('btn-price').innerText = price.toLocaleString('vi-VN') + "đ"; }; window.selectMethod = (el, name) => { document.querySelectorAll('.method-item').forEach(i => i.classList.remove('active')); el.classList.add('active'); currentMethod = name; }; window.processPayment = async () => { if (currentMethod === 'Momo') return showToast("Ví MoMo đang bảo trì! Vui lòng chọn Ngân hàng."); const btn = document.getElementById('btn-submit'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...'; const transferCode = "WBP-" + userUID.substring(0, 5).toUpperCase() + "-" + Math.floor(Math.random()*1000); try { await addDoc(collection(db, "topupRequests"), { uid: userUID, email: auth.currentUser.email, amount: currentPrice, coinRequested: currentCoin + currentBonus, method: currentMethod, status: "pending", transferCode: transferCode, timestamp: Date.now() }); const qrUrl = `https://img.vietqr.io/image/BIDV-8816291999-compact.png?amount=${currentPrice}&addInfo=${transferCode}`; document.getElementById('qr-img').src = qrUrl; document.getElementById('modal-code').innerText = transferCode; document.getElementById('bank-modal').classList.add('open'); } catch (e) { showToast("Lỗi kết nối!"); console.error(e); } finally { btn.disabled = false; btn.innerHTML = 'THANH TOÁN ' + currentPrice.toLocaleString() + 'đ'; } }; window.closeModal = () => document.getElementById('bank-modal').classList.remove('open'); window.copy = (text) => { navigator.clipboard.writeText(text); showToast("Đã copy nội dung!"); }; function showToast(msg) { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = `<i class="fas fa-info-circle"></i><span>${msg}</span>`; c.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 3000); } </script><script type="text/javascript"> document.addEventListener('contextmenu', function(e) { e.preventDefault(); }); document.addEventListener('keydown', function(e) { if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; } if (e.ctrlKey) { switch (e.key.toLowerCase()) { case 'u': case 's': case 'p': e.preventDefault(); return false; } if (e.shiftKey) { switch (e.key.toLowerCase()) { case 'i': case 'j': case 'c': e.preventDefault(); return false; } } } });</script></body></html>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nạp Coin - Wibey</title>
+    
+    <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- CORE VARIABLES --- */            
+        :root {
+            --bg-body: #191b24; 
+            --bg-card: #23252f; /* Màu nền card tối */
+            --bg-card-hover: #303341;
+            --primary: #FF5E62;
+            --secondary: #FF8F50;
+            --gradient: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%);
+            --gradient-main: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%); 
+            --text-main: #ffffff;
+            --text-sub: #9ca3af;
+            --border-color: rgba(255,255,255,0.08);
+            --gold: #FFD700;
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.5; overflow-x: hidden; min-height: 100vh; }
+
+        /* Header gọn gàng */
+        .text-gradient { 
+            background: var(--gradient-main); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            display: inline-block; 
+            font-weight: 800;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo img { height: 35px; }
+        .logo span { font-weight: 900; font-size: 1.2rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .back-btn { color: #ccc; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .back-btn:hover { color: var(--primary); }
+
+        /* --- MAIN CONTAINER --- */
+        .main-container { max-width: 1000px; margin: 100px auto 60px; padding: 0 20px; }
+
+        /* USER INFO SECTION (CENTERED) */
+        .user-section { text-align: center; margin-bottom: 50px; }
+        .page-title { font-size: 2rem; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .user-card { 
+            display: inline-flex; align-items: center; gap: 15px; 
+            background: var(--bg-card); padding: 10px 25px 10px 10px; 
+            border-radius: 50px; border: 1px solid var(--border-color);
+        }
+        .user-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        .user-details { text-align: left; }
+        .user-name { font-weight: 700; font-size: 1rem; color: #fff; display: flex; align-items: center; gap: 5px; }
+        .user-balance { font-size: 0.9rem; color: var(--gold); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+        /* --- SELECTION STEPS --- */
+        .step-label { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--secondary); display: block; }
+        
+        /* GRID PACKAGES */
+        .pack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 40px; }
+        .pack-item {
+            background: var(--bg-card); border-radius: var(--radius); padding: 20px;
+            border: 2px solid transparent; cursor: pointer; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .pack-item:hover { background: var(--bg-card-hover); transform: translateY(-5px); }
+        .pack-item.active { background: rgba(255, 94, 98, 0.05); border-color: var(--primary); }
+        
+        .pack-coin { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 5px; }
+        .pack-bonus { font-size: 0.8rem; color: var(--gold); font-weight: 600; min-height: 20px; }
+        .pack-price { font-size: 1rem; font-weight: 700; color: #ccc; margin-top: 10px; background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 20px; }
+        .pack-item.active .pack-price { background: var(--gradient); color: #fff; }
+
+        /* METHOD GRID */
+        .method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 40px; }
+        .method-item {
+            background: var(--bg-card); border-radius: var(--radius); padding: 15px;
+            border: 2px solid transparent; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .method-item:hover { background: var(--bg-card-hover); }
+        .method-item.active { border-color: var(--primary); background: rgba(255, 94, 98, 0.05); }
+        
+        .method-icon { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; background: #fff; padding: 5px; }
+        .method-info { flex: 1; }
+        .method-name { font-weight: 700; font-size: 0.95rem; color: #fff; display: block; }
+        .method-desc { font-size: 0.75rem; color: #888; }
+
+        /* ACTION BUTTON */
+        .action-area { text-align: center; margin-bottom: 60px; }
+        .btn-pay {
+            background: var(--gradient); color: #fff; border: none;
+            padding: 15px 50px; font-size: 1.1rem; font-weight: 800;
+            border-radius: 50px; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(255, 94, 98, 0.3);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-pay:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(255, 94, 98, 0.5); }
+        .btn-pay:disabled { background: #444; cursor: not-allowed; box-shadow: none; transform: none; }
+
+        /* --- HISTORY SECTION (TABLE STYLE) --- */
+        .history-section { border-top: 1px solid var(--border-color); padding-top: 40px; }
+        .history-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        /* --- UPDATE: BẢNG LỊCH SỬ CUỘN DỌC --- */
+        .history-table-wrapper { 
+            overflow-x: auto; /* Cuộn ngang nếu màn hình nhỏ */
+            overflow-y: auto; /* Cuộn dọc */
+            background: var(--bg-card); 
+            border-radius: var(--radius); 
+            border: 1px solid var(--border-color);
+            
+            /* 🔥 Giới hạn chiều cao: Khoảng 10 dòng (mỗi dòng ~60px) */
+            max-height: 600px; 
+        }
+
+        /* Tùy chỉnh thanh cuộn cho đẹp */
+        .history-table-wrapper::-webkit-scrollbar { width: 6px; height: 6px; }
+        .history-table-wrapper::-webkit-scrollbar-track { background: #1a1d26; }
+        .history-table-wrapper::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+        .history-table-wrapper::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .history-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        
+        /* 🔥 Ghim tiêu đề bảng để khi cuộn không bị mất */
+        .history-table th { 
+            position: sticky; top: 0; z-index: 5;
+            text-align: left; padding: 18px 20px; 
+            color: #ccc; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; 
+            background: #23252f; /* Màu nền tiêu đề phải đặc để che nội dung trôi qua */
+            border-bottom: 2px solid var(--border-color); 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .history-table td { padding: 18px 20px; color: #fff; font-size: 0.95rem; border-bottom: 1px solid var(--border-color); }
+        .history-table tr:hover { background: rgba(255,255,255,0.02); }
+
+        /* Badges */
+        .status-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .status-pending { background: rgba(255, 193, 7, 0.15); color: #FFC107; }
+        .status-completed { background: rgba(0, 230, 118, 0.15); color: #00E676; }
+        .status-rejected { background: rgba(255, 82, 82, 0.15); color: #FF5252; }
+        
+        .coin-badge { color: var(--gold); font-weight: 700; display: flex; align-items: center; gap: 5px; }
+        .method-badge { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+
+        /* --- MODAL QR --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal.open { display: flex; }
+        .modal-content { background: #1a1d26; width: 380px; border-radius: 20px; padding: 30px; border: 1px solid var(--border-color); position: relative; text-align: center; }
+        .qr-img { width: 100%; border-radius: 12px; margin: 15px 0; border: 5px solid #fff; }
+        .copy-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px dashed #555; }
+        .copy-box:hover { border-color: var(--primary); background: rgba(255, 94, 98, 0.05); }
+
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+        .toast { background: #23252f; color: #fff; padding: 12px 20px; border-radius: 8px; border-left: 4px solid var(--primary); margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); animation: slideIn 0.3s; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        @media (max-width: 768px) {
+            .pack-grid, .method-grid { grid-template-columns: 1fr; }
+            .page-title { font-size: 1.5rem; }
+            .main-container { margin-top: 80px; }
+        }
+
+        /* --- HEADER & USER MENU (FIXED) --- */
+        header {
+            height: 70px; padding: 0 4%; position: fixed; top: 0; width: 100%; z-index: 1000;
+            display: flex; align-items: center; justify-content: space-between;
+            background: #191b24; border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
+        }
+        
+        /* Logo & Back Button */
+        .header-left { display: flex; align-items: center; gap: 25px; }
+        .back-btn { 
+            color: #aaa; text-decoration: none; font-size: 0.9rem; font-weight: 600;
+            display: flex; align-items: center; gap: 8px; transition: 0.3s; padding: 8px 12px;
+            border-radius: 30px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+        }
+        .back-btn:hover { color: #fff; background: rgba(255,255,255,0.1); border-color: #fff; }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo img { height: 38px; }
+        .logo span { font-weight: 900; font-size: 1.4rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Header Right & Dropdown */
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .balance-box {
+            background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #FFD700; padding: 6px 16px; border-radius: 50px; font-weight: 700; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 8px;
+        }
+        
+        .user-menu-container { position: relative; }
+        .header-avatar { 
+            width: 42px; height: 42px; border-radius: 50%; object-fit: cover; 
+            border: 2px solid var(--primary); cursor: pointer; transition: 0.3s;
+        }
+        .header-avatar:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 94, 98, 0.4); }
+        
+        /* Dropdown Menu */
+        .user-dropdown {
+            position: absolute; top: 120%; right: 0; width: 220px;
+            background: #23252f; border-radius: 12px; padding: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+            display: none; flex-direction: column; animation: fadeIn 0.2s ease;
+        }
+        .user-dropdown.active { display: flex; }
+        .ud-item { 
+            padding: 10px 15px; color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: 500;
+            display: flex; align-items: center; gap: 10px; border-radius: 8px; transition: 0.2s; cursor: pointer;
+        }
+        .ud-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .ud-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 5px 0; }
+
+        /* =========================================
+        FOOTER REDESIGN (Wibey x WIBUPAD STYLE)
+        ========================================= */
+        footer {
+            background: #0b0c12; /* Màu nền tối hơn body một chút để tách biệt */
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 80px 4% 30px;
+            margin-top: 80px;
+            position: relative;
+            z-index: 100;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1.2fr; /* Cột Logo và Download to hơn chút */
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        /* --- Cột 1: Brand --- */
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .footer-logo img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .footer-logo .brand-text {
+            font-size: 1.6rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .footer-desc {
+            color: var(--text-sub);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+            max-width: 90%;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            transition: 0.3s;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        .social-link:hover {
+            background: var(--gradient-main);
+            color: #fff;
+            border-color: transparent;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 94, 98, 0.3);
+        }
+
+        /* --- Các cột Link --- */
+        .footer-col h4 {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: var(--text-sub);
+            text-decoration: none;
+            transition: 0.3s;
+            font-size: 0.95rem;
+            display: block;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        /* --- Cột 4: Download Buttons --- */
+        .download-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-download-app {
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 220px;
+        }
+
+        .btn-download-app i {
+            font-size: 1.6rem;
+            color: #ccc;
+            transition: 0.3s;
+        }
+
+        .btn-content {
+            line-height: 1.3;
+        }
+
+        .btn-small-text {
+            font-size: 0.7rem;
+            color: #888;
+            display: block;
+        }
+
+        .btn-big-text {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .btn-download-app:hover {
+            border-color: var(--primary-color);
+            background: rgba(255, 94, 98, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .btn-download-app:hover i {
+            color: var(--primary-color);
+        }
+
+        /* --- Footer Bottom --- */
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 30px;
+            text-align: center;
+            color: #555;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- Responsive Mobile --- */
+        @media (max-width: 900px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                text-align: center;
+            }
+
+            .footer-logo, .footer-socials {
+                justify-content: center;
+            }
+
+            .footer-desc {
+                margin: 0 auto 25px;
+            }
+
+            .footer-col h4 {
+                margin-bottom: 15px;
+            }
+            
+            .download-group {
+                align-items: center;
+            }
+            
+            .footer-bottom {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        /* Custom Scroller */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FF5E62; }
+
+        /* --- HIỆU ỨNG VIP (GIỐNG INDEX) --- */
+        .vip-glow { 
+            border: 2px solid #FFD700 !important; 
+            box-shadow: 0 0 15px #FFD700, 0 0 25px rgba(255, 215, 0, 0.4) !important;
+            animation: vipPulse 2s infinite !important;
+        }
+        .vip-name { 
+            background: linear-gradient(to right, #FFD700, #FFF5C3, #FFD700); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            font-weight: 900 !important; 
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        @keyframes vipPulse { 
+            0% { box-shadow: 0 0 5px #FFD700; } 
+            50% { box-shadow: 0 0 20px #FFD700; } 
+            100% { box-shadow: 0 0 5px #FFD700; } 
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <a href="/" class="logo">
+                <img src="/LOGO.WEBP" alt="Wibey">
+                <span>Wibey</span>
+            </a>
+        </div>
+        
+        <div class="header-right">
+            <div class="balance-box" id="header-balance-box" style="display: none;">
+                <i class="fas fa-coins"></i> <span id="header-coin">0</span>
+            </div>
+
+            <div class="user-menu-container">
+                <img src="/Guest.webp" id="header-avatar" class="header-avatar" onclick="toggleDropdown()">
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="ud-item" style="pointer-events: none; font-weight: 800; font-size: 1rem; color: #fff; padding-bottom: 5px;">
+                        <span id="dropdown-name">Khách</span>
+                    </div>
+                    
+                    <div class="ud-divider"></div>
+                    
+                    <div class="ud-item" onclick="window.location.href='/profile.html'">
+                        <i class="fas fa-user" style="width: 20px;"></i> Tài khoản
+                    </div>
+                    
+                    <div class="ud-item" onclick="scrollToHistory()">
+                        <i class="fas fa-history" style="width: 20px;"></i> Lịch sử nạp
+                    </div>
+                    
+                    <div class="ud-divider"></div>
+                    
+                    <div class="ud-item" id="menuLogout" onclick="logout()" style="color: #ff4757; display: none;">
+                        <i class="fas fa-sign-out-alt" style="width: 20px;"></i> Đăng xuất
+                    </div>
+                </div>
+
+                <button id="header-login-btn" onclick="window.location.href='/login.html'" 
+                        style="display: block; background: var(--gradient); border: none; color: #fff; padding: 6px 18px; border-radius: 30px; font-weight: 700; cursor: pointer; margin-left: 10px;">
+                    Đăng nhập
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <div class="user-section">
+            <h1 class="page-title">Nạp Coin vào tài khoản</h1>
+            <div class="user-card" id="userInfoBox" style="display: none;">
+                <img src="/Guest.webp" id="user-avatar-display" class="user-avatar">
+                <div class="user-details">
+                    <div class="user-name"><span id="user-name-display"></span> <i class="fas fa-check-circle" style="color:#4ade80; font-size:0.8rem;"></i></div>
+                    <div class="user-balance"><i class="fas fa-coins"></i> Số dư: <span id="user-balance-display">0</span> <span style="background:#FFD700; color:#000; font-size:0.6rem; padding:1px 4px; border-radius:4px; font-weight:800;">W</span></div>
+                </div>
+            </div>
+            <div id="login-warning" style="color: #aaa;">Vui lòng đăng nhập để nạp coin.</div>
+        </div>
+
+        <label class="step-label">Bước 1: Chọn gói Coin thích hợp</label>
+        <div class="pack-grid">
+            <div class="pack-item" onclick="selectPack(this, 20000, 20, 0)">
+                <div class="pack-coin">20 <small>COIN</small></div>
+                <div class="pack-bonus"></div>
+                <div class="pack-price">20.000đ</div>
+            </div>
+            <div class="pack-item active" onclick="selectPack(this, 50000, 50, 5)">
+                <div style="position:absolute; top:0; right:0; background:var(--gradient); color:#fff; font-size:0.6rem; padding:3px 8px; border-bottom-left-radius:8px; font-weight:700;">POPULAR</div>
+                <div class="pack-coin">50 <small>COIN</small></div>
+                <div class="pack-bonus">+5 Coin tặng thêm</div>
+                <div class="pack-price">50.000đ</div>
+            </div>
+            <div class="pack-item" onclick="selectPack(this, 100000, 100, 15)">
+                <div class="pack-coin">100 <small>COIN</small></div>
+                <div class="pack-bonus">+15 Coin tặng thêm</div>
+                <div class="pack-price">100.000đ</div>
+            </div>
+            <div class="pack-item" onclick="selectPack(this, 200000, 200, 40)">
+                <div class="pack-coin">200 <small>COIN</small></div>
+                <div class="pack-bonus">+40 Coin tặng thêm</div>
+                <div class="pack-price">200.000đ</div>
+            </div>
+            <div class="pack-item" onclick="selectPack(this, 500000, 500, 150)">
+                <div class="pack-coin">500 <small>COIN</small></div>
+                <div class="pack-bonus">+150 Coin tặng thêm</div>
+                <div class="pack-price">500.000đ</div>
+            </div>
+            <div class="pack-item" onclick="selectPack(this, 1000000, 1000, 400)">
+                <div style="position:absolute; top:0; right:0; background:linear-gradient(to right, #FFD700, #FDB931); color:#000; font-size:0.6rem; padding:3px 8px; border-bottom-left-radius:8px; font-weight:700;">BEST VALUE</div>
+                <div class="pack-coin" style="color:var(--gold)">1.000 <small>COIN</small></div>
+                <div class="pack-bonus">+400 Coin tặng thêm</div>
+                <div class="pack-price">1.000.000đ</div>
+            </div>
+        </div>
+
+        <label class="step-label">Bước 2: Chọn phương thức thanh toán</label>
+        <div class="method-grid">
+            <div class="method-item" onclick="selectMethod(this, 'Banking')">
+                <img src="https://rophimm.net/images/bank.webp" class="method-icon">
+                <div class="method-info">
+                    <span class="method-name">Chuyển khoản</span>
+                    <span class="method-desc">Quét mã QR</span>
+                </div>
+            </div>
+            <div class="method-item" style="opacity: 0.5; cursor: not-allowed;">
+                <img src="https://rophimm.net/images/momo.webp" class="method-icon">
+                <div class="method-info">
+                    <span class="method-name">Ví MoMo</span>
+                    <span class="method-desc">Đang bảo trì</span>
+                </div>
+            </div>
+            <div class="method-item" style="opacity: 0.5; cursor: not-allowed;">
+                <img src="https://rophimm.net/images/phone.webp" class="method-icon">
+                <div class="method-info">
+                    <span class="method-name">Thẻ cào</span>
+                    <span class="method-desc">Đang bảo trì</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-area">
+            <button class="btn-pay" id="btn-submit" onclick="processPayment()">
+                Thanh Toán <span id="btn-price">50.000đ</span>
+            </button>
+            <p style="margin-top: 15px; color: #666; font-size: 0.85rem;">
+                <i class="fas fa-shield-alt"></i> Giao dịch an toàn & bảo mật
+            </p>
+        </div>
+
+        <div class="history-section">
+            <div class="history-title">Lịch sử thanh toán</div>
+            
+            <div class="history-table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Thời gian</th>
+                            <th>Coin</th>
+                            <th>Hình thức</th>
+                            <th>Số tiền</th>
+                            <th style="text-align: right;">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-list">
+                        <tr><td colspan="5" style="text-align:center; padding: 30px; color: #666;">Đang tải dữ liệu...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+<footer>
+    <div class="footer-grid">
+        <div class="footer-col">
+            <div class="footer-logo">
+                <img src="/LOGO.WEBP" alt="Wibey">
+                <span class="text-gradient brand-text">Wibey</span>
+            </div>
+            <p class="footer-desc">
+                Wibey - Nền tảng xem phim trực tuyến miễn phí chất lượng cao. Cập nhật liên tục, không giật lag, trải nghiệm điện ảnh đỉnh cao ngay tại nhà.
+            </p>
+            <div class="footer-socials">
+                <a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-discord"></i></a>
+                <a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-telegram-plane"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h4>Khám Phá</h4>
+            <ul class="footer-links">
+                <li><a href="#" onclick="loadCategory('phim-moi', 'Phim Mới')">Phim Mới Cập Nhật</a></li>
+                <li><a href="#" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Chiếu Rạp</a></li>
+                <li><a href="#" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ Độc Quyền</a></li>
+                <li><a href="#" onclick="loadCategory('tv-shows', 'TV Shows')">TV Shows</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Hỗ Trợ</h4>
+            <ul class="footer-links">
+                <li><a href="lienhequangcao.html">Liên hệ quảng cáo</a></li>
+                <li><a href="baoloi.html">Báo lỗi phim</a></li>
+                <li><a href="dieukhoan.html">Điều khoản dịch vụ</a></li>
+                <li><a href="wibey.netlify.app">Về WibeyTeam</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Tải Ứng Dụng</h4>
+            <div class="download-group">
+                <button class="btn-download-app">
+                    <i class="fab fa-apple"></i>
+                    <div class="btn-content">
+                        <span class="btn-small-text">Download on the</span>
+                        <span class="btn-big-text">App Store</span>
+                    </div>
+                </button>
+                
+                <button class="btn-download-app">
+                    <i class="fab fa-google-play"></i>
+                    <div class="btn-content">
+                        <span class="btn-small-text">Get it on</span>
+                        <span class="btn-big-text">Google Play</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <span>&copy; 2026 Wibey. All Rights Reserved.</span>
+    </div>
+</footer>
+    <div class="modal" id="bank-modal">
+        <div class="modal-content">
+            <i class="fas fa-times" onclick="closeModal()" style="position:absolute; top:15px; right:15px; cursor:pointer; font-size:1.2rem; color:#fff;"></i>
+            <h3 style="color:var(--primary); margin-bottom:5px; font-weight:800;">QUÉT MÃ QR</h3>
+            <p style="font-size:0.85rem; color:#aaa;">Sử dụng App Ngân hàng hoặc MoMo</p>
+            
+            <img id="qr-img" src="" class="qr-img">
+            
+            <div style="text-align: left; margin-top: 15px;">
+                <div style="font-size: 0.85rem; color: #aaa; margin-bottom: 5px;">Nội dung chuyển khoản (Bắt buộc):</div>
+                <div class="copy-box" onclick="copy(document.getElementById('modal-code').innerText)">
+                    <strong id="modal-code" style="font-size: 1.2rem; color: #fff; letter-spacing: 1px;">...</strong>
+                    <i class="fas fa-copy" style="color: var(--primary);"></i>
+                </div>
+            </div>
+
+            <p style="margin-top: 20px; font-size: 0.85rem; color: var(--success); font-weight: 600;">
+                <i class="fas fa-sync fa-spin"></i> Hệ thống đang chờ thanh toán...
+            </p>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, addDoc, collection, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // CONFIG
+        const firebaseConfig = { apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc", authDomain: "hopphim-29e1c.firebaseapp.com", projectId: "hopphim-29e1c", storageBucket: "hopphim-29e1c.firebasestorage.app", messagingSenderId: "1076044580405", appId: "1:1076044580405:web:a3485f8533604f305e537c", measurementId: "G-6RT4CX2NR0" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentPrice = 50000, currentCoin = 50, currentBonus = 5, currentMethod = 'Momo', userUID = "";
+
+        // --- 1. QUẢN LÝ TRẠNG THÁI USER & VIP ---
+        onAuthStateChanged(auth, async (user) => {
+            const btnLogin = document.getElementById('header-login-btn');
+            const menuLogout = document.getElementById('menuLogout');
+            const userAvatar = document.getElementById('header-avatar');
+            const dropdownName = document.getElementById('dropdown-name');
+            
+            // User Info Section
+            const warning = document.getElementById('login-warning');
+            const infoBox = document.getElementById('userInfoBox');
+
+            if (user) {
+                // === ĐÃ ĐĂNG NHẬP ===
+                userUID = user.uid;
+                btnLogin.style.display = 'none';
+                menuLogout.style.display = 'flex';
+                warning.style.display = 'none';
+                infoBox.style.display = 'inline-flex';
+                
+                // Set Avatar tạm
+                const photo = user.photoURL || '/Guest.webp';
+                userAvatar.src = photo;
+                document.getElementById('user-avatar-display').src = photo;
+
+                // Lấy dữ liệu Realtime
+                onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        const balance = data.coinBalance || 0;
+                        const isVip = (data.vipExpiration || 0) > Date.now();
+                        const name = user.displayName || "Thành viên";
+                        
+                        // Cập nhật số dư
+                        document.getElementById('header-coin').innerText = balance.toLocaleString();
+                        document.getElementById('user-balance-display').innerText = balance.toLocaleString();
+
+                        // 🔥 HIỆU ỨNG VIP (SÁNG LẤP LÁNH) 🔥
+                        if (isVip) {
+                            // Header Avatar Glow
+                            userAvatar.classList.add('vip-glow');
+                            // Dropdown Name Gradient
+                            dropdownName.innerHTML = `<span class="vip-name">${name} <i class="fas fa-crown"></i></span>`;
+                            // User Info Section Name
+                            document.getElementById('user-name-display').innerHTML = `<span class="vip-name">${name}</span>`;
+                            // User Info Avatar
+                            document.getElementById('user-avatar-display').classList.add('vip-glow');
+                        } else {
+                            userAvatar.classList.remove('vip-glow');
+                            dropdownName.innerText = name;
+                            document.getElementById('user-name-display').innerText = name;
+                            document.getElementById('user-avatar-display').classList.remove('vip-glow');
+                        }
+                    }
+                });
+
+                // Load lịch sử
+                loadTransactionHistory(user.uid);
+
+            } else {
+                // === KHÁCH (CHƯA ĐĂNG NHẬP) ===
+                btnLogin.style.display = 'block';
+                menuLogout.style.display = 'none';
+                userAvatar.src = '/Guest.webp';
+                userAvatar.classList.remove('vip-glow');
+                dropdownName.innerText = "Khách";
+                
+                // Ẩn info user, hiện cảnh báo
+                infoBox.style.display = 'none';
+                warning.style.display = 'block';
+            }
+        });
+
+        // 🔥 HÀM CUỘN XUỐNG LỊCH SỬ 🔥
+        window.scrollToHistory = () => {
+            const section = document.querySelector('.history-section');
+            if(section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Đóng dropdown sau khi bấm
+                document.getElementById('userDropdown').classList.remove('active');
+            }
+        };
+        
+        // (Giữ nguyên các hàm toggleDropdown, window.onclick cũ)
+
+        // --- HÀM LOAD LỊCH SỬ (ĐÃ NÂNG CẤP SCROLL) ---
+        function loadTransactionHistory(uid) {
+            const list = document.getElementById('history-list');
+            
+            const q = query(collection(db, "topupRequests"), where("uid", "==", uid));
+            
+            onSnapshot(q, (snapshot) => {
+                if(snapshot.empty) {
+                    list.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#666; font-style:italic;">Bạn chưa có giao dịch nào</td></tr>`;
+                    return;
+                }
+                
+                let requests = [];
+                snapshot.forEach(doc => {
+                    requests.push(doc.data());
+                });
+
+                // Sắp xếp mới nhất lên đầu
+                requests.sort((a, b) => b.timestamp - a.timestamp);
+
+                // 🔥 Tăng giới hạn hiển thị lên 50 dòng để có thể cuộn
+                const displayList = requests.slice(0, 50);
+
+                let html = '';
+                displayList.forEach(d => {
+                    const date = new Date(d.timestamp).toLocaleString('vi-VN');
+                    
+                    let statusClass = 'status-pending'; 
+                    let statusText = 'Đang xử lý';
+                    
+                    if(d.status === 'completed') { statusClass = 'status-completed'; statusText = 'Thành công'; }
+                    else if(d.status === 'rejected') { statusClass = 'status-rejected'; statusText = 'Thất bại'; }
+
+                    let methodDisplay = d.method;
+                    if(methodDisplay === 'Banking') methodDisplay = 'Chuyển khoản NH';
+                    if(methodDisplay === 'Momo') methodDisplay = 'Ví MoMo';
+
+                    html += `
+                        <tr>
+                            <td><span style="color:#aaa; font-size:0.85rem;">${date}</span></td>
+                            <td style="color:#FFD700; font-weight:700;">+${d.coinRequested.toLocaleString()} W</td>
+                            <td>${methodDisplay}</td>
+                            <td>${d.amount.toLocaleString()}đ</td>
+                            <td style="text-align:right;"><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        </tr>
+                    `;
+                });
+                list.innerHTML = html;
+            }, (error) => {
+                console.error(error);
+                list.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ff4757;">Đang tải dữ liệu...</td></tr>`;
+            });
+        }
+
+        // Thêm hàm bật tắt Dropdown Header
+        window.toggleDropdown = () => {
+            const drop = document.getElementById('userDropdown');
+            if(drop) drop.classList.toggle('active');
+        }
+
+        // Click ra ngoài để đóng Dropdown
+        window.onclick = function(event) {
+            if (!event.target.matches('.header-avatar')) {
+                const drop = document.getElementById('userDropdown');
+                if (drop && drop.classList.contains('active')) {
+                    drop.classList.remove('active');
+                }
+            }
+        }
+        // UI LOGIC
+        window.selectPack = (el, price, coin, bonus) => {
+            document.querySelectorAll('.pack-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            currentPrice = price; currentCoin = coin; currentBonus = bonus;
+            document.getElementById('btn-price').innerText = price.toLocaleString('vi-VN') + "đ";
+        };
+
+        window.selectMethod = (el, name) => {
+            document.querySelectorAll('.method-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            currentMethod = name;
+        };
+
+        window.processPayment = async () => {
+            if (currentMethod === 'Momo') return showToast("Ví MoMo đang bảo trì! Vui lòng chọn Ngân hàng.");
+            const btn = document.getElementById('btn-submit');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            
+            const transferCode = "WBP-" + userUID.substring(0, 5).toUpperCase() + "-" + Math.floor(Math.random()*1000); // Thêm random để tránh trùng code
+
+            try {
+                await addDoc(collection(db, "topupRequests"), { 
+                    uid: userUID, 
+                    email: auth.currentUser.email, 
+                    amount: currentPrice, 
+                    coinRequested: currentCoin + currentBonus, 
+                    method: currentMethod, 
+                    status: "pending", 
+                    transferCode: transferCode, 
+                    timestamp: Date.now() 
+                });
+                
+                const qrUrl = `https://img.vietqr.io/image/BIDV-8816291999-compact.png?amount=${currentPrice}&addInfo=${transferCode}`;
+                document.getElementById('qr-img').src = qrUrl;
+                document.getElementById('modal-code').innerText = transferCode;
+                document.getElementById('bank-modal').classList.add('open');
+            } catch (e) { showToast("Lỗi kết nối!"); console.error(e); } 
+            finally { btn.disabled = false; btn.innerHTML = 'THANH TOÁN ' + currentPrice.toLocaleString() + 'đ'; }
+        };
+
+        window.closeModal = () => document.getElementById('bank-modal').classList.remove('open');
+        window.copy = (text) => { navigator.clipboard.writeText(text); showToast("Đã copy nội dung!"); };
+        function showToast(msg) {
+            const c = document.getElementById('toast-container');
+            const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = `<i class="fas fa-info-circle"></i> <span>${msg}</span>`;
+            c.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 3000);
+        }
+    </script>
+    <script type="text/javascript">
+    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
+    });
+
+    // 2. Chặn các phím tắt Developer Tools
+    document.addEventListener('keydown', function(e) {
+        // Chặn F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Chặn các tổ hợp phím Ctrl + ...
+        if (e.ctrlKey) {
+            switch (e.key.toLowerCase()) {
+                case 'u': // Chặn Ctrl + U (Xem source code)
+                case 's': // Chặn Ctrl + S (Lưu trang web)
+                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
+                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
+                    e.preventDefault();
+                    return false;
+            }
+
+            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
+            if (e.shiftKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'i': // Inspect Element
+                    case 'j': // Console
+                    case 'c': // Element Inspector
+                        e.preventDefault();
+                        return false;
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
