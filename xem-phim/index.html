@@ -135,6 +135,77 @@
             bottom: auto !important;
             left: auto !important;
         }
+
+
+        /* =========================================
+           🔥 NÂNG CẤP KÍCH THƯỚC PLAYER & MENU TÙY CHỈNH
+           ========================================= */
+        @media (min-width: 901px) {
+            /* 1. Mở rộng Player dài hơn, rộng hơn (1400px thay vì 1250px) */
+            .player-box { max-width: 1400px !important; }
+            .plyr { max-height: 85vh !important; } /* Cho video dài xuống thêm */
+            
+            /* Đồng bộ lề cho các nội dung bên dưới */
+            .premium-info-container, .premium-section-header, .comment-section { max-width: 1400px !important; }
+            .premium-horizontal-list { max-width: 1400px !important; }
+            .slider-container { max-width: 1400px !important; }
+        }
+
+        /* 2. Cụm nút bấm tùy chỉnh trên thanh điều khiển Plyr */
+        .plyr__controls .custom-controls-group { 
+            display: flex; align-items: center; gap: 10px; margin-right: auto; margin-left: 15px; 
+        }
+        .plyr__custom-btn {
+            background: transparent; border: none; color: #e5e5e5; font-family: var(--font-main);
+            font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 8px;
+            cursor: pointer; opacity: 0.8; transition: 0.2s; padding: 5px 12px; border-radius: 6px;
+        }
+        .plyr__custom-btn:hover { opacity: 1; color: #fff; background: rgba(255,255,255,0.1); }
+        .plyr__custom-btn.active-btn { color: var(--primary-color); opacity: 1; }
+        .plyr__custom-btn i { font-size: 1.1rem; color: #fff; }
+        .plyr__custom-btn:hover i { color: var(--primary-color); }
+
+        /* 3. Khung Popup hiển thị Danh sách & Phụ đề */
+        .plyr-popup-box {
+            position: absolute; bottom: 65px; right: 20px; 
+            background: rgba(20, 20, 25, 0.95); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+            color: #fff; z-index: 100; opacity: 0; visibility: hidden; 
+            transform: translateY(15px); transition: all 0.3s ease; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); overflow: hidden;
+            font-family: var(--font-main);
+        }
+        .plyr-popup-box.active { opacity: 1; visibility: visible; transform: translateY(0); }
+
+        /* Giao diện Popup: Danh sách tập */
+        .popup-episodes { width: 400px; display: flex; flex-direction: column; }
+        .pep-header { padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 700; display: flex; justify-content: space-between; font-size: 1.1rem; color: #ccc;}
+        .pep-list { max-height: 350px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 5px; }
+        /* Tùy chỉnh thanh cuộn cho Popup */
+        .pep-list::-webkit-scrollbar { width: 4px; }
+        .pep-list::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
+        
+        .pep-item { display: flex; gap: 15px; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; align-items: center;}
+        .pep-item:hover { background: rgba(255,255,255,0.1); }
+        .pep-item.active { background: rgba(255,255,255,0.05); }
+        .pep-item.active .pep-ep-name { color: var(--primary-color); }
+        .pep-item img { width: 110px; aspect-ratio: 16/9; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
+        .pep-ep-name { font-weight: 700; margin-bottom: 6px; font-size: 0.95rem; color: #fff; transition: 0.2s;}
+        .pep-desc { font-size: 0.8rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+        
+        /* Giao diện Popup: Âm thanh & Phụ đề */
+        .popup-audiosub { width: 350px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .pas-col h4 { font-size: 1rem; color: #fff; margin-bottom: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;}
+        .pas-item { padding: 10px; border-radius: 6px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; display: flex; align-items: center; gap: 10px; color: #aaa;}
+        .pas-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .pas-item.active { font-weight: 700; color: #fff; }
+        .pas-item i { opacity: 0; width: 14px; font-size: 0.85rem;}
+        .pas-item.active i { opacity: 1; color: var(--primary-color); }
+
+        /* Ẩn các nút này trên điện thoại cho gọn */
+        @media (max-width: 900px) {
+            .plyr__controls .custom-controls-group { display: none !important; }
+        }
     </style>
 
     <style>
@@ -2462,7 +2533,7 @@ footer {
         });
     }
 
-    // --- KHỞI TẠO PLAYER (CÓ CHỌN ĐỘ PHÂN GIẢI) ---
+    // --- KHỞI TẠO PLAYER (CÓ CHỌN ĐỘ PHÂN GIẢI + MENU TẬP/AUDIO TÙY CHỈNH) ---
     function initPlayer(sourceType, sourceLink, poster = '', startTime = 0) {
         if (player) { player.destroy(); player = null; }
 
@@ -2470,7 +2541,6 @@ footer {
         container.innerHTML = `<video id="player" playsinline controls data-poster="${poster}" style="width:100%;"></video>`;
         const videoElement = document.getElementById('player');
 
-        // Thêm nút settings và quality vào control
         const defaultOptions = {
             keyboard: { focused: true, global: true },
             clickToPlay: false, 
@@ -2488,10 +2558,11 @@ footer {
             setupPauseOverlay(plyrInstance);
             setupMobileControls(plyrInstance); 
             setupAutoRotation(plyrInstance);   
+            injectCustomPlayerMenus(plyrInstance); // 🔥 Bơm 2 nút Menu vào Player
 
             if (window.innerWidth >= 1024) {
                 plyrInstance.elements.wrapper.addEventListener('click', (e) => {
-                    if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.plyr__controls')) return;
+                    if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.plyr__controls') || e.target.closest('.plyr-popup-box')) return;
                     plyrInstance.togglePlay();
                 });
             }
@@ -2516,17 +2587,16 @@ footer {
                 const hls = new Hls();
                 hls.loadSource(sourceLink);
 
-                // KẾT NỐI HLS VỚI BẢNG CHỌN CHẤT LƯỢNG PLYR
                 hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
                     const availableQualities = hls.levels.map((l) => l.height);
-                    availableQualities.unshift(0); // 0 = Auto
+                    availableQualities.unshift(0); 
 
                     defaultOptions.quality = {
                         default: 0, 
                         options: availableQualities,
                         forced: true,
                         onChange: (e) => {
-                            if (e === 0) hls.currentLevel = -1; // Auto
+                            if (e === 0) hls.currentLevel = -1;
                             else hls.levels.forEach((level, idx) => { if (level.height === e) hls.currentLevel = idx; });
                         },
                     };
@@ -2553,6 +2623,127 @@ footer {
                 }, 30000);
             }
         }, 1000);
+    }
+
+    // =========================================================
+    // 🔥 HÀM BƠM 2 NÚT (DANH SÁCH & ÂM THANH) VÀO TRONG PLAYER
+    // =========================================================
+    function injectCustomPlayerMenus(plyrInstance) {
+        if (window.innerWidth < 1024) return; // Không vẽ trên mobile để tránh chật chội
+        
+        const controls = plyrInstance.elements.controls;
+        if (!controls || controls.querySelector('.custom-controls-group')) return;
+
+        // 1. Tạo 2 nút bấm
+        const customGroup = document.createElement('div');
+        customGroup.className = 'custom-controls-group';
+        customGroup.innerHTML = `
+            <button class="plyr__custom-btn" id="btn-show-episodes">
+                <i class="fa-solid fa-layer-group"></i> Tập tiếp theo
+            </button>
+            <button class="plyr__custom-btn" id="btn-show-audiosub">
+                <i class="fa-solid fa-closed-captioning"></i> Danh sách tập
+            </button>
+        `;
+
+        // 2. Chèn vào giữa thanh Progress và Setting (Đẩy ra lề phải)
+        const settingsBtn = controls.querySelector('[data-plyr="settings"]');
+        if (settingsBtn) {
+            controls.insertBefore(customGroup, settingsBtn);
+        } else {
+            controls.appendChild(customGroup);
+        }
+
+        // 3. Xây dựng Layout Popup
+        const wrapper = plyrInstance.elements.wrapper;
+        
+        // Render HTML cho danh sách tập bên trong Player
+        let epsHtml = '';
+        const currentServer = window.currentMovieEpisodesData && window.currentMovieEpisodesData.length > 0 
+                                ? window.currentMovieEpisodesData[0].server_data : [];
+        let fallbackImg = currentMovieData.poster_url || currentMovieData.thumb_url;
+        if (fallbackImg && !fallbackImg.startsWith('http')) fallbackImg = IMG_BASE + fallbackImg;
+
+        currentServer.forEach((ep, idx) => {
+            let epName = ep.name;
+            if (!epName.toLowerCase().includes('tập')) epName = `Tập ${epName}`;
+            const isActive = (currentEpName === epName) ? 'active' : '';
+            
+            epsHtml += `
+                <div class="pep-item ${isActive}" onclick="window.changeEp('${ep.link_m3u8 || ep.link_embed}', '${ep.link_m3u8 ? 'hls' : 'iframe'}', null, '${epName}', 0, ${idx})">
+                    <img src="${fallbackImg}">
+                    <div style="flex:1;">
+                        <div class="pep-ep-name">${epName}</div>
+                        <div class="pep-desc">Khám phá diễn biến tiếp theo của ${currentMovieData.name} trong ${epName}...</div>
+                    </div>
+                </div>
+            `;
+        });
+
+        // 4. Tạo khối Popup HTML
+        const popupsHtml = `
+            <div class="plyr-popup-box popup-episodes" id="popup-episodes">
+                <div class="pep-header">
+                    <span>${currentMovieData.name}</span>
+                    <i class="fas fa-times" style="cursor:pointer; transition:0.2s;" onclick="document.getElementById('popup-episodes').classList.remove('active')"></i>
+                </div>
+                <div class="pep-list">${epsHtml}</div>
+            </div>
+
+            <div class="plyr-popup-box popup-audiosub" id="popup-audiosub">
+                <div class="pas-col">
+                    <h4>Phụ đề</h4>
+                    <div class="pas-item active"><i class="fas fa-check"></i> Tiếng Việt</div>
+                    <div class="pas-item"><i class="fas fa-check"></i> Tiếng Anh</div>
+                    <div class="pas-item"><i class="fas fa-check"></i> Tắt</div>
+                </div>
+                <div class="pas-col">
+                    <h4>Âm thanh</h4>
+                    <div class="pas-item active"><i class="fas fa-check"></i> Lồng Tiếng</div>
+                    <div class="pas-item"><i class="fas fa-check"></i> Thuyết Minh</div>
+                    <div class="pas-item"><i class="fas fa-check"></i> Tiếng Gốc</div>
+                </div>
+            </div>
+        `;
+        wrapper.insertAdjacentHTML('beforeend', popupsHtml);
+
+        // 5. Thêm sự kiện Bấm nút mở Menu
+        const btnEp = document.getElementById('btn-show-audiosub'); // Ở VieON: Nút danh sách tập nằm sát phụ đề
+        const btnAudio = document.getElementById('btn-show-episodes'); // Nút này mình dùng làm Âm thanh & Phụ đề
+        
+        // Gắn lại đúng chữ theo ảnh
+        btnAudio.innerHTML = `<i class="fa-solid fa-closed-captioning"></i> Âm thanh & Phụ đề`;
+        btnEp.innerHTML = `<i class="fa-solid fa-layer-group"></i> Danh sách tập`;
+
+        btnEp.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('popup-audiosub').classList.remove('active');
+            document.getElementById('popup-episodes').classList.toggle('active');
+        });
+
+        btnAudio.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('popup-episodes').classList.remove('active');
+            document.getElementById('popup-audiosub').classList.toggle('active');
+        });
+
+        // Tương tác giả lập cho Audio/Sub (UI Only)
+        document.querySelectorAll('.pas-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const siblings = this.parentElement.querySelectorAll('.pas-item');
+                siblings.forEach(s => s.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Bấm ra ngoài vùng Video thì tự đóng Menu
+        wrapper.addEventListener('click', (e) => {
+            if (!e.target.closest('.plyr-popup-box') && !e.target.closest('.custom-controls-group')) {
+                document.getElementById('popup-episodes')?.classList.remove('active');
+                document.getElementById('popup-audiosub')?.classList.remove('active');
+            }
+        });
     }
 
     // --- SKIP INTRO ---
