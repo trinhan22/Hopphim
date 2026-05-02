@@ -160,8 +160,8 @@
             .plyr video { object-fit: contain !important; } 
             
             /* Đồng bộ lề cho các nội dung bên dưới */
-            .premium-info-container, .premium-section-header, .comment-section { max-width: 1400px !important; }
-            .premium-horizontal-list { max-width: 1400px !important; }
+            .premium-info-container, .premium-section-header, .comment-section { max-width: 1600px !important; }
+            .premium-horizontal-list { max-width: 1600px !important; }
             .slider-container { max-width: 1400px !important; }
         }
 
@@ -511,27 +511,31 @@
             min-height: 100vh;
         }
 
-        /* 1. Player Thu Nhỏ Vừa Khung Hình Máy Tính (Theater Mode) */
+        /* 1. Player Bung Lụa (1600px) và Fix lỗi viền đen */
         .player-box {
             width: 100%;
-            max-width: 1250px; /* Khóa cứng kích thước cho PC */
-            margin: 0 auto;    /* Căn giữa màn hình */
+            max-width: 1600px !important; /* Mở rộng tối đa lên 1600px */
+            margin: 0 auto;
             background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: block !important; /* BỎ flex để player tự tràn viền */
             position: relative;
+            aspect-ratio: 16/9 !important; /* Ép tỷ lệ chuẩn */
             box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            border-radius: 12px; /* Bo góc Player cho mềm mại */
+            border-radius: 12px;
             overflow: hidden;
         }
+
+        /* Ép Plyr và Video lấp đầy 100% khung */
+        #player-container, .plyr, .plyr__video-wrapper {
+            width: 100% !important;
+            height: 100% !important;
+            max-height: none !important; /* Xóa giới hạn chiều cao cũ */
+        }
         
-        /* Giới hạn chiều cao Video */
-        .plyr {
-            width: 100% !important; 
-            max-height: 75vh; /* Cao tối đa 75% màn hình để không bị lấn */
-            aspect-ratio: 16/9;
+        .plyr video {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important; /* Lấp kín viền đen */
         }
 
         /* Thanh Topbar đè lên Video giống VieON */
@@ -1738,53 +1742,46 @@ footer {
     100% { transform: scale(1); opacity: 1; }
 }
 
-/* --- SERVER SELECTION (VIETSUB / LỒNG TIẾNG) --- */
-.server-selection {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    background: rgba(0,0,0,0.2);
-    padding: 10px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.05);
-}
-
-/* Nút chọn Server chưa active */
-.server-btn {
-    flex: 1;
-    background: #191b24;
-    color: #a0a0a0;
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 12px 0;
-    text-align: center;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.server-btn:hover {
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-}
-
-/* Nút Server khi được Active (Đang chọn) */
-.server-btn.active {
-    background: var(--gradient-main);
-    color: #fff;
-    border-color: transparent;
-    box-shadow: 0 5px 15px rgba(255, 94, 98, 0.3);
-}
-
-/* Icon nhỏ bên trong nút */
-.server-btn i {
-    font-size: 1.1rem;
-}
+/* --- SERVER SELECTION (VIETSUB / LỒNG TIẾNG) TỐI ƯU --- */
+        .server-wrapper {
+            max-width: 1600px; width: 96%; margin: 0 auto 20px auto; padding: 0;
+        }
+        
+        .server-selection { 
+            display: inline-flex; /* Giúp khung chỉ to bằng nội dung bên trong */
+            flex-wrap: wrap;
+            gap: 8px; 
+            background: #1c1e29; /* Nền tối nhẹ ôm trọn các nút */
+            padding: 6px; 
+            border-radius: 50px; /* Bo tròn kiểu viên thuốc */
+            border: 1px solid rgba(255,255,255,0.05); 
+        }
+        
+        .server-btn { 
+            /* Xóa flex: 1 để nút không dãn vỡ viền */
+            background: transparent; 
+            color: #a0a0a0; 
+            border: none; 
+            padding: 10px 24px; 
+            border-radius: 40px; 
+            font-weight: 600; 
+            font-size: 0.95rem; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        
+        .server-btn:hover { color: #fff; }
+        
+        .server-btn.active { 
+            background: var(--gradient-main); 
+            color: #fff; 
+            box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3); 
+        }
+        
+        .server-btn i { font-size: 1rem; margin-top: -2px; }
     </style>
 </head>
 <body>
@@ -2033,7 +2030,7 @@ footer {
             </div>
 
             <!-- NÚT CHỌN SERVER -->
-            <div style="max-width: 1600px; margin: 0 auto;">
+            <div class="server-wrapper">
                  <div class="server-selection" id="serverSelectionDesktop" style="display: none;"></div>
             </div>
 
