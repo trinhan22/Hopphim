@@ -2686,8 +2686,9 @@ footer {
             // Đã thêm id="ad-video-element" và thuộc tính "muted" để đảm bảo autoplay trên mobile
             container.innerHTML = `
                 <div class="preroll-container">
-                    <video id="ad-video-element" src="https://wibey.netlify.app/fptshop.mp4" class="preroll-gif" autoplay loop playsinline muted></video>
-                    <div class="preroll-info-box"><p>Quảng cáo</p><div>FPT Shop</div></div>
+                    <video id="ad-video-element" src="https://wibey.netlify.app/fptshop.mp4" class="preroll-gif" autoplay loop playsinline style="cursor: pointer;" onclick="window.open('https://fptshop.com.vn/ctkm/kho-vang-uu-dai', '_blank')"></video>
+                    
+                    <div class="preroll-info-box"><p>Quảng cáo</p></div>
                     <div class="preroll-skip-area">
                         <button id="skip-ad-btn" class="btn-skip-preroll" disabled>Đang tải QC...</button>
                     </div>
@@ -2929,8 +2930,8 @@ footer {
     <script>
         // CẤU HÌNH QUẢNG CÁO GIF POPUP (BỎ ĐẾM GIỜ)
         const adConfig = {
-            gifUrl: "https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:format(webp):quality(75)/RC_1_aeaf2116c4.png",
-            targetUrl: "https://fptshop.com.vn/collection/dien-thoai-choi-game-muot-pin-trau"
+            gifUrl: "https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:format(webp):quality(75)/content_sec1_D_808d9f1820.png",
+            targetUrl: "https://fptshop.com.vn/ctkm/kho-vang-uu-dai"
         };
 
         const adOverlay = document.getElementById('ad-overlay');
