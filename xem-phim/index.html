@@ -1851,26 +1851,6 @@ footer {
             <img src="https://wibey.netlify.app/WIBEYPHIMADSVIP.PNG" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
-
-<div class="community-section">
-    <a href="https://www.facebook.com/groups/1165263735526384/" target="_blank" class="comm-card">
-        <i class="fab fa-facebook comm-bg-deco"></i>
-        
-        <div class="comm-left">
-            <div class="comm-icon">
-                <i class="fab fa-facebook-f"></i>
-            </div>
-            <div class="comm-info">
-                <div class="comm-title">Cộng Đồng WibeyTeam</div>
-                <div class="comm-desc">Tham gia Group Facebook để yêu cầu phim, báo lỗi và chém gió cùng admin!</div>
-            </div>
-        </div>
-        
-        <div class="comm-btn">
-            Tham Gia Ngay <i class="fas fa-arrow-right"></i>
-        </div>
-    </a>
-</div>
     
  <footer>
     <div class="footer-grid">
@@ -2701,34 +2681,68 @@ footer {
     }
 
     function showPrerollAd(link, type, time) {
-        const container = document.getElementById('player-container');
-        container.innerHTML = `
-            <div class="preroll-container">
-                <video src="https://hopvan.netlify.app/HOPVAN.mp4" class="preroll-gif" autoplay loop playsinline></video>
-                <div class="preroll-info-box"><p>Quảng cáo</p><div>hopvan.netlify.app</div></div>
-                <div class="preroll-skip-area">
-                    <button id="skip-ad-btn" class="btn-skip-preroll" disabled>Bỏ qua sau <span id="ad-timer" style="margin-left:5px;">5</span>s</button>
-                </div>
-            </div>`;
-        
-        let timeLeft = 5;
-        const timerText = document.getElementById('ad-timer');
-        const skipBtn = document.getElementById('skip-ad-btn');
-        
-        const cd = setInterval(() => {
-            timeLeft--;
-            if(timerText) timerText.innerText = timeLeft;
-            if(timeLeft <= 0) {
-                clearInterval(cd);
-                if(skipBtn) {
-                    skipBtn.disabled = false;
-                    skipBtn.classList.add('ready');
-                    skipBtn.innerHTML = 'Bỏ qua quảng cáo <i class="fas fa-step-forward"></i>';
-                    skipBtn.onclick = () => window.startActualPlayer(link, type, time);
-                }
+            const container = document.getElementById('player-container');
+            
+            // Đã thêm id="ad-video-element" và thuộc tính "muted" để đảm bảo autoplay trên mobile
+            container.innerHTML = `
+                <div class="preroll-container">
+                    <video id="ad-video-element" src="https://www.youtube.com/watch?v=5YzPNzrEwbI" class="preroll-gif" autoplay loop playsinline muted></video>
+                    <div class="preroll-info-box"><p>Quảng cáo</p><div>hopvan.netlify.app</div></div>
+                    <div class="preroll-skip-area">
+                        <button id="skip-ad-btn" class="btn-skip-preroll" disabled>Đang tải QC...</button>
+                    </div>
+                </div>`;
+            
+            const adVideo = document.getElementById('ad-video-element');
+            const skipBtn = document.getElementById('skip-ad-btn');
+            let timeLeft = 5;
+            let countdownInterval = null;
+
+            // Hàm bắt đầu đếm ngược
+            function startCountdown() {
+                if (countdownInterval) return; // Tránh chạy đúp
+                
+                skipBtn.innerHTML = `Bỏ qua sau <span id="ad-timer" style="margin-left:5px;">${timeLeft}</span>s`;
+                const timerText = document.getElementById('ad-timer');
+                
+                countdownInterval = setInterval(() => {
+                    timeLeft--;
+                    if(timerText) timerText.innerText = timeLeft;
+                    if(timeLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        if(skipBtn) {
+                            skipBtn.disabled = false;
+                            skipBtn.classList.add('ready');
+                            skipBtn.innerHTML = 'Bỏ qua quảng cáo <i class="fas fa-step-forward"></i>';
+                            skipBtn.onclick = () => window.startActualPlayer(link, type, time);
+                        }
+                    }
+                }, 1000);
             }
-        }, 1000);
-    }
+
+            if (adVideo) {
+                // Lắng nghe sự kiện: Chỉ khi video quảng cáo THỰC SỰ BẮT ĐẦU PHÁT thì mới đếm ngược
+                adVideo.addEventListener('playing', () => {
+                    startCountdown();
+                });
+
+                // DỰ PHÒNG 1: Nếu link video bị lỗi (404), bỏ qua quảng cáo luôn
+                adVideo.addEventListener('error', () => {
+                    console.log("Lỗi tải quảng cáo, phát phim luôn.");
+                    window.startActualPlayer(link, type, time);
+                });
+
+                // DỰ PHÒNG 2: Timeout. Nếu mạng quá lag, sau 8 giây không load được thì mở nút Bỏ qua luôn
+                setTimeout(() => {
+                    if (!countdownInterval) {
+                        skipBtn.disabled = false;
+                        skipBtn.classList.add('ready');
+                        skipBtn.innerHTML = 'Bỏ qua quảng cáo <i class="fas fa-step-forward"></i>';
+                        skipBtn.onclick = () => window.startActualPlayer(link, type, time);
+                    }
+                }, 8000);
+            }
+        }
 
     window.startActualPlayer = function(link, type, startTime) {
         const container = document.getElementById('player-container');
@@ -2915,8 +2929,8 @@ footer {
     <script>
         // CẤU HÌNH QUẢNG CÁO GIF POPUP (BỎ ĐẾM GIỜ)
         const adConfig = {
-            gifUrl: "https://hopvan.netlify.app/IMG/hero-video.gif",
-            targetUrl: "https://hopvan.netlify.app/"
+            gifUrl: "https://youtu.be/K_T84i1bfII?si=-9SdwNZrTdOqk6Fb",
+            targetUrl: "https://fptshop.com.vn"
         };
 
         const adOverlay = document.getElementById('ad-overlay');
