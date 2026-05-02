@@ -352,30 +352,182 @@
         .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; font-family: var(--font-main); margin-right: 15px; }
         #mobileSearchOverlay .close-btn-overlay { position: static; color: #fff; }
 
-        /* --- XEM PHIM LAYOUT --- */
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 4%; }
-        .watch-wrapper { display: grid; grid-template-columns: 2.8fr 1.2fr; gap: 30px; padding-top: 100px; padding-bottom: 50px; }
+        /* =========================================
+           🔥 PREMIUM WATCH LAYOUT (VIEON / NETFLIX STYLE)
+           ========================================= */
+        .container { max-width: 100%; margin: 0; padding: 0; }
         
-        .player-box { background: #000; border-radius: var(--radius); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; position: relative; }
+        .premium-watch-wrapper {
+            padding-top: 70px; /* Cách header */
+            padding-bottom: 50px;
+            background: #0f1014;
+        }
+
+        /* 1. Player Tràn Viền */
+        .player-box {
+            width: 100%;
+            background: #000;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
         .aspect-ratio-16-9 { width: 100%; padding-top: 56.25%; position: relative; }
         .aspect-ratio-16-9 iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-        /* Movie Info Block */
-        .movie-info-block { position: relative; background: #161823; padding: 30px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
-        .movie-info-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.20; filter: blur(10px) saturate(150%); pointer-events: none; }
-        .movie-info-content { position: relative; z-index: 1; }
-        .movie-breadcrumbs { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 15px; display: flex; gap: 8px; align-items: center; }
-        .movie-breadcrumbs a { color: #ccc; text-decoration: none; } .movie-breadcrumbs a:hover { color: var(--primary-color); }
-        .movie-title-large { font-size: 2.4rem; font-weight: 900; margin-bottom: 5px; line-height: 1.2; text-transform: uppercase; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .movie-origin-name { font-size: 1.1rem; color: #a0a0a0; margin-bottom: 20px; font-weight: 600; }
-        .movie-tags { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; align-items: center; }
-        .tag-item { padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 700; color: #ccc; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.05); }
-        .tag-highlight { background: var(--gradient-main); color: #fff; border: none; }
-        .movie-description { color: #d1d5db; line-height: 1.7; font-size: 1rem; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border-left: 3px solid var(--primary-color); }
+        /* 2. Cụm Thông Tin Phim (Full Width, Chia 2 cột text) */
+        .premium-info-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 4%;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 50px;
+        }
 
-        .episode-block { background: var(--bg-card); padding: 25px; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
-        .section-header { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; border-left: 4px solid var(--primary-color); padding-left: 10px; color: #fff; display: flex; justify-content: space-between; align-items: center; }
-        .episode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto; }
+        .info-left .movie-title-large {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 15px;
+            line-height: 1.2;
+            text-shadow: none;
+            background: none;
+            -webkit-text-fill-color: #fff;
+        }
+
+        .info-stats {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1rem;
+            color: #e5e5e5;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        .info-stats .stars { color: #f5c518; font-size: 1.1rem; }
+        .info-stats .tags-inline span {
+            border-right: 1px solid #444;
+            padding-right: 10px;
+            margin-right: 10px;
+        }
+        .info-stats .tags-inline span:last-child { border-right: none; }
+
+        .current-ep-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 20px 0 10px;
+        }
+
+        .movie-description {
+            color: #a3a3a3;
+            line-height: 1.6;
+            font-size: 1.05rem;
+            background: transparent;
+            padding: 0; border: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Thông tin Đạo diễn/Diễn viên bên phải */
+        .info-right {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-top: 10px;
+        }
+        .action-row { display: flex; gap: 20px; color: #fff; font-weight: 500; margin-bottom: 20px; }
+        .action-row div { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; color: #a3a3a3; transition: 0.2s;}
+        .action-row div:hover { color: #fff; }
+        .action-row i { font-size: 1.2rem; }
+
+        .crew-info { font-size: 0.95rem; line-height: 1.6; color: #a3a3a3; }
+        .crew-info span { color: #fff; font-weight: 600; margin-right: 5px; }
+
+        /* 3. Tiêu đề các mục Slider */
+        .premium-section-header {
+            max-width: 1600px;
+            margin: 40px auto 20px;
+            padding: 0 4%;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .premium-section-title { font-size: 1.6rem; font-weight: 700; color: #fff; }
+        .premium-section-meta { font-size: 0.9rem; color: #a3a3a3; font-weight: 500;}
+
+        /* 4. Thanh trượt ngang cho Tập phim & Đề xuất (Cực mượt) */
+        .premium-horizontal-list {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 0 4% 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none; /* Firefox */
+        }
+        .premium-horizontal-list::-webkit-scrollbar { display: none; }
+
+        /* 5. Card Tập Phim (Kiểu mới) */
+        .ep-card-premium {
+            flex: 0 0 280px; /* Kích thước cố định */
+            scroll-snap-align: start;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .ep-card-premium:hover .ep-thumb img { transform: scale(1.05); }
+        .ep-thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            background: #222;
+            margin-bottom: 12px;
+        }
+        .ep-thumb img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; opacity: 0.7; }
+        .ep-card-premium.active .ep-thumb img { opacity: 1; border: 2px solid var(--primary-color); }
+        
+        .ep-play-icon {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff;
+            display: flex; align-items: center; justify-content: center; color: #fff;
+            background: rgba(0,0,0,0.5); opacity: 0; transition: 0.2s;
+        }
+        .ep-card-premium:hover .ep-play-icon { opacity: 1; }
+
+        .ep-name { font-size: 1.05rem; font-weight: 600; color: #fff; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .ep-meta { font-size: 0.8rem; color: #a3a3a3; font-weight: 500; display: flex; gap: 10px; align-items: center; margin-bottom: 8px;}
+        .ep-desc-mini { font-size: 0.85rem; color: #888; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* 6. Card Đề xuất Phim (Kiểu mới) */
+        .rec-card-premium {
+            flex: 0 0 300px;
+            scroll-snap-align: start;
+            cursor: pointer;
+        }
+        .rec-card-premium .ep-thumb { aspect-ratio: 16/9; opacity: 1; margin-bottom: 15px;}
+        .rec-card-premium .ep-thumb img { opacity: 1; }
+        .rec-meta-tags { font-size: 0.8rem; font-weight: 600; color: #ccc; margin: 8px 0; }
+        .rec-meta-tags span { border-right: 1px solid #555; padding-right: 8px; margin-right: 8px; }
+        .rec-meta-tags span:last-child { border-right: none; }
+        .vip-tag { position: absolute; top: 10px; left: 10px; background: #f5c518; color: #000; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; z-index: 10;}
+
+        /* Mobile Adjustments */
+        @media (max-width: 900px) {
+            .premium-watch-wrapper { padding-top: 60px; }
+            .premium-info-container { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+            .info-left .movie-title-large { font-size: 1.8rem; }
+            .info-stats { flex-wrap: wrap; }
+            .premium-horizontal-list { padding: 0 20px 20px; }
+            .ep-card-premium, .rec-card-premium { flex: 0 0 240px; }
+            
+            /* Tùy chỉnh thanh chọn Server cho Mobile */
+            .server-selection { margin: 0 20px 20px; }
+        }
+        
         /* --- TÙY CHỈNH THANH CUỘN RIÊNG CHO DANH SÁCH TẬP --- */
         .episode-grid::-webkit-scrollbar {
             width: 4px; /* Độ rộng: 4px là rất mảnh và đẹp */
@@ -1762,55 +1914,85 @@ footer {
 
     <div class="container">
 
-        <div class="watch-wrapper">
-
-            <div class="main-content">
-                <div class="player-box">
-                    <div id="player-container">
-                        <video id="player" playsinline controls></video>
-                    </div>
+        <div class="premium-watch-wrapper">
+            
+            <!-- VIDEO PLAYER KHỔNG LỒ -->
+            <div class="player-box">
+                <div id="player-container">
+                    <video id="player" playsinline controls></video>
                 </div>
+            </div>
 
-                <div class="episode-block episode-block-mobile">
-                    <div class="section-header">
-                        <span>Danh sách tập</span>
-                        <span class="server-name"><i class="fas fa-server"></i> Server VIP</span>
-                    </div>
-                    <div class="server-selection" id="serverSelectionMobile" style="display: none;"></div>
-                    <div class="episode-grid" id="episodeListMobile"></div>
-                </div>
-
-                <div class="movie-info-block">
-                    <div id="movieInfoBg" class="movie-info-bg"></div>
+            <!-- THÔNG TIN PHIM -->
+            <div class="premium-info-container">
+                <div class="info-left">
+                    <h1 class="movie-title-large" id="mName">Loading...</h1>
                     
-                    <div class="movie-info-content">
-                        <div class="movie-breadcrumbs">
-                            <a href="/">Trang chủ</a> <i class="fas fa-chevron-right" style="font-size: 0.7rem; color: #555;"></i> <span id="breadCrumbTitle">Đang xem</span>
-                        </div>
-                        <h1 class="movie-title-large" id="mName">Loading...</h1>
-                        <div class="movie-origin-name" id="mOrigin">Loading...</div>
-                        
-                        <div class="movie-tags" id="mTags"></div>
-                        
-                        <div class="movie-description">
-                            <h4 style="color:#fff; margin-bottom:10px; font-size:1rem;">Nội dung phim</h4>
-                            <span id="mContent">Đang tải nội dung phim...</span>
-                        </div>
+                    <div class="info-stats">
+                        <span class="views"><span id="mViews">2.901.459</span> lượt xem</span>
+                        <span class="stars">5.0 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
+                    </div>
+                    
+                    <div class="info-stats tags-inline">
+                        <span id="mYear">2026</span>
+                        <span>T16</span>
+                        <span id="mCountry">Trung Quốc</span>
+                        <span>1 Phần</span>
+                        <span id="mQuality" style="color: #fff; font-weight: 700;">Full HD</span>
+                    </div>
+
+                    <div class="current-ep-title" id="breadCrumbTitle">Tập 1</div>
+                    
+                    <div class="movie-description" id="mContent">
+                        Đang tải nội dung phim...
                     </div>
                 </div>
 
-                <div class="comment-section">
-                    <div class="comment-header-title">
-                        <i class="fas fa-comments" style="color: var(--primary-color);"></i> 
-                        Bình luận
+                <div class="info-right">
+                    <div class="action-row">
+                        <div onclick="window.showToast('Đã thêm vào danh sách', 'success')"><i class="fas fa-plus"></i> Thêm vào</div>
+                        <div onclick="document.getElementById('commentSectionBox').scrollIntoView({behavior: 'smooth'})"><i class="fas fa-comment-alt"></i> Bình luận</div>
+                        <div onclick="window.showToast('Đã copy link', 'success')"><i class="fas fa-share-alt"></i> Chia sẻ</div>
                     </div>
+                    <div class="crew-info"><span>Diễn viên:</span> <span id="mActors" style="color:#a3a3a3; font-weight:400;">Đang cập nhật...</span></div>
+                    <div class="crew-info"><span>Đạo diễn:</span> <span id="mDirector" style="color:#a3a3a3; font-weight:400;">Đang cập nhật...</span></div>
+                    <div class="crew-info"><span>Thể loại:</span> <span id="mGenres" style="color:#a3a3a3; font-weight:400;">Đang cập nhật...</span></div>
+                </div>
+            </div>
+
+            <!-- NÚT CHỌN SERVER -->
+            <div style="max-width: 1600px; margin: 0 auto;">
+                 <div class="server-selection" id="serverSelectionDesktop" style="display: none;"></div>
+            </div>
+
+            <!-- DANH SÁCH TẬP -->
+            <div class="premium-section-header">
+                <div class="premium-section-title">Danh sách tập</div>
+                <div class="premium-section-meta" id="mTotalEps">0 tập</div>
+            </div>
+            <div class="premium-horizontal-list" id="episodeListDesktop">
+                <!-- Javascript sẽ đổ Card tập phim vào đây -->
+            </div>
+
+            <!-- ĐỀ XUẤT CHO BẠN -->
+            <div class="premium-section-header">
+                <div class="premium-section-title">Đề xuất cho bạn</div>
+            </div>
+            <div class="premium-horizontal-list" id="relatedList">
+                <!-- Javascript sẽ đổ Card phim đề xuất vào đây -->
+            </div>
+
+            <!-- BÌNH LUẬN -->
+            <div style="max-width: 1600px; margin: 0 auto; padding: 0 4%;" id="commentSectionBox">
+                <div class="comment-section" style="background: transparent; border: none; padding: 0; margin-top: 20px;">
+                    <div class="premium-section-title" style="margin-bottom: 20px;">Bình luận</div>
                     
                     <div class="comment-input-box">
                         <img src="/Guest.webp" id="cmtMyAvatar" class="current-user-avatar">
                         <div class="comment-form">
                             <textarea id="cmtInput" class="comment-input" placeholder="Viết bình luận của bạn về phim này..."></textarea>
                             <div class="form-actions">
-                                <span style="font-size: 0.8rem; color: #666;">Dù gái hay trai, chỉ hai là đủ.</span>
+                                <span style="font-size: 0.8rem; color: #666;">Bình luận văn minh, lịch sự nhé.</span>
                                 <button class="btn-send-cmt" onclick="sendComment()">
                                     Gửi <i class="fas fa-paper-plane"></i>
                                 </button>
@@ -1825,22 +2007,6 @@ footer {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="sidebar-right">
-                <div class="episode-block episode-block-desktop">
-                    <div class="section-header">
-                        <span>Danh sách tập</span>
-                        <span class="server-name"><i class="fas fa-server"></i> Server VIP</span>
-                    </div>
-                    <div class="server-selection" id="serverSelectionDesktop" style="display: none;"></div>
-                    <div class="episode-grid" id="episodeListDesktop"></div>
-                </div>
-
-                <div class="section-header" style="border-left-color: #FF8F50; margin-bottom: 15px;">
-                    <span style="font-size: 1.1rem;">Đề xuất cho bạn</span>
-                </div>
-                <div id="relatedList"></div>
             </div>
 
         </div>
@@ -2587,22 +2753,42 @@ footer {
         renderEpisodeList(episodesArray[0].server_data, savedEpName, savedTime);
     }
 
-    // --- HÀM 2: VẼ DANH SÁCH TẬP (CỦA SERVER ĐƯỢC CHỌN) ---
+    // --- 2. HÀM RENDER DANH SÁCH TẬP DẠNG THẺ (CARD) ---
     function renderEpisodeList(svData, savedEpName, savedTime) {
         let epHtml = '';
         let targetEpToPlay = null; 
         let targetIndex = 0;
 
+        // Lấy ảnh nền của phim làm ảnh minh họa cho các tập (Vì API không có ảnh từng tập)
+        let fallbackImg = currentMovieData.poster_url || currentMovieData.thumb_url;
+        if (fallbackImg && !fallbackImg.startsWith('http')) fallbackImg = IMG_BASE + fallbackImg;
+
+        document.getElementById('mTotalEps').innerText = `${svData.length} tập`;
+
         svData.forEach((ep, idx) => {
             const type = ep.link_m3u8 ? 'hls' : 'iframe';
             const link = ep.link_m3u8 || ep.link_embed;
-            epHtml += `<div class="ep-btn" id="btn-ep-${idx}" onclick="window.changeEp('${link}', '${type}', this, '${ep.name}')">${ep.name}</div>`;
+            
+            // Format tên tập
+            let epDisplay = ep.name;
+            if (!epDisplay.toLowerCase().includes('tập')) epDisplay = `Tập ${epDisplay}`;
+
+            epHtml += `
+            <div class="ep-card-premium" id="btn-ep-desk-${idx}" onclick="window.changeEp('${link}', '${type}', this, '${epDisplay}', 0, ${idx})">
+                <div class="ep-thumb">
+                    <img src="${fallbackImg}" loading="lazy" alt="${epDisplay}">
+                    <div class="ep-play-icon"><i class="fas fa-play"></i></div>
+                </div>
+                <div class="ep-name">${epDisplay}</div>
+                <div class="ep-meta"><span>T16</span><span>|</span><span>Full HD</span><span>|</span><span>45ph</span></div>
+                <div class="ep-desc-mini">Khám phá diễn biến tiếp theo của ${currentMovieData.name} trong ${epDisplay}...</div>
+            </div>`;
 
             if (savedEpName) {
                 const n1 = ep.name.toLowerCase().replace(/tập\s*/g, '').replace(/^0+/, '').trim();
                 const n2 = savedEpName.toLowerCase().replace(/tập\s*/g, '').replace(/^0+/, '').trim();
                 if (n1 === n2 || ep.name === savedEpName) {
-                    targetEpToPlay = { link, type, name: ep.name };
+                    targetEpToPlay = { link, type, name: epDisplay };
                     targetIndex = idx;
                 }
             }
@@ -2610,23 +2796,20 @@ footer {
 
         if (!targetEpToPlay && svData.length > 0) {
             const firstEp = svData[0];
-            targetEpToPlay = { link: firstEp.link_m3u8 || firstEp.link_embed, type: firstEp.link_m3u8 ? 'hls' : 'iframe', name: firstEp.name };
+            let epDisplay = firstEp.name;
+            if (!epDisplay.toLowerCase().includes('tập')) epDisplay = `Tập ${epDisplay}`;
+            targetEpToPlay = { link: firstEp.link_m3u8 || firstEp.link_embed, type: firstEp.link_m3u8 ? 'hls' : 'iframe', name: epDisplay };
             targetIndex = 0; savedTime = 0; 
         }
 
-        // Đổ HTML vào UI
-        document.getElementById('episodeListMobile').innerHTML = epHtml;
-        // Đổ HTML vào Desktop nhưng thêm ID khác để khỏi trùng
-        document.getElementById('episodeListDesktop').innerHTML = epHtml.replace(/btn-ep-/g, 'btn-ep-desk-');
+        document.getElementById('episodeListDesktop').innerHTML = epHtml;
 
         if (targetEpToPlay) {
             setTimeout(() => {
-                const mobileBtn = document.querySelector(`#episodeListMobile #btn-ep-${targetIndex}`);
                 const desktopBtn = document.querySelector(`#episodeListDesktop #btn-ep-desk-${targetIndex}`);
-                if (mobileBtn) mobileBtn.classList.add('active');
                 if (desktopBtn) desktopBtn.classList.add('active');
             }, 100);
-            window.changeEp(targetEpToPlay.link, targetEpToPlay.type, null, targetEpToPlay.name, savedTime);
+            window.changeEp(targetEpToPlay.link, targetEpToPlay.type, null, targetEpToPlay.name, savedTime, targetIndex);
         }
     }
 
@@ -2657,13 +2840,21 @@ footer {
         }, 500);
     }
     
-    // Hàm Change Ep
-    window.changeEp = function(link, type, btn, epName, startTime = 0) {
+    // --- 3. ĐỒNG BỘ LẠI HÀM CHANGE EP (Cập nhật tiêu đề tập đang chiếu) ---
+    window.changeEp = function(link, type, btn, epName, startTime = 0, index = 0) {
         if (btn) {
-            document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.ep-card-premium').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+        } else {
+             document.querySelectorAll('.ep-card-premium').forEach(b => b.classList.remove('active'));
+             const autoBtn = document.getElementById(`btn-ep-desk-${index}`);
+             if(autoBtn) autoBtn.classList.add('active');
         }
-        if (epName) currentEpName = epName;
+        
+        if (epName) {
+            currentEpName = epName;
+            document.getElementById('breadCrumbTitle').innerText = epName; // Cập nhật tên tập ở Info
+        }
 
         if (window.isCurrentVip) {
             window.startActualPlayer(link, type, startTime);
@@ -2675,7 +2866,6 @@ footer {
         saveHistoryTimeout = setTimeout(() => {
             if(window.currentUser) {
                 window.saveToHistory(currentMovieData, currentEpName, 0); 
-                console.log("💾 Bắt đầu lưu lịch sử cho:", currentEpName);
             }
         }, 10000); 
     }
@@ -2785,9 +2975,10 @@ footer {
     }
 
     const MANUAL_RELATED = ["con-ra-the-thong-gi-nua-2026", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "duong-cung-ky-an-thanh-vu-phong-minh", "su-tro-lai-cua-tham-phan", "tuoi-tre-tai-cao", "con-say-mua-xuan", "trao-em-ca-vu-tru", "thu-hut-manh-liet", "truong-nguyet-tan-minh"];
+    // --- 4. HÀM TẢI ĐỀ XUẤT CHO BẠN ---
     async function loadRelated() {
         try {
-            const promises = MANUAL_RELATED.map(slug => fetch(`${API_BASE}/${slug}`));
+            const promises = MANUAL_RELATED.map(slug => fetch(`${API_BASE}/phim/${slug}`));
             const results = await Promise.all(promises);
             const jsonResults = await Promise.all(results.map(res => res.json()));
             const validMovies = jsonResults.filter(d => d.status).map(d => d.data.item);
@@ -2795,9 +2986,27 @@ footer {
             if (validMovies.length > 0) {
                 let html = '';
                 validMovies.forEach(m => {
-                    let img = m.thumb_url;
+                    let img = m.poster_url || m.thumb_url; // Ưu tiên ảnh ngang
                     if (!img.startsWith('http')) img = `https://img.ophim1.com/uploads/movies/${img}`;
-                    html += `<div class="sidebar-card" onclick="window.location.href='/xem-phim/${m.slug}'"><div class="sb-thumb"><img src="${img}" loading="lazy"></div><div class="sb-info"><div class="sb-title">${m.name}</div><div class="sb-meta">${m.origin_name} (${m.year})</div><div class="sb-views"><i class="fas fa-eye"></i> ${Math.floor(Math.random()*10000)}</div></div></div>`;
+                    
+                    // Tạo đoạn giới thiệu ngắn (cắt từ nội dung)
+                    const rawContent = m.content || "";
+                    const tempDiv = document.createElement("div"); tempDiv.innerHTML = rawContent;
+                    const plainText = tempDiv.innerText || tempDiv.textContent;
+                    const shortDesc = plainText.split(/\s+/).slice(0, 20).join(' ') + '...';
+
+                    html += `
+                    <div class="rec-card-premium" onclick="window.location.href='/xem-phim.html?slug=${m.slug}'">
+                        <div class="ep-thumb">
+                            <div class="vip-tag">VIP</div>
+                            <img src="${img}" loading="lazy" onerror="this.src='${IMG_BASE + m.thumb_url}'">
+                        </div>
+                        <h4 class="ep-name" style="font-size: 1.15rem;">${m.name}</h4>
+                        <div class="rec-meta-tags">
+                            <span>${m.year}</span><span>T16</span><span>${m.origin_name}</span><span>1 Phần</span><span style="color:#fff;">Full HD</span>
+                        </div>
+                        <div class="ep-desc-mini">${shortDesc}</div>
+                    </div>`;
                 });
                 document.getElementById('relatedList').innerHTML = html;
             }
@@ -2817,31 +3026,27 @@ footer {
     
     function renderInfo(movie) {
         document.title = `${movie.name} - Wibey`;
-        document.getElementById('breadCrumbTitle').innerText = movie.name;
         document.getElementById('mName').innerText = movie.name;
-        document.getElementById('mOrigin').innerText = `${movie.origin_name} (${movie.year})`;
+        document.getElementById('mYear').innerText = movie.year || '2025';
+        document.getElementById('mQuality').innerText = movie.quality || 'Full HD';
         
+        // Tạo view ngẫu nhiên cho ảo
+        document.getElementById('mViews').innerText = Math.floor(Math.random() * 5000000 + 100000).toLocaleString('vi-VN');
+
+        if (movie.country && movie.country[0]) {
+            document.getElementById('mCountry').innerText = movie.country[0].name;
+        }
+
+        // Lấy danh sách diễn viên, đạo diễn, thể loại
+        if(movie.actor && movie.actor.length > 0) document.getElementById('mActors').innerText = movie.actor.join(', ');
+        if(movie.director && movie.director.length > 0) document.getElementById('mDirector').innerText = movie.director.join(', ');
+        if(movie.category && movie.category.length > 0) document.getElementById('mGenres').innerText = movie.category.map(c => c.name).join(', ');
+
         const contentBox = document.getElementById('mContent');
         const rawContent = movie.content || "Đang cập nhật nội dung...";
         const tempDiv = document.createElement("div"); tempDiv.innerHTML = rawContent;
-        const plainText = tempDiv.innerText || tempDiv.textContent;
-        const words = plainText.trim().split(/\s+/);
+        contentBox.innerHTML = tempDiv.innerText || tempDiv.textContent;
 
-        if (words.length > 36) {
-            const shortContent = words.slice(0, 36).join(' ') + '...';
-            contentBox.innerHTML = `<span id="shortText">${shortContent}</span><span id="fullText" style="display: none;">${rawContent}</span><a href="javascript:void(0)" id="toggleBtn" onclick="window.toggleContent()" style="color: var(--primary-color); font-weight: 700; text-decoration: none; margin-left: 5px; cursor: pointer;">Xem thêm</a>`;
-        } else {
-            contentBox.innerHTML = rawContent;
-        }
-
-        let bgImg = movie.poster_url || movie.thumb_url;
-        if (!bgImg.startsWith('http')) bgImg = `https://img.ophim1.com/uploads/movies/${bgImg}`;
-        document.getElementById('movieInfoBg').style.backgroundImage = `url('${bgImg}')`;
-
-        let tagsHtml = `<span class="tag-item tag-highlight">${movie.quality || 'HD'}</span><span class="tag-item">${movie.lang || 'Vietsub'}</span><span class="tag-item">${movie.year}</span>`;
-        if (movie.category) { movie.category.forEach(cat => { tagsHtml += `<span class="tag-item">${cat.name}</span>`; }); }
-        if (movie.country && movie.country[0]) { tagsHtml += `<span class="tag-item"><i class="fas fa-globe"></i> ${movie.country[0].name}</span>`; }
-        document.getElementById('mTags').innerHTML = tagsHtml;
         setTimeout(() => { if (currentUser) saveToHistory(movie, currentEpName, Math.floor(player?.currentTime || 0)); }, 3000);
     }
 
