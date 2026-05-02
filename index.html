@@ -7,8 +7,8 @@
     <meta name="google-site-verification" content="cqng8m-Hmu-ritVNnaHl8kBmqRxs0EXZGW5yuW3f5fI" />
     <meta property="og:title" content="WFlix - Phim Hay Trong Tầm Tay" />
     <meta property="og:description" content="Trang xem phim trực tuyến miễn phí chất lượng cao." />
-    <meta property="og:image" content="https://WFlix.netlify.app/panel.webp" />
-    <meta property="og:url" content="https://WFlix.netlify.app" />
+    <meta property="og:image" content="https://wibuphim.netlify.app/panel.webp" />
+    <meta property="og:url" content="https://wibuphim.netlify.app" />
     <meta property="og:type" content="article" />
 
     <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
@@ -2418,8 +2418,8 @@ footer {
 </div>
 
     <div class="ad-panel-wrapper">
-        <a href="https://WFlix.netlify.app/nap-coin.html" target="_blank" class="ad-link">
-            <img src="https://WFlix.netlify.app/WFlixADSVIP.PNG" alt="Quảng cáo" class="ad-img-728">
+        <a href="https://wibuphim.netlify.app/nap-coin.html" target="_blank" class="ad-link">
+            <img src="https://wibuphim.netlify.app/WFlixADSVIP.PNG" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
 
@@ -2456,7 +2456,7 @@ footer {
 
     <div class="ad-panel-wrapper">
         <a href="https://wibuanime.netlify.app" target="_blank" class="ad-link">
-            <img src="https://WFlix.netlify.app/WIBUANIMEADS.PNG" alt="Quảng cáo" class="ad-img-728">
+            <img src="https://wibuphim.netlify.app/WIBUANIMEADS.PNG" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
 
@@ -2510,8 +2510,8 @@ footer {
     </section>
 
     <div class="ad-panel-wrapper">
-        <a href="https://WFlix.netlify.app" target="_blank" class="ad-link">
-            <img src="https://WFlix.netlify.app/WFlixADS.PNG" alt="Quảng cáo" class="ad-img-728">
+        <a href="https://wibuphim.netlify.app" target="_blank" class="ad-link">
+            <img src="https://wibuphim.netlify.app/WFlixADS.PNG" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
 
@@ -2543,7 +2543,7 @@ footer {
 
     <div class="ad-panel-wrapper">
         <a href="https://wibuanime.netlify.app" target="_blank" class="ad-link">
-            <img src="https://WFlix.netlify.app/WIBUANIMEADS.PNG" alt="Quảng cáo" class="ad-img-728">
+            <img src="https://wibuphim.netlify.app/WIBUANIMEADS.PNG" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
 
@@ -2577,8 +2577,8 @@ footer {
     </div>
 
     <div class="ad-panel-wrapper">
-        <a href="https://WFlix.netlify.app" target="_blank" class="ad-link">
-            <img src="https://WFlix.netlify.app/WFlixADS.PNG" alt="Quảng cáo" class="ad-img-728">
+        <a href="https://wibuphim.netlify.app" target="_blank" class="ad-link">
+            <img src="https://wibuphim.netlify.app/WFlixADS.PNG" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
 
@@ -2651,7 +2651,7 @@ footer {
         <i class="fas fa-times aib-close" onclick="closeAppBanner()"></i>
         
         <a href="/WFlix.apk" download>
-            <img src="https://WFlix.netlify.app/WFlixAPP.png" alt="Tải App WFlix">
+            <img src="https://wibuphim.netlify.app/WFlixAPP.png" alt="Tải App WFlix">
         </a>
     </div>
 </div>
@@ -2718,7 +2718,7 @@ footer {
                     const isVip = (u.vipExpiration && u.vipExpiration > Date.now());
                     const vipClass = isVip ? 'is-vip-user' : '';
                     
-                    const avatar = (u.photoURL && u.photoURL.startsWith('http')) ? u.photoURL : 'https://WFlix.netlify.app/Guest.webp';
+                    const avatar = (u.photoURL && u.photoURL.startsWith('http')) ? u.photoURL : 'https://wibuphim.netlify.app/Guest.webp';
                     const name = u.displayName || 'Ẩn danh';
                     const coin = u.coinBalance || 0;
                     
@@ -2726,7 +2726,7 @@ footer {
                         <div class="lb-item ${vipClass}">
                             <div class="lb-left">
                                 <div class="lb-rank">${rank}</div>
-                                <img src="${avatar}" class="lb-avatar" onerror="this.src='https://WFlix.netlify.app/Guest.webp'">
+                                <img src="${avatar}" class="lb-avatar" onerror="this.src='https://wibuphim.netlify.app/Guest.webp'">
                                 <div class="lb-info">
                                     <div class="lb-name">${name} ${isVip ? '<i class="fas fa-crown" style="font-size:0.7rem; color:#FFD700;"></i>' : ''}</div>
                                 </div>
@@ -2761,7 +2761,7 @@ footer {
 
             // Tải ảnh phim
             const enriched = await Promise.all(commentsData.map(async (c) => {
-                let img = "https://WFlix.netlify.app/panel.webp";
+                let img = "https://wibuphim.netlify.app/panel.webp";
                 let title = "Phim Hay"; 
                 
                 const isYT = c.movieId && c.movieId.startsWith('yt_');
@@ -2794,7 +2794,7 @@ footer {
                 const vipClass = isVip ? 'is-vip-user' : '';
                 const nameClass = isVip ? 'vip-username' : 'rc-username';
                 const timeStr = timeAgo(c.timestamp);
-                const avatar = (c.userAvatar && c.userAvatar.startsWith('http')) ? c.userAvatar : 'https://WFlix.netlify.app/Guest.webp';
+                const avatar = (c.userAvatar && c.userAvatar.startsWith('http')) ? c.userAvatar : 'https://wibuphim.netlify.app/Guest.webp';
 
                 // 🔥 Label VIP Member (Thin, Bright)
                 const roleLabel = isVip 
@@ -2814,7 +2814,7 @@ footer {
 
                             <div class="rc-content-wrapper">
                                 <div class="rc-user-info">
-                                    <img src="${avatar}" class="rc-avatar-img" onerror="this.src='https://WFlix.netlify.app/Guest.webp'">
+                                    <img src="${avatar}" class="rc-avatar-img" onerror="this.src='https://wibuphim.netlify.app/Guest.webp'">
                                     <div class="rc-user-text">
                                         <div class="${nameClass}">${c.userName} ${isVip ? '<i class="fas fa-crown" style="color:#FFD70; font-size:0.7rem;"></i>' : ''}</div>
                                         ${roleLabel}
@@ -2829,7 +2829,7 @@ footer {
                 else if (index < 10) {
                     listHtml += `
                         <div class="rc-item ${vipClass}" onclick="window.location.href='/xem-phim/${c.movieId}'">
-                            <img src="${avatar}" class="rc-avatar-small" onerror="this.src='https://WFlix.netlify.app/Guest.webp'">
+                            <img src="${avatar}" class="rc-avatar-small" onerror="this.src='https://wibuphim.netlify.app/Guest.webp'">
                             <div class="rc-content">
                                 <div class="rc-header">
                                     <span class="${nameClass}" style="font-size:0.9rem;">${c.userName} ${isVip ? '<i class="fas fa-crown" style="font-size:0.7rem;"></i>' : ''}</span>
@@ -3170,8 +3170,8 @@ footer {
         const HERO_CONFIG = [
             { 
                 slug: "bong-ma-hanh-phuc",
-                titleImage: "https://WFlix.netlify.app/bongmahanhphuc.png",
-                customImage: "https://WFlix.netlify.app/bongmahanhphucpanel.jpg",
+                titleImage: "https://wibuphim.netlify.app/bongmahanhphuc.png",
+                customImage: "https://wibuphim.netlify.app/bongmahanhphucpanel.jpg",
                 imdb: "8.6"
             },
             { 
@@ -3231,7 +3231,7 @@ footer {
                                 finalImage = IMG_BASE_HERO + finalImage;
                             }
                         }
-                        if (!finalImage) finalImage = 'https://WFlix.netlify.app/panel.webp';
+                        if (!finalImage) finalImage = 'https://wibuphim.netlify.app/panel.webp';
 
                         const bgPos = config.position || 'center center';
 
