@@ -355,8 +355,50 @@
         /* =========================================
            🔥 PREMIUM THEATER LAYOUT (VIEON STYLE)
            ========================================= */
-        /* Tắt header mặc định trên trang xem phim để làm giao diện Rạp hát */
-        #siteHeader { display: none !important; }
+        
+        /* 1. Logic ẩn/hiện Header mượt mà trên PC */
+        @media (min-width: 901px) {
+            /* Ẩn header và tạo hiệu ứng trượt */
+            #header {
+                transform: translateY(-100%);
+                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+                background: transparent;
+                border-bottom: none;
+            }
+            #header.show-on-scroll {
+                transform: translateY(0);
+                background: rgba(10, 12, 16, 0.95);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            
+            /* Căn giữa & Khóa kích thước 1250px cho giao diện */
+            .premium-watch-wrapper { padding-top: 30px !important; }
+            .player-box { max-width: 1250px !important; margin: 0 auto !important; border-radius: 12px !important; box-shadow: 0 25px 60px rgba(0,0,0,0.9) !important; border-bottom: none !important; }
+            .plyr { max-height: 75vh !important; }
+            .premium-info-container, .premium-section-header, .comment-section { max-width: 1250px !important; margin-left: auto !important; margin-right: auto !important; padding-left: 0 !important; padding-right: 0 !important; }
+            .premium-horizontal-list { max-width: 1250px !important; margin: 0 auto !important; padding-bottom: 10px !important; }
+            .theater-top-bar { border-radius: 12px 12px 0 0 !important; }
+        }
+
+        /* Container bọc list để chứa nút điều hướng */
+        .slider-container { position: relative; max-width: 1250px; margin: 0 auto; }
+        .premium-horizontal-list { scroll-behavior: smooth; }
+
+        /* Nút Điều Hướng Slider (Trái/Phải) */
+        .slider-nav-btn {
+            position: absolute; top: 40%; transform: translateY(-50%);
+            width: 45px; height: 45px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 10; backdrop-filter: blur(5px);
+            opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .slider-container:hover .slider-nav-btn { opacity: 1; visibility: visible; }
+        .slider-nav-btn:hover { background: var(--primary-color); border-color: var(--primary-color); transform: translateY(-50%) scale(1.15); }
+        .slider-nav-btn.left { left: -22px; }
+        .slider-nav-btn.right { right: -22px; }
+        @media (max-width: 900px) { .slider-nav-btn { display: none !important; } }
         
         .container { max-width: 100%; margin: 0; padding: 0; }
         
@@ -1709,6 +1751,126 @@ footer {
         </div>
     </div>
 
+    <header id="header">
+        <div class="header-left-group">
+            <div class="menu-toggle" onclick="openMobileMenu()"><i class="fas fa-bars"></i></div>
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="/LOGO.WEBP" alt="Wibey"><span class="logo-text">Wibey</span>
+            </div>
+            
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">Trang chủ</a>
+                </li>
+                
+                                <li class="nav-item">
+                    <div class="nav-link">Thể loại <i class="fas fa-caret-down"></i></div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-grid">
+                            <a class="dropdown-item-link" onclick="loadCategory('hanh-dong', 'Hành Động')">Hành Động</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('tinh-cam', 'Tình Cảm')">Tình Cảm</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('hai-huoc', 'Hài Hước')">Hài Hước</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('co-trang', 'Cổ Trang')">Cổ Trang</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('tam-ly', 'Tâm Lý')">Tâm Lý</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('hinh-su', 'Hình Sự')">Hình Sự</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('chien-tranh', 'Chiến Tranh')">Chiến Tranh</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('the-thao', 'Thể Thao')">Thể Thao</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('vo-thuat', 'Võ Thuật')">Võ Thuật</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('vien-tuong', 'Viễn Tưởng')">Viễn Tưởng</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('phieu-luu', 'Phiêu Lưu')">Phiêu Lưu</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('khoa-hoc', 'Khoa Học')">Khoa Học</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('kinh-di', 'Kinh Dị')">Kinh Dị</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('am-nhac', 'Âm Nhạc')">Âm Nhạc</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('than-thoai', 'Thần Thoại')">Thần Thoại</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('tai-lieu', 'Tài Liệu')">Tài Liệu</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('gia-dinh', 'Gia Đình')">Gia Đình</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('hoc-duong', 'Học Đường')">Học Đường</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('short-drama', 'Short Drama')">Short Drama</a>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="nav-item"><a class="nav-link" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Lẻ</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ</a></li>
+
+                <li class="nav-item">
+                    <div class="nav-link">Quốc gia <i class="fas fa-caret-down"></i></div>
+                    <div class="dropdown-menu" style="width: 400px;">
+                        <div class="dropdown-grid" style="grid-template-columns: repeat(3, 1fr);">
+                            <a class="dropdown-item-link" onclick="openModal('trung-quoc', 'Phim Trung Quốc')">Trung Quốc</a>
+                            <a class="dropdown-item-link" onclick="openModal('han-quoc', 'Phim Hàn Quốc')">Hàn Quốc</a>
+                            <a class="dropdown-item-link" onclick="openModal('nhat-ban', 'Phim Nhật Bản')">Nhật Bản</a>
+                            <a class="dropdown-item-link" onclick="openModal('thai-lan', 'Phim Thái Lan')">Thái Lan</a>
+                            <a class="dropdown-item-link" onclick="openModal('au-my', 'Phim Âu Mỹ')">Âu Mỹ</a>
+                            <a class="dropdown-item-link" onclick="openModal('dai-loan', 'Phim Đài Loan')">Đài Loan</a>
+                            <a class="dropdown-item-link" onclick="openModal('hong-kong', 'Phim Hồng Kông')">Hồng Kông</a>
+                            <a class="dropdown-item-link" onclick="openModal('an-do', 'Phim Ấn Độ')">Ấn Độ</a>
+                            <a class="dropdown-item-link" onclick="openModal('viet-nam', 'Phim Việt Nam')">Việt Nam</a>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link has-badge" href="javascript:void(0)" onclick="window.showToast('Tính năng Xem Chung đang phát triển!', 'error')">
+                        Xem Chung 
+                        <span class="badge-beta-sup">BETA</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="right-elements">
+            <div class="mobile-search-trigger" onclick="openMobileSearch()"><i class="fas fa-search"></i></div>
+            
+            <div class="search-box desktop-auth" style="position: relative;"> 
+                <i class="fas fa-search" style="color: #ccc"></i>
+                <input type="text" id="searchInput" placeholder="Tìm kiếm phim..." autocomplete="off">
+                <div id="desktopSearchResults"></div> 
+            </div>
+
+<div class="download-nav-item" id="dlContainer">
+        <div class="download-trigger" onclick="toggleDlPanel(event)">
+            <i class="fas fa-mobile-alt"></i>
+            <span>Tải App</span>
+        </div>
+
+        <div class="dl-dropdown-panel" id="dlPanel">
+            <div class="dl-mini-label">Chọn thiết bị</div>
+            
+            <div class="dl-device-list">
+                <a href="javascript:void(0)" class="dl-item-btn" onclick="window.showToast('Phiên bản Android TV đang phát triển!', 'error')">
+                    <i class="fas fa-tv"></i>
+                    <span>Android TV</span>
+                </a>
+
+                <a href="../Wibey.apk" class="dl-item-btn" download>
+                    <i class="fas fa-mobile-screen-button"></i>
+                    <span>Smartphone</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+            <div class="desktop-auth" style="position: relative;">
+                <button id="btnLogin" class="btn-login" onclick="window.location.href='/login.html'">Đăng nhập</button>
+                <img id="userAvatar" class="user-avatar" src="" alt="User" onclick="toggleUserDropdown()">
+                <div id="userMenu" class="user-dropdown">
+                    <div id="userNameDisplay" class="user-info-item">User</div>
+                    
+                    <div id="vipStatus" style="padding: 10px; font-size: 0.8rem; color: #aaa; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <i class="fas fa-crown"></i> Free Plan
+                    </div>
+
+                    <button class="dropdown-item" onclick="window.buyVipPackage()">
+                        <i class="fas fa-star" style="color: #FFD700;"></i> Mua VIP
+                    </button>
+
+                    <button class="dropdown-item" onclick="window.location.href='/nap-coin.html'"><i class="fa-duotone fa-solid fa-wallet"></i> Nạp Coin</button>
+                    <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
+                    <button class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+                </div>
+            </div>
+        </div>
+    </header>
 
     <div class="container">
 
@@ -1773,21 +1935,29 @@ footer {
                  <div class="server-selection" id="serverSelectionDesktop" style="display: none;"></div>
             </div>
 
-            <!-- DANH SÁCH TẬP (TRƯỢT NGANG) -->
+            <!-- DANH SÁCH TẬP (CÓ NÚT ĐIỀU HƯỚNG) -->
             <div class="premium-section-header" style="justify-content: space-between;">
                 <div class="premium-section-title">Danh sách tập</div>
                 <div class="premium-section-meta" id="mTotalEps">0 tập</div>
             </div>
-            <div class="premium-horizontal-list" id="episodeListDesktop">
-                <!-- Javascript sẽ đổ Card tập phim vào đây -->
+            <div class="slider-container">
+                <div class="slider-nav-btn left" onclick="window.scrollList('episodeListDesktop', -400)"><i class="fas fa-chevron-left"></i></div>
+                <div class="premium-horizontal-list" id="episodeListDesktop">
+                    <!-- Javascript sẽ đổ Card tập phim vào đây -->
+                </div>
+                <div class="slider-nav-btn right" onclick="window.scrollList('episodeListDesktop', 400)"><i class="fas fa-chevron-right"></i></div>
             </div>
 
-            <!-- ĐỀ XUẤT CHO BẠN (TRƯỢT NGANG) -->
+            <!-- ĐỀ XUẤT CHO BẠN (CÓ NÚT ĐIỀU HƯỚNG) -->
             <div class="premium-section-header">
                 <div class="premium-section-title">Đề xuất cho bạn</div>
             </div>
-            <div class="premium-horizontal-list" id="relatedList">
-                <!-- Javascript sẽ đổ Card phim đề xuất vào đây -->
+            <div class="slider-container">
+                <div class="slider-nav-btn left" onclick="window.scrollList('relatedList', -400)"><i class="fas fa-chevron-left"></i></div>
+                <div class="premium-horizontal-list" id="relatedList">
+                    <!-- Javascript sẽ đổ Card phim đề xuất vào đây -->
+                </div>
+                <div class="slider-nav-btn right" onclick="window.scrollList('relatedList', 400)"><i class="fas fa-chevron-right"></i></div>
             </div>
 
             <!-- BÌNH LUẬN -->
@@ -2292,35 +2462,25 @@ footer {
         });
     }
 
-    // --- 3. KHỞI TẠO PLAYER (ĐÃ FIX TOÀN DIỆN) ---
+    // --- KHỞI TẠO PLAYER (CÓ CHỌN ĐỘ PHÂN GIẢI) ---
     function initPlayer(sourceType, sourceLink, poster = '', startTime = 0) {
-        if (player) {
-            player.destroy();
-            player = null;
-        }
+        if (player) { player.destroy(); player = null; }
 
         const container = document.getElementById('player-container');
         container.innerHTML = `<video id="player" playsinline controls data-poster="${poster}" style="width:100%;"></video>`;
         const videoElement = document.getElementById('player');
 
-        // Cấu hình Player
-        const plyrOptions = {
-            // 🔥 BẬT phím tắt mặc định (Space, F, M, Arrow) cho PC
+        // Thêm nút settings và quality vào control
+        const defaultOptions = {
             keyboard: { focused: true, global: true },
-            
-            // 🔥 TẮT clickToPlay để tránh xung đột trên Mobile
             clickToPlay: false, 
-
             controls: [
                 'play-large', 'rewind', 'play', 'fast-forward', 
                 'progress', 'current-time', 'mute', 'volume', 
-                'captions', 'settings', 'pip', 'airplay', 'fullscreen'
+                'settings', 'fullscreen' 
             ],
-            seekTime: 10,
-            youtube: { noCookie: true, rel: 0, modestbranding: 1 },
-            
-            iosNative: true, 
-            ratio: '16:9'
+            settings: ['quality', 'speed'], 
+            seekTime: 10, autoplay: true, ratio: '16:9'
         };
 
         const onPlayerReady = (plyrInstance) => {
@@ -2329,29 +2489,25 @@ footer {
             setupMobileControls(plyrInstance); 
             setupAutoRotation(plyrInstance);   
 
-            // 🔥 SỰ KIỆN CLICK RIÊNG CHO PC (Mobile đã có hàm setupMobileControls lo)
             if (window.innerWidth >= 1024) {
-                const wrapper = plyrInstance.elements.wrapper;
-                wrapper.addEventListener('click', (e) => {
+                plyrInstance.elements.wrapper.addEventListener('click', (e) => {
                     if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.plyr__controls')) return;
                     plyrInstance.togglePlay();
                 });
             }
 
-            // 🔥 LOGIC RESUME
              if (startTime > 0) {
                 setTimeout(() => {
                     plyrInstance.currentTime = startTime;
-                    var playPromise = plyrInstance.play();
-                    if (playPromise !== undefined) {
-                        playPromise.catch(() => { plyrInstance.muted = true; plyrInstance.play(); });
-                    }
+                    const playPromise = plyrInstance.play();
+                    if (playPromise !== undefined) playPromise.catch(() => { plyrInstance.muted = true; plyrInstance.play(); });
                 }, 500); 
              }
         };
 
         if (sourceType === 'youtube') {
-            player = new Plyr(videoElement, plyrOptions);
+            defaultOptions.youtube = { noCookie: true, rel: 0, modestbranding: 1 };
+            player = new Plyr(videoElement, defaultOptions);
             player.source = { type: 'video', sources: [{ src: sourceLink, provider: 'youtube' }] };
             player.on('ready', () => onPlayerReady(player));
         } 
@@ -2359,30 +2515,41 @@ footer {
             if (Hls.isSupported()) {
                 const hls = new Hls();
                 hls.loadSource(sourceLink);
-                hls.attachMedia(videoElement);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    player = new Plyr(videoElement, plyrOptions);
+
+                // KẾT NỐI HLS VỚI BẢNG CHỌN CHẤT LƯỢNG PLYR
+                hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+                    const availableQualities = hls.levels.map((l) => l.height);
+                    availableQualities.unshift(0); // 0 = Auto
+
+                    defaultOptions.quality = {
+                        default: 0, 
+                        options: availableQualities,
+                        forced: true,
+                        onChange: (e) => {
+                            if (e === 0) hls.currentLevel = -1; // Auto
+                            else hls.levels.forEach((level, idx) => { if (level.height === e) hls.currentLevel = idx; });
+                        },
+                    };
+                    defaultOptions.i18n = { qualityLabel: { 0: 'Tự động' } };
+
+                    player = new Plyr(videoElement, defaultOptions);
                     onPlayerReady(player);
                 });
+
+                hls.attachMedia(videoElement);
+                window.hls = hls;
             } else {
                 videoElement.src = sourceLink;
-                player = new Plyr(videoElement, plyrOptions);
+                player = new Plyr(videoElement, defaultOptions);
                 player.on('ready', () => onPlayerReady(player));
             }
         }
         
-        // Lưu tiến trình
         setTimeout(() => {
             if (player) {
-                player.on('pause', () => {
-                    const currentTime = Math.floor(player.currentTime);
-                    window.saveToHistory(currentMovieData, currentEpName, currentTime);
-                });
+                player.on('pause', () => { window.saveToHistory(currentMovieData, currentEpName, Math.floor(player.currentTime)); });
                 setInterval(() => {
-                    if (player && player.playing) {
-                        const currentTime = Math.floor(player.currentTime);
-                        window.saveToHistory(currentMovieData, currentEpName, currentTime);
-                    }
+                    if (player && player.playing) window.saveToHistory(currentMovieData, currentEpName, Math.floor(player.currentTime));
                 }, 30000);
             }
         }, 1000);
@@ -2916,6 +3083,22 @@ footer {
         window.closeMobileSearch = () => {
             document.getElementById('mobileSearchOverlay').classList.remove('active');
         }
+
+
+        // --- HÀM CUỘN DANH SÁCH SLIDER ---
+        window.scrollList = function(id, amount) {
+            const list = document.getElementById(id);
+            if (list) list.scrollBy({ left: amount, behavior: 'smooth' });
+        };
+
+        // --- HIỆN HEADER KHI CUỘN QUA VIDEO ---
+        window.onscroll = () => {
+            const h = document.getElementById('header');
+            if (h && window.innerWidth >= 901) {
+                if(window.scrollY > 500) h.classList.add('show-on-scroll');
+                else h.classList.remove('show-on-scroll');
+            }
+        };
 </script>
     
     <script>
