@@ -353,39 +353,65 @@
         #mobileSearchOverlay .close-btn-overlay { position: static; color: #fff; }
 
         /* =========================================
-           🔥 PREMIUM WATCH LAYOUT (VIEON / NETFLIX STYLE)
+           🔥 PREMIUM THEATER LAYOUT (VIEON STYLE)
            ========================================= */
+        /* Tắt header mặc định trên trang xem phim để làm giao diện Rạp hát */
+        #siteHeader { display: none !important; }
+        
         .container { max-width: 100%; margin: 0; padding: 0; }
         
         .premium-watch-wrapper {
-            padding-top: 70px; 
+            padding-top: 0; /* Bỏ khoảng cách header */
             padding-bottom: 50px;
-            background: #0f1014;
+            background: #0f1014; /* Màu nền VieON */
+            min-height: 100vh;
         }
 
-        /* 1. Player Tràn Viền */
+        /* 1. Player Thu Nhỏ Vừa Khung Hình (Theater Mode) */
         .player-box {
             width: 100%;
             background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             position: relative;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .aspect-ratio-16-9 { width: 100%; padding-top: 56.25%; position: relative; }
-        .aspect-ratio-16-9 iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        /* Giới hạn chiều cao Video không vượt quá màn hình máy tính */
+        .plyr {
+            max-height: 85vh; /* Chỉ chiếm 85% chiều cao màn hình */
+            width: auto !important; 
+            max-width: 100%;
+            aspect-ratio: 16/9;
+        }
+
+        /* Thanh Topbar đè lên Video giống VieON */
+        .theater-top-bar {
+            position: absolute; top: 0; left: 0; width: 100%;
+            padding: 20px 4%; z-index: 50; display: flex; align-items: center; gap: 15px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+            color: #fff; font-size: 1.3rem; font-weight: 600;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .player-box:hover .theater-top-bar { opacity: 1; }
+        .theater-top-bar i { cursor: pointer; font-size: 1.5rem; transition: 0.2s; }
+        .theater-top-bar i:hover { color: var(--primary-color); transform: translateX(-3px); }
+        .theater-title-text { display: flex; align-items: center; gap: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .theater-title-text span.ep-num { color: #a0a0a0; font-weight: 500; font-size: 1.1rem;}
 
         /* 2. Cụm Thông Tin Phim */
         .premium-info-container {
-            max-width: 1600px; margin: 0 auto; padding: 40px 4%;
+            max-width: 1600px; margin: 0 auto; padding: 40px 6%; /* Thêm lề 6% cho thoáng */
             display: grid; grid-template-columns: 2fr 1fr; gap: 50px;
         }
 
         .info-left .movie-title-large {
-            font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 15px; line-height: 1.2; text-transform: uppercase;
+            font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 15px; line-height: 1.2;
         }
 
-        .info-stats {
-            display: flex; align-items: center; gap: 15px; font-size: 1rem; color: #e5e5e5; margin-bottom: 15px; font-weight: 500;
-        }
+        .info-stats { display: flex; align-items: center; gap: 15px; font-size: 0.95rem; color: #e5e5e5; margin-bottom: 15px; font-weight: 500; }
         .info-stats .stars { color: #f5c518; font-size: 1.1rem; }
         .info-stats .tags-inline span { border-right: 1px solid #444; padding-right: 10px; margin-right: 10px; }
         .info-stats .tags-inline span:last-child { border-right: none; }
@@ -399,50 +425,55 @@
 
         .info-right { display: flex; flex-direction: column; gap: 15px; padding-top: 10px; }
         .action-row { display: flex; gap: 30px; color: #fff; font-weight: 500; margin-bottom: 20px; }
-        .action-row div { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; color: #a3a3a3; transition: 0.2s; font-size: 0.9rem;}
+        .action-row div { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; color: #a3a3a3; transition: 0.2s; font-size: 0.85rem;}
         .action-row div:hover { color: #fff; transform: translateY(-3px);}
-        .action-row i { font-size: 1.5rem; }
+        .action-row i { font-size: 1.4rem; }
 
         .crew-info { font-size: 0.95rem; line-height: 1.6; color: #a3a3a3; }
         .crew-info span { color: #fff; font-weight: 600; margin-right: 5px; }
 
-        /* 3. Tiêu đề các mục Slider & Chọn Server */
-        .premium-section-header { max-width: 1600px; margin: 40px auto 20px; padding: 0 4%; display: flex; align-items: center; gap: 15px; }
-        .premium-section-title { font-size: 1.6rem; font-weight: 700; color: #fff; }
+        /* 3. Tiêu đề Danh sách & Đề xuất (Căn lề chuẩn) */
+        .premium-section-header { max-width: 1600px; margin: 40px auto 20px; padding: 0 6%; display: flex; align-items: center; justify-content: space-between; }
+        .premium-section-title { font-size: 1.5rem; font-weight: 700; color: #fff; }
         .premium-section-meta { font-size: 0.9rem; color: #a3a3a3; font-weight: 500;}
 
-        /* 4. Thanh trượt ngang cho Tập phim & Đề xuất */
+        /* 4. Thanh trượt ngang */
         .premium-horizontal-list {
-            display: flex; gap: 20px; overflow-x: auto; padding: 0 4% 30px; max-width: 1600px; margin: 0 auto;
+            display: flex; gap: 20px; overflow-x: auto; 
+            padding: 0 6% 30px; /* Lề trái phải 6% giống header */
+            max-width: 1600px; margin: 0 auto;
             scroll-snap-type: x mandatory; scrollbar-width: none;
         }
         .premium-horizontal-list::-webkit-scrollbar { display: none; }
 
         /* Card Tập Phim */
-        .ep-card-premium { flex: 0 0 280px; scroll-snap-align: start; cursor: pointer; transition: transform 0.2s; }
+        .ep-card-premium { flex: 0 0 260px; scroll-snap-align: start; cursor: pointer; transition: transform 0.2s; }
         .ep-card-premium:hover .ep-thumb img { transform: scale(1.05); }
         .ep-thumb { width: 100%; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; position: relative; background: #222; margin-bottom: 12px; }
-        .ep-thumb img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; opacity: 0.5; }
-        .ep-card-premium.active .ep-thumb img { opacity: 1; border: 2px solid var(--primary-color); }
+        .ep-thumb img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; opacity: 0.5; filter: brightness(0.8); }
+        
+        /* Hiệu ứng Đang chọn (Active) giống VieON */
+        .ep-card-premium.active .ep-thumb img { opacity: 1; filter: brightness(1); border: 2px solid var(--primary-color); }
+        .ep-card-premium.active .ep-name { color: var(--primary-color); }
+
         .ep-play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; color: #fff; background: rgba(0,0,0,0.5); opacity: 0; transition: 0.2s; }
         .ep-card-premium:hover .ep-play-icon { opacity: 1; }
-        .ep-name { font-size: 1.05rem; font-weight: 600; color: #fff; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .ep-name { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 5px; transition: 0.2s;}
         .ep-meta { font-size: 0.8rem; color: #a3a3a3; font-weight: 500; display: flex; gap: 10px; align-items: center; margin-bottom: 8px;}
-        .ep-desc-mini { font-size: 0.85rem; color: #888; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .ep-desc-mini { font-size: 0.85rem; color: #888; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
         /* Card Đề xuất Phim */
-        .rec-card-premium { flex: 0 0 300px; scroll-snap-align: start; cursor: pointer; }
-        .rec-card-premium .ep-thumb img { opacity: 1; }
-        .rec-meta-tags { font-size: 0.8rem; font-weight: 600; color: #ccc; margin: 8px 0; }
+        .rec-card-premium { flex: 0 0 280px; scroll-snap-align: start; cursor: pointer; }
+        .rec-card-premium .ep-thumb img { opacity: 1; filter: brightness(1); }
+        .rec-meta-tags { font-size: 0.8rem; font-weight: 600; color: #a3a3a3; margin: 8px 0; }
         .rec-meta-tags span { border-right: 1px solid #555; padding-right: 8px; margin-right: 8px; }
         .rec-meta-tags span:last-child { border-right: none; }
-        .vip-tag { position: absolute; top: 10px; left: 10px; background: #f5c518; color: #000; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; z-index: 10;}
 
         /* BÌNH LUẬN */
-        .comment-section { max-width: 1600px; margin: 0 auto; padding: 0 4%; }
+        .comment-section { max-width: 1600px; margin: 0 auto; padding: 0 6%; }
         .comment-input-box { display: flex; gap: 20px; margin-bottom: 40px; align-items: flex-start; }
         .current-user-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
-        .comment-form { flex: 1; background: #1f222e; border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .comment-form { flex: 1; background: #16181f; border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
         .comment-input { width: 100%; background: transparent; border: none; color: #fff; font-family: var(--font-main); font-size: 0.95rem; resize: none; min-height: 60px; outline: none; }
         .form-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
         .btn-send-cmt { background: var(--gradient-main); color: #fff; border: none; padding: 8px 24px; border-radius: 20px; font-weight: 700; cursor: pointer; }
@@ -454,15 +485,21 @@
         .comment-author { font-weight: 700; font-size: 0.95rem; color: #fff; }
         .comment-text { color: #ccc; font-size: 0.95rem; line-height: 1.5; background: rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 0 12px 12px 12px; display: inline-block; }
 
+        /* Xử lý khoảng trống Footer */
+        footer { margin-top: 0 !important; background: #0b0c12 !important;} /* Khớp màu với body */
+
         /* Mobile Adjustments */
         @media (max-width: 900px) {
+            #siteHeader { display: flex !important; } /* Hiện lại header trên Mobile */
+            .theater-top-bar { display: none; } /* Ẩn topbar đè video trên mobile */
             .premium-watch-wrapper { padding-top: 60px; }
+            .plyr { max-height: auto; width: 100% !important; }
+            
             .premium-info-container { grid-template-columns: 1fr; gap: 20px; padding: 20px 4%; }
-            .info-left .movie-title-large { font-size: 1.8rem; }
-            .info-stats { flex-wrap: wrap; }
-            .premium-horizontal-list { padding: 0 4% 20px; }
-            .ep-card-premium, .rec-card-premium { flex: 0 0 240px; }
-            .server-selection { margin: 0 4% 20px; }
+            .info-left .movie-title-large { font-size: 1.6rem; }
+            .info-stats { flex-wrap: wrap; gap: 10px; font-size: 0.85rem;}
+            .premium-section-header, .premium-horizontal-list { padding-left: 4%; padding-right: 4%; }
+            .ep-card-premium, .rec-card-premium { flex: 0 0 220px; }
             .action-row { justify-content: space-between; gap: 10px;}
         }
 
@@ -1784,17 +1821,27 @@ footer {
     <div class="container">
 
         <div class="premium-watch-wrapper">
-            
-            <!-- VIDEO PLAYER TRÀN VIỀN -->
-            <div class="player-box">
-                <div id="player-container">
-                    <video id="player" playsinline controls></video>
+        
+        <!-- VIDEO PLAYER (THEATER MODE) -->
+        <div class="player-box">
+            <!-- Thanh Top Bar đè lên Video (Thay thế Header) -->
+            <div class="theater-top-bar">
+                <i class="fas fa-chevron-left" onclick="window.history.back()" title="Quay lại"></i>
+                <div class="theater-title-text">
+                    <span id="theaterMovieName">Đang tải...</span>
+                    <span>|</span>
+                    <span class="ep-num" id="theaterEpName">Tập 1</span>
                 </div>
             </div>
 
-            <!-- THÔNG TIN PHIM -->
-            <div class="premium-info-container">
-                <div class="info-left">
+            <div id="player-container" style="width: 100%; height: 100%;">
+                <video id="player" playsinline controls></video>
+            </div>
+        </div>
+
+        <!-- THÔNG TIN PHIM -->
+        <div class="premium-info-container">
+            <div class="info-left">
                     <h1 class="movie-title-large" id="mName">Loading...</h1>
                     
                     <div class="info-stats">
@@ -2706,7 +2753,9 @@ footer {
         
         if (epName) {
             currentEpName = epName;
-            document.getElementById('breadCrumbTitle').innerText = epName; // Cập nhật tên tập đang chiếu
+            document.getElementById('breadCrumbTitle').innerText = epName; 
+            const theaterEp = document.getElementById('theaterEpName');
+            if(theaterEp) theaterEp.innerText = epName; // Update số tập lên Topbar
         }
 
         if (window.isCurrentVip) {
@@ -2847,12 +2896,12 @@ footer {
                     html += `
                     <div class="rec-card-premium" onclick="window.location.href='/xem-phim.html?slug=${m.slug}'">
                         <div class="ep-thumb">
-                            <div class="vip-tag">VIP</div>
+                            <!-- Đã xóa thẻ VIP ở đây -->
                             <img src="${img}" loading="lazy">
                         </div>
                         <div class="ep-name" style="font-size: 1.15rem;">${m.name}</div>
                         <div class="rec-meta-tags">
-                            <span>${m.year}</span><span>T16</span><span>${m.origin_name}</span><span>1 Phần</span><span style="color:#fff;">Full HD</span>
+                            <span>${m.year || '2025'}</span><span>T16</span><span>${m.origin_name || 'Đang cập nhật'}</span><span style="color:#fff;">Full HD</span>
                         </div>
                         <div class="ep-desc-mini">${shortDesc}</div>
                     </div>`;
@@ -2876,6 +2925,10 @@ footer {
     function renderInfo(movie) {
         document.title = `${movie.name} - Wibey`;
         document.getElementById('mName').innerText = movie.name;
+        // Cập nhật tên lên thanh Theater Top Bar
+        const theaterName = document.getElementById('theaterMovieName');
+        if(theaterName) theaterName.innerText = movie.name;
+
         document.getElementById('mYear').innerText = movie.year || '2026';
         document.getElementById('mQuality').innerText = movie.quality || 'Full HD';
         document.getElementById('mViews').innerText = Math.floor(Math.random() * 5000000 + 100000).toLocaleString('vi-VN');
