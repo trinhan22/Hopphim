@@ -1281,7 +1281,7 @@ footer {
 
         /* --- 1. QUY TẮC CHUNG CHO CARD PHIM (Standard & History) --- */
         .n-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
-
+        
         /* PC: Card bình thường và Xem tiếp đều hiện ảnh NGANG */
         .n-poster-wide { display: block !important; }
         .n-poster-portrait { display: none !important; }
@@ -2203,7 +2203,16 @@ footer {
             from { transform: translateX(100px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+        /* Hiệu ứng biến mất cho Floating Ads */
+        @keyframes fadeOutRightFSA {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100px); opacity: 0; }
+        }
 
+        .floating-sidebar-ads.hide-fsa {
+            animation: fadeOutRightFSA 0.4s ease-in forwards !important;
+            pointer-events: none;
+        }
         .fsa-content {
             position: relative;
             /* Giữ filter này để hỗ trợ các trình duyệt cũ */
@@ -3452,16 +3461,19 @@ footer {
         
         // --- HÀM TẮT SIDEBAR ADS ---
         window.closeSidebarAds = (event) => {
-            event.preventDefault();
-            event.stopPropagation();
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
             const ads = document.getElementById('floating-sidebar-ads');
             if (ads) {
-                ads.style.transition = "all 0.5s ease";
-                ads.style.opacity = "0";
-                ads.style.transform = "translateX(50px) scale(0.9)";
+                // Thêm class chứa animation mờ dần
+                ads.classList.add('hide-fsa');
+                
+                // Đợi animation chạy xong (400ms) rồi mới ẩn hẳn
                 setTimeout(() => {
-                    ads.remove();
-                }, 500);
+                    ads.style.display = 'none';
+                }, 400);
             }
         };
 
@@ -4076,7 +4088,18 @@ footer {
         }
     });
 </script>
-
+<script>
+    // 🔥 AUTO FALLBACK: Tự động bắt mọi lỗi ảnh trên toàn web và thay bằng panel.webp
+    document.addEventListener('error', function (event) {
+        // Kiểm tra xem thẻ bị lỗi có phải là thẻ <img> không
+        if (event.target && event.target.tagName === 'IMG') {
+            // Đảm bảo không bị lặp vô hạn nếu ảnh panel.webp cũng lỗi
+            if (event.target.src !== 'https://wibey.netlify.app/home-background.jpg') {
+                event.target.src = 'https://wibey.netlify.app/home-background.jpg';
+            }
+        }
+    }, true); // true = Bắt lỗi ngay lập tức (Capture phase)
+</script>
     <script src="backtotop.js"></script>
 
     </body>
