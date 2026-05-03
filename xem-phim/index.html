@@ -485,26 +485,27 @@
         .slider-container { position: relative; max-width: 1250px; margin: 0 auto; }
         .premium-horizontal-list { scroll-behavior: smooth; }
 
-        /* Nút Điều Hướng Slider (Trái/Phải) - Đẳng cấp Netflix */
+        /* Nút Điều Hướng Slider (Trái/Phải) - Form Vuông Dài Hiện Đại */
         .slider-nav-btn {
             position: absolute; 
             top: 0; 
-            /* Chỉ cao bằng phần ảnh, không che chữ tên phim bên dưới */
-            height: calc(100% - 95px); 
+            /* Cân bằng chính xác với chiều cao của Card phim */
+            height: calc(100% - 10px); 
             width: 50px; 
-            color: #fff; font-size: 1.8rem; /* Icon to và rõ hơn */
+            border-radius: 8px; /* Bo nhẹ các góc để không quá gắt */
+            background: rgba(0, 0, 0, 0.75); /* Đen mờ tinh tế */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #fff; font-size: 1.5rem; 
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 10; 
-            backdrop-filter: blur(3px);
+            cursor: pointer; z-index: 10; backdrop-filter: blur(5px);
             opacity: 0; visibility: hidden; transition: all 0.3s ease;
-            border: none; /* Bỏ viền thừa */
         }
         
         .slider-container:hover .slider-nav-btn { opacity: 1; visibility: visible; }
         
         /* NÚT BÊN TRÁI: Thụt vào trong, Bo góc ngoài (trái), Vuông góc trong (phải) */
         .slider-nav-btn.left { 
-            left: 0; /* Nằm sát mép trong của danh sách */
+            left: -10; /* Nằm sát mép trong của danh sách */
             border-radius: 10px 0 0 10px; 
             /* Đổ bóng đen gradient từ lề mờ dần vào trong */
             background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 100%);
@@ -512,7 +513,7 @@
         
         /* NÚT BÊN PHẢI: Thụt vào trong, Bo góc ngoài (phải), Vuông góc trong (trái) */
         .slider-nav-btn.right { 
-            right: 0; /* Nằm sát mép trong của danh sách */
+            right: -10; /* Nằm sát mép trong của danh sách */
             border-radius: 0 10px 10px 0; 
             /* Đổ bóng đen gradient từ lề mờ dần vào trong */
             background: linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 100%);
