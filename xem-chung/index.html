@@ -27,9 +27,9 @@
            1. CSS VARIABLES & BASE
            ========================================================================== */
         :root {
-            --bg-body: #10121b; 
-            --bg-dark: #151722; 
-            --bg-card: #1a1d27;
+            --bg-body: #191b24; 
+            --bg-dark: #191b24; 
+            --bg-card: #23252f;
             --text-main: #ffffff; 
             --text-sub: #9ca3af; 
             --primary-color: #FF5E62;
@@ -643,12 +643,49 @@
             .download-group { align-items: center; }
             .footer-bottom { flex-direction: column; gap: 10px; }
         }
+
+        /* ==========================================================================
+           4. LOADING SCREEN
+           ========================================================================== 
+        */
+        #loadingScreen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
+            background: var(--bg-body); z-index: 9999; display: flex; 
+            justify-content: center; align-items: center; 
+        }
+        
+        .loading-img { 
+            width: 800px; /* Chỉnh lại kích thước cho vừa vặn */
+            max-width: 90vw; height: auto; object-fit: contain; 
+            /* Animation mặc định: Hiện ra -> Bay lơ lửng */
+            animation: zoomIn 0.8s ease-out forwards, floatIdle 3s ease-in-out infinite 0.8s; 
+        }
+        
+        /* Class này sẽ được JS thêm vào khi tải xong */
+        .loading-img.zoom-out { 
+            /* Dùng ease-in để tạo cảm giác hút nhanh vào trong */
+            animation: zoomOut 0.5s ease-in forwards !important; 
+        }
+
+        /* Hiệu ứng lúc mới vào trang */
+        @keyframes zoomIn { 0% { transform: scale(1.36); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes floatIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        
+        /* --- 🔥 SỬA ĐOẠN NÀY: HÚT VÀO TRONG --- */
+        @keyframes zoomOut { 
+            36% { transform: scale(1); opacity: 1; } 
+            100% { transform: scale(0.36); opacity: 0; } /* scale(0) là thu nhỏ biến mất */
+        }
     </style>
 </head>
 <body>
 
     <!-- Toast -->
     <div class="wibu-toast" id="wibu-toast"><i class="fas fa-info-circle"></i> <span id="toast-msg">Thông báo</span></div>
+
+    <div id="loadingScreen">
+        <img src="/Loading.png" class="loading-img" alt="Wibey">
+    </div>
 
     <!-- Mobile Overlays -->
     <div id="mobileMenuOverlay" class="mobile-overlay">
@@ -1059,6 +1096,15 @@
 
         const hlsConfig = { maxBufferLength: 30, enableWorker: true, lowLatencyMode: true };
 
+        // ================= HÀM ẨN LOADING =================
+        function hideLoadingState() {
+            const screen = document.getElementById('loadingScreen');
+            if (!screen || screen.style.display === 'none') return;
+            const img = screen.querySelector('.loading-img');
+            if (img) img.classList.add('zoom-out');
+            setTimeout(() => { screen.style.display = 'none'; }, 500);
+        }
+
         // ================= HEADER & MENU LOGIC =================
         window.openMobileMenu = () => { document.getElementById('mobileMenuOverlay').classList.add('active'); };
         window.closeMobileMenu = () => { document.getElementById('mobileMenuOverlay').classList.remove('active'); };
@@ -1174,6 +1220,8 @@
             document.getElementById('lobby-container').style.display = 'block';
             document.getElementById('room-container').style.display = 'none';
             
+            hideLoadingState();
+
             const roomsRef = collection(db, "watch_rooms");
             onSnapshot(roomsRef, (snapshot) => {
                 const grid = document.getElementById('rooms-grid');
@@ -1236,7 +1284,7 @@
         // 🔥 HÀM TÌM KIẾM ĐA NGUỒN MỚI
         async function fetchSearchMultiSource(keyword) {
             const endpoints = [
-                { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
+                { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' },
                 { url: `https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' },
                 { url: `https://phim.nguonc.com/api/films/search?keyword=${encodeURIComponent(keyword)}`, imgBase: '' }
             ];
@@ -1248,9 +1296,10 @@
                     const data = await res.json();
                     
                     if (data.status === "success" && data.data && data.data.items && data.data.items.length > 0) {
+                        const imgDomain = data.data.APP_DOMAIN_CDN_IMAGE || api.imgBase;
                         data.data.items.forEach(m => {
-                            if (m.thumb_url && !m.thumb_url.startsWith('http')) m.thumb_url = api.imgBase + m.thumb_url;
-                            if (m.poster_url && !m.poster_url.startsWith('http')) m.poster_url = api.imgBase + m.poster_url;
+                            if (m.thumb_url && !m.thumb_url.startsWith('http')) m.thumb_url = imgDomain + m.thumb_url;
+                            if (m.poster_url && !m.poster_url.startsWith('http')) m.poster_url = imgDomain + m.poster_url;
                         });
                         return { status: true, items: data.data.items };
                     }
@@ -1271,17 +1320,16 @@
             grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--primary-color); margin-top:50px;"><i class="fas fa-spinner fa-spin fa-3x"></i><div style="margin-top:10px; font-weight:600; color:#fff;">Đang tải danh sách phim...</div></div>';
             
             try {
-                // Ưu tiên 1: Dùng API V1 mới nhất của Ophim
                 const res = await fetch('https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat?page=1');
                 if (res.ok) {
                     const data = await res.json();
                     if (data.status === "success" && data.data && data.data.items) {
-                        renderSetupMovies(data.data.items, 'https://img.ophim1.com/uploads/movies/');
+                        const domain = data.data.APP_DOMAIN_CDN_IMAGE || 'https://phimimg.com/';
+                        renderSetupMovies(data.data.items, domain);
                         return;
                     }
                 }
                 
-                // Ưu tiên 2: Dùng PhimAPI nếu Ophim sập
                 const res2 = await fetch('https://phimapi.com/danh-sach/phim-moi-cap-nhat?page=1');
                 if (res2.ok) {
                     const data2 = await res2.json();
@@ -1320,21 +1368,31 @@
             }, 500); 
         }
 
-        function renderSetupMovies(items, defaultImgBase = '') {
-            const fallbackImg = '/panel.webp';
+        function renderSetupMovies(items, defaultImgBase = 'https://phimimg.com/') {
+            const fallbackImg = '/home-background.jpg';
             document.getElementById('setup-movie-grid').innerHTML = items.map(item => {
                 let img = item.thumb_url || item.poster_url;
-                if(img && !img.startsWith('http')) {
-                    img = defaultImgBase + img;
+                
+                // 🔥 SỬA LỖI DOMAIN ẢNH OPHIM BỊ CHẾT (Chuyển tự động sang phimimg.com)
+                if (img) {
+                    if (img.startsWith('http')) {
+                        img = img.replace('img.ophim1.com', 'phimimg.com')
+                                 .replace('img.ophim.live', 'phimimg.com')
+                                 .replace('ophim1.com', 'phimimg.com');
+                    } else {
+                        img = defaultImgBase + img;
+                    }
+                } else {
+                    img = fallbackImg;
                 }
-                // Nếu api trả về rỗng, dùng ảnh panel mặc định
-                if(!img) img = fallbackImg;
                 
                 const safeName = (item.name || "Phim Mới").replace(/'/g, "\\'");
                 return `
                 <div class="mini-movie-card" onclick="window.selectAnimeForRoom('${item.slug}', '${safeName}', '${img}')">
-                    <img src="${img}" loading="lazy" onerror="this.src='${fallbackImg}'">
-                    <div class="mini-movie-title">${item.name || 'Không xác định'}</div>
+                    <div class="card-img-wrap">
+                        <img src="${img}" loading="lazy" onerror="this.src='${fallbackImg}'">
+                    </div>
+                    <div class="mini-movie-title"><span>${item.name || 'Không xác định'}</span></div>
                 </div>`;
             }).join('');
         }
@@ -1390,6 +1448,7 @@
 
                 if(targetRoomData.isPrivate && targetRoomData.hostUid !== currentUser.uid) {
                     document.getElementById('modal-enter-pwd').style.display = 'flex';
+                    hideLoadingState();
                 } else { enterRoomUI(roomRef); }
             } catch(error) {
                 console.error("Lỗi lấy thông tin phòng:", error);
@@ -1411,6 +1470,8 @@
         function enterRoomUI(roomRef) {
             document.getElementById('lobby-container').style.display = 'none';
             document.getElementById('room-container').style.display = 'flex';
+
+            hideLoadingState();
 
             updateDoc(roomRef, {
                 viewers: arrayUnion({uid: currentUser.uid, name: currentUser.customName})
@@ -1736,7 +1797,7 @@
                             
                             html += `
                                 <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
-                                    <img src="${img}" alt="${safeName}" loading="lazy" onerror="this.src='/panel.webp'">
+                                    <img src="${img}" alt="${safeName}" loading="lazy" onerror="this.src='/home-background.jpg'">
                                     <div class="search-result-info">
                                         <div class="search-result-title">${m.name}</div>
                                         <div class="search-result-meta">${m.year || '2026'} • ${m.origin_name || ''}</div>
