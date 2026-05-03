@@ -1852,13 +1852,6 @@ footer {
     </style>
 </head>
 <body>
-    
-    <div id="ad-overlay">
-        <div id="ad-container">
-            <button id="skip-button" disabled>Skip ad (<span>3</span>)</button>
-            <img id="ad-image" alt="Quảng cáo" title="Nhấn để xem chi tiết">
-        </div>
-    </div>
 
     <div id="loadingScreen">
         <img src="/Loading.png" class="loading-img" alt="Wibey">
@@ -3477,7 +3470,7 @@ footer {
     <script>
         // CẤU HÌNH QUẢNG CÁO GIF POPUP (BỎ ĐẾM GIỜ)
         const adConfig = {
-            gifUrl: "https://wibey.netlify.app/8576155517683601969.jpg",
+            gifUrl: "https://tpc.googlesyndication.com/simgad/8576155517683601969",
             targetUrl: "https://www.thegioididong.com/may-tinh-bang/xiaomi-pad-2-wifi-9-7-4gb-64gb"
         };
 
@@ -3519,25 +3512,24 @@ footer {
             }
         }
 
-
         // --- LOGIC DROPDOWN TẢI APP GỌN NHẸ ---
-    window.toggleDlPanel = (event) => {
-        event.stopPropagation();
-        const panel = document.getElementById('dlPanel');
-        panel.classList.toggle('active');
-        
-        // Đóng menu user nếu đang mở
-        const userMenu = document.getElementById('userMenu');
-        if (userMenu) userMenu.classList.remove('active');
-    }
-
-    document.addEventListener('click', (e) => {
-        const container = document.getElementById('dlContainer');
-        const panel = document.getElementById('dlPanel');
-        if (container && !container.contains(e.target)) {
-            if(panel) panel.classList.remove('active');
+        window.toggleDlPanel = (event) => {
+            event.stopPropagation();
+            const panel = document.getElementById('dlPanel');
+            panel.classList.toggle('active');
+            
+            // Đóng menu user nếu đang mở
+            const userMenu = document.getElementById('userMenu');
+            if (userMenu) userMenu.classList.remove('active');
         }
-    });
+
+        document.addEventListener('click', (e) => {
+            const container = document.getElementById('dlContainer');
+            const panel = document.getElementById('dlPanel');
+            if (container && !container.contains(e.target)) {
+                if(panel) panel.classList.remove('active');
+            }
+        });
     </script>
 <script type="text/javascript">
     // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
