@@ -709,7 +709,7 @@
     <div id="mobileSearchOverlay" class="mobile-overlay">
         <div class="search-header-mobile">
             <i class="fas fa-search" style="color: #a0a0a0; margin-right: 10px;"></i>
-            <input type="text" id="mobileSearchInput" class="search-input-mobile" placeholder="Nhập tên phim..." autocomplete="off">
+            <input type="search" id="mobileSearchInput" class="search-input-mobile" placeholder="Nhập tên phim..." autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
             <i class="fas fa-times close-btn-overlay" onclick="closeMobileSearch()"></i>
         </div>
         <div class="search-content-mobile">
@@ -780,7 +780,7 @@
                 <li class="nav-item">
                     <a class="nav-link has-badge" href="/xem-chung/" style="color: #fff;">
                         Xem Chung 
-                        <span style="position: absolute; top: -8px; right: -10px; background: linear-gradient(135deg, #FFD700 0%, #FF8F50 100%); color: #000; font-size: 0.5rem; font-weight: 900; padding: 1px 4px; border-radius: 4px; z-index: 10;">BETA</span>
+                        <span style="position: absolute; top: -8px; right: -10px; background: linear-gradient(135deg, #FFD700 0%, #FF8F50 100%); color: #000; font-size: 0.5rem; font-weight: 900; padding: 1px 4px; border-radius: 4px; z-index: 10;">NEW</span>
                     </a>
                 </li>
             </ul>
@@ -790,7 +790,7 @@
             
             <div class="search-box desktop-auth" style="position: relative;"> 
                 <i class="fas fa-search" style="color: #ccc"></i>
-                <input type="search" id="searchInput" name="wibey_search" placeholder="Tìm kiếm phim..." autocomplete="new-password" spellcheck="false">
+                <input type="search" id="searchInput" name="wibey_search" placeholder="Tìm kiếm phim..." autocomplete="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');">
                 <div id="desktopSearchResults"></div> 
             </div>
 
@@ -1281,7 +1281,94 @@
         }
         window.closeModals = () => { document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none'); }
 
-        // 🔥 HÀM TÌM KIẾM ĐA NGUỒN (ĐÃ FIX LỖI ẢNH)
+        // ============================================================
+        // 🔥 HÀM CHUẨN HÓA ẢNH TỐI THƯỢNG (FIX MỌI LỖI DOMAIN)
+        // ============================================================
+        function getCleanImageUrl(url, baseDomain = '') {
+            if (!url) return 'https://wibey.netlify.app/home-background.jpg';
+            
+            // Lấy tên file cuối cùng (loại bỏ toàn bộ phần path rác như /uploads/movies/)
+            const fileName = url.split('/').pop(); 
+            
+            // Nhận diện Ophim/KKPhim để chuyển về domain phimimg.com (đặt ở root)
+            if (baseDomain.includes('phimimg') || baseDomain.includes('ophim') || url.includes('ophim') || url.includes('phimimg')) {
+                return 'https://phimimg.com/' + fileName;
+            }
+            
+            // Xử lý các nguồn khác (NguonC...)
+            let finalUrl = url;
+            if (!finalUrl.startsWith('http')) {
+                finalUrl = baseDomain.endsWith('/') ? baseDomain + finalUrl : baseDomain + '/' + finalUrl;
+            }
+            return finalUrl;
+        }
+
+        // ============================================================
+        // 🔥 HỆ THỐNG FETCH ĐA NGUỒN (OPHIM - KKPHIM - NGUỒN C) 🔥
+        // ============================================================
+        
+        // Hàm 1: Lấy chi tiết 1 bộ phim (Quét qua 3 Server)
+        async function fetchMovieMultiSource(slug) {
+            const endpoints = [
+                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://phimimg.com/' },
+                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' },
+                { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' }
+            ];
+
+            for (let api of endpoints) {
+                try {
+                    const res = await fetch(api.url);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    let movie = null;
+                    if (data.status && data.data && data.data.item) movie = data.data.item; 
+                    else if (data.status && data.movie) movie = data.movie; 
+                    else if (data.movie) movie = data.movie; 
+                    
+                    if (movie) {
+                        movie.poster_url = getCleanImageUrl(movie.poster_url, api.imgBase);
+                        movie.thumb_url = getCleanImageUrl(movie.thumb_url, api.imgBase);
+                        
+                        // 🔥 FIX LỖI API UP NGƯỢC ẢNH
+                        if (slug === 'vi-me-anh-phan-chia-tay') {
+                            let temp = movie.poster_url;
+                            movie.poster_url = movie.thumb_url;
+                            movie.thumb_url = temp;
+                        }
+                        return { status: true, item: movie };
+                    }
+                } catch (e) {}
+            }
+            return { status: false, item: null };
+        }
+
+        // Hàm 2: Lấy Danh sách phim / Thể loại / Quốc gia
+        async function fetchListMultiSource(endpoint) {
+            const endpoints = [
+                { base: 'https://ophim1.com/v1/api', imgBase: 'https://phimimg.com/' },
+                { base: 'https://phimapi.com/v1/api', imgBase: 'https://phimimg.com/' }
+            ];
+
+            for (let api of endpoints) {
+                try {
+                    const res = await fetch(`${api.base}${endpoint}`);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    if (data.status && data.data && data.data.items) {
+                        data.data.items.forEach(m => {
+                            m.poster_url = getCleanImageUrl(m.poster_url, api.imgBase);
+                            m.thumb_url = getCleanImageUrl(m.thumb_url, api.imgBase);
+                        });
+                        return data;
+                    }
+                } catch (e) {}
+            }
+            return { status: false, data: { items: [] } };
+        }
+
+        // Hàm 3: Tìm kiếm phim Đa luồng
         async function fetchSearchMultiSource(keyword) {
             const endpoints = [
                 { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' },
@@ -1298,29 +1385,15 @@
                     if (data.status === "success" && data.data && data.data.items && data.data.items.length > 0) {
                         const imgDomain = data.data.APP_DOMAIN_CDN_IMAGE || api.imgBase;
                         data.data.items.forEach(m => {
-                            // SỬA: Đảm bảo có dấu '/' giữa domain và tên file ảnh nếu cần
-                            let thumb = m.thumb_url;
-                            let poster = m.poster_url;
-                            
-                            if (thumb && !thumb.startsWith('http')) {
-                                m.thumb_url = imgDomain.endsWith('/') ? imgDomain + thumb : imgDomain + '/' + thumb;
-                            }
-                            if (poster && !poster.startsWith('http')) {
-                                m.poster_url = imgDomain.endsWith('/') ? imgDomain + poster : imgDomain + '/' + poster;
-                            }
+                            m.thumb_url = getCleanImageUrl(m.thumb_url, imgDomain);
+                            m.poster_url = getCleanImageUrl(m.poster_url, imgDomain);
                         });
                         return { status: true, items: data.data.items };
                     }
                     if (data.status === "success" && data.paginate && data.items && data.items.length > 0) {
                         data.items.forEach(m => {
-                            let thumb = m.thumb_url;
-                            let poster = m.poster_url;
-                            if (thumb && !thumb.startsWith('http')) {
-                                m.thumb_url = api.imgBase.endsWith('/') ? api.imgBase + thumb : api.imgBase + '/' + thumb;
-                            }
-                            if (poster && !poster.startsWith('http')) {
-                                m.poster_url = api.imgBase.endsWith('/') ? api.imgBase + poster : api.imgBase + '/' + poster;
-                            }
+                            m.thumb_url = getCleanImageUrl(m.thumb_url, api.imgBase);
+                            m.poster_url = getCleanImageUrl(m.poster_url, api.imgBase);
                         });
                         return { status: true, items: data.items };
                     }
@@ -1383,26 +1456,12 @@
         }
 
         function renderSetupMovies(items, defaultImgBase = 'https://phimimg.com/') {
-            // Đổi ảnh fallback sang ảnh chắc chắn tồn tại trên server của bạn
             const fallbackImg = 'https://wibey.netlify.app/home-background.jpg'; 
             
             document.getElementById('setup-movie-grid').innerHTML = items.map(item => {
-                let img = item.thumb_url || item.poster_url;
-                
-                if (img) {
-                    if (img.startsWith('http')) {
-                        img = img.replace('img.ophim1.com', 'phimimg.com')
-                                 .replace('img.ophim.live', 'phimimg.com')
-                                 .replace('ophim1.com', 'phimimg.com');
-                    } else {
-                        // 🔥 FIX: Thêm logic tự động chèn dấu '/' nếu domain gốc chưa có
-                        img = defaultImgBase.endsWith('/') ? defaultImgBase + img : defaultImgBase + '/' + img;
-                    }
-                } else {
-                    img = fallbackImg;
-                }
-                
+                let img = getCleanImageUrl(item.thumb_url || item.poster_url, defaultImgBase);
                 const safeName = (item.name || "Phim Mới").replace(/'/g, "\\'");
+                
                 return `
                 <div class="mini-movie-card" onclick="window.selectAnimeForRoom('${item.slug}', '${safeName}', '${img}')">
                     <div class="card-img-wrap">
@@ -1456,7 +1515,7 @@
                 const snap = await getDoc(roomRef);
                 
                 if(!snap.exists()) {
-                    alert("Mật thất không tồn tại hoặc đã bị Chủ phòng đóng!");
+                    alert("Phòng không tồn tại hoặc đã bị Chủ phòng đóng!");
                     window.location.href = "/xem-chung/";
                     return;
                 }
