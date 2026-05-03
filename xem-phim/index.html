@@ -3005,11 +3005,16 @@ footer {
         let targetEpToPlay = null; 
         let targetIndex = 0;
 
-        // Lấy ảnh nền của phim làm ảnh minh họa cho các tập (Vì API không có ảnh từng tập)
+        // Lấy ảnh nền của phim làm ảnh minh họa cho các tập
         let fallbackImg = currentMovieData.poster_url || currentMovieData.thumb_url;
         if (fallbackImg && !fallbackImg.startsWith('http')) fallbackImg = IMG_BASE + fallbackImg;
 
         document.getElementById('mTotalEps').innerText = `${svData.length} tập`;
+
+        // 🌟 ĐỂ 3 BIẾN NÀY Ở NGOÀI VÒNG LẶP ĐỂ TỐI ƯU TỐC ĐỘ XỬ LÝ NHÉ
+        const movieQuality = currentMovieData.quality || 'FHD';
+        const movieTime = currentMovieData.time || 'Đang cập nhật';
+        const movieLang = currentMovieData.lang || 'Vietsub';
 
         svData.forEach((ep, idx) => {
             const type = ep.link_m3u8 ? 'hls' : 'iframe';
@@ -3026,8 +3031,10 @@ footer {
                     <div class="ep-play-icon"><i class="fas fa-play"></i></div>
                 </div>
                 <div class="ep-name">${epDisplay}</div>
-                <div class="ep-meta"><span>T16</span><span>|</span><span>Full HD</span><span>|</span><span>45ph</span></div>
-                <div class="ep-desc-mini">Khám phá diễn biến tiếp theo của ${currentMovieData.name} trong ${epDisplay}...</div>
+                <div class="ep-meta">
+                    <span>${movieLang}</span><span>|</span><span>${movieQuality}</span><span>|</span><span>${movieTime}</span>
+                </div>
+                <div class="ep-desc-mini">Đón xem những tình tiết mới nhất của ${currentMovieData.name} trong ${epDisplay}...</div>
             </div>`;
 
             if (savedEpName) {
@@ -3222,7 +3229,7 @@ footer {
         return Math.floor(hours / 24) + " ngày trước";
     }
 
-    // --- LOAD PHIM ĐỀ XUẤT NGẪU NHIÊN ---
+    // --- LOAD PHIM ĐỀ XUẤT NGẪU NHIÊN & DỮ LIỆU THẬT ---
     async function loadRelated() {
         try {
             // Lấy ngẫu nhiên 1 trang từ 1 đến 5 để có data phong phú
@@ -3238,10 +3245,15 @@ footer {
 
                 let html = '';
                 selectedMovies.forEach(m => {
-                    // API danh sách thường trả về thumb_url là chủ yếu
+                    // Xử lý ảnh
                     let img = m.poster_url || m.thumb_url; 
                     if (img && !img.startsWith('http')) img = `https://img.ophim1.com/uploads/movies/${img}`;
                     
+                    // Lấy dữ liệu thật từ API (nếu API thiếu thì dùng giá trị mặc định)
+                    const movieQuality = m.quality || 'FHD';
+                    const movieLang = m.lang || 'Vietsub';
+                    const currentEp = m.episode_current || 'Đang cập nhật';
+
                     html += `
                     <div class="rec-card-premium" onclick="window.location.href='/xem-phim.html?slug=${m.slug}'">
                         <div class="ep-thumb">
@@ -3249,9 +3261,9 @@ footer {
                         </div>
                         <div class="ep-name" style="font-size: 1.15rem;">${m.name}</div>
                         <div class="rec-meta-tags">
-                            <span>${m.year || new Date().getFullYear()}</span><span>T16</span><span style="color:#fff;">Full HD</span>
+                            <span>${m.year || new Date().getFullYear()}</span><span>|</span><span>${movieLang}</span><span>|</span><span style="color:#fff;">${movieQuality}</span>
                         </div>
-                        <div class="ep-desc-mini">Khám phá siêu phẩm ${m.name} đang cực hot trên Wibey ngay hôm nay...</div>
+                        <div class="ep-desc-mini">Tiến độ: ${currentEp} • Khám phá siêu phẩm ${m.name} đang cực hot trên Wibey ngay hôm nay...</div>
                     </div>`;
                 });
                 document.getElementById('relatedList').innerHTML = html;
