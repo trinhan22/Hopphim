@@ -2223,8 +2223,6 @@ footer {
         <span>&copy; 2026 Wibey. All Rights Reserved.</span>
     </div>
 </footer>
-
-<script src="../chatbot.js"></script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -2246,6 +2244,77 @@ footer {
     const db = getFirestore(app);
 
     window.isCurrentVip = false;
+
+    // ============================================================
+    // 🔥 HỆ THỐNG FETCH ĐA NGUỒN CỰC MẠNH (OPHIM - KKPHIM - NGUỒN C)
+    // ============================================================
+    async function fetchMovieMultiSource(slug) {
+        const endpoints = [
+            { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
+            { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' },
+            { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' }
+        ];
+
+        let finalMovie = null;
+        let finalEpisodes = []; // Mảng chứa toàn bộ các server
+        let finalImgBase = '';
+
+        for (let api of endpoints) {
+            try {
+                const res = await fetch(api.url);
+                if (!res.ok) continue;
+                const data = await res.json();
+                
+                let movie = null;
+                let eps = [];
+
+                // 1. Lấy thông tin chung của Phim (Ưu tiên lấy thông tin từ nguồn đầu tiên chạy được)
+                if (data.status && data.data && data.data.item) movie = data.data.item;
+                else if (data.status && data.movie) movie = data.movie;
+                else if (data.movie) movie = data.movie;
+                
+                if (movie && !finalMovie) {
+                    finalMovie = movie;
+                    finalImgBase = api.imgBase;
+                }
+
+                // 2. Gom nhặt các tập phim từ MỌI NGUỒN (Gom thành các server)
+                if (data.episodes && data.episodes.length > 0) {
+                    eps = data.episodes;
+                } else if (movie && movie.episodes && movie.episodes.length > 0) {
+                    eps = movie.episodes;
+                }
+
+                if (eps.length > 0) {
+                    eps.forEach(serverGroup => {
+                        let srvName = serverGroup.server_name || "Vietsub";
+                        
+                        // Chuẩn hóa tên tập phim
+                        let srvData = (serverGroup.server_data || serverGroup.items || []).map(ep => ({
+                            name: ep.name,
+                            link_m3u8: ep.link_m3u8 || ep.link_embed,
+                            link_embed: ep.link_embed || ep.link_m3u8
+                        }));
+
+                        // Nếu server này chưa có trong danh sách thì thêm vào
+                        if (!finalEpisodes.some(g => g.server_name === srvName) && srvData.length > 0) {
+                            finalEpisodes.push({ server_name: srvName, server_data: srvData });
+                        }
+                    });
+                }
+            } catch (e) {
+                console.warn(`[Fallback] Lỗi lấy nguồn ${api.url}`);
+            }
+        }
+
+        if (finalMovie && finalEpisodes.length > 0) {
+            if (finalMovie.poster_url && !finalMovie.poster_url.startsWith('http')) finalMovie.poster_url = finalImgBase + finalMovie.poster_url;
+            if (finalMovie.thumb_url && !finalMovie.thumb_url.startsWith('http')) finalMovie.thumb_url = finalImgBase + finalMovie.thumb_url;
+            return { status: true, item: finalMovie, episodes: finalEpisodes };
+        }
+
+        return { status: false, item: null, episodes: [] };
+    }
 
     // 2. CONSTANTS & UI ELEMENTS
     const API_BASE = 'https://ophim1.com/v1/api/phim';
@@ -2940,10 +3009,11 @@ footer {
         if (!movieSlug) { hideLoadingState(); return; }
 
         try {
-            const res = await fetch(`${API_BASE}/${movieSlug}`);
-            const data = await res.json();
+            // 🔥 THAY ĐỔI CỐT LÕI Ở ĐÂY: Dùng hàm fetchMovieMultiSource
+            const data = await fetchMovieMultiSource(movieSlug);
+            
             if (data.status) {
-                const movie = data.data.item;
+                const movie = data.item;
                 if (movie.category && movie.category.some(c => c.slug === 'short-drama')) {
                     window.location.replace(`/short.html?slug=${movie.slug}`);
                     return;
@@ -2951,13 +3021,12 @@ footer {
                 currentMovieData = movie;
                 renderInfo(movie);
 
-                const episodesArray = movie.episodes; 
+                const episodesArray = data.episodes; // 🔥 Nhận list tập chuẩn hóa từ đa nguồn
                 
                 if (episodesArray && episodesArray.length > 0) {
                     if (episodesArray.length > 1) {
                         renderServerButtons(episodesArray, savedEpName, savedTime);
                     } else {
-                        // 🔥 ĐÃ FIX LỖI Ở ĐÂY: Chỉ target 1 ID duy nhất
                         document.getElementById('serverSelectionDesktop').style.display = 'none';
                         renderEpisodeList(episodesArray[0].server_data, savedEpName, savedTime);
                     }
@@ -2966,6 +3035,8 @@ footer {
                 }
 
                 loadRelated();
+            } else {
+                window.showToast("Phim bị lỗi hoặc đã bị xóa khỏi các server!", "error");
             }
         } catch (e) {
             console.error("Lỗi:", e);
@@ -3509,6 +3580,5 @@ footer {
         }
     });
 </script>
-<script src="../backtotop.js"></script>
 </body>
 </html>

@@ -3322,9 +3322,91 @@ footer {
         
     </script>
 
-    <script>
-        const API_BASE = 'https://ophim1.com/v1/api';
-        const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
+<script>
+        // ============================================================
+        // 🔥 HỆ THỐNG FETCH ĐA NGUỒN (OPHIM - KKPHIM - NGUỒN C) 🔥
+        // ============================================================
+        
+        // Hàm 1: Lấy chi tiết 1 bộ phim (Quét qua 3 Server)
+        async function fetchMovieMultiSource(slug) {
+            const endpoints = [
+                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
+                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' },
+                { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' } // NguonC thường trả full link
+            ];
+
+            for (let api of endpoints) {
+                try {
+                    const res = await fetch(api.url);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    let movie = null;
+                    // Chuẩn hoá cấu trúc (Ophim và KKPhim khác nhau đôi chút)
+                    if (data.status && data.data && data.data.item) movie = data.data.item; 
+                    else if (data.status && data.movie) movie = data.movie; 
+                    else if (data.movie) movie = data.movie; 
+                    
+                    if (movie) {
+                        // Chuẩn hoá link ảnh để card hiển thị không bị lỗi
+                        if (movie.poster_url && !movie.poster_url.startsWith('http')) movie.poster_url = api.imgBase + movie.poster_url;
+                        if (movie.thumb_url && !movie.thumb_url.startsWith('http')) movie.thumb_url = api.imgBase + movie.thumb_url;
+                        return { status: true, item: movie };
+                    }
+                } catch (e) {
+                    console.warn(`[Fallback] Bỏ qua ${api.url} vì lỗi kết nối.`);
+                }
+            }
+            return { status: false, item: null };
+        }
+
+        // Hàm 2: Lấy Danh sách phim / Thể loại / Quốc gia (Ophim + KKPhim)
+        async function fetchListMultiSource(endpoint) {
+            const endpoints = [
+                { base: 'https://ophim1.com/v1/api', imgBase: 'https://img.ophim1.com/uploads/movies/' },
+                { base: 'https://phimapi.com/v1/api', imgBase: 'https://phimimg.com/' }
+            ];
+
+            for (let api of endpoints) {
+                try {
+                    const res = await fetch(`${api.base}${endpoint}`);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    if (data.status && data.data && data.data.items) {
+                        data.data.items.forEach(m => {
+                            if (m.poster_url && !m.poster_url.startsWith('http')) m.poster_url = api.imgBase + m.poster_url;
+                            if (m.thumb_url && !m.thumb_url.startsWith('http')) m.thumb_url = api.imgBase + m.thumb_url;
+                        });
+                        return data;
+                    }
+                } catch (e) {}
+            }
+            return { status: false, data: { items: [] } };
+        }
+
+        // Hàm 3: Tìm kiếm phim Đa luồng
+        async function searchMultiSource(keyword) {
+            const endpoints = [
+                { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
+                { url: `https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' }
+            ];
+            
+            for (let api of endpoints) {
+                try {
+                    const res = await fetch(api.url);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    if (data.status && data.data && data.data.items && data.data.items.length > 0) {
+                        data.data.items.forEach(m => {
+                            if (m.thumb_url && !m.thumb_url.startsWith('http')) m.thumb_url = api.imgBase + m.thumb_url;
+                        });
+                        return data;
+                    }
+                } catch (e) {}
+            }
+            return { status: false, data: { items: [] } };
+        }
 
         // --- TIME HELPER ---
         function timeAgo(timestamp) {
@@ -3339,48 +3421,32 @@ footer {
             return "Vừa xong";
         }
 
-        // --- RENDER CARD (ĐÃ CẬP NHẬT: HIỆN THỂ LOẠI TRONG LỊCH SỬ) ---
+        // --- RENDER CARD (Chuẩn hóa cho Đa Nguồn) ---
         window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
-            // 1. Xử lý link ảnh
-            let imgSource = m.poster_url;
-            if (!imgSource || imgSource === "") imgSource = m.thumb_url;
-
-            const imgFull = imgSource.startsWith('http') ? imgSource : IMG_BASE + imgSource;
-            const imgPortrait = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-
-            // 2. Tên & Class
+            let imgFull = m.poster_url || m.thumb_url;
+            let imgPortrait = m.thumb_url || m.poster_url;
+            
             const nameFixed = (m.name || "").replace(/'/g, "\\'");
             const historyClass = isHistory ? `history-card-${m.slug}` : '';
-            
             let originName = m.origin_name;
             if (!originName || originName === "undefined" || originName === "null") originName = "";
 
-            // Padding
             const paddingStyle = isHistory ? "padding: 12px 12px 10px 12px;" : "padding: 12px;";
 
-            // 3. Logic Độ tuổi & Thể loại
             let ageTag = 'T13';
-            let genreText = ""; // Biến lưu tên thể loại
+            let genreText = "Phim Hay Ngất Ngây";
 
             if (m.category && m.category.length > 0) {
-                // Lấy độ tuổi
-                const cats = m.category.map(c => c.slug);
-                if (cats.some(s => s === 'kinh-di' || s === 'toi-pham' || s === '18')) ageTag = 'T18'; 
-                else if (cats.some(s => s === 'hanh-dong' || s === 'vo-thuat')) ageTag = 'T16'; 
-                else if (cats.some(s => s === 'hoat-hinh')) ageTag = 'P'; 
+                const cats = m.category.map(c => c.slug || c.name.toLowerCase());
+                if (cats.some(s => s.includes('kinh-di') || s.includes('tội phạm') || s.includes('18'))) ageTag = 'T18'; 
+                else if (cats.some(s => s.includes('hanh-dong') || s.includes('vo-thuat'))) ageTag = 'T16'; 
+                else if (cats.some(s => s.includes('hoat-hinh') || s.includes('gia đình'))) ageTag = 'P'; 
                 
-                // 🔥 Lấy tên thể loại (Lấy cái đầu tiên cho gọn, vd: "Tình Cảm")
                 genreText = m.category[0].name;
-            } else {
-                genreText = "Phim Hay Ngất Ngây";
             }
             
-            // Nếu là phim thường (không phải lịch sử), hiện nhiều thể loại hơn
-            if (!isHistory && m.category) {
-                 genreText = m.category.slice(0, 2).map(c => c.name).join(' • ');
-            }
+            if (!isHistory && m.category) genreText = m.category.slice(0, 2).map(c => c.name).join(' • ');
 
-            // 4. Badge Tập
             let badgeText = (m.epName || "").toUpperCase();
             if (badgeText && !badgeText.includes("TẬP") && !badgeText.includes("FULL") && !badgeText.includes("TRỌN BỘ")) {
                 badgeText = "TẬP " + badgeText;
@@ -3395,14 +3461,11 @@ footer {
             return `
             <div class="n-card ${historyClass}" onclick="window.location.href='${redirectUrl}'">
                 ${epBadge}
-                
                 <img src="${imgFull}" class="n-poster-wide" loading="lazy" style="object-position: top;">
                 <img src="${imgPortrait}" class="n-poster-portrait" loading="lazy">
                 
                 <div class="n-info-layer" style="${paddingStyle} display: flex; flex-direction: column; justify-content: flex-end;"> 
-                    
                     <div class="n-title-in" style="margin-bottom: 0px; line-height: 1.2;">${m.name}</div>
-                    
                     ${originName ? `<div style="font-size: 0.75rem; color: #aaa; margin-bottom: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">${originName}</div>` : ''}
 
                     <div class="n-meta-in" style="flex-wrap: wrap; gap: 5px; margin-top: -4px;">
@@ -3410,15 +3473,12 @@ footer {
                             ? `<span style="color:#FF8F50; font-size: 0.8rem; font-weight: 700;"><i class="fas fa-history"></i> ${timeString}</span>` 
                             : `
                                 <span style="background: #ccc; color:#181818; padding: 0px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 500; line-height: 16px; display: inline-block;">${ageTag}</span>
-                                <span style="background: rgba(255,255,255,0.1); color: #ccc; padding: 0px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 500; height: 16px; line-height: 16px; display: inline-block;">${m.year}</span>
+                                <span style="background: rgba(255,255,255,0.1); color: #ccc; padding: 0px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 500; height: 16px; line-height: 16px; display: inline-block;">${m.year || '2026'}</span>
                                 <span style="background: rgba(70, 211, 105, 0.1); color: #46d369; padding: 0px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 500; height: 16px; line-height: 16px; display: inline-block;">${m.episode_current || 'Full'}</span>
                             `
                         }
                     </div>
-                    
-                    <div style="font-size: 0.75rem; color: #999; margin-top: 1px; font-weight: 500;">
-                        ${genreText}
-                    </div>
+                    <div style="font-size: 0.75rem; color: #999; margin-top: 1px; font-weight: 500;">${genreText}</div>
 
                     <div class="n-actions-in" style="margin-top: 3px;">
                         <button class="btn-mini-play">
@@ -3431,14 +3491,11 @@ footer {
             </div>`;
         };
         
-        // --- RENDER HISTORY ROW ---
         window.renderHistoryRow = (movies) => {
             const container = document.getElementById('history-container');
             if(!movies || movies.length === 0) { container.innerHTML = ''; return; }
-            
             const historyGridId = 'historyList'; 
             let cards = movies.map(m => window.createMovieCardHTML(m, true, timeAgo(m.timestamp))).join('');
-            
             container.innerHTML = `
                 <div class="merged-block" style="margin-top:0; padding-bottom:30px;">
                     <div class="country-section" style="border:none;">
@@ -3454,11 +3511,10 @@ footer {
                 </div>`;
         }
 
-        /* ==============================================
-           🔥 FIX SEARCH LOGIC (TÌM KIẾM)
-           ============================================== */
+        // ==============================================
+        // 🔥 LOGIC TÌM KIẾM ĐA NGUỒN
+        // ==============================================
         let searchTimeout;
-        const IMG_BASE_URL = 'https://img.ophim1.com/uploads/movies/';
 
         async function performSearch(keyword, containerId) {
             const container = document.getElementById(containerId);
@@ -3476,19 +3532,17 @@ footer {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(async () => {
                 try {
-                    const res = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`);
-                    const data = await res.json();
+                    const data = await searchMultiSource(keyword); // Dùng hàm mới
 
-                    if (data.data && data.data.items && data.data.items.length > 0) {
+                    if (data.status && data.data && data.data.items && data.data.items.length > 0) {
                         let html = '';
                         data.data.items.slice(0, 10).forEach(m => {
-                            const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE_URL + m.thumb_url;
                             html += `
                                 <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
-                                    <img src="${img}" alt="${m.name}" loading="lazy">
+                                    <img src="${m.thumb_url}" alt="${m.name}" loading="lazy" onerror="this.src='https://wibey.netlify.app/panel.webp'">
                                     <div class="search-result-info">
                                         <div class="search-result-title">${m.name}</div>
-                                        <div class="search-result-meta">${m.year} • ${m.origin_name}</div>
+                                        <div class="search-result-meta">${m.year || '2026'} • ${m.origin_name || 'Đang cập nhật'}</div>
                                     </div>
                                 </div>`;
                         });
@@ -3502,19 +3556,12 @@ footer {
             }, 500);
         }
 
-        // Gán sự kiện cho Desktop
         const desktopSearch = document.getElementById('searchInput');
-        if(desktopSearch) {
-            desktopSearch.addEventListener('input', (e) => performSearch(e.target.value, 'desktopSearchResults'));
-        }
-
-        // Gán sự kiện cho Mobile
+        if(desktopSearch) desktopSearch.addEventListener('input', (e) => performSearch(e.target.value, 'desktopSearchResults'));
+        
         const mobileSearch = document.getElementById('mobileSearchInput');
-        if(mobileSearch) {
-            mobileSearch.addEventListener('input', (e) => performSearch(e.target.value, 'mobileSearchResults'));
-        }
+        if(mobileSearch) mobileSearch.addEventListener('input', (e) => performSearch(e.target.value, 'mobileSearchResults'));
 
-        // Click ra ngoài để ẩn kết quả Desktop
         document.addEventListener('click', (e) => {
             const box = document.querySelector('.search-box');
             const res = document.getElementById('desktopSearchResults');
@@ -3523,314 +3570,177 @@ footer {
             }
         });
 
-        // Hàm mở/đóng search mobile (Dùng chung cho toàn web)
-        window.openMobileSearch = () => {
-            document.getElementById('mobileSearchOverlay').classList.add('active');
+        window.openMobileSearch = () => { 
+            const overlay = document.getElementById('mobileSearchOverlay');
+            overlay.classList.add('active'); 
             setTimeout(() => document.getElementById('mobileSearchInput').focus(), 300);
         }
-        window.closeMobileSearch = () => {
-            document.getElementById('mobileSearchOverlay').classList.remove('active');
-        }
+        window.closeMobileSearch = () => { document.getElementById('mobileSearchOverlay').classList.remove('active'); }
 
-
-        // --- HÀM ĐOÁN ĐỘ TUỔI (Nếu chưa có thì thêm vào) ---
         function getAgeRating(movie) {
-            // Ưu tiên nếu API có sẵn field rating
             if (movie.content_rating) return movie.content_rating;
-            if (!movie.category || movie.category.length === 0) return '13+';
-            const slugs = movie.category.map(c => c.slug); 
-
-            // --- LOGIC PHÂN LOẠI ---
-            if (slugs.some(s => s === 'kinh-di' || s === 'toi-pham' || s === '18' || s === 'tam-ly-18')) {
-                return 'T18';
-            }
-            if (slugs.some(s => s === 'hanh-dong' || s === 'vo-thuat' || s === 'tinh-cam' || s === 'tam-ly' || s === 'chien-tranh' || s === 'bi-an')) {
-                return 'T16';
-            }
-            if (slugs.some(s => s === 'hoat-hinh' || s === 'gia-dinh')) {
-                return 'P';
-            }
+            if (!movie.category || movie.category.length === 0) return 'T13';
+            const slugs = movie.category.map(c => c.slug || c.name.toLowerCase()); 
+            if (slugs.some(s => s.includes('kinh-di') || s.includes('toi-pham') || s.includes('18'))) return 'T18';
+            if (slugs.some(s => s.includes('hanh-dong') || s.includes('vo-thuat') || s.includes('tinh-cam'))) return 'T16';
+            if (slugs.some(s => s.includes('hoat-hinh') || s.includes('gia-dinh'))) return 'P';
             return 'T13';
         }
 
-        // --- LOAD TOP 5 PHIM BỘ (ĐÃ THÊM TÊN TIẾNG ANH) ---
+        // ==============================================
+        // 🔥 LOAD DATA TỪ CÁC PHÂN MỤC (ĐA NGUỒN)
+        // ==============================================
+
+        // 1. TOP 5 PHIM BỘ
         async function loadTop5() {
-            const MANUAL_TOP_5 = [
-                "bong-ma-hanh-phuc", 
-                "boyfriend-on-demand", 
-                "con-ra-the-thong-gi-nua-2026", 
-                "tieng-yeu-nay-anh-dich-duoc-khong", 
-                "giang-ho-da-vu-thap-nien-dang"
-            ];
-            
+            const MANUAL_TOP_5 = ["bong-ma-hanh-phuc", "boyfriend-on-demand", "con-ra-the-thong-gi-nua-2026", "tieng-yeu-nay-anh-dich-duoc-khong", "giang-ho-da-vu-thap-nien-dang"];
             const container = document.getElementById('top5List');
             if(!container) return;
-            
             let html = '';
             
             for (let i = 0; i < MANUAL_TOP_5.length; i++) {
-                try {
-                    const res = await fetch(`${API_BASE}/phim/${MANUAL_TOP_5[i]}`);
-                    const data = await res.json();
-                    
-                    if(data.status) {
-                        const m = data.data.item;
-                        const img = m.thumb_url.startsWith('http') ? m.thumb_url : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
-                        
-                        // 1. Xử lý độ tuổi
-                        const ageTag = getAgeRating(m);
-                        let ageColor = '#ccc'; // Xanh lá
-                        if(ageTag === 'T18') ageColor = '#ccc'; // Đỏ
-                        if(ageTag === 'T16') ageColor = '#ccc'; // Cam
+                const res = await fetchMovieMultiSource(MANUAL_TOP_5[i]);
+                if(res.status) {
+                    const m = res.item;
+                    const ageTag = getAgeRating(m);
+                    const ageColor = ageTag === 'T18' ? '#ff4757' : (ageTag === 'T16' ? '#FF8F50' : '#2ecc71');
 
-                        html += `
-                        <div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'">
-                            <div class="top-poster-style2">
-                                <img src="${img}" loading="lazy" alt="${m.name}">
-                                
-                                <div style="position:absolute; top:10px; right:10px; background:#FF8F50; color:#fff; font-size:0.65rem; font-weight:800; padding:3px 6px; border-radius:4px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                    ${m.lang}
+                    html += `
+                    <div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'">
+                        <div class="top-poster-style2">
+                            <img src="${m.thumb_url}" loading="lazy" alt="${m.name}">
+                            <div style="position:absolute; top:10px; right:10px; background:#FF8F50; color:#fff; font-size:0.65rem; font-weight:800; padding:3px 6px; border-radius:4px;">${m.lang || 'Vietsub'}</div>
+                        </div>
+                        <div class="top-info-row">
+                            <div class="top-rank-style2">${i+1}</div>
+                            <div class="top-text-style2">
+                                <div class="top-title-style2">${m.name}</div>
+                                <div style="font-size: 0.8rem; color: #888; font-weight: 500; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${m.origin_name || ''}</div>
+                                <div class="top-meta-style2" style="gap: 8px; align-items: center;">
+                                    <span style="color: ${ageColor}">${ageTag}</span>
+                                    <span style="font-size: 0.7rem; color: #555;">●</span>
+                                    <span style="font-weight: 600; font-size: 0.66rem;">${m.episode_current || 'Full'}</span>
                                 </div>
                             </div>
-                            
-                            <div class="top-info-row">
-                                <div class="top-rank-style2">${i+1}</div>
-                                
-                                <div class="top-text-style2">
-                                    <div class="top-title-style2" style="font-size: 1rem; margin-bottom: 2px;">
-                                        ${m.name}
-                                    </div>
-                                    
-                                    <div style="font-size: 0.8rem; color: #888; font-weight: 500; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
-                                        ${m.origin_name}
-                                    </div>
-                                    
-                                    <div class="top-meta-style2" style="gap: 8px; align-items: center;">
-                                        <span style="color: ${ageColor}">${ageTag}</span>
-
-                                        <span style="font-size: 0.7rem; color: #555;">●</span>
-                                        
-                                        <span style= font-weight: 600; font-size: 0.66rem;">
-                                            ${m.episode_current}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-                    }
-                } catch(e) { console.error(e); }
+                        </div>
+                    </div>`;
+                }
             }
             container.innerHTML = html;
         }
 
-        // --- HÀM TẢI PHIM CHIẾU RẠP (TỰ CHỈNH LIST) ---
+        // 2. TẢI PHIM CHIẾU RẠP
         async function loadCinemaMovies() {
-            // 👇 DANH SÁCH SLUG (Bạn thêm bao nhiêu phim cũng được)
-            const CINEMA_SLUGS = [
-                "an-danh-phan-3",
-                "avatar-3-lua-va-tro-tan",
-                "deadpool-va-wolverine",
-                "godzilla-x-kong-de-che-moi",
-                "exhuma-quat-mo-trung-ma",
-                "co-hau-gai-2025"
-            ]; 
-            
+            const CINEMA_SLUGS = ["an-danh-phan-3", "avatar-3-lua-va-tro-tan", "deadpool-va-wolverine", "godzilla-x-kong-de-che-moi", "exhuma-quat-mo-trung-ma", "co-hau-gai-2025"]; 
             const container = document.getElementById('cinemaList');
             if(!container) return;
-
             let html = '';
 
             for (const slug of CINEMA_SLUGS) {
-                try {
-                    const res = await fetch(`https://ophim1.com/v1/api/phim/${slug}`);
-                    const data = await res.json();
-                    
-                    if(data.status) {
-                        const m = data.data.item;
-                        const posterUrl = m.poster_url.startsWith('http') ? m.poster_url : `https://img.ophim1.com/uploads/movies/${m.poster_url}`;
-                        const thumbUrl = m.thumb_url.startsWith('http') ? m.thumb_url : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
+                const res = await fetchMovieMultiSource(slug);
+                if(res.status) {
+                    const m = res.item;
+                    const ageTag = getAgeRating(m);
+                    const ageColor = ageTag === 'T18' ? '#ff4757' : (ageTag === 'T16' ? '#FF8F50' : '#2ecc71');
+                    const duration = m.time ? m.time.replace('phút', 'p') : 'Đang cập nhật';
 
-                        // --- 1. LOGIC ĐOÁN ĐỘ TUỔI ---
-                        let ageTag = 'T13';
-                        let ageColor = '#ccc'; // Mặc định xanh lá (An toàn)
-
-                        if (m.category) {
-                            const cats = m.category.map(c => c.name.toLowerCase());
-                            if (cats.some(c => c.includes('18+') || c.includes('người lớn') || c.includes('kinh dị') || c.includes('tội phạm'))) {
-                                ageTag = 'T18'; ageColor = '#ccc'; // Đỏ
-                            } else if (cats.some(c => c.includes('hành động') || c.includes('võ thuật') || c.includes('chiến tranh') || c.includes('tình cảm'))) {
-                                ageTag = 'T16'; ageColor = '#ccc'; // Cam
-                            } else if (cats.some(c => c.includes('hoạt hình') || c.includes('gia đình'))) {
-                                ageTag = 'P'; ageColor = '#ccc'; // Xanh dương
-                            }
-                        }
-                        
-                        // --- 2. LOGIC THỜI LƯỢNG ---
-                        // API thường trả về "120 phút" hoặc "N/A"
-                        const duration = m.time ? m.time.replace('phút', 'p') : 'Đang cập nhật';
-
-                        html += `
-                        <div class="cinema-card" onclick="window.location.href='/xem-phim/${m.slug}'">
-                            <div class="cinema-bg">
-                                <img src="${posterUrl}" loading="lazy" alt="${m.name}">
-                                <div class="cinema-overlay"></div>
-                                <div style="position:absolute; top:10px; right:10px; background:#FF8F50; color:#fff; font-size:0.65rem; font-weight:800; padding:3px 6px; border-radius:4px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                    ${m.lang}
+                    html += `
+                    <div class="cinema-card" onclick="window.location.href='/xem-phim/${m.slug}'">
+                        <div class="cinema-bg">
+                            <img src="${m.poster_url}" loading="lazy" alt="${m.name}">
+                            <div class="cinema-overlay"></div>
+                            <div style="position:absolute; top:10px; right:10px; background:#FF8F50; color:#fff; font-size:0.65rem; font-weight:800; padding:3px 6px; border-radius:4px;">${m.lang || 'Vietsub'}</div>
+                        </div>
+                        <div class="cinema-content">
+                            <div class="cinema-poster-mini">
+                                <img src="${m.thumb_url}" loading="lazy">
+                            </div>
+                            <div class="cinema-info">
+                                <div class="cinema-title-vi">${m.name}</div>
+                                <div class="cinema-title-en">${m.origin_name || ''}</div>
+                                <div class="cinema-meta" style="display:flex; align-items:center; gap:8px; margin-top:5px;">
+                                    <span style="color: ${ageColor}">${ageTag}</span>
+                                    <span style="color:#aaa; font-size:0.7rem;">●</span>
+                                    <span style="color:#ccc;">${m.year || '2026'}</span>
+                                    <span style="color:#aaa; font-size:0.7rem;">●</span>
+                                    <span style="color:#ccc;">${duration}</span>
                                 </div>
                             </div>
-                            <div class="cinema-content">
-                                <div class="cinema-poster-mini">
-                                    <img src="${thumbUrl}" loading="lazy">
-                                </div>
-                                <div class="cinema-info">
-                                    <div class="cinema-title-vi">${m.name}</div>
-                                    <div class="cinema-title-en">${m.origin_name}</div>
-                                    
-                                    <div class="cinema-meta" style="display:flex; align-items:center; gap:8px; margin-top:5px;">
-                                        <span style="color: ${ageColor}">${ageTag}</span>
-                                        
-                                        <span style="color:#aaa; font-size:0.7rem;">●</span>
-                                        
-                                        <span style="color:#ccc;">${m.year}</span>
-                                        
-                                        <span style="color:#aaa; font-size:0.7rem;">●</span>
-                                        
-                                        <span style="color:#ccc;">${duration}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-                    }
-                } catch (e) {
-                    console.error(`Lỗi tải phim ${slug}:`, e);
+                        </div>
+                    </div>`;
                 }
             }
             container.innerHTML = html;
         }
 
-        // --- HÀM ĐIỀU HƯỚNG SCROLL ---
-        window.scrollCinema = (direction) => {
-            const container = document.getElementById('cinemaList');
-            if (container) {
-                // Cuộn một khoảng bằng 1/3 chiều rộng màn hình
-                const scrollAmount = container.clientWidth * 0.5;
-                container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
-            }
-        }
-
-        // --- HÀM TẢI TOP 5 PHIM LẺ (TỰ CHỈNH LIST) ---
+        // 3. TOP 5 PHIM LẺ
         async function loadTop5Movies() {
-            // Danh sách phim lẻ của bạn
-            const MANUAL_TOP_MOVIES = [
-                "truy-tim-long-dien-huong",
-                "quai-vat-nho-nui-lang-lang", 
-                "avatar-3-lua-va-tro-tan", 
-                "doi-cam-lang-ac-mong-trong-suong", 
-                "ke-an-dat", 
-            ];
-            
+            const MANUAL_TOP_MOVIES = ["truy-tim-long-dien-huong", "quai-vat-nho-nui-lang-lang", "avatar-3-lua-va-tro-tan", "doi-cam-lang-ac-mong-trong-suong", "ke-an-dat"];
             const container = document.getElementById('top5MoviesList');
             if(!container) return;
-            
             let html = '';
             
             for (let i = 0; i < MANUAL_TOP_MOVIES.length; i++) {
-                try {
-                    const res = await fetch(`${API_BASE}/phim/${MANUAL_TOP_MOVIES[i]}`);
-                    const data = await res.json();
-                    
-                    if(data.status) {
-                        const m = data.data.item;
-                        // Xử lý ảnh
-                        const img = m.thumb_url.startsWith('http') ? m.thumb_url : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
-                        
-                        // 1. Xử lý Độ tuổi (Dùng hàm getAgeRating đã có)
-                        const ageTag = getAgeRating(m);
-                        let ageColor = '#ccc'; // Xanh lá
-                        if(ageTag === 'T18') ageColor = '#ccc'; // Đỏ
-                        if(ageTag === 'T16') ageColor = '#ccc'; // Cam
+                const res = await fetchMovieMultiSource(MANUAL_TOP_MOVIES[i]);
+                if(res.status) {
+                    const m = res.item;
+                    const ageTag = getAgeRating(m);
+                    const ageColor = ageTag === 'T18' ? '#ff4757' : (ageTag === 'T16' ? '#FF8F50' : '#2ecc71');
+                    const duration = m.time ? m.time.replace('phút', 'p') : 'N/A';
 
-                        // 2. Xử lý Thời lượng (đổi "phút" -> "p")
-                        const duration = m.time ? m.time.replace('phút', 'p') : 'N/A';
-
-                        html += `
-                        <div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'">
-                            <div class="top-poster-style2">
-                                <img src="${img}" loading="lazy" alt="${m.name}">
-                                
-                                <div style="position:absolute; top:10px; right:10px; background:#FF8F50; color:#fff; font-size:0.65rem; font-weight:800; padding:3px 6px; border-radius:4px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                    ${m.lang}
+                    html += `
+                    <div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'">
+                        <div class="top-poster-style2">
+                            <img src="${m.thumb_url}" loading="lazy" alt="${m.name}">
+                            <div style="position:absolute; top:10px; right:10px; background:#FF8F50; color:#fff; font-size:0.65rem; font-weight:800; padding:3px 6px; border-radius:4px;">${m.lang || 'Vietsub'}</div>
+                        </div>
+                        <div class="top-info-row">
+                            <div class="top-rank-style2">${i+1}</div>
+                            <div class="top-text-style2">
+                                <div class="top-title-style2" style="font-size: 1rem; margin-bottom: 2px;">${m.name}</div>
+                                <div style="font-size: 0.8rem; color: #888; font-weight: 500; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${m.origin_name || ''}</div>
+                                <div class="top-meta-style2" style="gap: 8px; align-items: center;">
+                                    <span style="color: ${ageColor}">${ageTag}</span>
+                                    <span style="font-size: 0.7rem; color: #555;">●</span>
+                                    <span style="font-weight: 600; font-size: 0.66rem;">${m.year || '2026'}</span>
+                                    <span style="font-size: 0.7rem; color: #555;">●</span>
+                                    <span style="font-weight: 600; font-size: 0.66rem;">${duration}</span>
                                 </div>
                             </div>
-                            
-                            <div class="top-info-row">
-                                <div class="top-rank-style2">${i+1}</div>
-                                
-                                <div class="top-text-style2">
-                                    <div class="top-title-style2" style="font-size: 1rem; margin-bottom: 2px;">
-                                        ${m.name}
-                                    </div>
-                                    
-                                    <div style="font-size: 0.8rem; color: #888; font-weight: 500; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
-                                        ${m.origin_name}
-                                    </div>
-                                    
-                                    <div class="top-meta-style2" style="gap: 8px; align-items: center;">
-                                        <span style="color: ${ageColor}">${ageTag}</span>
-                                        
-                                        <span style="font-size: 0.7rem; color: #555;">●</span>
-                                        
-                                        <span style= font-weight: 600; font-size: 0.66rem;">${m.year}</span>
-                                        
-                                        <span style="font-size: 0.7rem; color: #555;">●</span>
-                                        
-                                        <span style= font-weight: 600; font-size: 0.66rem;">${duration}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-                    }
-                } catch(e) {
-                    console.error("Lỗi tải phim lẻ:", e);
+                        </div>
+                    </div>`;
                 }
             }
             container.innerHTML = html;
         }
-        // --- OTHER LOAD FUNCTIONS ---
+
+        // 4. DANH SÁCH THEO QUỐC GIA
         async function loadCountrySection(slug, elementId) {
-            try {
-                const res = await fetch(`${API_BASE}/quoc-gia/${slug}?page=1`);
-                const data = await res.json();
-                if(data.data) {
-                    let html = '';
-                    data.data.items.slice(0, 16).forEach(m => html += window.createMovieCardHTML(m));
-                    document.getElementById(elementId).innerHTML = html;
-                }
-            } catch(e) {}
+            const data = await fetchListMultiSource(`/quoc-gia/${slug}?page=1`);
+            if(data.status && data.data && data.data.items) {
+                let html = '';
+                data.data.items.slice(0, 16).forEach(m => html += window.createMovieCardHTML(m));
+                document.getElementById(elementId).innerHTML = html;
+            }
         }
 
-        window.scrollGrid = (id, direction) => {
-            const el = document.getElementById(id);
-            if(el) el.scrollBy({ left: direction * el.clientWidth, behavior: 'smooth' });
-        };
-
+        // 5. MODAL THEO QUỐC GIA/THỂ LOẠI
         window.openModal = async (slug, title) => {
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalPopup').classList.add('active');
-            const res = await fetch(`${API_BASE}/quoc-gia/${slug}?page=1`);
-            const data = await res.json();
             const container = document.getElementById('modalContent');
-            let html = '';
-            if(data.data) {
+            container.innerHTML = '<div style="grid-column: 1/-1; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>';
+
+            const data = await fetchListMultiSource(`/quoc-gia/${slug}?page=1`);
+            if(data.status && data.data && data.data.items) {
+                let html = '';
                 data.data.items.forEach(m => {
-                    const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-                    html += `<div class="modal-card" onclick="window.location.href='/xem-phim/${m.slug}'"><img src="${img}" style="width:100%; border-radius:8px;"><div style="padding:15px; font-weight:700; font-size:0.9rem; color:#fff;">${m.name}</div></div>`;
+                    html += `<div class="modal-card-vertical" onclick="window.location.href='/xem-phim/${m.slug}'"><img src="${m.thumb_url}" loading="lazy"><div class="modal-info-overlay"><div class="modal-title">${m.name}</div><div class="modal-meta">${m.year || '2026'}</div></div></div>`;
                 });
+                container.innerHTML = html;
             }
-            container.innerHTML = html;
         }
 
-        // --- HÀM TẢI THỂ LOẠI (ĐÃ SỬA LỖI ẢNH) ---
         window.loadCategory = async (slug, title) => {
             const modal = document.getElementById('modalPopup');
             const modalContent = document.getElementById('modalContent');
@@ -3838,114 +3748,71 @@ footer {
 
             if (modalTitle) modalTitle.innerText = title;
             if (modal) modal.classList.add('active');
-            
-            if (modalContent) {
-                modalContent.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; color: #a0a0a0; padding: 40px;">
-                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;"></i>
-                        <br>Đang tải phim ${title}...
-                    </div>
-                `;
-            }
+            if (modalContent) modalContent.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #a0a0a0; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;"></i><br>Đang tải phim ${title}...</div>`;
 
-            try {
-                // Gọi API
-                const res = await fetch(`https://ophim1.com/v1/api/the-loai/${slug}`);
-                const data = await res.json();
-
-                if (data.data && data.data.items) {
-                    let html = '';
-                    data.data.items.forEach(m => {
-                        // Xử lý link ảnh
-                        const img = m.thumb_url.startsWith('http') 
-                            ? m.thumb_url 
-                            : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
-                        
-                        // Render Card
-                        html += `
-                        <div class="n-card" onclick="window.location.href='/xem-phim/${m.slug}'">
-                            <img src="${img}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:12px; display:block;">
-                            
-                            <div class="n-info-layer" style="padding:10px;"> 
-                                <div class="n-title-in" style="font-size:0.9rem;">${m.name}</div>
-                                <div style="font-size:0.75rem; color:#aaa;">${m.year} • ${m.lang}</div>
-                            </div>
-                        </div>`;
-                    });
-                    modalContent.innerHTML = html;
-                } else {
-                    modalContent.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; color:#ccc;">Không tìm thấy phim nào.</div>';
-                }
-            } catch (e) {
-                console.error(e);
+            const data = await fetchListMultiSource(`/the-loai/${slug}`);
+            if (data.status && data.data && data.data.items) {
+                let html = '';
+                data.data.items.forEach(m => {
+                    html += `
+                    <div class="n-card" onclick="window.location.href='/xem-phim/${m.slug}'">
+                        <img src="${m.thumb_url}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:12px; display:block;">
+                        <div class="n-info-layer" style="padding:10px;"> 
+                            <div class="n-title-in" style="font-size:0.9rem;">${m.name}</div>
+                            <div style="font-size:0.75rem; color:#aaa;">${m.year || '2026'}</div>
+                        </div>
+                    </div>`;
+                });
+                modalContent.innerHTML = html;
+            } else {
                 if (modalContent) modalContent.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; color:#ff4757;">Lỗi kết nối server!</div>';
             }
         };
 
         window.closeModal = () => document.getElementById('modalPopup').classList.remove('active');
-        
-        // MOBILE HANDLERS
         window.openMobileMenu = () => { document.getElementById('mobileMenuOverlay').classList.add('active'); }
         window.closeMobileMenu = () => { document.getElementById('mobileMenuOverlay').classList.remove('active'); }
-        
-        window.openMobileSearch = () => { 
-            const overlay = document.getElementById('mobileSearchOverlay');
-            overlay.classList.add('active'); 
-            setTimeout(() => document.getElementById('mobileSearchInput').focus(), 300);
-        }
-        window.closeMobileSearch = () => { document.getElementById('mobileSearchOverlay').classList.remove('active'); }
-        
         window.loadHome = () => window.location.href = '/';
+        window.scrollGrid = (id, direction) => {
+            const el = document.getElementById(id);
+            if(el) el.scrollBy({ left: direction * el.clientWidth, behavior: 'smooth' });
+        };
 
-        // --- HÀM LOAD SHORT DRAMA (SLIDER) ---
+        // 6. SHORT DRAMA SLIDER
         async function loadShortDramaSection() {
             const container = document.getElementById('shortDramaContainer');
             if(!container) return;
 
-            try {
-                // Lấy 24 phim để có đủ nội dung mà trượt
-                const res = await fetch(`${API_BASE}/the-loai/short-drama?page=1`);
-                const data = await res.json();
+            const data = await fetchListMultiSource(`/the-loai/short-drama?page=1`);
+            if (data.status && data.data && data.data.items) {
+                let html = '';
+                data.data.items.slice(0, 24).forEach(m => {
+                    const cleanName = m.name.replace('Phim', '').trim();
+                    let epText = m.episode_current || 'Full';
+                    if (epText.includes('(') && epText.includes(')')) {
+                        let match = epText.match(/\((.*?)\)/);
+                        if (match) epText = match[1];
+                    }
 
-                if (data.data && data.data.items) {
-                    let html = '';
-                    const items = data.data.items.slice(0, 24); 
-
-                    items.forEach(m => {
-                        const img = m.thumb_url.startsWith('http') ? m.thumb_url : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
-                        const cleanName = m.name.replace('Phim', '').trim();
-                        
-                        // Logic số tập
-                        let epText = m.episode_current || '';
-                        if (epText.includes('(') && epText.includes(')')) {
-                            let match = epText.match(/\((.*?)\)/);
-                            if (match) epText = match[1];
-                        }
-                        if (!epText || epText.toLowerCase() === 'full') epText = 'Full';
-
-                        html += `
-                            <div class="short-card" onclick="window.location.href='/short/${m.slug}'" title="${m.name}">
-                                <div class="short-ep-badge">${epText}</div>
-                                <img src="${img}" loading="lazy" alt="${m.name}">
-                                <div class="short-info">
-                                    <div class="short-title">${cleanName}</div>
-                                </div>
+                    html += `
+                        <div class="short-card" onclick="window.location.href='/short/${m.slug}'" title="${m.name}">
+                            <div class="short-ep-badge">${epText}</div>
+                            <img src="${m.thumb_url}" loading="lazy" alt="${m.name}">
+                            <div class="short-info">
+                                <div class="short-title">${cleanName}</div>
                             </div>
-                        `;
-                    });
-                    container.innerHTML = html;
-                }
-            } catch (e) {
-                console.error("Lỗi Short Drama:", e);
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
                 container.innerHTML = `<div style="padding:20px; color:#ff4757">Lỗi tải dữ liệu.</div>`;
             }
         }
 
-        // --- HÀM ĐIỀU HƯỚNG SHORT DRAMA ---
         window.scrollShorts = (direction) => {
             const container = document.getElementById('shortDramaContainer');
             if (container) {
-                // Cuộn một khoảng bằng 70% chiều rộng container (trượt gần hết màn hình)
                 const scrollAmount = container.clientWidth * 0.7;
                 container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
             }
@@ -3961,99 +3828,55 @@ footer {
             loadCountrySection('thai-lan', 'thaiList');
             loadShortDramaSection();
 
-            // --- 🔥 LOGIC ZOOM OUT (ĐÃ SỬA) ---
-            const screen = document.getElementById('loadingScreen');
-            const img = screen.querySelector('.loading-img');
-
-            // --- TRONG PHẦN SCRIPT CỦA INDEX.HTML ---
             setTimeout(() => {
                 const screen = document.getElementById('loadingScreen');
                 const img = screen ? screen.querySelector('.loading-img') : null;
 
                 if(img) {
                     img.classList.add('zoom-out');
-                    
-                    // Đợi ảnh zoom xong (480ms) thì tắt màn hình đen và hiện mọi thứ
                     setTimeout(() => {
                         if(screen) screen.style.display = 'none';
-                        
-                        // 1. HIỆN CHATBOT
-                        if (window.showChatbot) {
-                            window.showChatbot();
-                        }
-
-                        // 2. HIỆN BANNER APP CÙNG LÚC (Trượt lên)
+                        if (window.showChatbot) window.showChatbot();
                         const banner = document.getElementById('app-install-banner');
                         if(banner) banner.classList.add('show-banner');
-
                     }, 480);
                 } else {
-                    // Fallback nếu không có ảnh loading
                     if(screen) screen.style.display = 'none';
                     if (window.showChatbot) window.showChatbot();
-                    
                     const banner = document.getElementById('app-install-banner');
                     if(banner) banner.classList.add('show-banner');
                 }
-            }, 1000); // Đợi 1 giây sau khi load trang rồi mới bắt đầu zoom
-            
-
-            // --- 🔥 GÁN SỰ KIỆN TÌM KIẾM ---
-            const mobileInput = document.getElementById('mobileSearchInput');
-            if(mobileInput) {
-                mobileInput.addEventListener('input', (e) => performSearch(e.target.value, 'mobileSearchResults'));
-            }
-
-            const desktopInput = document.getElementById('searchInput');
-            if(desktopInput) {
-                desktopInput.addEventListener('input', (e) => performSearch(e.target.value, 'desktopSearchResults'));
-                
-                // Ẩn kết quả khi click ra ngoài
-                document.addEventListener('click', (e) => {
-                    const searchBox = document.querySelector('.search-box');
-                    const results = document.getElementById('desktopSearchResults');
-                    if (searchBox && !searchBox.contains(e.target) && results) {
-                        results.classList.remove('active');
-                    }
-                });
-            }
+            }, 1000);
         });
 
         window.addEventListener('scroll', () => {
             document.getElementById('siteHeader').classList.toggle('scrolled', window.scrollY > 50);
         });
 
-
-        // --- HÀM ĐÓNG BANNER APP ---
-    window.closeAppBanner = () => {
-        const banner = document.getElementById('app-install-banner');
-        if (banner) {
-            // Hiệu ứng mờ dần trước khi mất
-            banner.style.transition = "opacity 0.3s ease, transform 0.3s ease";
-            banner.style.opacity = "0";
-            banner.style.transform = "translateY(50px)";
-            setTimeout(() => { banner.style.display = 'none'; }, 300);
+        // --- ĐÓNG BANNER ---
+        window.closeAppBanner = () => {
+            const banner = document.getElementById('app-install-banner');
+            if (banner) {
+                banner.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+                banner.style.opacity = "0";
+                banner.style.transform = "translateY(50px)";
+                setTimeout(() => { banner.style.display = 'none'; }, 300);
+            }
         }
-    }
 
-// --- LOGIC DROPDOWN TẢI APP GỌN NHẸ ---
-    window.toggleDlPanel = (event) => {
-        event.stopPropagation();
-        const panel = document.getElementById('dlPanel');
-        panel.classList.toggle('active');
-        
-        // Đóng menu user nếu đang mở
-        const userMenu = document.getElementById('userMenu');
-        if (userMenu) userMenu.classList.remove('active');
-    }
-
-    document.addEventListener('click', (e) => {
-        const container = document.getElementById('dlContainer');
-        const panel = document.getElementById('dlPanel');
-        if (container && !container.contains(e.target)) {
-            if(panel) panel.classList.remove('active');
+        window.toggleDlPanel = (event) => {
+            event.stopPropagation();
+            document.getElementById('dlPanel')?.classList.toggle('active');
+            document.getElementById('userMenu')?.classList.remove('active');
         }
-    });
+
+        document.addEventListener('click', (e) => {
+            const container = document.getElementById('dlContainer');
+            const panel = document.getElementById('dlPanel');
+            if (container && !container.contains(e.target) && panel) {
+                panel.classList.remove('active');
+            }
+        });
     </script>
 <script type="text/javascript">
     // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")

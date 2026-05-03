@@ -580,8 +580,60 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // ============================================================
+    // 🔥 HỆ THỐNG FETCH ĐA NGUỒN CỰC MẠNH (OPHIM - KKPHIM - NGUỒN C)
+    // ============================================================
+    async function fetchMovieMultiSource(slug) {
+        const endpoints = [
+            { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
+            { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' },
+            { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' }
+        ];
+
+        for (let api of endpoints) {
+            try {
+                const res = await fetch(api.url);
+                if (!res.ok) continue;
+                const data = await res.json();
+                
+                let movie = null;
+                let eps = [];
+
+                // 1. Chuẩn hóa Data Phim
+                if (data.status && data.data && data.data.item) movie = data.data.item; // Ophim
+                else if (data.status && data.movie) movie = data.movie; // KKPhim
+                else if (data.movie) movie = data.movie; // NguonC
+                
+                // 2. Chuẩn hóa Danh sách Tập phim
+                if (data.episodes && data.episodes.length > 0) {
+                    eps = data.episodes[0].server_data;
+                } else if (movie && movie.episodes && movie.episodes.length > 0) {
+                    eps = movie.episodes[0].server_data || movie.episodes[0].items;
+                }
+
+                // 3. Nếu lấy thành công, trả về ngay
+                if (movie && eps && eps.length > 0) {
+                    // Sửa lỗi link ảnh
+                    if (movie.poster_url && !movie.poster_url.startsWith('http')) movie.poster_url = api.imgBase + movie.poster_url;
+                    if (movie.thumb_url && !movie.thumb_url.startsWith('http')) movie.thumb_url = api.imgBase + movie.thumb_url;
+                    
+                    // Sửa lỗi link tập phim
+                    eps = eps.map(ep => ({
+                        name: ep.name,
+                        link_m3u8: ep.link_m3u8 || ep.link_embed,
+                        link_embed: ep.link_embed || ep.link_m3u8
+                    }));
+
+                    return { status: true, item: movie, episodes: eps };
+                }
+            } catch (e) {
+                console.warn(`[Fallback] Bỏ qua ${api.url} do lỗi phản hồi.`);
+            }
+        }
+        return { status: false, item: null, episodes: [] };
+    }
+
     // 2. STATE
-    const API_BASE = 'https://ophim1.com/v1/api/phim';
     let movieData = null;
     let episodes = [];
     let currentEpIndex = 0;
@@ -620,11 +672,9 @@
 
         if (user) {
             window.currentUser = user;
-            // Nếu phim đã load xong rồi thì check lịch sử ngay
             if(movieData) checkHistoryAndResume();
         }
 
-        // Load phim nếu chưa load
         if (!movieData) {
             await loadData(slug);
         }
@@ -639,14 +689,12 @@
             const snap = await getDoc(doc(db, "users", window.currentUser.uid));
             if (snap.exists()) {
                 const h = snap.data().watchHistory || [];
-                // Tìm phim
                 const f = h.find(i => i.slug === movieData.slug);
                 
                 if (f && f.epIndex !== undefined) {
                     const resumeIdx = parseInt(f.epIndex);
                     console.log("⚡ Tìm thấy lịch sử Short: Tập", resumeIdx + 1);
 
-                    // Nếu tập cần xem khác tập 0 (mặc định)
                     if (resumeIdx > 0 && resumeIdx < episodes.length) {
                         
                         // 1. Cập nhật Tab (Chia tập 1-30, 31-60...)
@@ -656,22 +704,16 @@
 
                         // 2. Nhảy tới tập
                         if (isMobile) {
-                            // Mobile: Cuộn tới slide đó
                             setTimeout(() => {
                                 const slide = document.getElementById(`m-slide-${resumeIdx}`);
                                 if(slide) {
                                     slide.scrollIntoView({ behavior: 'auto' });
                                     currentEpIndex = resumeIdx;
-                                    
-                                    // Cập nhật nút Playlist
                                     document.getElementById('mCurEp').innerText = `Tập ${episodes[resumeIdx].name.replace(/tập/ig,'').trim()} / ${episodes.length}`;
-                                    
-                                    // Highlight nút trong drawer
                                     window.updateActiveBtn(resumeIdx);
                                 }
                             }, 500);
                         } else {
-                            // PC: Play tập đó
                             window.playPC(resumeIdx);
                         }
                     }
@@ -680,43 +722,43 @@
         } catch(e) { console.error("Resume Error:", e); }
     }
 
-    // 4. LOAD DATA (ĐÃ SỬA)
+    // 4. LOAD DATA (ĐÃ TÍCH HỢP ĐA NGUỒN)
     async function loadData(slug) {
         try {
-            const res = await fetch(`${API_BASE}/${slug}`);
-            if (!res.ok) throw new Error("API Error");
-            const data = await res.json();
+            // Thay vì dùng fetch trực tiếp, ta dùng hàm fetchMovieMultiSource
+            const data = await fetchMovieMultiSource(slug);
             
             if (data.status) {
-                movieData = data.data.item;
-                episodes = movieData.episodes[0].server_data;
-                if (!episodes.length) { alert('Phim lỗi!'); return; }
+                movieData = data.item;
+                episodes = data.episodes; // Episodes đã được chuẩn hóa
+                
+                if (!episodes || !episodes.length) { 
+                    alert('Phim lỗi tập!'); 
+                    document.getElementById('loadingScreen').innerHTML = '<div style="color:white;text-align:center">Phim chưa có tập nào</div>';
+                    return; 
+                }
 
                 renderInfo();
                 currentTabStart = 0;
                 renderGrids(); 
 
-                // Render giao diện mặc định (Tập 0)
                 if (isMobile) {
                     document.getElementById('mPlaylistBtn').style.display = 'flex';
                     renderMobileSlides();
                 } else {
                     document.getElementById('pcBgBlur').style.backgroundImage = `url('${movieData.poster_url}')`;
-                    // PC Mặc định play tập 0, chưa lưu vội
                     window.playPC(0, 0, false); 
                 }
 
                 hideLoadingState();
                 
-                // 🔥 Check lịch sử ngay sau khi render xong (nếu đã login)
                 if(window.currentUser) checkHistoryAndResume();
 
             } else { 
-                document.getElementById('loadingScreen').innerHTML = '<div style="color:white;text-align:center">Phim không tồn tại</div>';
+                document.getElementById('loadingScreen').innerHTML = '<div style="color:white;text-align:center">Phim không tồn tại hoặc đã bị xóa</div>';
             }
         } catch (e) { 
             console.error(e);
-            // document.getElementById('loadingScreen').innerHTML = '<div style="color:white;text-align:center">Lỗi tải phim</div>';
         }
     }
 
