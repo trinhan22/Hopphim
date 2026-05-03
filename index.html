@@ -2178,6 +2178,84 @@ footer {
     50% { transform: scale(1.1); opacity: 0.9; }
     100% { transform: scale(1); opacity: 1; }
 }
+
+        /* =========================================
+           🔥 SIDEBAR FLOATING ADS (FIXED STYLE)
+           ========================================= */
+        .floating-sidebar-ads {
+            position: fixed;
+            right: 55px;
+            bottom: 22%;
+            width: 222px;
+            z-index: 99999;
+            pointer-events: none; /* Chặn click khi chưa hiện */
+            display: none;        /* Ẩn hoàn toàn lúc đầu */
+            opacity: 0;
+        }
+
+        .floating-sidebar-ads.show-fsa {
+            display: block;
+            pointer-events: auto;
+            animation: slideInRightFSA 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes slideInRightFSA {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .fsa-content {
+            position: relative;
+            /* Giữ filter này để hỗ trợ các trình duyệt cũ */
+            transition: transform 0.3s ease;
+        }
+
+        .fsa-content:hover {
+            transform: scale(1.036);
+        }
+
+        .fsa-content img {
+            width: 100%;
+            height: auto;
+            display: block;
+            /* 🔥 Xóa bỏ border và border-radius ở đây để ảnh trong suốt không bị lộ khung */
+            border: none !important; 
+            border-radius: 0 !important; 
+        }
+
+        /* Nút tắt style Rophim */
+        .close-fsa {
+            position: absolute;
+            top: 0; 
+            right: 0;
+            width: 26px;
+            height: 26px;
+            background: rgba(36, 36, 36, 0.8); /* Làm nút X tối hơn chút cho nổi */
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.3s;
+        }
+
+        .close-fsa:hover {
+            background: #FF8F50;
+            border-color: #FF8F50;
+            transform: rotate(90deg);
+        }
+
+        /* Ẩn trên Mobile để không che mất nội dung phim */
+        @media (max-width: 900px) {
+            .floating-sidebar-ads {
+                display: none !important;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -2631,6 +2709,16 @@ footer {
     </div>
 </div>
 
+<!-- 🔥 FLOATING SIDEBAR ADS - GHIM CỐ ĐỊNH MÀN HÌNH -->
+    <div id="floating-sidebar-ads" class="floating-sidebar-ads">
+        <div class="fsa-content">
+            <i class="fas fa-times close-fsa" onclick="closeSidebarAds(event)"></i>
+            <a href="/Wibey.apk" download>
+                <img src="https://wibey.netlify.app/Floating.png" alt="Tải App Wibey">
+            </a>
+        </div>
+    </div>
+
     <script src="chatbot.js"></script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -2971,6 +3059,20 @@ footer {
                     window.isCurrentVip = isVip;
                     const name = user.displayName || "Thành viên";
                     
+                    // --- 🔥 LOGIC DÀNH RIÊNG CHO VIP ---
+                    if (isVip) {
+                        // 1. Ẩn Banner cài app ở đáy
+                        const banner = document.getElementById('app-install-banner');
+                        if(banner) banner.classList.remove('show-banner');
+
+                        // 2. Ẩn Floating Ads bên phải
+                        const fsa = document.getElementById('floating-sidebar-ads');
+                        if(fsa) fsa.classList.remove('show-fsa');
+
+                        // 3. (Tùy chọn) Ẩn luôn các panel quảng cáo tĩnh khác trong trang
+                        document.querySelectorAll('.ad-panel-wrapper').forEach(p => p.style.display = 'none');
+                    }
+
                     // UI Update
                     if (isVip) {
                         if(userAvatar) userAvatar.classList.add('vip-glow');
@@ -3348,6 +3450,21 @@ footer {
             renderHero();
         });
         
+        // --- HÀM TẮT SIDEBAR ADS ---
+        window.closeSidebarAds = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const ads = document.getElementById('floating-sidebar-ads');
+            if (ads) {
+                ads.style.transition = "all 0.5s ease";
+                ads.style.opacity = "0";
+                ads.style.transform = "translateX(50px) scale(0.9)";
+                setTimeout(() => {
+                    ads.remove();
+                }, 500);
+            }
+        };
+
     </script>
 
 <script>
@@ -3872,8 +3989,15 @@ footer {
                     setTimeout(() => {
                         if(screen) screen.style.display = 'none';
                         if (window.showChatbot) window.showChatbot();
-                        const banner = document.getElementById('app-install-banner');
-                        if(banner) banner.classList.add('show-banner');
+                        
+                        if (!window.isCurrentVip) {
+                            const banner = document.getElementById('app-install-banner');
+                            if(banner) banner.classList.add('show-banner');
+
+                            const fsa = document.getElementById('floating-sidebar-ads');
+                            if(fsa) fsa.classList.add('show-fsa');
+                        }
+
                     }, 480);
                 } else {
                     if(screen) screen.style.display = 'none';
