@@ -311,7 +311,11 @@
 
     <div id="ad-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:99999; justify-content:center; align-items:center;">
         <div style="position:relative; width:80%; max-width:800px;">
-            <img src="https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:format(webp):quality(75)/mo_kho_qua_vang_trieu_loi_cam_on_uu_dai_sieu_khung_tu_fpt_shop_203075_1_367c12afb7.png" style="width:100%; border-radius:10px;">
+            <!-- Bọc video bằng thẻ <a> để gắn liên kết -->
+            <a href="https://fptshop.com.vn/ctkm/kho-vang-uu-dai" target="_blank" style="display:block; text-decoration:none;">
+                <!-- Thay thế <img> bằng <video> và sử dụng video mp4 -->
+                <video src="https://wibey.netlify.app/fptshop.mp4" controls muted autoplay loop style="width:100%; border-radius:10px;"></video>
+            </a>
             <button id="skip-button" disabled style="position:absolute; top:10px; right:10px; padding:8px 15px; background:rgba(0,0,0,0.5); color:#fff; border:none; border-radius:4px;">Đang xem (30s)</button>
         </div>
     </div>
