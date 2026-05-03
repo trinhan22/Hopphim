@@ -367,16 +367,26 @@
         .room-card:hover .poster-img { transform: scale(1.05); }
         .room-card:hover .thumb-blur-bg { filter: blur(15px) brightness(0.6); }
 
-        /* Badge LIVE mới xịn xò */
+        /* Badge LIVE mới xịn xò (Gradient + Chấm nháy) */
         .badge-live { 
-            position: absolute; top: 10px; left: 10px; z-index: 3; 
-            background: rgba(229, 9, 20, 0.85); backdrop-filter: blur(4px);
-            color: #fff; font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 6px; 
-            display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(229, 9, 20, 0.4);
-            border: 1px solid rgba(255, 100, 100, 0.4); letter-spacing: 0.5px;
+            position: absolute; top: 12px; left: 12px; z-index: 3; 
+            background: linear-gradient(135deg, #ff0f7b, #f89b29); 
+            color: #fff; font-size: 0.7rem; font-weight: 900; 
+            padding: 4px 12px; border-radius: 50px; 
+            display: flex; align-items: center; gap: 6px; 
+            box-shadow: 0 4px 15px rgba(255, 15, 123, 0.5);
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
-        .badge-live i { font-size: 0.5rem; animation: pulseRed 1.5s infinite;}
-        @keyframes pulseRed { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+        .badge-live .live-dot {
+            width: 8px; height: 8px; background-color: #fff; border-radius: 50%;
+            box-shadow: 0 0 8px #fff; animation: pulseLiveDot 1.5s infinite ease-in-out;
+        }
+        @keyframes pulseLiveDot {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #fff; }
+            100% { transform: scale(0.8); opacity: 0.8; }
+        }
         .badge-lock { background: rgba(0,0,0,0.7); color: #f1c40f; backdrop-filter: blur(5px); border: 1px solid #f1c40f;}
 
         .badge-status-bottom {
@@ -486,11 +496,11 @@
         .search-anime-input:focus { border-color: var(--primary-color); }
         
         /* --- HIỂN THỊ ẢNH NGANG CHUẨN 16:9 CHO LƯỚI TÌM KIẾM --- */
-        .setup-movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; overflow-y: auto; padding-right: 5px; flex: 1; align-content: start;}
-        .mini-movie-card { background: var(--bg-body); border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 1px solid var(--border-light); display: flex; flex-direction: column;}
-        .mini-movie-card:hover { border-color: var(--primary-color); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 2; position: relative;}
-        .mini-movie-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; object-position: center top; transition: 0.5s; flex-shrink: 0; background: #000;}
-        .mini-movie-title { font-size: 0.9rem; font-weight: 600; color: #fff; padding: 10px 8px; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1;}
+        .setup-movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; overflow-y: auto; padding-right: 5px; flex: 1; align-content: start;}
+        .mini-movie-card { background: var(--bg-card); border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 1px solid var(--border-light); display: flex; flex-direction: column; position: relative;}
+        .mini-movie-card:hover { border-color: var(--primary-color); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 2;}
+        .mini-movie-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; object-position: center 20%; background: #000; display: block; border-bottom: 2px solid var(--primary-color);}
+        .mini-movie-title { font-size: 0.85rem; font-weight: 700; color: #fff; padding: 10px; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.8));}
 
         .episodes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; overflow-y: auto; max-height: 50vh;}
         .btn-ep { background: var(--bg-body); border: 1px solid var(--border-light); color: #fff; padding: 10px 5px; border-radius: 8px; font-family: var(--font-main); font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.3s;}
@@ -1112,12 +1122,12 @@
                             <div class="card-thumb-container">
                                 <div class="thumb-blur-bg" style="background-image: url('${data.movieThumb}')"></div>
                                 <img src="${data.movieThumb}" class="poster-img" onerror="this.src='https://i.ibb.co/QFtBjvzg/bg-cd67b6fc-ac61-41a6-875c-8b68628f4942.png'">
-                                <div class="badge-live">LIVE</div>
+                                <div class="badge-live"><div class="live-dot"></div> LIVE</div>
                                 ${lockBadge}
                                 <div class="badge-status-bottom"><i class="fas fa-users"></i> ${data.viewers ? data.viewers.length : 1} Đang xem</div>
                             </div>
                             <div class="card-info">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${data.hostName}&backgroundColor=ffdfbf" class="host-avatar">
+                                <img src="${data.hostAvatar || '/Guest.webp'}" class="host-avatar" onerror="this.src='/Guest.webp'">
                                 <div class="info-text">
                                     <h3 class="room-title">Cùng xem ${data.movieName}</h3>
                                     <p class="ep-info">Tập đang phát - ${data.movieName}</p>
@@ -1378,19 +1388,31 @@
 
         async function loadMovieFromApi(slug, epIndex) {
             try {
-                // 🔥 XỬ LÝ PHIM NGUỒN NGOÀI (CUSTOM M3U8) TRƯỚC
+                // 1. DỌN DẸP PLAYER CŨ ĐỂ KHÔNG BỊ TRÀN RAM / LỖI DOM
+                if (plyrPlayer) { 
+                    plyrPlayer.destroy(); 
+                    plyrPlayer = null;
+                }
+                if (window.hlsInstance) {
+                    window.hlsInstance.destroy();
+                    window.hlsInstance = null;
+                }
+                
+                // 2. LẤY LẠI THẺ VIDEO (Vì Plyr có thể đã ghi đè làm mất DOM gốc)
+                videoElement = document.getElementById('main-player');
+
+                // 3. 🔥 XỬ LÝ PHIM NGUỒN NGOÀI (CUSTOM M3U8) TRƯỚC
                 if (slug === 'custom_m3u8_stream' && targetRoomData.customM3u8Url) {
                     document.getElementById('ui-movie-title').innerText = targetRoomData.movieName;
                     document.getElementById('ui-movie-ep').innerHTML = `<i class="fas fa-play-circle"></i> Đang phát: Tùy Chỉnh`;
                     
                     const m3u8Url = targetRoomData.customM3u8Url;
-                    if (plyrPlayer) { plyrPlayer.destroy(); }
                     
                     if (Hls.isSupported() && m3u8Url.includes('.m3u8')) {
-                        hlsInstance = new Hls(hlsConfig); 
-                        hlsInstance.loadSource(m3u8Url);
-                        hlsInstance.attachMedia(videoElement);
-                        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => { 
+                        window.hlsInstance = new Hls(hlsConfig); 
+                        window.hlsInstance.loadSource(m3u8Url);
+                        window.hlsInstance.attachMedia(videoElement);
+                        window.hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => { 
                             initPlyrAndNetflix({name: targetRoomData.movieName, content: "Đang phát từ nguồn bên ngoài."}, {name: "Tập tùy chỉnh"}); 
                         });
                     } else {
@@ -1398,10 +1420,10 @@
                         initPlyrAndNetflix({name: targetRoomData.movieName, content: ""}, {name: "Tập tùy chỉnh"});
                     }
                     videoElement.setAttribute('data-loaded', 'true');
-                    return; // 👉 ĐÃ THÊM RETURN ĐỂ CHẶN LỖI CHẠY TIẾP XUỐNG API BÊN DƯỚI
+                    return; // 👉 Đã thêm return chặn lỗi chạy tiếp xuống API bên dưới
                 }
 
-                // 🔥 XỬ LÝ PHIM CÓ TRONG HỆ THỐNG
+                // 4. 🔥 XỬ LÝ PHIM CÓ TRONG HỆ THỐNG
                 const endpoints = [
                     { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
                     { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' }
@@ -1431,13 +1453,14 @@
 
                         const m3u8Url = currentEp.link_m3u8 || currentEp.link_embed;
                         
-                        if (plyrPlayer) { plyrPlayer.destroy(); }
-
                         if (Hls.isSupported() && m3u8Url.includes('.m3u8')) {
-                            hlsInstance = new Hls(hlsConfig); 
-                            hlsInstance.loadSource(m3u8Url);
-                            hlsInstance.attachMedia(videoElement);
-                            hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => { initPlyrAndNetflix(movie, currentEp); });
+                            // SỬ DỤNG window.hlsInstance ĐỂ VƯỢT LỖI SCOPE
+                            window.hlsInstance = new Hls(hlsConfig); 
+                            window.hlsInstance.loadSource(m3u8Url);
+                            window.hlsInstance.attachMedia(videoElement);
+                            window.hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => { 
+                                initPlyrAndNetflix(movie, currentEp); 
+                            });
                         } else {
                             videoElement.src = m3u8Url;
                             initPlyrAndNetflix(movie, currentEp);
