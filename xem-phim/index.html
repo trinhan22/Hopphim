@@ -473,7 +473,7 @@
             }
             
             /* Căn giữa & Khóa kích thước 1250px cho giao diện */
-            .premium-watch-wrapper { padding-top: 30px !important; }
+            .premium-watch-wrapper { padding-top: 0 !important; }
             .player-box { max-width: 1250px !important; margin: 0 auto !important; border-radius: 12px !important; box-shadow: 0 25px 60px rgba(0,0,0,0.9) !important; border-bottom: none !important; }
             .plyr { max-height: 75vh !important; }
             .premium-info-container, .premium-section-header, .comment-section { max-width: 1250px !important; margin-left: auto !important; margin-right: auto !important; padding-left: 0 !important; padding-right: 0 !important; }
@@ -531,7 +531,7 @@
         .container { max-width: 100%; margin: 0; padding: 0; }
         
         .premium-watch-wrapper {
-            padding-top: 20px; /* Thêm 1 chút khoảng cách trên đỉnh */
+            padding-top: 0; /* Xóa khoảng trống trên đỉnh cho sát mép */
             padding-bottom: 50px;
             background: #191b24; /* Màu nền VieON */
             min-height: 100vh;
@@ -3222,38 +3222,43 @@ footer {
         return Math.floor(hours / 24) + " ngày trước";
     }
 
-    const MANUAL_RELATED = ["con-ra-the-thong-gi-nua-2026", "dia-nguc-doc-than-phan-5", "tieng-yeu-nay-anh-dich-duoc-khong", "duong-cung-ky-an-thanh-vu-phong-minh", "su-tro-lai-cua-tham-phan", "tuoi-tre-tai-cao", "con-say-mua-xuan", "trao-em-ca-vu-tru", "thu-hut-manh-liet", "truong-nguyet-tan-minh"];
+    // --- LOAD PHIM ĐỀ XUẤT NGẪU NHIÊN ---
     async function loadRelated() {
         try {
-            const promises = MANUAL_RELATED.map(slug => fetch(`${API_BASE}/${slug}`));
-            const results = await Promise.all(promises);
-            const jsonResults = await Promise.all(results.map(res => res.json()));
-            const validMovies = jsonResults.filter(d => d.status).map(d => d.data.item);
+            // Lấy ngẫu nhiên 1 trang từ 1 đến 5 để có data phong phú
+            const randomPage = Math.floor(Math.random() * 5) + 1;
+            const res = await fetch(`https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=${randomPage}`);
+            const data = await res.json();
 
-            if (validMovies.length > 0) {
+            if (data.status && data.items && data.items.length > 0) {
+                // Thuật toán xáo trộn mảng (Shuffle array) để phim hiện random
+                const shuffled = data.items.sort(() => 0.5 - Math.random());
+                // Cắt lấy đúng 10 bộ phim
+                const selectedMovies = shuffled.slice(0, 10);
+
                 let html = '';
-                validMovies.forEach(m => {
-                    let img = m.poster_url || m.thumb_url; // Ưu tiên ảnh ngang
-                    if (!img.startsWith('http')) img = `https://img.ophim1.com/uploads/movies/${img}`;
+                selectedMovies.forEach(m => {
+                    // API danh sách thường trả về thumb_url là chủ yếu
+                    let img = m.poster_url || m.thumb_url; 
+                    if (img && !img.startsWith('http')) img = `https://img.ophim1.com/uploads/movies/${img}`;
                     
-                    const tempDiv = document.createElement("div"); tempDiv.innerHTML = m.content || "";
-                    const shortDesc = (tempDiv.innerText || tempDiv.textContent).split(/\s+/).slice(0, 15).join(' ') + '...';
-
                     html += `
                     <div class="rec-card-premium" onclick="window.location.href='/xem-phim.html?slug=${m.slug}'">
                         <div class="ep-thumb">
-                            <img src="${img}" loading="lazy" onerror="this.src='${IMG_BASE + m.thumb_url}'">
+                            <img src="${img}" loading="lazy" onerror="this.src='https://img.ophim1.com/uploads/movies/${m.thumb_url}'">
                         </div>
                         <div class="ep-name" style="font-size: 1.15rem;">${m.name}</div>
                         <div class="rec-meta-tags">
-                            <span>${m.year || '2026'}</span><span>T16</span><span>${m.origin_name || 'Đang cập nhật'}</span><span style="color:#fff;">Full HD</span>
+                            <span>${m.year || new Date().getFullYear()}</span><span>T16</span><span>${m.origin_name || 'Đang cập nhật'}</span><span style="color:#fff;">Full HD</span>
                         </div>
-                        <div class="ep-desc-mini">${shortDesc}</div>
+                        <div class="ep-desc-mini">Khám phá siêu phẩm ${m.name} đang cực hot trên Wibey ngay hôm nay...</div>
                     </div>`;
                 });
                 document.getElementById('relatedList').innerHTML = html;
             }
-        } catch(e) {}
+        } catch(e) { 
+            console.error("Lỗi tải phim đề xuất:", e); 
+        }
     }
 
     window.toggleContent = () => {
