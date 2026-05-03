@@ -367,11 +367,16 @@
         .room-card:hover .poster-img { transform: scale(1.05); }
         .room-card:hover .thumb-blur-bg { filter: blur(15px) brightness(0.6); }
 
+        /* Badge LIVE mới xịn xò */
         .badge-live { 
-            position: absolute; top: 10px; left: 10px; z-index: 3; background: #e50914; color: #fff; 
-            font-size: 0.75rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; gap: 5px;
+            position: absolute; top: 10px; left: 10px; z-index: 3; 
+            background: rgba(229, 9, 20, 0.85); backdrop-filter: blur(4px);
+            color: #fff; font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 6px; 
+            display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(229, 9, 20, 0.4);
+            border: 1px solid rgba(255, 100, 100, 0.4); letter-spacing: 0.5px;
         }
-        .badge-live i { font-size: 0.6rem; animation: blink 1s infinite;}
+        .badge-live i { font-size: 0.5rem; animation: pulseRed 1.5s infinite;}
+        @keyframes pulseRed { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
         .badge-lock { background: rgba(0,0,0,0.7); color: #f1c40f; backdrop-filter: blur(5px); border: 1px solid #f1c40f;}
 
         .badge-status-bottom {
@@ -1373,6 +1378,30 @@
 
         async function loadMovieFromApi(slug, epIndex) {
             try {
+                // 🔥 XỬ LÝ PHIM NGUỒN NGOÀI (CUSTOM M3U8) TRƯỚC
+                if (slug === 'custom_m3u8_stream' && targetRoomData.customM3u8Url) {
+                    document.getElementById('ui-movie-title').innerText = targetRoomData.movieName;
+                    document.getElementById('ui-movie-ep').innerHTML = `<i class="fas fa-play-circle"></i> Đang phát: Tùy Chỉnh`;
+                    
+                    const m3u8Url = targetRoomData.customM3u8Url;
+                    if (plyrPlayer) { plyrPlayer.destroy(); }
+                    
+                    if (Hls.isSupported() && m3u8Url.includes('.m3u8')) {
+                        hlsInstance = new Hls(hlsConfig); 
+                        hlsInstance.loadSource(m3u8Url);
+                        hlsInstance.attachMedia(videoElement);
+                        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => { 
+                            initPlyrAndNetflix({name: targetRoomData.movieName, content: "Đang phát từ nguồn bên ngoài."}, {name: "Tập tùy chỉnh"}); 
+                        });
+                    } else {
+                        videoElement.src = m3u8Url;
+                        initPlyrAndNetflix({name: targetRoomData.movieName, content: ""}, {name: "Tập tùy chỉnh"});
+                    }
+                    videoElement.setAttribute('data-loaded', 'true');
+                    return; // 👉 ĐÃ THÊM RETURN ĐỂ CHẶN LỖI CHẠY TIẾP XUỐNG API BÊN DƯỚI
+                }
+
+                // 🔥 XỬ LÝ PHIM CÓ TRONG HỆ THỐNG
                 const endpoints = [
                     { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
                     { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' }
