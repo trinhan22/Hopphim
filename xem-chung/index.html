@@ -747,7 +747,7 @@
         <div class="video-section" id="video-wrapper">
             <div class="player-box">
                 <!-- Nút Back góc trái -->
-                <a href="xem-chung.html" class="btn-back-room" title="Rời phòng">
+                <a href="/xem-chung/" class="btn-back-room" title="Rời phòng">
                     <i class="fas fa-chevron-left"></i>
                 </a>
 
@@ -829,7 +829,7 @@
         <div class="modal-box small">
             <div class="modal-header">
                 <h2><i class="fas fa-lock" style="color:#ff4757"></i> Phòng Khóa</h2>
-                <button class="modal-close" onclick="window.location.href='xem-chung.html'"><i class="fas fa-times"></i></button>
+                <button class="modal-close" onclick="window.location.href='/xem-chung/'"><i class="fas fa-times"></i></button>
             </div>
             <p style="color:var(--text-sub); font-size: 0.9rem; text-align: center; margin-bottom: 20px;">Phòng này yêu cầu mật khẩu để truy cập.</p>
             <div class="pwd-input-group">
@@ -1103,7 +1103,7 @@
                     const timeAgo = formatTimeAgo(data.updatedAt);
                     
                     grid.innerHTML += `
-                        <div class="room-card" onclick="window.location.href='xem-chung.html?room=${docSnap.id}'">
+                        <div class="room-card" onclick="window.location.href='/xem-chung/?room=${docSnap.id}'">
                             <div class="card-thumb-container">
                                 <div class="thumb-blur-bg" style="background-image: url('${data.movieThumb}')"></div>
                                 <img src="${data.movieThumb}" class="poster-img" onerror="this.src='https://i.ibb.co/QFtBjvzg/bg-cd67b6fc-ac61-41a6-875c-8b68628f4942.png'">
@@ -1263,7 +1263,7 @@
                     viewers: [],
                     banned_users: []
                 });
-                window.location.href = `xem-chung.html?room=${newRoomId}`;
+                window.location.href = `/xem-chung/?room=${newRoomId}`;
             } catch(e) { window.showToast("Lỗi tạo phòng!", "error"); }
         }
 
@@ -1275,7 +1275,7 @@
                 
                 if(!snap.exists()) {
                     alert("Mật thất không tồn tại hoặc đã bị Chủ phòng đóng!");
-                    window.location.href = "xem-chung.html";
+                    window.location.href = "/xem-chung/";
                     return;
                 }
                 targetRoomData = snap.data();
@@ -1325,7 +1325,7 @@
             currentRoomListener = onSnapshot(roomRef, async (docSnap) => {
                 if (!docSnap.exists()) {
                     alert("Chủ phòng đã đóng phòng! Quay về sảnh chờ.");
-                    window.location.href = "xem-chung.html";
+                    window.location.href = "/xem-chung/";
                     return;
                 }
                 
@@ -1488,7 +1488,7 @@
         window.executeDeleteRoom = async () => {
             try {
                 await deleteDoc(doc(db, "watch_rooms", roomIdParam));
-                window.location.href = "xem-chung.html"; 
+                window.location.href = "/xem-chung/"; 
             } catch (e) { 
                 window.showToast("Lỗi đóng phòng!", "error"); 
                 window.closeModals();
