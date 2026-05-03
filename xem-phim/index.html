@@ -3512,24 +3512,25 @@ footer {
             }
         }
 
-        // --- LOGIC DROPDOWN TẢI APP GỌN NHẸ ---
-        window.toggleDlPanel = (event) => {
-            event.stopPropagation();
-            const panel = document.getElementById('dlPanel');
-            panel.classList.toggle('active');
-            
-            // Đóng menu user nếu đang mở
-            const userMenu = document.getElementById('userMenu');
-            if (userMenu) userMenu.classList.remove('active');
-        }
 
-        document.addEventListener('click', (e) => {
-            const container = document.getElementById('dlContainer');
-            const panel = document.getElementById('dlPanel');
-            if (container && !container.contains(e.target)) {
-                if(panel) panel.classList.remove('active');
-            }
-        });
+        // --- LOGIC DROPDOWN TẢI APP GỌN NHẸ ---
+    window.toggleDlPanel = (event) => {
+        event.stopPropagation();
+        const panel = document.getElementById('dlPanel');
+        panel.classList.toggle('active');
+        
+        // Đóng menu user nếu đang mở
+        const userMenu = document.getElementById('userMenu');
+        if (userMenu) userMenu.classList.remove('active');
+    }
+
+    document.addEventListener('click', (e) => {
+        const container = document.getElementById('dlContainer');
+        const panel = document.getElementById('dlPanel');
+        if (container && !container.contains(e.target)) {
+            if(panel) panel.classList.remove('active');
+        }
+    });
     </script>
 <script type="text/javascript">
     // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
