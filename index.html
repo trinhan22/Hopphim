@@ -3155,25 +3155,64 @@ footer {
                 imdb: "0.0"
             },
             { 
+                slug: "vi-me-anh-phan-chia-tay",
+                titleImage: "https://wibey.netlify.app/1_title.png",
+                imdb: "0.0"
+            },
+            { 
                 slug: "cam-nang-yeu",
                 titleImage: "https://wibey.netlify.app/2_title.webp",
                 customImage: "https://wibey.netlify.app/2_panel.webp",
                 imdb: "6.6"
-            },
-            { 
-                slug: "giang-ho-da-vu-thap-nien-dang",
-                titleImage: "https://wibey.netlify.app/3_title.webp",
-                customImage: "https://wibey.netlify.app/3_panel.webp",
-                imdb: "7.1"
             }
         ];
+
+        // ============================================================
+        // 🔥 HỆ THỐNG FETCH ĐA NGUỒN CỰC MẠNH (OPHIM - KKPHIM - NGUỒN C)
+        // ============================================================
+        async function fetchHeroMultiSource(slug) {
+            const endpoints = [
+                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
+                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' },
+                { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' }
+            ];
+
+            for (let api of endpoints) {
+                try {
+                    const res = await fetch(api.url);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    let movie = null;
+                    if (data.status && data.data && data.data.item) movie = data.data.item; 
+                    else if (data.status && data.movie) movie = data.movie; 
+                    else if (data.movie) movie = data.movie; 
+                    
+                    if (movie) {
+                        if (movie.poster_url && !movie.poster_url.startsWith('http')) movie.poster_url = api.imgBase + movie.poster_url;
+                        if (movie.thumb_url && !movie.thumb_url.startsWith('http')) movie.thumb_url = api.imgBase + movie.thumb_url;
+                        
+                        // 🔥 FIX LỖI API UP NGƯỢC ẢNH
+                        if (slug === 'vi-me-anh-phan-chia-tay') {
+                            let temp = movie.poster_url;
+                            movie.poster_url = movie.thumb_url;
+                            movie.thumb_url = temp;
+                        }
+
+                        return { status: true, item: movie };
+                    }
+                } catch (e) {
+                    console.warn(`[Fallback] Lỗi lấy Hero cho ${slug} từ ${api.url}`);
+                }
+            }
+            return { status: false, item: null };
+        }
 
         // ============================================================
         // --- LOGIC XỬ LÝ ---
         // ============================================================
         let currentSlide = 0;
         let slideInterval;
-        const IMG_BASE_HERO = 'https://img.ophim1.com/uploads/movies/';
 
         async function renderHero() {
             const slidesContainer = document.getElementById('heroSlidesContainer');
@@ -3181,11 +3220,8 @@ footer {
             
             if(!slidesContainer) return;
 
-            const promises = HERO_CONFIG.map(config => 
-                fetch(`https://ophim1.com/v1/api/phim/${config.slug}`)
-                    .then(res => res.json())
-                    .catch(err => ({ status: false }))
-            );
+            // Chạy fetch song song cho tất cả các config
+            const promises = HERO_CONFIG.map(config => fetchHeroMultiSource(config.slug));
 
             try {
                 const results = await Promise.all(promises);
@@ -3197,8 +3233,9 @@ footer {
                     const data = results[i];
                     const config = HERO_CONFIG[i]; 
 
-                    if (data.status && data.data && data.data.item) {
-                        const m = data.data.item;
+                    // Kiểm tra status từ hàm đa nguồn thay vì status mặc định của 1 API
+                    if (data.status && data.item) {
+                        const m = data.item;
                         const slideId = validIndex;
                         const active = slideId === 0 ? 'active' : '';
 
@@ -3208,9 +3245,6 @@ footer {
                             finalImage = config.customImage;
                         } else {
                             finalImage = m.poster_url || m.thumb_url;
-                            if (finalImage && !finalImage.startsWith('http')) {
-                                finalImage = IMG_BASE_HERO + finalImage;
-                            }
                         }
                         if (!finalImage) finalImage = 'https://wibey.netlify.app/panel.webp';
 
@@ -3227,9 +3261,9 @@ footer {
                         // 3. 🔥 XỬ LÝ ĐIỂM IMDb (Lấy từ Config hoặc mặc định 8.5) 🔥
                         const imdbScore = config.imdb || "8.5";
 
-                        // 4. Xử lý nội dung
+                        // 4. Xử lý nội dung (Loại bỏ các thẻ HTML để lấy Text thuần)
                         const tempDiv = document.createElement("div");
-                        tempDiv.innerHTML = m.content;
+                        tempDiv.innerHTML = m.content || "Khám phá bộ phim hấp dẫn này ngay hôm nay trên Wibey...";
                         let cleanDesc = tempDiv.textContent || tempDiv.innerText || "";
                         if(cleanDesc.length > 200) cleanDesc = cleanDesc.substring(0, 200) + "...";
 
@@ -3241,13 +3275,13 @@ footer {
                                     
                                     ${titleHTML}
 
-                                    <div class="hero-origin-name">${m.origin_name} (${m.year})</div>
+                                    <div class="hero-origin-name">${m.origin_name || ''} (${m.year || '2026'})</div>
 
                                     <div class="hero-meta">
                                         <span class="imdb-badge">IMDb ${imdbScore}</span>
-                                        <span class="quality-badge">${m.quality}</span>
-                                        <span>${m.lang}</span>
-                                        <span>${m.time}</span>
+                                        <span class="quality-badge">${m.quality || 'FHD'}</span>
+                                        <span>${m.lang || 'Vietsub'}</span>
+                                        <span>${m.time || 'Đang cập nhật'}</span>
                                     </div>
                                     
                                     <div class="hero-desc">${cleanDesc}</div>
@@ -3342,7 +3376,6 @@ footer {
                     const data = await res.json();
                     
                     let movie = null;
-                    // Chuẩn hoá cấu trúc (Ophim và KKPhim khác nhau đôi chút)
                     if (data.status && data.data && data.data.item) movie = data.data.item; 
                     else if (data.status && data.movie) movie = data.movie; 
                     else if (data.movie) movie = data.movie; 
@@ -3351,6 +3384,14 @@ footer {
                         // Chuẩn hoá link ảnh để card hiển thị không bị lỗi
                         if (movie.poster_url && !movie.poster_url.startsWith('http')) movie.poster_url = api.imgBase + movie.poster_url;
                         if (movie.thumb_url && !movie.thumb_url.startsWith('http')) movie.thumb_url = api.imgBase + movie.thumb_url;
+                        
+                        // 🔥 FIX LỖI API UP NGƯỢC ẢNH
+                        if (slug === 'vi-me-anh-phan-chia-tay') {
+                            let temp = movie.poster_url;
+                            movie.poster_url = movie.thumb_url;
+                            movie.thumb_url = temp;
+                        }
+
                         return { status: true, item: movie };
                     }
                 } catch (e) {
@@ -3593,7 +3634,7 @@ footer {
 
         // 1. TOP 5 PHIM BỘ
         async function loadTop5() {
-            const MANUAL_TOP_5 = ["bong-ma-hanh-phuc", "boyfriend-on-demand", "con-ra-the-thong-gi-nua-2026", "tieng-yeu-nay-anh-dich-duoc-khong", "giang-ho-da-vu-thap-nien-dang"];
+            const MANUAL_TOP_5 = ["bong-ma-hanh-phuc", "vi-me-anh-phan-chia-tay", "boyfriend-on-demand", "tieng-yeu-nay-anh-dich-duoc-khong", "giang-ho-da-vu-thap-nien-dang"];
             const container = document.getElementById('top5List');
             if(!container) return;
             let html = '';
