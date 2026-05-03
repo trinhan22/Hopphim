@@ -159,9 +159,11 @@
         .copy-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px dashed #555; }
         .copy-box:hover { border-color: var(--primary); background: rgba(255, 94, 98, 0.05); }
 
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
-        .toast { background: #23252f; color: #fff; padding: 12px 20px; border-radius: 8px; border-left: 4px solid var(--primary); margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); animation: slideIn 0.3s; }
-        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        /* Wibey Toast Đồng Bộ */
+        .wibu-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--bg-panel); color: #fff; padding: 12px 20px; border-radius: 8px; z-index: 20000; box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.9rem; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid rgba(255,255,255,0.08);}
+        .wibu-toast.show { top: 20px; }
+        .wibu-toast.success i { color: #2ecc71;}
+        .wibu-toast.error i { color: #ff4757;}
 
         @media (max-width: 768px) {
             .pack-grid, .method-grid { grid-template-columns: 1fr; }
@@ -457,7 +459,7 @@
         <div class="header-left">
             <a href="/" class="logo">
                 <img src="/LOGO.WEBP" alt="Wibey">
-                <span>Wibey</span>
+                <span>WIBEY</span>
             </a>
         </div>
         
@@ -690,7 +692,7 @@
         </div>
     </div>
 
-    <div id="toast-container"></div>
+    <div class="wibu-toast" id="wibu-toast"><i class="fas fa-info-circle"></i> <span id="toast-msg">Thông báo</span></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -906,6 +908,18 @@
             const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = `<i class="fas fa-info-circle"></i> <span>${msg}</span>`;
             c.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 3000);
         }
+
+
+        window.showToast = (msg, type = "success") => {
+        const toast = document.getElementById('wibu-toast');
+        const msgSpan = document.getElementById('toast-msg');
+        if (!toast || !msgSpan) return;
+        
+        toast.className = `wibu-toast show ${type}`;
+        msgSpan.innerText = msg;
+        
+        setTimeout(() => { toast.classList.remove('show'); }, 3000);
+    }
     </script>
     <script type="text/javascript">
     // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")

@@ -90,16 +90,11 @@
            3. TOAST & CONFIRM COMPONENTS
            ========================================================================== 
         */
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 20000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { 
-            background: #23252f; color: #fff; padding: 12px 22px; border-radius: 12px; 
-            display: flex; align-items: center; gap: 12px; min-width: 280px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary-color); 
-            animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto; 
-        }
-        .toast.success { border-left-color: #2ecc71; }
-        .toast.error { border-left-color: #ff4757; }
-        .toast i { font-size: 1.2rem; }
+        /* Wibey Toast Đồng Bộ */
+        .wibu-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--bg-panel); color: #fff; padding: 12px 20px; border-radius: 8px; z-index: 20000; box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.9rem; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid rgba(255,255,255,0.08);}
+        .wibu-toast.show { top: 20px; }
+        .wibu-toast.success i { color: #2ecc71;}
+        .wibu-toast.error i { color: #ff4757;}
 
         .custom-confirm-overlay { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 20001; 
@@ -2191,7 +2186,7 @@ footer {
         <img src="/Loading.png" class="loading-img" alt="Wibey">
     </div>
 
-    <div id="toast-container"></div>
+    <div class="wibu-toast" id="wibu-toast"><i class="fas fa-info-circle"></i> <span id="toast-msg">Thông báo</span></div>
 
     <div id="confirmModal" class="custom-confirm-overlay">
         <div class="confirm-box">
@@ -2340,7 +2335,7 @@ footer {
             <div class="dl-mini-label">Chọn thiết bị</div>
             
             <div class="dl-device-list">
-                <a href="javascript:void(0)" class="dl-item-btn" onclick="window.showToast('Phiên bản Android TV đang phát triển!', 'error')">
+                <a href="javascript:void(0)" class="dl-item-btn" onclick="window.showToast('Phiên bản Smart TV đang được phát triển!', 'error')">
                     <i class="fas fa-tv"></i>
                     <span>Android TV</span>
                 </a>
@@ -3045,17 +3040,15 @@ footer {
     
     window.toggleUserDropdown = () => document.getElementById('userMenu').classList.toggle('active');
 
-    window.showToast = (msg, type = 'success') => {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        const icon = type === 'success' ? '<i class="fas fa-check-circle" style="color:#2ecc71"></i>' : '<i class="fas fa-exclamation-triangle" style="color:#ff4757"></i>';
-        toast.innerHTML = `${icon} <span>${msg}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => {
-            toast.style.transition = "0.4s"; toast.style.opacity = "0"; toast.style.transform = "translateX(100%)";
-            setTimeout(() => toast.remove(), 400);
-        }, 3000);
+    window.showToast = (msg, type = "success") => {
+        const toast = document.getElementById('wibu-toast');
+        const msgSpan = document.getElementById('toast-msg');
+        if (!toast || !msgSpan) return;
+        
+        toast.className = `wibu-toast show ${type}`;
+        msgSpan.innerText = msg;
+        
+        setTimeout(() => { toast.classList.remove('show'); }, 3000);
     }
 
     window.customConfirm = (msg) => {

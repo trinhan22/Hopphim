@@ -27,10 +27,11 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
 
-        /* TOAST & CONFIRM */
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { background: #23252f; color: #fff; padding: 15px 25px; border-radius: 12px; display: flex; align-items: center; gap: 12px; min-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary); animation: slideIn 0.3s ease; pointer-events: auto; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        /* Wibey Toast Đồng Bộ */
+        .wibu-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--bg-panel); color: #fff; padding: 12px 20px; border-radius: 8px; z-index: 20000; box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.9rem; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid rgba(255,255,255,0.08);}
+        .wibu-toast.show { top: 20px; }
+        .wibu-toast.success i { color: #2ecc71;}
+        .wibu-toast.error i { color: #ff4757;}
 
         .custom-confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10001; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.3s; }
         .custom-confirm-overlay.active { display: flex; opacity: 1; }
@@ -128,7 +129,8 @@
 <body>
 
     <div id="loadingScreen"><div class="loader-spinner"></div></div>
-    <div id="toast-container"></div>
+    
+    <div class="wibu-toast" id="wibu-toast"><i class="fas fa-info-circle"></i> <span id="toast-msg">Thông báo</span></div>
 
     <div id="avatarModal" class="modal-overlay" onclick="closeAvatarModal(event)">
         <div class="custom-popup">
@@ -390,13 +392,15 @@
         });
 
         // --- GLOBAL HELPERS ---
-        window.showToast = (msg, type = 'success') => {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-triangle'}"></i> <span>${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 3000);
+        window.showToast = (msg, type = "success") => {
+            const toast = document.getElementById('wibu-toast');
+            const msgSpan = document.getElementById('toast-msg');
+            if (!toast || !msgSpan) return;
+            
+            toast.className = `wibu-toast show ${type}`;
+            msgSpan.innerText = msg;
+            
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
         window.customConfirm = (msg) => {

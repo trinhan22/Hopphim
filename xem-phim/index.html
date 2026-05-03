@@ -352,10 +352,11 @@
             100% { transform: scale(0.36); opacity: 0; } /* scale(0) là thu nhỏ biến mất */
         }
 
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { background: #23252f; color: #fff; padding: 15px 25px; border-radius: 12px; display: flex; align-items: center; gap: 12px; min-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-left: 4px solid var(--primary-color); animation: slideInRight 0.3s ease; pointer-events: auto; }
-        .toast.success { border-left-color: #2ecc71; } .toast.error { border-left-color: #ff4757; }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        /* Wibey Toast Đồng Bộ */
+        .wibu-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--bg-card); color: #fff; padding: 12px 20px; border-radius: 8px; z-index: 9999; box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.9rem; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid var(--border-light);}
+        .wibu-toast.show { top: 20px; }
+        .wibu-toast.success i { color: #2ecc71;}
+        .wibu-toast.error i { color: #ff4757;}
 
         /* --- CONFIRM POPUP --- */
         .custom-confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10001; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.3s; backdrop-filter: blur(5px); }
@@ -1864,7 +1865,8 @@ footer {
         <img src="/Loading.png" class="loading-img" alt="Wibey">
     </div>
 
-    <div id="toast-container"></div>
+    <!-- Toast Đồng Bộ -->
+    <div class="wibu-toast" id="wibu-toast"><i class="fas fa-info-circle"></i> <span id="toast-msg">Thông báo</span></div>
 
     <div id="confirmModal" class="custom-confirm-overlay">
         <div class="confirm-box">
@@ -2499,14 +2501,11 @@ footer {
     }
     window.toggleUserDropdown = () => document.getElementById('userMenu').classList.toggle('active');
 
-    window.showToast = (msg, type = 'success') => {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-        toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+    window.showToast = (msg, type = "success") => {
+        const toast = document.getElementById('wibu-toast');
+        toast.className = `wibu-toast show ${type}`;
+        toast.innerHTML = type === "error" ? `<i class="fas fa-exclamation-circle"></i> <span>${msg}</span>` : `<i class="fas fa-check-circle"></i> <span>${msg}</span>`;
+        setTimeout(() => { toast.classList.remove('show'); }, 3000);
     }
 
     window.customConfirm = (message) => {
