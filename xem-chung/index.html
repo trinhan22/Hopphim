@@ -2,10 +2,10 @@
 <html lang="vi">
 <head>
     <meta charset="utf-8">
-    <title>Wibey Sync - Xem Phim Cùng Nhau</title>
+    <title>Xem Chung - Wibey</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <meta property="og:title" content="Wibey Sync - Xem Phim Cùng Nhau" />
+    <meta property="og:title" content="Xem Chung - Wibey" />
     <meta property="og:description" content="Tạo phòng, mời bạn bè và xem phim đồng bộ thời gian thực." />
     <meta property="og:image" content="/live-cover2.webp" />
     
@@ -607,31 +607,31 @@
                     <div class="nav-link">Thể loại <i class="fas fa-caret-down"></i></div>
                     <div class="dropdown-menu">
                         <div class="dropdown-grid">
-                            <a class="dropdown-item-link" href="/the-loai/hanh-dong">Hành Động</a>
-                            <a class="dropdown-item-link" href="/the-loai/tinh-cam">Tình Cảm</a>
-                            <a class="dropdown-item-link" href="/the-loai/hai-huoc">Hài Hước</a>
-                            <a class="dropdown-item-link" href="/the-loai/co-trang">Cổ Trang</a>
-                            <a class="dropdown-item-link" href="/the-loai/tam-ly">Tâm Lý</a>
-                            <a class="dropdown-item-link" href="/the-loai/hinh-su">Hình Sự</a>
-                            <a class="dropdown-item-link" href="/the-loai/chien-tranh">Chiến Tranh</a>
-                            <a class="dropdown-item-link" href="/the-loai/the-thao">Thể Thao</a>
-                            <a class="dropdown-item-link" href="/the-loai/vo-thuat">Võ Thuật</a>
-                            <a class="dropdown-item-link" href="/the-loai/vien-tuong">Viễn Tưởng</a>
-                            <a class="dropdown-item-link" href="/the-loai/phieu-luu">Phiêu Lưu</a>
-                            <a class="dropdown-item-link" href="/the-loai/khoa-hoc">Khoa Học</a>
-                            <a class="dropdown-item-link" href="/the-loai/kinh-di">Kinh Dị</a>
-                            <a class="dropdown-item-link" href="/the-loai/am-nhac">Âm Nhạc</a>
-                            <a class="dropdown-item-link" href="/the-loai/than-thoai">Thần Thoại</a>
-                            <a class="dropdown-item-link" href="/the-loai/tai-lieu">Tài Liệu</a>
-                            <a class="dropdown-item-link" href="/the-loai/gia-dinh">Gia Đình</a>
-                            <a class="dropdown-item-link" href="/the-loai/hoc-duong">Học Đường</a>
-                            <a class="dropdown-item-link" href="/the-loai/short-drama">Short Drama</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('hanh-dong', 'Hành Động')">Hành Động</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('tinh-cam', 'Tình Cảm')">Tình Cảm</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('hai-huoc', 'Hài Hước')">Hài Hước</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('co-trang', 'Cổ Trang')">Cổ Trang</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('tam-ly', 'Tâm Lý')">Tâm Lý</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('hinh-su', 'Hình Sự')">Hình Sự</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('chien-tranh', 'Chiến Tranh')">Chiến Tranh</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('the-thao', 'Thể Thao')">Thể Thao</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('vo-thuat', 'Võ Thuật')">Võ Thuật</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('vien-tuong', 'Viễn Tưởng')">Viễn Tưởng</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('phieu-luu', 'Phiêu Lưu')">Phiêu Lưu</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('khoa-hoc', 'Khoa Học')">Khoa Học</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('kinh-di', 'Kinh Dị')">Kinh Dị</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('am-nhac', 'Âm Nhạc')">Âm Nhạc</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('than-thoai', 'Thần Thoại')">Thần Thoại</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('tai-lieu', 'Tài Liệu')">Tài Liệu</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('gia-dinh', 'Gia Đình')">Gia Đình</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('hoc-duong', 'Học Đường')">Học Đường</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('short-drama', 'Short Drama')">Short Drama</a>
                         </div>
                     </div>
                 </li>
 
-                <li class="nav-item"><a class="nav-link" href="/danh-sach/phim-le">Phim Lẻ</a></li>
-                <li class="nav-item"><a class="nav-link" href="/danh-sach/phim-bo">Phim Bộ</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Lẻ</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ</a></li>
 
                 <li class="nav-item">
                     <div class="nav-link">Quốc gia <i class="fas fa-caret-down"></i></div>
@@ -1316,7 +1316,7 @@
 
             if(!isHost) {
                 addDoc(collection(db, `watch_rooms/${roomIdParam}/messages`), {
-                    uid: "system", name: "Hệ thống", text: `Đạo hữu ${currentUser.customName} vừa tham gia!`, type: 'system', timestamp: Date.now()
+                    uid: "system", name: "Hệ thống", text: `${currentUser.customName} vừa tham gia!`, type: 'system', timestamp: Date.now()
                 }).catch(e=>{});
             }
 
