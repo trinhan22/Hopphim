@@ -490,7 +490,7 @@
             position: absolute; 
             top: 0; 
             /* Cân bằng chính xác với chiều cao của Card phim */
-            height: calc(100% - 30px); 
+            height: calc(100% - 10px); 
             width: 50px; 
             border-radius: 8px; /* Bo nhẹ các góc để không quá gắt */
             background: rgba(0, 0, 0, 0.75); /* Đen mờ tinh tế */
@@ -638,12 +638,10 @@
         }
 
         /* --- HIỆU ỨNG HOVER CHUỘT --- */
-        .ep-card-premium:hover { transform: translateY(-5px); }
         .ep-card-premium:hover .ep-thumb { border-color: rgba(255, 255, 255, 0.2); }
         .ep-card-premium:hover .ep-thumb img { transform: scale(1.05); opacity: 0.8; filter: brightness(1); }
 
         /* --- 🌟 HIỆU ỨNG TẬP ĐANG PHÁT (ACTIVE) SIÊU ĐẸP --- */
-        .ep-card-premium.active { transform: translateY(-5px); }
         
         /* Viền phát sáng rực rỡ */
         .ep-card-premium.active .ep-thumb { 
