@@ -3481,37 +3481,15 @@ footer {
 
 <script>
         // ============================================================
-        // 🔥 HỆ THỐNG FETCH ĐA NGUỒN & XỬ LÝ ẢNH (BẢN FINAL CHUẨN XÁC)
+        // 🔥 HỆ THỐNG FETCH ĐA NGUỒN (OPHIM - KKPHIM - NGUỒN C) 🔥
         // ============================================================
         
-        // Hàm bóc tách ảnh: Lọc lấy tên file, ép về server phimimg.com, giữ nguyên ảnh dự phòng
-        function getCleanImageUrl(url, baseDomain = '') {
-            if (!url) return 'https://wibey.netlify.app/home-background.jpg';
-            
-            let finalUrl = url;
-            
-            // Ép tất cả ảnh của hệ thống Ophim/KKPhim về chung 1 mối phimimg.com (bỏ qua các thư mục thừa)
-            if (finalUrl.includes('ophim') || finalUrl.includes('phimimg') || baseDomain.includes('phimimg')) {
-                const fileName = finalUrl.split('/').pop();
-                return 'https://phimimg.com/' + fileName;
-            }
-
-            // Với các nguồn khác (như Nguồn C), ghép domain bình thường
-            if (!finalUrl.startsWith('http')) {
-                let domain = baseDomain.endsWith('/') ? baseDomain : baseDomain + '/';
-                let path = finalUrl.startsWith('/') ? finalUrl.substring(1) : finalUrl;
-                finalUrl = domain + path;
-            }
-
-            return finalUrl;
-        }
-
-        // Hàm 1: Lấy chi tiết 1 bộ phim (Ưu tiên PhimAPI trước để lấy ảnh mượt)
+        // Hàm 1: Lấy chi tiết 1 bộ phim (Quét qua 3 Server)
         async function fetchMovieMultiSource(slug) {
             const endpoints = [
+                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
                 { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' },
-                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://phimimg.com/' },
-                { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' } 
+                { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' } // NguonC thường trả full link
             ];
 
             for (let api of endpoints) {
@@ -3526,15 +3504,17 @@ footer {
                     else if (data.movie) movie = data.movie; 
                     
                     if (movie) {
-                        movie.poster_url = getCleanImageUrl(movie.poster_url, api.imgBase);
-                        movie.thumb_url = getCleanImageUrl(movie.thumb_url, api.imgBase);
+                        // Chuẩn hoá link ảnh để card hiển thị không bị lỗi
+                        if (movie.poster_url && !movie.poster_url.startsWith('http')) movie.poster_url = api.imgBase + movie.poster_url;
+                        if (movie.thumb_url && !movie.thumb_url.startsWith('http')) movie.thumb_url = api.imgBase + movie.thumb_url;
                         
-                        // Fix lỗi đảo ngược ảnh riêng của 1 phim
+                        // 🔥 FIX LỖI API UP NGƯỢC ẢNH
                         if (slug === 'vi-me-anh-phan-chia-tay') {
                             let temp = movie.poster_url;
                             movie.poster_url = movie.thumb_url;
                             movie.thumb_url = temp;
                         }
+
                         return { status: true, item: movie };
                     }
                 } catch (e) {
@@ -3544,11 +3524,11 @@ footer {
             return { status: false, item: null };
         }
 
-        // Hàm 2: Lấy Danh sách phim (Ưu tiên PhimAPI)
+        // Hàm 2: Lấy Danh sách phim / Thể loại / Quốc gia (Ophim + KKPhim)
         async function fetchListMultiSource(endpoint) {
             const endpoints = [
-                { base: 'https://phimapi.com/v1/api', imgBase: 'https://phimimg.com/' },
-                { base: 'https://ophim1.com/v1/api', imgBase: 'https://phimimg.com/' }
+                { base: 'https://ophim1.com/v1/api', imgBase: 'https://img.ophim1.com/uploads/movies/' },
+                { base: 'https://phimapi.com/v1/api', imgBase: 'https://phimimg.com/' }
             ];
 
             for (let api of endpoints) {
@@ -3559,8 +3539,8 @@ footer {
                     
                     if (data.status && data.data && data.data.items) {
                         data.data.items.forEach(m => {
-                            m.poster_url = getCleanImageUrl(m.poster_url, api.imgBase);
-                            m.thumb_url = getCleanImageUrl(m.thumb_url, api.imgBase);
+                            if (m.poster_url && !m.poster_url.startsWith('http')) m.poster_url = api.imgBase + m.poster_url;
+                            if (m.thumb_url && !m.thumb_url.startsWith('http')) m.thumb_url = api.imgBase + m.thumb_url;
                         });
                         return data;
                     }
@@ -3569,12 +3549,11 @@ footer {
             return { status: false, data: { items: [] } };
         }
 
-        // Hàm 3: Tìm kiếm phim (Ưu tiên PhimAPI)
+        // Hàm 3: Tìm kiếm phim Đa luồng
         async function searchMultiSource(keyword) {
             const endpoints = [
-                { url: `https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' },
-                { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' },
-                { url: `https://phim.nguonc.com/api/films/search?keyword=${encodeURIComponent(keyword)}`, imgBase: '' }
+                { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
+                { url: `https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' }
             ];
             
             for (let api of endpoints) {
@@ -3582,19 +3561,11 @@ footer {
                     const res = await fetch(api.url);
                     if (!res.ok) continue;
                     const data = await res.json();
-                    
-                    if (data.status === "success" && data.data && data.data.items && data.data.items.length > 0) {
-                        const imgDomain = data.data.APP_DOMAIN_CDN_IMAGE || api.imgBase;
+                    if (data.status && data.data && data.data.items && data.data.items.length > 0) {
                         data.data.items.forEach(m => {
-                            m.thumb_url = getCleanImageUrl(m.thumb_url, imgDomain);
+                            if (m.thumb_url && !m.thumb_url.startsWith('http')) m.thumb_url = api.imgBase + m.thumb_url;
                         });
                         return data;
-                    }
-                    if (data.status === true && data.items && data.items.length > 0) {
-                        data.items.forEach(m => {
-                            m.thumb_url = getCleanImageUrl(m.thumb_url, api.imgBase);
-                        });
-                        return { status: true, data: { items: data.items } };
                     }
                 } catch (e) {}
             }
