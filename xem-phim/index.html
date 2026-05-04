@@ -707,7 +707,7 @@
         .rec-meta-tags span:last-child { border-right: none; }
 
         /* BÌNH LUẬN */
-        .comment-section { max-width: 1250px; margin: 0 auto; padding: 0; }
+        .comment-section { max-width: 1250px; margin: 60px auto 0; padding: 0; }
         .comment-input-box { display: flex; gap: 20px; margin-bottom: 40px; align-items: flex-start; }
         .current-user-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
         .comment-form { flex: 1; background: #23252f; border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
@@ -3621,6 +3621,30 @@ footer {
             if(panel) panel.classList.remove('active');
         }
     });
+    </script>
+<script>
+        // =========================================================
+        // 🔥 HÀM SƠ CUA (FALLBACK) - TỰ ĐỘNG BẮT MỌI LỖI ẢNH TRÊN WEB
+        // =========================================================
+        document.addEventListener('error', function (event) {
+            // 1. Kiểm tra xem thẻ vừa bị lỗi có phải là thẻ <img> hay không
+            if (event.target && event.target.tagName === 'IMG') {
+                
+                // 2. Link ảnh sơ cua (Mặc định dùng ảnh Wibey của bạn)
+                const fallbackImg = 'https://wibey.netlify.app/home-background.jpg';
+                
+                // 3. Đảm bảo không bị lặp vô hạn (Trường hợp mạng rớt khiến chính ảnh sơ cua cũng lỗi)
+                if (event.target.src !== fallbackImg) {
+                    event.target.src = fallbackImg;
+                    
+                    // (Tuỳ chọn) Thêm CSS object-fit để ảnh sơ cua không bị méo
+                    event.target.style.objectFit = 'cover';
+                    
+                    // Console báo lỗi nhẹ để Dev biết ảnh nào tẻo mà fix
+                    console.warn('Đã thay ảnh sơ cua cho link hỏng:', event.target.src);
+                }
+            }
+        }, true); // "true" rất quan trọng: Đứng canh ở cổng (Capture phase) để bắt lỗi ngay lập tức
     </script>
 <script type="text/javascript">
     // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
