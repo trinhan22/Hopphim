@@ -165,21 +165,24 @@
             .slider-container { max-width: 1400px !important; }
         }
 
-        /* --- ĐƯA CỤM NÚT SANG BÊN PHẢI (NẰM TRƯỚC CÀI ĐẶT) --- */
+        /* --- ÉP BUỘC HIỂN THỊ CỤM NÚT & CĂN PHẢI (CHỐNG LỖI ẨN TRÊN MOBILE) --- */
         .plyr__controls .custom-controls-group { 
-            display: flex; align-items: center; gap: 4px; 
-            margin: 0 5px; /* Bỏ margin: auto đi để không vỡ layout mặc định của Plyr */
+            display: flex !important; /* Tiêu diệt lệnh ẩn cũ */
+            align-items: center !important; 
+            gap: 4px !important; 
+            margin-left: auto !important; /* Lực đẩy sát sang bên phải (cạnh nút Cài đặt) */
+            margin-right: 5px !important;
         }
         
-        /* Style icon đồng bộ 100% với nút của Plyr */
+        /* Chỉnh icon đồng màu, chuẩn kích thước Plyr */
         .plyr__custom-icon-btn {
-            background: transparent; border: none; color: inherit;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; opacity: 0.8; transition: all 0.2s ease; 
-            padding: 7px; border-radius: 4px; font-size: 18px; 
+            background: transparent !important; border: none !important; color: inherit !important;
+            display: flex !important; align-items: center !important; justify-content: center !important;
+            cursor: pointer !important; opacity: 0.8 !important; transition: all 0.2s ease !important; 
+            padding: 7px !important; border-radius: 4px !important; font-size: 18px !important; 
         }
         .plyr__custom-icon-btn:hover { 
-            opacity: 1; color: var(--plyr-color-main); background: rgba(255,255,255,0.1); 
+            opacity: 1 !important; color: var(--primary-color) !important; background: rgba(255,255,255,0.15) !important; 
         }
         .plyr__custom-btn i { font-size: 1.1rem; color: #fff; }
         .plyr__custom-btn:hover i { color: var(--primary-color); }
@@ -2838,33 +2841,31 @@ footer {
     }
 
     // =========================================================
-    // 🔥 HÀM BƠM NÚT VÀO PLAYER (BẢN FIX LỖI TÀNG HÌNH)
+    // 🔥 HÀM BƠM MENU NHỎ GỌN VÀO THANH CONTROLS (BẢN CHỐNG LỖI)
     // =========================================================
     function injectCustomPlayerMenus(plyrInstance) {
-        // Đã xóa dòng "if (window.innerWidth < 900) return;" để cho phép hiện trên mọi màn hình
-
         let retryCount = 0;
         let checkExist = setInterval(function() {
             retryCount++;
-            if(retryCount > 50) clearInterval(checkExist); 
+            if(retryCount > 100) clearInterval(checkExist); // Chờ kiên nhẫn tới 20 giây
 
-            // 1. Dùng plyrInstance.elements.controls để tóm chính xác thanh công cụ
-            const controls = plyrInstance.elements.controls;
+            // Tìm thẳng vào DOM thực tế thay vì bộ nhớ của Plyr
+            const controls = document.querySelector('.plyr__controls');
             if (!controls) return;
 
-            // 2. Tìm nút Cài đặt HOẶC Phóng to (Fullscreen) để làm mốc chèn vào
+            // Dùng nút Settings hoặc Fullscreen làm "mỏ neo" để chèn nút mới vào cạnh nó
             const targetBtn = controls.querySelector('[data-plyr="settings"]') || controls.querySelector('[data-plyr="fullscreen"]');
-            
+
             if (targetBtn) {
                 clearInterval(checkExist); 
                 
-                // Nếu đã có rồi thì bỏ qua
+                // Tránh bơm đúp nếu nút đã tồn tại
                 if (controls.querySelector('.custom-controls-group')) return;
 
                 const customGroup = document.createElement('div');
                 customGroup.className = 'custom-controls-group';
                 
-                // 3. Render 2 Icon vào Group (Nút Menu và Nút Next)
+                // HTML 2 nút: Danh sách & Tập tiếp theo
                 customGroup.innerHTML = `
                     <button type="button" class="plyr__custom-icon-btn" id="btn-show-episodes-mini" title="Danh sách tập">
                         <i class="fa-solid fa-list-ul"></i>
@@ -2874,11 +2875,13 @@ footer {
                     </button>
                 `;
 
-                // 4. Chèn vào TRƯỚC nút target (Nằm sát cạnh Cài đặt / Âm lượng)
+                // Chèn ngay TRƯỚC nút mục tiêu (Nằm giữa âm lượng và Cài đặt)
                 controls.insertBefore(customGroup, targetBtn);
 
-                // 5. Render HTML cho Popup Danh sách tập
-                const wrapper = plyrInstance.elements.wrapper || document.querySelector('.plyr'); 
+                // --- TẠO POPUP CHO DANH SÁCH TẬP ---
+                const wrapper = document.querySelector('.plyr'); 
+                if (!wrapper) return;
+                
                 let epsHtml = '';
                 const currentServer = (window.currentMovieEpisodesData && window.currentMovieEpisodesData.length > 0) 
                                         ? window.currentMovieEpisodesData[window.currentServerIndex].server_data : [];
@@ -2915,10 +2918,10 @@ footer {
                 `;
                 wrapper.insertAdjacentHTML('beforeend', popupsHtml);
 
-                // --- 6. Gắn Sự Kiện Cho Nút ---
+                // --- GẮN SỰ KIỆN CLICK CHO 2 NÚT ---
                 document.getElementById('btn-next-ep-mini').addEventListener('click', (e) => {
                     e.stopPropagation(); 
-                    window.playNextEpisode(); // Gọi hàm next tập
+                    window.playNextEpisode();
                 });
 
                 document.getElementById('btn-show-episodes-mini').addEventListener('click', (e) => {
@@ -2926,7 +2929,7 @@ footer {
                     document.getElementById('popup-episodes').classList.toggle('active');
                 });
 
-                // Bấm ra ngoài video để đóng menu
+                // Bấm ra ngoài video để tắt bảng danh sách tập
                 wrapper.addEventListener('click', (e) => {
                     if (!e.target.closest('.plyr-popup-box') && !e.target.closest('.custom-controls-group')) {
                         document.getElementById('popup-episodes')?.classList.remove('active');
