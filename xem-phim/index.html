@@ -167,9 +167,8 @@
 
         /* --- ÉP BUỘC HIỂN THỊ CỤM NÚT & CĂN PHẢI (CHỐNG LỖI ẨN TRÊN MOBILE) --- */
         .plyr__controls .custom-controls-group { 
-            display: flex !important; /* Tiêu diệt lệnh ẩn cũ */
+            display: flex !important;
             align-items: center !important; 
-            gap: 4px !important; 
             margin-left: auto !important; /* Lực đẩy sát sang bên phải (cạnh nút Cài đặt) */
             margin-right: 5px !important;
         }
@@ -2841,46 +2840,50 @@ footer {
     }
 
     // =========================================================
-    // 🔥 HÀM BƠM MENU NHỎ GỌN VÀO THANH CONTROLS (BẢN CHỐNG LỖI)
+    // 🔥 HÀM BƠM MENU VÀO THANH CONTROLS (BẢN VĨNH VIỄN)
     // =========================================================
     function injectCustomPlayerMenus(plyrInstance) {
         let retryCount = 0;
         let checkExist = setInterval(function() {
             retryCount++;
-            if(retryCount > 100) clearInterval(checkExist); // Chờ kiên nhẫn tới 20 giây
+            if(retryCount > 100) clearInterval(checkExist); // Thử tối đa 20 giây
 
-            // Tìm thẳng vào DOM thực tế thay vì bộ nhớ của Plyr
-            const controls = document.querySelector('.plyr__controls');
-            if (!controls) return;
+            // BẮT BỘC: Lấy chính xác thanh controls của trình phát ĐANG CHẠY (Bỏ qua các trình phát ảo)
+            if (!plyrInstance || !plyrInstance.elements || !plyrInstance.elements.controls) return;
+            const controls = plyrInstance.elements.controls;
 
-            // Dùng nút Settings hoặc Fullscreen làm "mỏ neo" để chèn nút mới vào cạnh nó
+            // Tìm mốc là nút Cài đặt hoặc Phóng to
             const targetBtn = controls.querySelector('[data-plyr="settings"]') || controls.querySelector('[data-plyr="fullscreen"]');
 
             if (targetBtn) {
                 clearInterval(checkExist); 
                 
-                // Tránh bơm đúp nếu nút đã tồn tại
+                // Không bơm đúp
                 if (controls.querySelector('.custom-controls-group')) return;
 
                 const customGroup = document.createElement('div');
                 customGroup.className = 'custom-controls-group';
                 
-                // HTML 2 nút: Danh sách & Tập tiếp theo
+                // Dùng class "plyr__control" của chính Plyr + Vẽ icon bằng SVG để chống lỗi tàng hình 100%
                 customGroup.innerHTML = `
-                    <button type="button" class="plyr__custom-icon-btn" id="btn-show-episodes-mini" title="Danh sách tập">
-                        <i class="fa-solid fa-list-ul"></i>
+                    <button type="button" class="plyr__control" id="btn-show-episodes-mini" aria-label="Danh sách tập" style="width: 32px; height: 32px; padding: 4px; margin-left: 2px;" title="Danh sách tập">
+                        <svg style="width:18px;height:18px;fill:currentColor;" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
                     </button>
-                    <button type="button" class="plyr__custom-icon-btn" id="btn-next-ep-mini" title="Tập tiếp theo">
-                        <i class="fas fa-step-forward"></i>
+                    <button type="button" class="plyr__control" id="btn-next-ep-mini" aria-label="Tập tiếp theo" style="width: 32px; height: 32px; padding: 4px; margin-left: 2px;" title="Tập tiếp theo">
+                        <svg style="width:18px;height:18px;fill:currentColor;" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                     </button>
                 `;
 
-                // Chèn ngay TRƯỚC nút mục tiêu (Nằm giữa âm lượng và Cài đặt)
+                // Chèn vào TRƯỚC nút cài đặt
                 controls.insertBefore(customGroup, targetBtn);
 
-                // --- TẠO POPUP CHO DANH SÁCH TẬP ---
-                const wrapper = document.querySelector('.plyr'); 
+                // --- TẠO POPUP DANH SÁCH TẬP CHUẨN XÁC VÀO TRONG WRAPPER CỦA PLAYER ---
+                const wrapper = plyrInstance.elements.wrapper; 
                 if (!wrapper) return;
+
+                // Xóa popup cũ để tránh rác DOM khi chuyển tập
+                const oldPopup = wrapper.querySelector('#popup-episodes');
+                if (oldPopup) oldPopup.remove();
                 
                 let epsHtml = '';
                 const currentServer = (window.currentMovieEpisodesData && window.currentMovieEpisodesData.length > 0) 
@@ -2911,28 +2914,29 @@ footer {
                     <div class="plyr-popup-box popup-episodes" id="popup-episodes">
                         <div class="pep-header">
                             <span>${currentMovieData?.name || 'Danh sách tập'}</span>
-                            <i class="fas fa-times" style="cursor:pointer;" onclick="document.getElementById('popup-episodes').classList.remove('active')"></i>
+                            <i class="fas fa-times" style="cursor:pointer;" onclick="this.closest('.popup-episodes').classList.remove('active')"></i>
                         </div>
                         <div class="pep-list">${epsHtml}</div>
                     </div>
                 `;
                 wrapper.insertAdjacentHTML('beforeend', popupsHtml);
 
-                // --- GẮN SỰ KIỆN CLICK CHO 2 NÚT ---
-                document.getElementById('btn-next-ep-mini').addEventListener('click', (e) => {
+                // --- GẮN SỰ KIỆN CLICK CHO NÚT BÊN TRONG CỤM PLAYER ĐÓ ---
+                wrapper.querySelector('#btn-next-ep-mini').addEventListener('click', (e) => {
                     e.stopPropagation(); 
                     window.playNextEpisode();
                 });
 
-                document.getElementById('btn-show-episodes-mini').addEventListener('click', (e) => {
+                wrapper.querySelector('#btn-show-episodes-mini').addEventListener('click', (e) => {
                     e.stopPropagation();
-                    document.getElementById('popup-episodes').classList.toggle('active');
+                    wrapper.querySelector('#popup-episodes').classList.toggle('active');
                 });
 
                 // Bấm ra ngoài video để tắt bảng danh sách tập
                 wrapper.addEventListener('click', (e) => {
-                    if (!e.target.closest('.plyr-popup-box') && !e.target.closest('.custom-controls-group')) {
-                        document.getElementById('popup-episodes')?.classList.remove('active');
+                    const popup = wrapper.querySelector('#popup-episodes');
+                    if (popup && !e.target.closest('.plyr-popup-box') && !e.target.closest('.custom-controls-group')) {
+                        popup.classList.remove('active');
                     }
                 });
             }
