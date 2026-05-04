@@ -2243,21 +2243,35 @@ footer {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
     window.isCurrentVip = false;
 
     // ============================================================
-    // 🔥 HỆ THỐNG FETCH ĐA NGUỒN CỰC MẠNH (OPHIM - KKPHIM - NGUỒN C)
+    // 🔥 HÀM CHUẨN HÓA ẢNH TỐI THƯỢNG (BẢN FINAL V3 - BẤT BẠI)
+    // ============================================================
+    function getCleanImageUrl(url, baseDomain = '') {
+        if (!url) return 'https://wibey.netlify.app/home-background.jpg';
+        const fileName = url.split('/').pop(); 
+        if (url.includes('nguonc') || baseDomain.includes('nguonc')) {
+            if (url.startsWith('http')) return url;
+            let domain = baseDomain.endsWith('/') ? baseDomain.slice(0, -1) : baseDomain;
+            let path = url.startsWith('/') ? url : '/' + url;
+            return domain + path;
+        }
+        return 'https://phimimg.com/' + fileName;
+    }
+
+    // ============================================================
+    // 🔥 HỆ THỐNG FETCH ĐA NGUỒN CỰC MẠNH (ĐÃ ĐƯỢC FIX ẢNH)
     // ============================================================
     async function fetchMovieMultiSource(slug) {
         const endpoints = [
-            { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
-            { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' },
+            { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' }, // Ưu tiên PhimAPI vì cực kỳ ổn định
+            { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://phimimg.com/' },
             { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' }
         ];
 
         let finalMovie = null;
-        let finalEpisodes = []; // Mảng chứa toàn bộ các server
+        let finalEpisodes = []; 
         let finalImgBase = '';
 
         for (let api of endpoints) {
@@ -2269,17 +2283,18 @@ footer {
                 let movie = null;
                 let eps = [];
 
-                // 1. Lấy thông tin chung của Phim (Ưu tiên lấy thông tin từ nguồn đầu tiên chạy được)
                 if (data.status && data.data && data.data.item) movie = data.data.item;
                 else if (data.status && data.movie) movie = data.movie;
                 else if (data.movie) movie = data.movie;
                 
                 if (movie && !finalMovie) {
                     finalMovie = movie;
+                    // Lọc ảnh sạch sẽ ngay từ đầu
+                    finalMovie.poster_url = getCleanImageUrl(movie.poster_url, api.imgBase);
+                    finalMovie.thumb_url = getCleanImageUrl(movie.thumb_url, api.imgBase);
                     finalImgBase = api.imgBase;
                 }
 
-                // 2. Gom nhặt các tập phim từ MỌI NGUỒN (Gom thành các server)
                 if (data.episodes && data.episodes.length > 0) {
                     eps = data.episodes;
                 } else if (movie && movie.episodes && movie.episodes.length > 0) {
@@ -2289,15 +2304,12 @@ footer {
                 if (eps.length > 0) {
                     eps.forEach(serverGroup => {
                         let srvName = serverGroup.server_name || "Vietsub";
-                        
-                        // Chuẩn hóa tên tập phim
                         let srvData = (serverGroup.server_data || serverGroup.items || []).map(ep => ({
                             name: ep.name,
                             link_m3u8: ep.link_m3u8 || ep.link_embed,
                             link_embed: ep.link_embed || ep.link_m3u8
                         }));
 
-                        // Nếu server này chưa có trong danh sách thì thêm vào
                         if (!finalEpisodes.some(g => g.server_name === srvName) && srvData.length > 0) {
                             finalEpisodes.push({ server_name: srvName, server_data: srvData });
                         }
@@ -2309,8 +2321,6 @@ footer {
         }
 
         if (finalMovie && finalEpisodes.length > 0) {
-            if (finalMovie.poster_url && !finalMovie.poster_url.startsWith('http')) finalMovie.poster_url = finalImgBase + finalMovie.poster_url;
-            if (finalMovie.thumb_url && !finalMovie.thumb_url.startsWith('http')) finalMovie.thumb_url = finalImgBase + finalMovie.thumb_url;
             return { status: true, item: finalMovie, episodes: finalEpisodes };
         }
 
@@ -2318,8 +2328,8 @@ footer {
     }
 
     // 2. CONSTANTS & UI ELEMENTS
-    const API_BASE = 'https://ophim1.com/v1/api/phim';
-    const IMG_BASE = 'https://img.ophim1.com/uploads/movies/';
+    const API_BASE = 'https://phimapi.com/v1/api/phim';
+    const IMG_BASE = 'https://phimimg.com/';
     
     // UI Elements
     const loadingScreen = document.getElementById('loadingScreen');
@@ -2579,12 +2589,8 @@ footer {
 
     // --- 🔥 1. MOBILE CONTROLS (ĐÃ FIX LỖI ĐỨNG MÀN HÌNH) ---
     function setupMobileControls(player) {
-        // Chỉ chạy trên Mobile/Tablet
         if (window.innerWidth >= 1024) return;
-
         const container = player.elements.container;
-        
-        // Xóa layer cũ nếu có (để tránh trùng lặp khi đổi tập)
         const oldLayer = container.querySelector('.center-controls-layer');
         if (oldLayer) oldLayer.remove();
 
@@ -2601,22 +2607,16 @@ footer {
         const btnPlay = layer.querySelector('#cc-play');
         const btnForward = layer.querySelector('#cc-forward');
         const iconPlay = btnPlay.querySelector('i');
-
         let hideTimeout;
 
-        // Hàm hiện controls
         const showControls = () => {
             layer.classList.remove('hidden');
             clearTimeout(hideTimeout);
-            
-            // Nếu đang phát thì tự ẩn sau 2.5s
             if (player.playing) {
                 hideTimeout = setTimeout(() => layer.classList.add('hidden'), 2500);
             }
         };
 
-        // --- XỬ LÝ CLICK NÚT ---
-        // Sử dụng e.preventDefault() và e.stopImmediatePropagation() để chặn triệt để
         btnRewind.onclick = (e) => { 
             e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
             player.rewind(10); 
@@ -2632,10 +2632,8 @@ footer {
         btnPlay.onclick = (e) => { 
             e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
             player.togglePlay();
-            // Không cần gọi showControls ở đây vì sự kiện play/pause bên dưới sẽ lo
         };
 
-        // --- LẮNG NGHE TRẠNG THÁI PLAYER ---
         player.on('play', () => { 
             iconPlay.className = 'fas fa-pause'; 
             showControls(); 
@@ -2643,32 +2641,20 @@ footer {
 
         player.on('pause', () => { 
             iconPlay.className = 'fas fa-play'; 
-            layer.classList.remove('hidden'); // Pause thì LUÔN HIỆN
+            layer.classList.remove('hidden');
             clearTimeout(hideTimeout);
         });
 
-        // --- XỬ LÝ CHẠM MÀN HÌNH ---
-        // Chạm vào vùng trống của container -> Hiện/Ẩn Controls
-        // (Chứ không toggle Play/Pause, việc đó để nút giữa làm)
         const wrapper = player.elements.wrapper;
-        
         wrapper.onclick = (e) => {
-            // Nếu click trúng nút điều khiển (của Plyr hoặc của mình) -> Bỏ qua
             if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.center-controls-layer')) return;
-
-            // Nếu controls đang hiện -> Ẩn đi
-            // Nếu đang ẩn -> Hiện lên
             if (layer.classList.contains('hidden')) {
                 showControls();
             } else {
-                // Nếu đang Pause thì không cho ẩn
-                if (player.playing) {
-                    layer.classList.add('hidden');
-                }
+                if (player.playing) layer.classList.add('hidden');
             }
         };
 
-        // Khởi tạo
         showControls();
     }
 
@@ -2677,18 +2663,11 @@ footer {
         player.on('enterfullscreen', async () => {
             try {
                 if (window.innerWidth < 1024) {
-                    // Android
-                    if (screen.orientation && screen.orientation.lock) {
-                        await screen.orientation.lock('landscape');
-                    } 
-                    // iOS (Native Player)
-                    else if (player.media.webkitEnterFullscreen) {
-                        player.media.webkitEnterFullscreen();
-                    }
+                    if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
+                    else if (player.media.webkitEnterFullscreen) player.media.webkitEnterFullscreen();
                 }
             } catch (err) { console.log('Tự xoay không hỗ trợ trên thiết bị này'); }
         });
-
         player.on('exitfullscreen', async () => {
             try { if (screen.orientation && screen.orientation.unlock) await screen.orientation.unlock(); } catch (err) {}
         });
@@ -2719,7 +2698,7 @@ footer {
             setupPauseOverlay(plyrInstance);
             setupMobileControls(plyrInstance); 
             setupAutoRotation(plyrInstance);   
-            injectCustomPlayerMenus(plyrInstance); // 🔥 Bơm Menu vào Player
+            injectCustomPlayerMenus(plyrInstance); 
 
             if (window.innerWidth >= 1024) {
                 plyrInstance.elements.wrapper.addEventListener('click', (e) => {
@@ -2790,23 +2769,18 @@ footer {
     // 🔥 HÀM BƠM 2 NÚT VÀO PLAYER (SIÊU CỨNG, KHÔNG BỊ MẤT)
     // =========================================================
     function injectCustomPlayerMenus(plyrInstance) {
-        if (window.innerWidth < 900) return; // Không vẽ trên mobile
+        if (window.innerWidth < 900) return;
 
-        // Dùng setInterval săn tìm bằng được thanh controls của Plyr sau khi nó update HLS
         let retryCount = 0;
         let checkExist = setInterval(function() {
             retryCount++;
-            if(retryCount > 50) clearInterval(checkExist); // Dừng sau 10 giây nếu lỗi
+            if(retryCount > 50) clearInterval(checkExist); 
 
             const controls = document.querySelector('.plyr__controls');
-            // Phải đợi controls và nút settings xuất hiện đầy đủ mới bơm vào
             if (controls && controls.querySelector('[data-plyr="settings"]')) {
                 clearInterval(checkExist); 
-                
-                // Nếu đã bơm rồi thì bỏ qua
                 if (controls.querySelector('.custom-controls-group')) return;
 
-                // 1. Tạo 2 nút bấm
                 const customGroup = document.createElement('div');
                 customGroup.className = 'custom-controls-group';
                 customGroup.innerHTML = `
@@ -2818,17 +2792,15 @@ footer {
                     </button>
                 `;
 
-                // 2. Chèn vào cạnh nút Cài đặt (Settings)
                 const settingsBtn = controls.querySelector('[data-plyr="settings"]');
                 controls.insertBefore(customGroup, settingsBtn);
 
-                // 3. Render HTML cho danh sách tập
-                const wrapper = document.querySelector('.plyr'); // Dùng DOM selector trực tiếp
+                const wrapper = document.querySelector('.plyr'); 
                 let epsHtml = '';
                 const currentServer = (window.currentMovieEpisodesData && window.currentMovieEpisodesData.length > 0) 
                                         ? window.currentMovieEpisodesData[0].server_data : [];
+                
                 let fallbackImg = currentMovieData?.poster_url || currentMovieData?.thumb_url || '/Guest.webp';
-                if (fallbackImg && !fallbackImg.startsWith('http')) fallbackImg = IMG_BASE + fallbackImg;
 
                 currentServer.forEach((ep, idx) => {
                     let epName = ep.name;
@@ -2839,7 +2811,7 @@ footer {
                     
                     epsHtml += `
                         <div class="pep-item ${isActive}" onclick="window.changeEp('${link}', '${type}', null, '${epName}', 0, ${idx})">
-                            <img src="${fallbackImg}" alt="${epName}">
+                            <img src="${fallbackImg}" alt="${epName}" onerror="this.src='https://wibey.netlify.app/home-background.jpg'">
                             <div style="flex:1;">
                                 <div class="pep-ep-name">${epName}</div>
                                 <div class="pep-desc">Khám phá diễn biến tiếp theo...</div>
@@ -2848,7 +2820,6 @@ footer {
                     `;
                 });
 
-                // 4. Tạo khối Popup
                 const popupsHtml = `
                     <div class="plyr-popup-box popup-episodes" id="popup-episodes">
                         <div class="pep-header">
@@ -2875,7 +2846,6 @@ footer {
                 `;
                 wrapper.insertAdjacentHTML('beforeend', popupsHtml);
 
-                // 5. Gắn sự kiện click mở Menu
                 document.getElementById('btn-show-episodes').addEventListener('click', (e) => {
                     e.stopPropagation();
                     document.getElementById('popup-audiosub').classList.remove('active');
@@ -2888,7 +2858,6 @@ footer {
                     document.getElementById('popup-audiosub').classList.toggle('active');
                 });
 
-                // Tương tác UI cho Âm thanh & Phụ đề
                 document.querySelectorAll('.pas-item').forEach(item => {
                     item.addEventListener('click', function(e) {
                         e.stopPropagation();
@@ -2898,7 +2867,6 @@ footer {
                     });
                 });
 
-                // Bấm ra ngoài để tắt
                 wrapper.addEventListener('click', (e) => {
                     if (!e.target.closest('.plyr-popup-box') && !e.target.closest('.custom-controls-group')) {
                         document.getElementById('popup-episodes')?.classList.remove('active');
@@ -2906,7 +2874,7 @@ footer {
                     }
                 });
             }
-        }, 200); // Check liên tục mỗi 200ms
+        }, 200); 
     }
 
     // --- SKIP INTRO ---
@@ -2942,11 +2910,9 @@ footer {
         });
     }
 
-    // --- PAUSE OVERLAY (Chỉ hiện trên PC) ---
+    // --- PAUSE OVERLAY ---
     function setupPauseOverlay(player) {
-        // Mobile không hiện overlay này để tránh rối
         if (window.innerWidth < 1024) return;
-        
         if (!currentMovieData) return;
         const overlay = document.createElement('div');
         overlay.className = 'pause-overlay';
@@ -3007,7 +2973,7 @@ footer {
         if (!movieSlug) { hideLoadingState(); return; }
 
         try {
-            // 🔥 THAY ĐỔI CỐT LÕI Ở ĐÂY: Dùng hàm fetchMovieMultiSource
+            // 🔥 CỐT LÕI: DÙNG HÀM FETCH ĐÃ CHUẨN HOÁ ẢNH 
             const data = await fetchMovieMultiSource(movieSlug);
             
             if (data.status) {
@@ -3019,7 +2985,7 @@ footer {
                 currentMovieData = movie;
                 renderInfo(movie);
 
-                const episodesArray = data.episodes; // 🔥 Nhận list tập chuẩn hóa từ đa nguồn
+                const episodesArray = data.episodes; 
                 
                 if (episodesArray && episodesArray.length > 0) {
                     if (episodesArray.length > 1) {
@@ -3044,7 +3010,7 @@ footer {
     }
 
     // --- HÀM 1: VẼ NÚT CHỌN SERVER ---
-    window.currentMovieEpisodesData = []; // Lưu biến toàn cục
+    window.currentMovieEpisodesData = []; 
     
     function renderServerButtons(episodesArray, savedEpName, savedTime) {
         window.currentMovieEpisodesData = episodesArray;
@@ -3057,30 +3023,25 @@ footer {
                 icon = '<i class="fas fa-microphone-alt"></i>';
             }
             const activeClass = index === 0 ? 'active' : '';
-            // Gán chung ID desk cho cả điện thoại và máy tính
             btnHtmlDesk += `<button class="server-btn ${activeClass}" id="btn-sv-desk-${index}" onclick="window.changeServer(${index}, '${savedEpName}', ${savedTime})">${icon} ${server.server_name}</button>`;
         });
 
         containerDesktop.style.display = 'flex';
         containerDesktop.innerHTML = btnHtmlDesk;
 
-        // Khởi tạo danh sách tập của Server đầu tiên
         renderEpisodeList(episodesArray[0].server_data, savedEpName, savedTime);
     }
 
-    // --- HÀM 2: VẼ DANH SÁCH TẬP (CỦA SERVER ĐƯỢC CHỌN) ---
+    // --- HÀM 2: VẼ DANH SÁCH TẬP ---
     function renderEpisodeList(svData, savedEpName, savedTime) {
         let epHtml = '';
         let targetEpToPlay = null; 
         let targetIndex = 0;
 
-        // Lấy ảnh nền của phim làm ảnh minh họa cho các tập
         let fallbackImg = currentMovieData.poster_url || currentMovieData.thumb_url;
-        if (fallbackImg && !fallbackImg.startsWith('http')) fallbackImg = IMG_BASE + fallbackImg;
 
         document.getElementById('mTotalEps').innerText = `${svData.length} tập`;
 
-        // 🌟 ĐỂ 3 BIẾN NÀY Ở NGOÀI VÒNG LẶP ĐỂ TỐI ƯU TỐC ĐỘ XỬ LÝ NHÉ
         const movieQuality = currentMovieData.quality || 'FHD';
         const movieTime = currentMovieData.time || 'Đang cập nhật';
         const movieLang = currentMovieData.lang || 'Vietsub';
@@ -3089,14 +3050,13 @@ footer {
             const type = ep.link_m3u8 ? 'hls' : 'iframe';
             const link = ep.link_m3u8 || ep.link_embed;
             
-            // Format tên tập
             let epDisplay = ep.name;
             if (!epDisplay.toLowerCase().includes('tập')) epDisplay = `Tập ${epDisplay}`;
 
             epHtml += `
             <div class="ep-card-premium" id="btn-ep-premium-${idx}" onclick="window.changeEp('${link}', '${type}', this, '${epDisplay}', 0, ${idx})">
                 <div class="ep-thumb">
-                    <img src="${fallbackImg}" loading="lazy" alt="${epDisplay}">
+                    <img src="${fallbackImg}" loading="lazy" alt="${epDisplay}" onerror="this.src='https://wibey.netlify.app/home-background.jpg'">
                     <div class="ep-play-icon"><i class="fas fa-play"></i></div>
                 </div>
                 <div class="ep-name">${epDisplay}</div>
@@ -3124,7 +3084,6 @@ footer {
             targetIndex = 0; savedTime = 0; 
         }
 
-        // Đổ html vào 1 List duy nhất cho cả PC và Mobile
         document.getElementById('episodeListDesktop').innerHTML = epHtml;
 
         if (targetEpToPlay) {
@@ -3138,11 +3097,9 @@ footer {
 
     // --- HÀM 3: SỰ KIỆN KHI BẤM CHUYỂN SERVER ---
     window.changeServer = function(serverIndex, savedEpName, savedTime) {
-        // Cập nhật giao diện nút
         document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll(`#btn-sv-desk-${serverIndex}`).forEach(btn => btn.classList.add('active'));
 
-        // Gọi lại hàm vẽ danh sách tập
         const serverData = window.currentMovieEpisodesData[serverIndex].server_data;
         renderEpisodeList(serverData, savedEpName, savedTime);
         
@@ -3177,7 +3134,7 @@ footer {
             currentEpName = epName;
             document.getElementById('breadCrumbTitle').innerText = epName; 
             const theaterEp = document.getElementById('theaterEpName');
-            if(theaterEp) theaterEp.innerText = epName; // Update số tập lên Topbar
+            if(theaterEp) theaterEp.innerText = epName; 
         }
 
         if (window.isCurrentVip) {
@@ -3197,7 +3154,6 @@ footer {
     function showPrerollAd(link, type, time) {
             const container = document.getElementById('player-container');
             
-            // Đã thêm id="ad-video-element" và thuộc tính "muted" để đảm bảo autoplay trên mobile
             container.innerHTML = `
                 <div class="preroll-container">
                     <video id="ad-video-element" src="https://wibey.netlify.app/fptshop.mp4" class="preroll-gif" autoplay loop playsinline style="cursor: pointer;" onclick="window.open('https://fptshop.com.vn/ctkm/kho-vang-uu-dai', '_blank')"></video>
@@ -3213,9 +3169,8 @@ footer {
             let timeLeft = 5;
             let countdownInterval = null;
 
-            // Hàm bắt đầu đếm ngược
             function startCountdown() {
-                if (countdownInterval) return; // Tránh chạy đúp
+                if (countdownInterval) return; 
                 
                 skipBtn.innerHTML = `Bỏ qua sau <span id="ad-timer" style="margin-left:5px;">${timeLeft}</span>s`;
                 const timerText = document.getElementById('ad-timer');
@@ -3236,18 +3191,15 @@ footer {
             }
 
             if (adVideo) {
-                // Lắng nghe sự kiện: Chỉ khi video quảng cáo THỰC SỰ BẮT ĐẦU PHÁT thì mới đếm ngược
                 adVideo.addEventListener('playing', () => {
                     startCountdown();
                 });
 
-                // DỰ PHÒNG 1: Nếu link video bị lỗi (404), bỏ qua quảng cáo luôn
                 adVideo.addEventListener('error', () => {
                     console.log("Lỗi tải quảng cáo, phát phim luôn.");
                     window.startActualPlayer(link, type, time);
                 });
 
-                // DỰ PHÒNG 2: Timeout. Nếu mạng quá lag, sau 8 giây không load được thì mở nút Bỏ qua luôn
                 setTimeout(() => {
                     if (!countdownInterval) {
                         skipBtn.disabled = false;
@@ -3301,24 +3253,23 @@ footer {
     // --- LOAD PHIM ĐỀ XUẤT NGẪU NHIÊN & DỮ LIỆU THẬT ---
     async function loadRelated() {
         try {
-            // Lấy ngẫu nhiên 1 trang từ 1 đến 5 để có data phong phú
             const randomPage = Math.floor(Math.random() * 5) + 1;
-            const res = await fetch(`https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=${randomPage}`);
+            // DÙNG PHIMAPI CHO CHUẨN JSON VÀ ẢNH MƯỢT
+            const res = await fetch(`https://phimapi.com/v1/api/danh-sach/phim-moi-cap-nhat?page=${randomPage}`);
             const data = await res.json();
 
-            if (data.status && data.items && data.items.length > 0) {
-                // Thuật toán xáo trộn mảng (Shuffle array) để phim hiện random
-                const shuffled = data.items.sort(() => 0.5 - Math.random());
-                // Cắt lấy đúng 10 bộ phim
+            // Trích xuất list items theo cấu trúc của PhimAPI
+            const items = data.data ? data.data.items : (data.items || []);
+
+            if (items && items.length > 0) {
+                const shuffled = items.sort(() => 0.5 - Math.random());
                 const selectedMovies = shuffled.slice(0, 10);
 
                 let html = '';
                 selectedMovies.forEach(m => {
-                    // Xử lý ảnh
-                    let img = m.poster_url || m.thumb_url; 
-                    if (img && !img.startsWith('http')) img = `https://img.ophim1.com/uploads/movies/${img}`;
+                    // CỐT LÕI: Chuẩn hóa link đề xuất về phimimg
+                    let img = getCleanImageUrl(m.poster_url || m.thumb_url, 'https://phimimg.com/'); 
                     
-                    // Lấy dữ liệu thật từ API (nếu API thiếu thì dùng giá trị mặc định)
                     const movieQuality = m.quality || 'FHD';
                     const movieLang = m.lang || 'Vietsub';
                     const currentEp = m.episode_current || 'Đang cập nhật';
@@ -3326,7 +3277,7 @@ footer {
                     html += `
                     <div class="rec-card-premium" onclick="window.location.href='/xem-phim.html?slug=${m.slug}'">
                         <div class="ep-thumb">
-                            <img src="${img}" loading="lazy" onerror="this.src='https://img.ophim1.com/uploads/movies/${m.thumb_url}'">
+                            <img src="${img}" loading="lazy" onerror="this.src='https://wibey.netlify.app/home-background.jpg'">
                         </div>
                         <div class="ep-name" style="font-size: 1.15rem;">${m.name}</div>
                         <div class="rec-meta-tags">
@@ -3378,199 +3329,99 @@ footer {
 
 
     // ==============================================
-        // 🔥 LOGIC TÌM KIẾM PHIM (DESKTOP & MOBILE)
-        // ==============================================
-        let searchTimeout;
+    // 🔥 LOGIC TÌM KIẾM PHIM (DESKTOP & MOBILE)
+    // ==============================================
+    let searchTimeout;
 
-        async function performSearch(keyword, containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
+    async function performSearch(keyword, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
 
-            if (!keyword || keyword.trim().length < 2) {
-                container.innerHTML = '';
-                container.classList.remove('active');
-                return;
-            }
+        if (!keyword || keyword.trim().length < 2) {
+            container.innerHTML = '';
+            container.classList.remove('active');
+            return;
+        }
 
-            container.classList.add('active');
-            container.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;"><i class="fas fa-spinner fa-spin"></i></div>';
+        container.classList.add('active');
+        container.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;"><i class="fas fa-spinner fa-spin"></i></div>';
 
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(async () => {
-                try {
-                    const res = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`);
-                    const data = await res.json();
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(async () => {
+            try {
+                // Ưu tiên dùng PhimAPI vì ổn định, cấu trúc json rành mạch
+                const res = await fetch(`https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`);
+                const data = await res.json();
+                const items = data.data ? data.data.items : (data.items || []);
 
-                    if (data.data && data.data.items && data.data.items.length > 0) {
-                        let html = '';
-                        data.data.items.slice(0, 10).forEach(m => {
-                            const img = m.thumb_url.startsWith('http') ? m.thumb_url : IMG_BASE + m.thumb_url;
-                            // Escape nháy đơn để không bị lỗi thẻ onclick
-                            const safeName = m.name.replace(/'/g, "\\'"); 
-                            
-                            html += `
-                                <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
-                                    <img src="${img}" alt="${safeName}" loading="lazy">
-                                    <div class="search-result-info">
-                                        <div class="search-result-title">${m.name}</div>
-                                        <div class="search-result-meta">${m.year} • ${m.origin_name}</div>
-                                    </div>
-                                </div>`;
-                        });
-                        container.innerHTML = html;
-                    } else {
-                        container.innerHTML = '<div style="color:#666; padding:20px; text-align:center;">Không tìm thấy phim nào...</div>';
-                    }
-                } catch (e) {
-                    container.innerHTML = '<div style="color:#ff4757; padding:20px; text-align:center;">Lỗi kết nối server!</div>';
+                if (items && items.length > 0) {
+                    let html = '';
+                    items.slice(0, 10).forEach(m => {
+                        // CỐT LÕI: Chuẩn hóa lại link tìm kiếm bằng hàm thần thánh
+                        const img = getCleanImageUrl(m.thumb_url, 'https://phimimg.com/');
+                        const safeName = m.name.replace(/'/g, "\\'"); 
+                        
+                        html += `
+                            <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
+                                <img src="${img}" alt="${safeName}" loading="lazy" onerror="this.src='https://wibey.netlify.app/home-background.jpg'">
+                                <div class="search-result-info">
+                                    <div class="search-result-title">${m.name}</div>
+                                    <div class="search-result-meta">${m.year || '2026'} • ${m.origin_name || 'Đang cập nhật'}</div>
+                                </div>
+                            </div>`;
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<div style="color:#666; padding:20px; text-align:center;">Không tìm thấy phim nào...</div>';
                 }
-            }, 500); // Delay 500ms chống spam API
-        }
-
-        // 1. Gán sự kiện Gõ phím cho Desktop
-        const desktopSearch = document.getElementById('searchInput');
-        if(desktopSearch) {
-            desktopSearch.addEventListener('input', (e) => performSearch(e.target.value, 'desktopSearchResults'));
-        }
-
-        // 2. Gán sự kiện Gõ phím cho Mobile
-        const mobileSearch = document.getElementById('mobileSearchInput');
-        if(mobileSearch) {
-            mobileSearch.addEventListener('input', (e) => performSearch(e.target.value, 'mobileSearchResults'));
-        }
-
-        // 3. Click ra ngoài để ẩn bảng kết quả (Desktop)
-        document.addEventListener('click', (e) => {
-            const searchBox = document.querySelector('.search-box');
-            const results = document.getElementById('desktopSearchResults');
-            if (searchBox && !searchBox.contains(e.target) && results) {
-                results.classList.remove('active');
+            } catch (e) {
+                container.innerHTML = '<div style="color:#ff4757; padding:20px; text-align:center;">Lỗi kết nối server!</div>';
             }
-        });
-
-        // 4. Các hàm Bật/Tắt Search trên Mobile (Gắn vào window để gọi từ HTML)
-        window.openMobileSearch = () => {
-            document.getElementById('mobileSearchOverlay').classList.add('active');
-            setTimeout(() => document.getElementById('mobileSearchInput').focus(), 300);
-        }
-        window.closeMobileSearch = () => {
-            document.getElementById('mobileSearchOverlay').classList.remove('active');
-        }
-
-
-        // --- HÀM CUỘN DANH SÁCH SLIDER ---
-        window.scrollList = function(id, amount) {
-            const list = document.getElementById(id);
-            if (list) list.scrollBy({ left: amount, behavior: 'smooth' });
-        };
-
-        // --- HIỆN HEADER KHI CUỘN QUA VIDEO ---
-        window.onscroll = () => {
-            const h = document.getElementById('header');
-            if (h && window.innerWidth >= 901) {
-                if(window.scrollY > 500) h.classList.add('show-on-scroll');
-                else h.classList.remove('show-on-scroll');
-            }
-        };
-</script>
-    
-    <script>
-        // CẤU HÌNH QUẢNG CÁO GIF POPUP (BỎ ĐẾM GIỜ)
-        const adConfig = {
-            gifUrl: "https://tpc.googlesyndication.com/simgad/8576155517683601969",
-            targetUrl: "https://www.thegioididong.com/may-tinh-bang/xiaomi-pad-2-wifi-9-7-4gb-64gb"
-        };
-
-        const adOverlay = document.getElementById('ad-overlay');
-        const adImage = document.getElementById('ad-image');
-        const skipButton = document.getElementById('skip-button');
-
-        if (adOverlay && skipButton && adImage) { 
-            adImage.src = adConfig.gifUrl;
-            
-            // 🔥 MỞ NÚT SKIP NGAY LẬP TỨC
-            skipButton.textContent = 'Skip ad'; 
-            skipButton.classList.add('enabled');
-            skipButton.removeAttribute('disabled'); 
-
-            skipButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeAd();
-            });
-
-            adImage.addEventListener('click', () => {
-                openTarget();
-            });
-
-            function openTarget() {
-                window.open(adConfig.targetUrl, '_blank'); 
-                closeAd();
-            }
-
-            function closeAd() {
-                adOverlay.style.opacity = '0'; 
-                setTimeout(() => { adOverlay.style.display = 'none'; }, 500);
-            }
-        }
-
-
-        // --- LOGIC DROPDOWN TẢI APP GỌN NHẸ ---
-    window.toggleDlPanel = (event) => {
-        event.stopPropagation();
-        const panel = document.getElementById('dlPanel');
-        panel.classList.toggle('active');
-        
-        // Đóng menu user nếu đang mở
-        const userMenu = document.getElementById('userMenu');
-        if (userMenu) userMenu.classList.remove('active');
+        }, 500); // Delay 500ms chống spam API
     }
 
+    // 1. Gán sự kiện Gõ phím cho Desktop
+    const desktopSearch = document.getElementById('searchInput');
+    if(desktopSearch) {
+        desktopSearch.addEventListener('input', (e) => performSearch(e.target.value, 'desktopSearchResults'));
+    }
+
+    // 2. Gán sự kiện Gõ phím cho Mobile
+    const mobileSearch = document.getElementById('mobileSearchInput');
+    if(mobileSearch) {
+        mobileSearch.addEventListener('input', (e) => performSearch(e.target.value, 'mobileSearchResults'));
+    }
+
+    // 3. Click ra ngoài để ẩn bảng kết quả (Desktop)
     document.addEventListener('click', (e) => {
-        const container = document.getElementById('dlContainer');
-        const panel = document.getElementById('dlPanel');
-        if (container && !container.contains(e.target)) {
-            if(panel) panel.classList.remove('active');
+        const searchBox = document.querySelector('.search-box');
+        const results = document.getElementById('desktopSearchResults');
+        if (searchBox && !searchBox.contains(e.target) && results) {
+            results.classList.remove('active');
         }
     });
-    </script>
-<script type="text/javascript">
-    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
-    });
 
-    // 2. Chặn các phím tắt Developer Tools
-    document.addEventListener('keydown', function(e) {
-        // Chặn F12
-        if (e.key === 'F12' || e.keyCode === 123) {
-            e.preventDefault();
-            return false;
+    // 4. Các hàm Bật/Tắt Search trên Mobile (Gắn vào window để gọi từ HTML)
+    window.openMobileSearch = () => {
+        document.getElementById('mobileSearchOverlay').classList.add('active');
+        setTimeout(() => document.getElementById('mobileSearchInput').focus(), 300);
+    }
+    window.closeMobileSearch = () => {
+        document.getElementById('mobileSearchOverlay').classList.remove('active');
+    }
+
+    // --- HÀM CUỘN DANH SÁCH SLIDER ---
+    window.scrollList = function(id, amount) {
+        const list = document.getElementById(id);
+        if (list) list.scrollBy({ left: amount, behavior: 'smooth' });
+    };
+
+    // --- HIỆN HEADER KHI CUỘN QUA VIDEO ---
+    window.onscroll = () => {
+        const h = document.getElementById('header');
+        if (h && window.innerWidth >= 901) {
+            if(window.scrollY > 500) h.classList.add('show-on-scroll');
+            else h.classList.remove('show-on-scroll');
         }
-
-        // Chặn các tổ hợp phím Ctrl + ...
-        if (e.ctrlKey) {
-            switch (e.key.toLowerCase()) {
-                case 'u': // Chặn Ctrl + U (Xem source code)
-                case 's': // Chặn Ctrl + S (Lưu trang web)
-                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
-                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
-                    e.preventDefault();
-                    return false;
-            }
-
-            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
-            if (e.shiftKey) {
-                switch (e.key.toLowerCase()) {
-                    case 'i': // Inspect Element
-                    case 'j': // Console
-                    case 'c': // Element Inspector
-                        e.preventDefault();
-                        return false;
-                }
-            }
-        }
-    });
+    };
 </script>
-</body>
-</html>
