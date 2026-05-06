@@ -1282,36 +1282,27 @@
         window.closeModals = () => { document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none'); }
 
         // ============================================================
-        // 🔥 HÀM CHUẨN HÓA ẢNH TỐI THƯỢNG (FIX MỌI LỖI DOMAIN)
+        // 🔥 HÀM CHUẨN HÓA ẢNH (FIX LỖI MẤT ĐƯỜNG DẪN CỦA KKPHIM)
         // ============================================================
         function getCleanImageUrl(url, baseDomain = '') {
             if (!url) return 'https://wibey.netlify.app/home-background.jpg';
+            if (url.startsWith('http')) return url; // Nếu link đã hoàn chỉnh thì dùng luôn
             
-            // Lấy tên file cuối cùng (loại bỏ toàn bộ phần path rác như /uploads/movies/)
-            const fileName = url.split('/').pop(); 
-            
-            // Nhận diện Ophim/KKPhim để chuyển về domain phimimg.com (đặt ở root)
-            if (baseDomain.includes('phimimg') || baseDomain.includes('ophim') || url.includes('ophim') || url.includes('phimimg')) {
-                return 'https://phimimg.com/' + fileName;
-            }
-            
-            // Xử lý các nguồn khác (NguonC...)
-            let finalUrl = url;
-            if (!finalUrl.startsWith('http')) {
-                finalUrl = baseDomain.endsWith('/') ? baseDomain + finalUrl : baseDomain + '/' + finalUrl;
-            }
-            return finalUrl;
+            // Ghép domain của KKPhim với đường dẫn thư mục gốc (không được cắt mất thư mục)
+            let finalUrl = baseDomain.endsWith('/') ? baseDomain + url : baseDomain + '/' + url;
+            // Xóa dấu slash // thừa (ngoại trừ https://)
+            return finalUrl.replace(/([^:]\/)\/+/g, "$1");
         }
 
         // ============================================================
-        // 🔥 HỆ THỐNG FETCH ĐA NGUỒN (OPHIM - KKPHIM - NGUỒN C) 🔥
+        // 🔥 HỆ THỐNG FETCH ĐA NGUỒN (ƯU TIÊN KKPHIM LÊN ĐẦU)
         // ============================================================
         
-        // Hàm 1: Lấy chi tiết 1 bộ phim (Quét qua 3 Server)
+        // Hàm 1: Lấy chi tiết 1 bộ phim
         async function fetchMovieMultiSource(slug) {
             const endpoints = [
-                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://phimimg.com/' },
-                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' },
+                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' }, // Đưa KKPhim lên Top 1
+                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
                 { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' }
             ];
 
@@ -1346,8 +1337,8 @@
         // Hàm 2: Lấy Danh sách phim / Thể loại / Quốc gia
         async function fetchListMultiSource(endpoint) {
             const endpoints = [
-                { base: 'https://ophim1.com/v1/api', imgBase: 'https://phimimg.com/' },
-                { base: 'https://phimapi.com/v1/api', imgBase: 'https://phimimg.com/' }
+                { base: 'https://phimapi.com/v1/api', imgBase: 'https://phimimg.com/' }, // Đưa KKPhim lên Top 1
+                { base: 'https://ophim1.com/v1/api', imgBase: 'https://img.ophim1.com/uploads/movies/' }
             ];
 
             for (let api of endpoints) {
@@ -1371,8 +1362,8 @@
         // Hàm 3: Tìm kiếm phim Đa luồng
         async function fetchSearchMultiSource(keyword) {
             const endpoints = [
-                { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' },
-                { url: `https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' },
+                { url: `https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' }, // Đưa KKPhim lên Top 1
+                { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
                 { url: `https://phim.nguonc.com/api/films/search?keyword=${encodeURIComponent(keyword)}`, imgBase: '' }
             ];
             
@@ -1390,7 +1381,7 @@
                         });
                         return { status: true, items: data.data.items };
                     }
-                    if (data.status === "success" && data.paginate && data.items && data.items.length > 0) {
+                    if (data.status === true && data.paginate && data.items && data.items.length > 0) {
                         data.items.forEach(m => {
                             m.thumb_url = getCleanImageUrl(m.thumb_url, api.imgBase);
                             m.poster_url = getCleanImageUrl(m.poster_url, api.imgBase);
@@ -1402,26 +1393,29 @@
             return { status: false, items: [] };
         }
 
+        // Hàm 4: Tải danh sách phim khi Tạo Phòng
         async function loadSetupMovies() {
             const grid = document.getElementById('setup-movie-grid');
             grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--primary-color); margin-top:50px;"><i class="fas fa-spinner fa-spin fa-3x"></i><div style="margin-top:10px; font-weight:600; color:#fff;">Đang tải danh sách phim...</div></div>';
             
             try {
-                const res = await fetch('https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat?page=1');
+                // Ưu tiên gọi API của KKPhim trước
+                const res = await fetch('https://phimapi.com/danh-sach/phim-moi-cap-nhat?page=1');
                 if (res.ok) {
                     const data = await res.json();
-                    if (data.status === "success" && data.data && data.data.items) {
-                        const domain = data.data.APP_DOMAIN_CDN_IMAGE || 'https://phimimg.com/';
-                        renderSetupMovies(data.data.items, domain);
+                    if (data.status && data.items) {
+                        renderSetupMovies(data.items, 'https://phimimg.com/');
                         return;
                     }
                 }
                 
-                const res2 = await fetch('https://phimapi.com/danh-sach/phim-moi-cap-nhat?page=1');
+                // Nếu KKPhim lỗi, chạy dự phòng Ophim
+                const res2 = await fetch('https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat?page=1');
                 if (res2.ok) {
                     const data2 = await res2.json();
-                    if (data2.items) {
-                        renderSetupMovies(data2.items, 'https://phimimg.com/');
+                    if (data2.status === "success" && data2.data && data2.data.items) {
+                        const domain = data2.data.APP_DOMAIN_CDN_IMAGE || 'https://phimimg.com/';
+                        renderSetupMovies(data2.data.items, domain);
                         return;
                     }
                 }
@@ -1654,8 +1648,8 @@
 
                 // 4. 🔥 XỬ LÝ PHIM CÓ TRONG HỆ THỐNG
                 const endpoints = [
-                    { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
-                    { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' }
+                    { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' }, // Đưa KKPhim lên Top 1
+                    { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' }
                 ];
                 
                 for (let api of endpoints) {

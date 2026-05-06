@@ -2264,75 +2264,116 @@ footer {
     window.isCurrentVip = false;
 
     // ============================================================
-    // 🔥 HỆ THỐNG FETCH ĐA NGUỒN CỰC MẠNH (OPHIM - KKPHIM - NGUỒN C)
-    // ============================================================
-    async function fetchMovieMultiSource(slug) {
-        const endpoints = [
-            { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
-            { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' },
-            { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' }
-        ];
+        // 🔥 HÀM CHUẨN HÓA ẢNH (FIX LỖI MẤT ĐƯỜNG DẪN CỦA KKPHIM)
+        // ============================================================
+        function getCleanImageUrl(url, baseDomain = '') {
+            if (!url) return 'https://wibey.netlify.app/home-background.jpg';
+            if (url.startsWith('http')) return url; // Nếu link đã hoàn chỉnh thì dùng luôn
+            
+            // Ghép domain của KKPhim với đường dẫn thư mục gốc (không được cắt mất thư mục)
+            let finalUrl = baseDomain.endsWith('/') ? baseDomain + url : baseDomain + '/' + url;
+            // Xóa dấu slash // thừa (ngoại trừ https://)
+            return finalUrl.replace(/([^:]\/)\/+/g, "$1");
+        }
 
-        let finalMovie = null;
-        let finalEpisodes = []; // Mảng chứa toàn bộ các server
-        let finalImgBase = '';
+        // ============================================================
+        // 🔥 HỆ THỐNG FETCH ĐA NGUỒN (ƯU TIÊN KKPHIM LÊN ĐẦU)
+        // ============================================================
+        
+        // Hàm 1: Lấy chi tiết 1 bộ phim
+        async function fetchMovieMultiSource(slug) {
+            const endpoints = [
+                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' }, // Đưa KKPhim lên Top 1
+                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
+                { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' }
+            ];
 
-        for (let api of endpoints) {
-            try {
-                const res = await fetch(api.url);
-                if (!res.ok) continue;
-                const data = await res.json();
-                
-                let movie = null;
-                let eps = [];
-
-                // 1. Lấy thông tin chung của Phim (Ưu tiên lấy thông tin từ nguồn đầu tiên chạy được)
-                if (data.status && data.data && data.data.item) movie = data.data.item;
-                else if (data.status && data.movie) movie = data.movie;
-                else if (data.movie) movie = data.movie;
-                
-                if (movie && !finalMovie) {
-                    finalMovie = movie;
-                    finalImgBase = api.imgBase;
-                }
-
-                // 2. Gom nhặt các tập phim từ MỌI NGUỒN (Gom thành các server)
-                if (data.episodes && data.episodes.length > 0) {
-                    eps = data.episodes;
-                } else if (movie && movie.episodes && movie.episodes.length > 0) {
-                    eps = movie.episodes;
-                }
-
-                if (eps.length > 0) {
-                    eps.forEach(serverGroup => {
-                        let srvName = serverGroup.server_name || "Vietsub";
+            for (let api of endpoints) {
+                try {
+                    const res = await fetch(api.url);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    let movie = null;
+                    if (data.status && data.data && data.data.item) movie = data.data.item; 
+                    else if (data.status && data.movie) movie = data.movie; 
+                    else if (data.movie) movie = data.movie; 
+                    
+                    if (movie) {
+                        movie.poster_url = getCleanImageUrl(movie.poster_url, api.imgBase);
+                        movie.thumb_url = getCleanImageUrl(movie.thumb_url, api.imgBase);
                         
-                        // Chuẩn hóa tên tập phim
-                        let srvData = (serverGroup.server_data || serverGroup.items || []).map(ep => ({
-                            name: ep.name,
-                            link_m3u8: ep.link_m3u8 || ep.link_embed,
-                            link_embed: ep.link_embed || ep.link_m3u8
-                        }));
-
-                        // Nếu server này chưa có trong danh sách thì thêm vào
-                        if (!finalEpisodes.some(g => g.server_name === srvName) && srvData.length > 0) {
-                            finalEpisodes.push({ server_name: srvName, server_data: srvData });
+                        // 🔥 FIX LỖI API UP NGƯỢC ẢNH
+                        if (slug === 'vi-me-anh-phan-chia-tay') {
+                            let temp = movie.poster_url;
+                            movie.poster_url = movie.thumb_url;
+                            movie.thumb_url = temp;
                         }
-                    });
-                }
-            } catch (e) {
-                console.warn(`[Fallback] Lỗi lấy nguồn ${api.url}`);
+                        return { status: true, item: movie };
+                    }
+                } catch (e) {}
             }
+            return { status: false, item: null };
         }
 
-        if (finalMovie && finalEpisodes.length > 0) {
-            if (finalMovie.poster_url && !finalMovie.poster_url.startsWith('http')) finalMovie.poster_url = finalImgBase + finalMovie.poster_url;
-            if (finalMovie.thumb_url && !finalMovie.thumb_url.startsWith('http')) finalMovie.thumb_url = finalImgBase + finalMovie.thumb_url;
-            return { status: true, item: finalMovie, episodes: finalEpisodes };
+        // Hàm 2: Lấy Danh sách phim / Thể loại / Quốc gia
+        async function fetchListMultiSource(endpoint) {
+            const endpoints = [
+                { base: 'https://phimapi.com/v1/api', imgBase: 'https://phimimg.com/' }, // Đưa KKPhim lên Top 1
+                { base: 'https://ophim1.com/v1/api', imgBase: 'https://img.ophim1.com/uploads/movies/' }
+            ];
+
+            for (let api of endpoints) {
+                try {
+                    const res = await fetch(`${api.base}${endpoint}`);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    if (data.status && data.data && data.data.items) {
+                        data.data.items.forEach(m => {
+                            m.poster_url = getCleanImageUrl(m.poster_url, api.imgBase);
+                            m.thumb_url = getCleanImageUrl(m.thumb_url, api.imgBase);
+                        });
+                        return data;
+                    }
+                } catch (e) {}
+            }
+            return { status: false, data: { items: [] } };
         }
 
-        return { status: false, item: null, episodes: [] };
-    }
+        // Hàm 3: Tìm kiếm phim Đa luồng
+        async function fetchSearchMultiSource(keyword) {
+            const endpoints = [
+                { url: `https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' }, // Đưa KKPhim lên Top 1
+                { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
+                { url: `https://phim.nguonc.com/api/films/search?keyword=${encodeURIComponent(keyword)}`, imgBase: '' }
+            ];
+            
+            for (let api of endpoints) {
+                try {
+                    const res = await fetch(api.url);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    if (data.status === "success" && data.data && data.data.items && data.data.items.length > 0) {
+                        const imgDomain = data.data.APP_DOMAIN_CDN_IMAGE || api.imgBase;
+                        data.data.items.forEach(m => {
+                            m.thumb_url = getCleanImageUrl(m.thumb_url, imgDomain);
+                            m.poster_url = getCleanImageUrl(m.poster_url, imgDomain);
+                        });
+                        return { status: true, items: data.data.items };
+                    }
+                    if (data.status === true && data.paginate && data.items && data.items.length > 0) {
+                        data.items.forEach(m => {
+                            m.thumb_url = getCleanImageUrl(m.thumb_url, api.imgBase);
+                            m.poster_url = getCleanImageUrl(m.poster_url, api.imgBase);
+                        });
+                        return { status: true, items: data.items };
+                    }
+                } catch (e) {}
+            }
+            return { status: false, items: [] };
+        }
 
     // 2. CONSTANTS & UI ELEMENTS
     const API_BASE = 'https://ophim1.com/v1/api/phim';
@@ -3392,20 +3433,19 @@ footer {
         try {
             // Lấy ngẫu nhiên 1 trang từ 1 đến 5 để có data phong phú
             const randomPage = Math.floor(Math.random() * 5) + 1;
-            const res = await fetch(`https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=${randomPage}`);
-            const data = await res.json();
+            // SỬ DỤNG HÀM FETCH ĐA NGUỒN THAY VÌ GỌI OPHIM ĐỂ LẤY KKPHIM
+            const data = await fetchListMultiSource(`/danh-sach/phim-moi-cap-nhat?page=${randomPage}`);
 
-            if (data.status && data.items && data.items.length > 0) {
+            if (data.status && data.data && data.data.items && data.data.items.length > 0) {
                 // Thuật toán xáo trộn mảng (Shuffle array) để phim hiện random
-                const shuffled = data.items.sort(() => 0.5 - Math.random());
+                const shuffled = data.data.items.sort(() => 0.5 - Math.random());
                 // Cắt lấy đúng 10 bộ phim
                 const selectedMovies = shuffled.slice(0, 10);
 
                 let html = '';
                 selectedMovies.forEach(m => {
-                    // Xử lý ảnh
-                    let img = m.poster_url || m.thumb_url; 
-                    if (img && !img.startsWith('http')) img = `https://img.ophim1.com/uploads/movies/${img}`;
+                    // Dùng ảnh đã được hàm fetch chuẩn hóa bên trên
+                    let img = m.thumb_url || m.poster_url; 
                     
                     // Lấy dữ liệu thật từ API (nếu API thiếu thì dùng giá trị mặc định)
                     const movieQuality = m.quality || 'FHD';
@@ -3413,9 +3453,9 @@ footer {
                     const currentEp = m.episode_current || 'Đang cập nhật';
 
                     html += `
-                    <div class="rec-card-premium" onclick="window.location.href='/xem-phim.html?slug=${m.slug}'">
+                    <div class="rec-card-premium" onclick="window.location.href='/xem-phim/${m.slug}'">
                         <div class="ep-thumb">
-                            <img src="${img}" loading="lazy" onerror="this.src='https://img.ophim1.com/uploads/movies/${m.thumb_url}'">
+                            <img src="${img}" loading="lazy" onerror="this.src='https://wibey.netlify.app/home-background.jpg'">
                         </div>
                         <div class="ep-name" style="font-size: 1.15rem;">${m.name}</div>
                         <div class="rec-meta-tags">

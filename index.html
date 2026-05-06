@@ -1279,26 +1279,25 @@ footer {
         }
         @media (min-width: 901px) { .episode-block-mobile { display: none; } }
 
-        /* --- 1. QUY TẮC CHUNG CHO CARD PHIM (Standard & History) --- */
+        /* --- 1. QUY TẮC CHUNG CHO CARD PHIM (Quốc Gia & Lịch Sử) -> LUÔN ẢNH NGANG --- */
         .n-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
         
-        /* PC: Card bình thường và Xem tiếp đều hiện ảnh NGANG */
         .n-poster-wide { display: block !important; }
         .n-poster-portrait { display: none !important; }
 
-        /* --- 2. QUY TẮC RIÊNG CHO TOP 5 (LUÔN LÀ ẢNH DỌC) --- */
+        /* --- 2. QUY TẮC RIÊNG CHO TOP 5 -> LUÔN LÀ ẢNH DỌC --- */
         .top-poster-style2 { aspect-ratio: 2/3 !important; }
         .top-poster-style2 img { display: block !important; }
 
         /* --- 3. ĐIỀU CHỈNH KHI XUỐNG MOBILE --- */
         @media (max-width: 900px) {
-            /* Mobile: Ẩn ảnh ngang, hiện ảnh dọc */
-            .n-poster-wide { display: none !important; }
-            .n-poster-portrait { display: block !important; }
+            /* Mobile: Ép Card phim Quốc gia/Lịch sử nằm NGANG */
+            .n-poster-wide { display: block !important; }
+            .n-poster-portrait { display: none !important; }
             
             .n-card {
-                flex: 0 0 160px;
-                aspect-ratio: 2/3 !important; /* Chuyển khung card sang dọc */
+                flex: 0 0 240px; /* Tăng chiều rộng để hợp với ảnh ngang */
+                aspect-ratio: 16/9 !important; /* Bắt buộc tỷ lệ ngang 16:9 */
             }
         }
 
@@ -2542,7 +2541,7 @@ footer {
 
         <div class="comm-carousel-viewport">
             <div class="comm-carousel-track" id="featuredTrack">
-                <div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>
+                <div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i></div>
             </div>
         </div>
 
@@ -2554,7 +2553,7 @@ footer {
                     <span class="view-all">Top 5</span>
                 </div>
                 <div class="leaderboard-list" id="coinLeaderboard">
-                    <div class="loading-placeholder">Đang tải...</div>
+                    <div class="loading-placeholder"></div>
                 </div>
             </div>
 
@@ -2564,7 +2563,7 @@ footer {
                     <span class="view-all">New Comments</span>
                 </div>
                 <div class="recent-comments-list" id="recentCommentsList">
-                    <div class="loading-placeholder">Đang tải...</div>
+                    <div class="loading-placeholder"></div>
                 </div>
             </div>
 
@@ -2619,7 +2618,7 @@ footer {
         </div>
     
         <div class="cinema-grid" id="cinemaList">
-            <div style="color:#ccc; padding:20px;">Đang tải...</div>
+            <div style="color:#ccc; padding:20px;"></div>
         </div>
     </section>
 
@@ -2833,7 +2832,7 @@ footer {
 
             // Tải ảnh phim
             const enriched = await Promise.all(commentsData.map(async (c) => {
-                let img = "https://wibey.netlify.app/panel.webp";
+                let img = "https://wibey.netlify.app/home-background.jpg";
                 let title = "Phim Hay"; 
                 
                 const isYT = c.movieId && c.movieId.startsWith('yt_');
@@ -3296,13 +3295,6 @@ footer {
                     if (movie) {
                         if (movie.poster_url && !movie.poster_url.startsWith('http')) movie.poster_url = api.imgBase + movie.poster_url;
                         if (movie.thumb_url && !movie.thumb_url.startsWith('http')) movie.thumb_url = api.imgBase + movie.thumb_url;
-                        
-                        // 🔥 FIX LỖI API UP NGƯỢC ẢNH
-                        if (slug === 'vi-me-anh-phan-chia-tay') {
-                            let temp = movie.poster_url;
-                            movie.poster_url = movie.thumb_url;
-                            movie.thumb_url = temp;
-                        }
 
                         return { status: true, item: movie };
                     }
@@ -3351,7 +3343,7 @@ footer {
                         } else {
                             finalImage = m.poster_url || m.thumb_url;
                         }
-                        if (!finalImage) finalImage = 'https://wibey.netlify.app/panel.webp';
+                        if (!finalImage) finalImage = 'https://wibey.netlify.app/home-background.jpg';
 
                         const bgPos = config.position || 'center center';
 
@@ -3481,15 +3473,45 @@ footer {
 
 <script>
         // ============================================================
-        // 🔥 HỆ THỐNG FETCH ĐA NGUỒN (OPHIM - KKPHIM - NGUỒN C) 🔥
+        // 🔥 HỆ THỐNG FETCH ĐA NGUỒN (ƯU TIÊN: KKPHIM -> OPHIM -> NGUỒN C)
         // ============================================================
-        
+        async function fetchHeroMultiSource(slug) {
+            const endpoints = [
+                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' }, // Đưa KKPhim lên làm nguồn CHÍNH
+                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
+                { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' }
+            ];
+
+            for (let api of endpoints) {
+                try {
+                    const res = await fetch(api.url);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    let movie = null;
+                    if (data.status && data.data && data.data.item) movie = data.data.item; 
+                    else if (data.status && data.movie) movie = data.movie; 
+                    else if (data.movie) movie = data.movie; 
+                    
+                    if (movie) {
+                        if (movie.poster_url && !movie.poster_url.startsWith('http')) movie.poster_url = api.imgBase + movie.poster_url;
+                        if (movie.thumb_url && !movie.thumb_url.startsWith('http')) movie.thumb_url = api.imgBase + movie.thumb_url;
+
+                        return { status: true, item: movie };
+                    }
+                } catch (e) {
+                    console.warn(`[Fallback] Lỗi lấy Hero cho ${slug} từ ${api.url}`);
+                }
+            }
+            return { status: false, item: null };
+        }
+
         // Hàm 1: Lấy chi tiết 1 bộ phim (Quét qua 3 Server)
         async function fetchMovieMultiSource(slug) {
             const endpoints = [
+                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' }, // Đưa KKPhim lên làm nguồn CHÍNH
                 { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
-                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' },
-                { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' } // NguonC thường trả full link
+                { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' } 
             ];
 
             for (let api of endpoints) {
@@ -3507,13 +3529,6 @@ footer {
                         // Chuẩn hoá link ảnh để card hiển thị không bị lỗi
                         if (movie.poster_url && !movie.poster_url.startsWith('http')) movie.poster_url = api.imgBase + movie.poster_url;
                         if (movie.thumb_url && !movie.thumb_url.startsWith('http')) movie.thumb_url = api.imgBase + movie.thumb_url;
-                        
-                        // 🔥 FIX LỖI API UP NGƯỢC ẢNH
-                        if (slug === 'vi-me-anh-phan-chia-tay') {
-                            let temp = movie.poster_url;
-                            movie.poster_url = movie.thumb_url;
-                            movie.thumb_url = temp;
-                        }
 
                         return { status: true, item: movie };
                     }
@@ -3524,11 +3539,11 @@ footer {
             return { status: false, item: null };
         }
 
-        // Hàm 2: Lấy Danh sách phim / Thể loại / Quốc gia (Ophim + KKPhim)
+        // Hàm 2: Lấy Danh sách phim / Thể loại / Quốc gia (KKPhim -> Ophim)
         async function fetchListMultiSource(endpoint) {
             const endpoints = [
-                { base: 'https://ophim1.com/v1/api', imgBase: 'https://img.ophim1.com/uploads/movies/' },
-                { base: 'https://phimapi.com/v1/api', imgBase: 'https://phimimg.com/' }
+                { base: 'https://phimapi.com/v1/api', imgBase: 'https://phimimg.com/' }, // KKPhim làm chính
+                { base: 'https://ophim1.com/v1/api', imgBase: 'https://img.ophim1.com/uploads/movies/' }
             ];
 
             for (let api of endpoints) {
@@ -3549,11 +3564,11 @@ footer {
             return { status: false, data: { items: [] } };
         }
 
-        // Hàm 3: Tìm kiếm phim Đa luồng
+        // Hàm 3: Tìm kiếm phim Đa luồng (KKPhim -> Ophim)
         async function searchMultiSource(keyword) {
             const endpoints = [
-                { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
-                { url: `https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' }
+                { url: `https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' }, // KKPhim làm chính
+                { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://img.ophim1.com/uploads/movies/' }
             ];
             
             for (let api of endpoints) {
@@ -3587,8 +3602,8 @@ footer {
 
         // --- RENDER CARD (Chuẩn hóa cho Đa Nguồn) ---
         window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
-            let imgFull = m.poster_url || m.thumb_url;
-            let imgPortrait = m.thumb_url || m.poster_url;
+            let imgFull = m.thumb_url || m.poster_url; 
+            let imgPortrait = m.poster_url || m.thumb_url;
             
             const nameFixed = (m.name || "").replace(/'/g, "\\'");
             const historyClass = isHistory ? `history-card-${m.slug}` : '';
@@ -3703,7 +3718,7 @@ footer {
                         data.data.items.slice(0, 10).forEach(m => {
                             html += `
                                 <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
-                                    <img src="${m.thumb_url}" alt="${m.name}" loading="lazy" onerror="this.src='https://wibey.netlify.app/panel.webp'">
+                                    <img src="${m.thumb_url}" alt="${m.name}" loading="lazy" onerror="this.src='https://wibey.netlify.app/home-background.jpg'">
                                     <div class="search-result-info">
                                         <div class="search-result-title">${m.name}</div>
                                         <div class="search-result-meta">${m.year || '2026'} • ${m.origin_name || 'Đang cập nhật'}</div>
@@ -3757,7 +3772,7 @@ footer {
 
         // 1. TOP 5 PHIM BỘ
         async function loadTop5() {
-            const MANUAL_TOP_5 = ["bong-ma-hanh-phuc", "vi-me-anh-phan-chia-tay", "boyfriend-on-demand", "tieng-yeu-nay-anh-dich-duoc-khong", "giang-ho-da-vu-thap-nien-dang"];
+            const MANUAL_TOP_5 = ["bong-ma-hanh-phuc", "vi-me-anh-phan-chia-tay", "ban-trai-theo-yeu-cau", "tieng-yeu-nay-anh-dich-duoc-khong", "giang-ho-da-vu-thap-nien-dang"];
             const container = document.getElementById('top5List');
             if(!container) return;
             let html = '';
@@ -3772,7 +3787,7 @@ footer {
                     html += `
                     <div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'">
                         <div class="top-poster-style2">
-                            <img src="${m.thumb_url}" loading="lazy" alt="${m.name}">
+                            <img src="${m.poster_url || m.thumb_url}" loading="lazy" alt="${m.name}">
                             <div style="position:absolute; top:10px; right:10px; background:#FF8F50; color:#fff; font-size:0.65rem; font-weight:800; padding:3px 6px; border-radius:4px;">${m.lang || 'Vietsub'}</div>
                         </div>
                         <div class="top-info-row">
@@ -3795,7 +3810,7 @@ footer {
 
         // 2. TẢI PHIM CHIẾU RẠP
         async function loadCinemaMovies() {
-            const CINEMA_SLUGS = ["an-danh-phan-3", "avatar-3-lua-va-tro-tan", "deadpool-va-wolverine", "godzilla-x-kong-de-che-moi", "exhuma-quat-mo-trung-ma", "co-hau-gai-2025"]; 
+            const CINEMA_SLUGS = ["tai-xe-an-danh-phan-3", "avatar-lua-va-tro-tan", "deadpool-va-wolverine", "godzilla-x-kong-de-che-moi", "quat-mo-trung-ma", "co-hau-gai-2025"]; 
             const container = document.getElementById('cinemaList');
             if(!container) return;
             let html = '';
@@ -3839,7 +3854,7 @@ footer {
 
         // 3. TOP 5 PHIM LẺ
         async function loadTop5Movies() {
-            const MANUAL_TOP_MOVIES = ["truy-tim-long-dien-huong", "quai-vat-nho-nui-lang-lang", "avatar-3-lua-va-tro-tan", "doi-cam-lang-ac-mong-trong-suong", "ke-an-dat"];
+            const MANUAL_TOP_MOVIES = ["truy-tim-long-dien-huong", "quai-vat-nho-nui-lang-lang-tieu-yeu-quai-nui-lang-lang", "avatar-lua-va-tro-tan", "doi-cam-lang-ac-mong-trong-suong", "ke-an-dat"];
             const container = document.getElementById('top5MoviesList');
             if(!container) return;
             let html = '';
@@ -3855,7 +3870,7 @@ footer {
                     html += `
                     <div class="top-card-style2" onclick="window.location.href='/xem-phim/${m.slug}'">
                         <div class="top-poster-style2">
-                            <img src="${m.thumb_url}" loading="lazy" alt="${m.name}">
+                            <img src="${m.poster_url || m.thumb_url}" loading="lazy" alt="${m.name}">
                             <div style="position:absolute; top:10px; right:10px; background:#FF8F50; color:#fff; font-size:0.65rem; font-weight:800; padding:3px 6px; border-radius:4px;">${m.lang || 'Vietsub'}</div>
                         </div>
                         <div class="top-info-row">
@@ -3893,7 +3908,7 @@ footer {
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalPopup').classList.add('active');
             const container = document.getElementById('modalContent');
-            container.innerHTML = '<div style="grid-column: 1/-1; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>';
+            container.innerHTML = '<div style="grid-column: 1/-1; text-align:center;"><i class="fas fa-spinner fa-spin"></i></div>';
 
             const data = await fetchListMultiSource(`/quoc-gia/${slug}?page=1`);
             if(data.status && data.data && data.data.items) {
@@ -3942,13 +3957,20 @@ footer {
             if(el) el.scrollBy({ left: direction * el.clientWidth, behavior: 'smooth' });
         };
 
-        // 6. SHORT DRAMA SLIDER
+        // 6. SHORT DRAMA SLIDER (ƯU TIÊN KKPHIM)
         async function loadShortDramaSection() {
             const container = document.getElementById('shortDramaContainer');
             if(!container) return;
 
-            const data = await fetchListMultiSource(`/the-loai/short-drama?page=1`);
-            if (data.status && data.data && data.data.items) {
+            // Quét slug 'short-drama' trước
+            let data = await fetchListMultiSource(`/the-loai/short-drama?page=1`);
+            
+            // Nếu KKPhim không có thư mục 'short-drama', tự động đổi sang quét 'phim-ngan'
+            if (!data.status || !data.data || !data.data.items || data.data.items.length === 0) {
+                data = await fetchListMultiSource(`/the-loai/phim-ngan?page=1`);
+            }
+
+            if (data.status && data.data && data.data.items && data.data.items.length > 0) {
                 let html = '';
                 data.data.items.slice(0, 24).forEach(m => {
                     const cleanName = m.name.replace('Phim', '').trim();
@@ -3958,10 +3980,13 @@ footer {
                         if (match) epText = match[1];
                     }
 
+                    // Ép dùng ảnh dọc cho định dạng Tiktok / Short Drama
+                    let img = m.poster_url || m.thumb_url;
+
                     html += `
                         <div class="short-card" onclick="window.location.href='/short/${m.slug}'" title="${m.name}">
                             <div class="short-ep-badge">${epText}</div>
-                            <img src="${m.thumb_url}" loading="lazy" alt="${m.name}">
+                            <img src="${img}" loading="lazy" alt="${m.name}" onerror="this.src='https://wibey.netlify.app/panel.webp'">
                             <div class="short-info">
                                 <div class="short-title">${cleanName}</div>
                             </div>
@@ -3970,7 +3995,7 @@ footer {
                 });
                 container.innerHTML = html;
             } else {
-                container.innerHTML = `<div style="padding:20px; color:#ff4757">Lỗi tải dữ liệu.</div>`;
+                container.innerHTML = `<div style="padding:20px; color:#ff4757">Đang cập nhật phim ngắn...</div>`;
             }
         }
 
