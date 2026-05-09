@@ -3293,8 +3293,12 @@ footer {
         if (targetEpToPlay) {
             setTimeout(() => {
                 const targetBtn = document.getElementById(`btn-ep-premium-${targetIndex}`);
-                if (targetBtn) targetBtn.classList.add('active');
-            }, 100);
+                if (targetBtn) {
+                    targetBtn.classList.add('active');
+                    // Tự động cuộn thẻ tập đang phát về sát lề trái cực mượt
+                    targetBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+                }
+            }, 300); // Chờ 300ms để danh sách vẽ ra đầy đủ rồi mới cuộn
             window.changeEp(targetEpToPlay.link, targetEpToPlay.type, null, targetEpToPlay.name, savedTime, targetIndex);
         }
     }
@@ -3326,16 +3330,19 @@ footer {
         }, 500);
     }
     
-    // Hàm Change Ep
+    // Hàm Change Ep (Tích hợp cuộn lề trái)
     window.changeEp = function(link, type, btn, epName, startTime = 0, index = 0) {
         window.currentEpIndex = index;
-        if (btn) {
-            document.querySelectorAll('.ep-card-premium').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        } else {
-             document.querySelectorAll('.ep-card-premium').forEach(b => b.classList.remove('active'));
-             const autoBtn = document.getElementById(`btn-ep-premium-${index}`);
-             if(autoBtn) autoBtn.classList.add('active');
+        
+        // Gỡ bỏ trạng thái active của toàn bộ tập
+        document.querySelectorAll('.ep-card-premium').forEach(b => b.classList.remove('active'));
+        
+        // Kích hoạt tập mới và cuộn nó về bên trái
+        let targetBtn = btn || document.getElementById(`btn-ep-premium-${index}`);
+        if(targetBtn) {
+            targetBtn.classList.add('active');
+            // Cuộn trượt thẻ này sang mép trái của khung danh sách
+            targetBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
         }
         
         if (epName) {
@@ -3468,17 +3475,35 @@ footer {
         try {
             const randomPage = Math.floor(Math.random() * 5) + 1;
             
-            // 🔥 ĐÃ SỬA: Chạy hàm fetchListMultiSource để tận dụng nguồn KKPhim
-            const data = await fetchListMultiSource(`/danh-sach/phim-moi-cap-nhat?page=${randomPage}`);
+            // Xử lý riêng biệt vì API KKPhim không dùng /v1/api cho phần danh sách mới
+            const endpoints = [
+                `https://phimapi.com/danh-sach/phim-moi-cap-nhat?page=${randomPage}`,
+                `https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat?page=${randomPage}`
+            ];
 
-            if (data.status && data.data && data.data.items && data.data.items.length > 0) {
-                // Thuật toán xáo trộn mảng để phim hiện random
-                const shuffled = data.data.items.sort(() => 0.5 - Math.random());
+            let items = [];
+            for (let url of endpoints) {
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    if (data.status && data.items) {
+                        items = data.items; // KKPhim data
+                        break;
+                    } else if (data.status && data.data && data.data.items) {
+                        items = data.data.items; // Ophim data
+                        break;
+                    }
+                } catch(e) {}
+            }
+
+            if (items.length > 0) {
+                const shuffled = items.sort(() => 0.5 - Math.random());
                 const selectedMovies = shuffled.slice(0, 10);
 
                 let html = '';
                 selectedMovies.forEach(m => {
-                    // 🔥 ĐÃ SỬA: Ưu tiên lấy thumb_url (Ảnh ngang) để khít với khung 16:9
                     let img = getCleanImageUrl(m.thumb_url || m.poster_url); 
                     
                     const movieQuality = m.quality || 'FHD';
@@ -3494,10 +3519,12 @@ footer {
                         <div class="rec-meta-tags">
                             <span>${m.year || new Date().getFullYear()}</span><span>${movieLang}</span><span style="color:#fff;">${movieQuality}</span>
                         </div>
-                        <div class="ep-desc-mini">Tiến độ: ${currentEp} • Khám phá siêu phẩm ${m.name} đang cực hot trên Wibey ngay hôm nay...</div>
+                        <div class="ep-desc-mini">Tiến độ: ${currentEp} • Khám phá siêu phẩm ${m.name} đang cực hot trên Wibey...</div>
                     </div>`;
                 });
                 document.getElementById('relatedList').innerHTML = html;
+            } else {
+                document.getElementById('relatedList').innerHTML = '<div style="color:#666; padding:20px;">Đang cập nhật phim đề xuất...</div>';
             }
         } catch(e) { 
             console.error("Lỗi tải phim đề xuất:", e); 
