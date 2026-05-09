@@ -3239,13 +3239,12 @@ footer {
         let targetEpToPlay = null; 
         let targetIndex = 0;
 
-        // Lấy ảnh nền của phim làm ảnh minh họa cho các tập
-        let fallbackImg = currentMovieData.poster_url || currentMovieData.thumb_url;
+        // 🔥 ĐÃ SỬA: Ưu tiên lấy 'thumb_url' (Ảnh ngang) thay vì 'poster_url' (Ảnh dọc)
+        let fallbackImg = currentMovieData.thumb_url || currentMovieData.poster_url;
         if (fallbackImg && !fallbackImg.startsWith('http')) fallbackImg = IMG_BASE + fallbackImg;
 
         document.getElementById('mTotalEps').innerText = `${svData.length} tập`;
 
-        // 🌟 ĐỂ 3 BIẾN NÀY Ở NGOÀI VÒNG LẶP ĐỂ TỐI ƯU TỐC ĐỘ XỬ LÝ NHÉ
         const movieQuality = currentMovieData.quality || 'FHD';
         const movieTime = currentMovieData.time || 'Đang cập nhật';
         const movieLang = currentMovieData.lang || 'Vietsub';
@@ -3289,7 +3288,6 @@ footer {
             targetIndex = 0; savedTime = 0; 
         }
 
-        // Đổ html vào 1 List duy nhất cho cả PC và Mobile
         document.getElementById('episodeListDesktop').innerHTML = epHtml;
 
         if (targetEpToPlay) {
@@ -3465,25 +3463,23 @@ footer {
         return Math.floor(hours / 24) + " ngày trước";
     }
 
-    // --- LOAD PHIM ĐỀ XUẤT NGẪU NHIÊN (ĐA NGUỒN ƯU TIÊN KKPHIM) ---
+    // --- LOAD PHIM ĐỀ XUẤT NGẪU NHIÊN (ĐA NGUỒN ƯU TIÊN KKPHIM + ẢNH NGANG) ---
     async function loadRelated() {
         try {
-            // Lấy ngẫu nhiên 1 trang từ 1 đến 5 để có data phong phú
             const randomPage = Math.floor(Math.random() * 5) + 1;
             
-            // Dùng hệ thống đa nguồn, tự động ưu tiên KKPhim
+            // 🔥 ĐÃ SỬA: Chạy hàm fetchListMultiSource để tận dụng nguồn KKPhim
             const data = await fetchListMultiSource(`/danh-sach/phim-moi-cap-nhat?page=${randomPage}`);
 
-            if (data.status && data.data.items && data.data.items.length > 0) {
-                // Thuật toán xáo trộn mảng (Shuffle array) để phim hiện random
+            if (data.status && data.data && data.data.items && data.data.items.length > 0) {
+                // Thuật toán xáo trộn mảng để phim hiện random
                 const shuffled = data.data.items.sort(() => 0.5 - Math.random());
-                // Cắt lấy đúng 10 bộ phim
                 const selectedMovies = shuffled.slice(0, 10);
 
                 let html = '';
                 selectedMovies.forEach(m => {
-                    // Ảnh đã được hàm đa nguồn xử lý mượt mà (KKPhim)
-                    let img = m.poster_url || m.thumb_url; 
+                    // 🔥 ĐÃ SỬA: Ưu tiên lấy thumb_url (Ảnh ngang) để khít với khung 16:9
+                    let img = getCleanImageUrl(m.thumb_url || m.poster_url); 
                     
                     const movieQuality = m.quality || 'FHD';
                     const movieLang = m.lang || 'Vietsub';
@@ -3591,7 +3587,7 @@ footer {
                 }
             }, 500); // Delay 500ms chống spam API
         }
-        
+
         // 1. Gán sự kiện Gõ phím cho Desktop
         const desktopSearch = document.getElementById('searchInput');
         if(desktopSearch) {
