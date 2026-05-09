@@ -1379,126 +1379,6 @@ footer {
             .cinema-grid { gap: 15px; padding-left: 15px; padding-right: 15px; } /* Căn lề trái phải cho đẹp */
         }
 
-/* =========================================
-   FACEBOOK COMMUNITY CARD (WIDE VERSION)
-   ========================================= */
-.community-section {
-    /* 1. CHỈNH CHIỀU RỘNG (NGANG) */
-    width: 100%;
-    max-width: 100%; /* Để 100% cho nó dài hết cỡ (hoặc 1600px nếu muốn giới hạn) */
-    margin: 0 auto 60px;
-    padding: 0 4%; /* Khoảng cách lề 2 bên */
-}
-
-.comm-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: linear-gradient(105deg, #1877F2 0%, #0f111a 60%);
-    
-    /* 2. CHỈNH CHIỀU CAO (ĐỘ DÀY) */
-    /* Tăng padding lên: 45px (trên dưới) 60px (trái phải) */
-    padding: 36px 60px; 
-    
-    border-radius: 24px;
-    text-decoration: none;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 15px 40px rgba(24, 119, 242, 0.25);
-    border: 1px solid rgba(255,255,255,0.1);
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-/* Hiệu ứng Hover */
-.comm-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 25px 80px rgba(24, 119, 242, 0.5); /* Bóng đổ mạnh hơn cho ngầu */
-    border-color: rgba(255,255,255,0.3);
-}
-
-/* Phần bên trái: Icon + Text */
-.comm-left {
-    display: flex;
-    align-items: center;
-    gap: 30px; /* Tăng khoảng cách icon và chữ */
-    z-index: 2;
-}
-
-.comm-icon {
-    width: 70px; height: 70px; /* Icon to hơn xíu */
-    background: #fff;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2.5rem; color: #1877F2;
-    box-shadow: 0 0 25px rgba(255,255,255,0.4);
-}
-
-.comm-title {
-    font-size: 1.8rem; /* Chữ to hơn */
-    font-weight: 900;
-    color: #fff;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.comm-desc {
-    font-size: 1.1rem; /* Mô tả rõ hơn */
-    color: rgba(255,255,255,0.9);
-    font-weight: 500;
-}
-
-/* Phần bên phải: Nút tham gia */
-.comm-btn {
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.3);
-    color: #fff;
-    padding: 15px 35px; /* Nút to hơn */
-    border-radius: 50px;
-    font-weight: 800;
-    font-size: 1rem;
-    display: flex; align-items: center; gap: 12px;
-    transition: 0.3s;
-    z-index: 2;
-    white-space: nowrap; /* Giữ nút không bị xuống dòng */
-}
-
-.comm-card:hover .comm-btn {
-    background: #fff;
-    color: #1877F2;
-    box-shadow: 0 0 20px rgba(255,255,255,0.5);
-}
-
-/* Hình nền trang trí */
-.comm-bg-deco {
-    position: absolute;
-    right: -20px; top: -60%;
-    font-size: 18rem; /* Icon nền to hơn */
-    color: rgba(255,255,255,0.05);
-    transform: rotate(15deg);
-    pointer-events: none;
-    transition: 0.4s;
-}
-.comm-card:hover .comm-bg-deco {
-    transform: rotate(0deg) scale(1.1);
-    color: rgba(255,255,255,0.1);
-}
-
-/* Mobile Responsive (Giữ nguyên cho điện thoại không bị vỡ) */
-@media (max-width: 768px) {
-    .comm-card {
-        flex-direction: column;
-        text-align: center;
-        padding: 30px 20px;
-        gap: 20px;
-    }
-    .comm-left { flex-direction: column; gap: 15px; }
-    .comm-bg-deco { font-size: 10rem; top: 10%; right: -20%; }
-    .comm-btn { width: 100%; justify-content: center; }
-    .comm-title { font-size: 1.5rem; }
-}
-
 /* Style huy hiệu số dư cạnh tên */
 .balance-badge {
     background: rgba(255, 215, 0, 0.15);
@@ -1757,202 +1637,6 @@ footer {
         
         @media (max-width: 900px) {
             .modal-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 15px; }
-        }
-
-        /* ==========================================================================
-           🔥 GÓC CỘNG ĐỒNG (LUXURY STYLES)
-           ========================================================================== */
-        .community-dashboard { padding: 0 4%; margin-bottom: 80px; position: relative; z-index: 20; }
-        
-        .comm-dash-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px;
-        }
-        .comm-dash-header h2 { font-size: 1.8rem; font-weight: 900; margin: 0; display: flex; align-items: center; gap: 12px; }
-        .comm-dash-header h2 i { color: #f1c40f; filter: drop-shadow(0 0 10px rgba(241, 196, 15, 0.4)); }
-        
-        .comm-stats { display: flex; gap: 15px; }
-        .c-stat-item { 
-            font-size: 0.85rem; color: #aaa; font-weight: 600; display: flex; align-items: center; gap: 6px; 
-            background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.05);
-        }
-        .c-stat-item i { color: #FF8F50; }
-
-        .slider-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .comm-sub-title { font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #fff; text-transform: uppercase; }
-
-        .carousel-controls { display: flex; gap: 10px; }
-        .carousel-controls button {
-            width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.5); color: #fff; cursor: pointer; transition: 0.3s;
-        }
-        .carousel-controls button:hover { background: #ff8f50; border-color: transparent; }
-
-        /* --- CAROUSEL SLIDER --- */
-        .comm-carousel-viewport {
-            width: 100%; overflow: hidden; margin-bottom: 40px;
-            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
-        }
-        .comm-carousel-track {
-            display: flex; gap: 20px;
-            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            width: max-content;
-        }
-
-        /* Review Card (Ngang) */
-        .review-card {
-            flex: 0 0 320px; height: 180px;
-            position: relative; border-radius: 14px; overflow: hidden; cursor: pointer;
-            background: #1a1c24; border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s; user-select: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        .review-card:hover {
-            transform: translateY(-5px); border-color: #FF8F50;
-            box-shadow: 0 15px 40px rgba(255, 161, 94, 0.3);
-        }
-        .review-bg-blur {
-            position: absolute; inset: 0; background-size: cover; background-position: center;
-            opacity: 0.4; filter: blur(4px) brightness(0.6); transition: 0.5s;
-        }
-        .review-card:hover .review-bg-blur { filter: blur(2px) brightness(0.8); opacity: 0.7; transform: scale(1.1); }
-        .review-overlay { position: absolute; inset: 0; background: linear-gradient(to top, #090a0f 10%, rgba(9, 10, 15, 0.6) 60%, transparent 100%); }
-
-        .rc-content-wrapper {
-            position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px; z-index: 2;
-            display: flex; flex-direction: column; gap: 6px;
-        }
-        
-        /* User Info Top */
-        .rc-user-info { display: flex; align-items: center; gap: 12px; }
-        .rc-avatar-img { 
-            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
-            border: 2px solid rgba(255,255,255,0.2); 
-        }
-        .rc-user-text { display: flex; flex-direction: column; justify-content: center; }
-
-        /* Tên User thường */
-        .rc-username { font-size: 0.95rem; font-weight: 700; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); line-height: 1.1; }
-        
-        /* 🔥 VIP USERNAME: VÀNG KIM LOẠI */
-        .vip-username {
-            color: #FFD700 !important;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            font-weight: 800;
-        }
-
-        /* 🔥 VIP LABEL: THIN & BRIGHT (MỚI) */
-        .rc-user-role {
-            font-size: 0.65rem;
-            color: #FFFACD; /* LemonChiffon - Vàng nhạt sáng */
-            font-weight: 400; /* Thin */
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
-            margin-top: 3px;
-            display: flex; align-items: center; gap: 4px;
-        }
-        .normal-user-role { font-size: 0.65rem; color: #888; margin-top: 3px; font-weight: 500; }
-
-        .rc-comment-text {
-            font-size: 0.9rem; color: #ddd; font-style: italic; line-height: 1.4;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-            margin-top: 4px;
-        }
-        
-        /* Mini Poster (Góc phải) */
-        .rc-mini-poster {
-            width: 45px; height: 68px; border-radius: 4px; object-fit: cover;
-            border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transition: 0.3s;
-        }
-        .review-card:hover .rc-mini-poster { transform: scale(1.1) rotate(5deg); border-color: var(--primary-color); }
-
-        /* --- 2. BOTTOM GRID --- */
-        .comm-bottom-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
-
-        .comm-col-box {
-            background: #181a24; border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05); overflow: hidden;
-            display: flex; flex-direction: column; height: 100%;
-        }
-
-        .comm-box-header {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.03); padding: 12px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .comm-box-header h3 { font-size: 1rem; margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #fff; text-transform: uppercase; }
-        .view-all { font-size: 0.75rem; color: #888; font-weight: 700; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; }
-
-        .leaderboard-list, .recent-comments-list { display: flex; flex-direction: column; flex: 1; }
-
-        /* --- A. LEADERBOARD LIST --- */
-        .lb-item {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.03); transition: 0.2s;
-            height: 68px; 
-        }
-        .lb-item:last-child { border-bottom: none; }
-        .lb-item:hover { background: rgba(255,255,255,0.03); padding-left: 25px; }
-        
-        .lb-left { display: flex; align-items: center; gap: 15px; }
-        
-        /* Rank Number */
-        .lb-rank { 
-            width: 24px; font-weight: 900; font-size: 1.1rem; text-align: center; color: #666;
-            font-family: 'Impact', sans-serif; letter-spacing: 1px;
-        }
-        .lb-item:nth-child(1) .lb-rank { font-size: 1.6rem; color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); transform: scale(1.1); }
-        .lb-item:nth-child(2) .lb-rank { font-size: 1.4rem; color: #C0C0C0; text-shadow: 0 0 8px rgba(192, 192, 192, 0.4); }
-        .lb-item:nth-child(3) .lb-rank { font-size: 1.4rem; color: #CD7F32; text-shadow: 0 0 8px rgba(205, 127, 50, 0.4); }
-
-        .lb-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); background: #333; }
-        .lb-name { font-size: 0.9rem; font-weight: 700; color: #fff; }
-        .lb-coin { font-weight: 700; color: #FFD700; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; background: rgba(255,215,0,0.08); padding: 4px 8px; border-radius: 4px; }
-
-        /* --- B. RECENT COMMENTS --- */
-        .rc-item {
-            display: flex; gap: 15px; padding: 0 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.03); transition: 0.2s; cursor: pointer;
-            height: 85px; align-items: center;
-        }
-        .rc-item:last-child { border-bottom: none; }
-        .rc-item:hover { background: rgba(255,255,255,0.03); }
-        .rc-avatar-small { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); background: #333; }
-        
-        .rc-content { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
-        .rc-header { display: flex; justify-content: space-between; align-items: center; }
-        .rc-user-small { font-size: 0.9rem; font-weight: 700; color: #fff; }
-        .rc-time { font-size: 0.7rem; color: #666; }
-        .rc-text { 
-            font-size: 0.85rem; color: #ccc; 
-            display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
-        }
-        .rc-movie-tag { 
-            font-size: 0.75rem; color: #696969; font-weight: 600; 
-            display: flex; align-items: center; gap: 6px; margin-top: 3px;
-        }
-        .rc-item:hover .rc-movie-tag { color: #fff; }
-
-        .loading-placeholder { padding: 20px; text-align: center; color: #666; width: 100%; }
-
-        /* VIP Glow Border */
-        .is-vip-user .rc-avatar-img, .is-vip-user .lb-avatar, .is-vip-user .rc-avatar-small {
-            border: 2px solid #FFD700 !important;
-            box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
-            animation: pulseGold 2s infinite;
-        }
-        .is-vip-user .rc-username, .is-vip-user .lb-name, .is-vip-user .rc-user-small {
-            /* Tên ở list thường dùng gradient */
-            background: linear-gradient(to right, #FFD700, #FFFACD, #FFD700);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900;
-        }
-        @keyframes pulseGold { 0% { box-shadow: 0 0 5px #FFD700; } 50% { box-shadow: 0 0 15px #FFD700; } 100% { box-shadow: 0 0 5px #FFD700; } }
-
-        @media (max-width: 900px) {
-            .comm-bottom-grid { grid-template-columns: 1fr; gap: 30px; }
-            .lb-item, .rc-item { height: auto; padding: 15px; } 
         }
 
 /* =========================================
@@ -2521,61 +2205,6 @@ footer {
         </a>
     </div>
 
-    <section class="community-dashboard">
-        
-        <div class="comm-dash-header">
-            <div class="comm-stats">
-                <div class="c-stat-item"><i class="fas fa-users"></i> <span id="totalUsers"></span> Thành viên</div>
-                <div class="c-stat-item"><i class="fas fa-comments"></i> <span id="totalComments"></span> Bình luận</div>
-            </div>
-        </div>
-
-        <div class="slider-header-row">
-            <h3 class="comm-sub-title">
-                <i class="fas fa-star"  style="color:#FF8F50;"></i></i> TOP BÌNH LUẬN</h3>
-            <div class="carousel-controls">
-                <button id="btnPrevComm"><i class="fas fa-chevron-left"></i></button>
-                <button id="btnNextComm"><i class="fas fa-chevron-right"></i></button>
-            </div>
-        </div>
-
-        <div class="comm-carousel-viewport">
-            <div class="comm-carousel-track" id="featuredTrack">
-                <div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i></div>
-            </div>
-        </div>
-
-        <div class="comm-bottom-grid">
-            
-            <div class="comm-col-box">
-                <div class="comm-box-header">
-                    <h3><i class="fas fa-trophy" style="color:#FF8F50;"></i> BXH Đại Gia</h3>
-                    <span class="view-all">Top 5</span>
-                </div>
-                <div class="leaderboard-list" id="coinLeaderboard">
-                    <div class="loading-placeholder"></div>
-                </div>
-            </div>
-
-            <div class="comm-col-box">
-                <div class="comm-box-header">
-                    <h3><i class="fas fa-bolt" style="color:#FF8F50;"></i> Bình Luận Mới</h3>
-                    <span class="view-all">New Comments</span>
-                </div>
-                <div class="recent-comments-list" id="recentCommentsList">
-                    <div class="loading-placeholder"></div>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <div class="ad-panel-wrapper">
-        <a href="https://wibey.netlify.app" target="_blank" class="ad-link">
-            <img src="https://wibey.netlify.app/WIBEYPHIMADSVIP.PNG" alt="Quảng cáo" class="ad-img-728">
-        </a>
-    </div>
-
     <section class="short-section">
         <div class="short-header">
             <div class="sh-title-group">
@@ -2604,7 +2233,7 @@ footer {
 
     <div class="ad-panel-wrapper">
         <a href="https://wibey.netlify.app" target="_blank" class="ad-link">
-            <img src="https://wibey.netlify.app/WIBEYPHIMADS.PNG" alt="Quảng cáo" class="ad-img-728">
+            <img src="https://wibey.netlify.app/WIBEYPHIMADSVIP.PNG" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
 
@@ -2639,7 +2268,7 @@ footer {
 
     <div class="ad-panel-wrapper">
         <a href="https://wibey.netlify.app" target="_blank" class="ad-link">
-            <img src="https://wibey.netlify.app/WIBEYPHIMADSVIP.PNG" alt="Quảng cáo" class="ad-img-728">
+            <img src="https://wibey.netlify.app/WIBEYPHIMADS.PNG" alt="Quảng cáo" class="ad-img-728">
         </a>
     </div>
 
@@ -2760,169 +2389,6 @@ footer {
             if (val >= 1) return val + " " + unit + " trước";
         }
         return "Vừa xong";
-    }
-
-    // ============================================================
-    // 🔥 LOGIC GÓC CỘNG ĐỒNG (V9 - FINAL LUXURY)
-    // ============================================================
-    
-    let sliderIndex = 0;
-    let sliderInterval;
-
-    async function loadCommunityDashboard() {
-        console.log("🚀 Loading Community Data...");
-        
-        // --- 1. TẢI BXH ĐẠI GIA (TOP 5) ---
-        try {
-            const usersRef = collection(db, "users");
-            const q = query(usersRef, orderBy("coinBalance", "desc"), limit(5));
-            const snapshot = await getDocs(q);
-            
-            const lbContainer = document.getElementById('coinLeaderboard');
-            if (snapshot.empty) {
-                if(lbContainer) lbContainer.innerHTML = '<div class="loading-placeholder">Chưa có dữ liệu.</div>';
-            } else {
-                let lbHtml = '';
-                let rank = 1;
-                snapshot.forEach(doc => {
-                    const u = doc.data();
-                    const isVip = (u.vipExpiration && u.vipExpiration > Date.now());
-                    const vipClass = isVip ? 'is-vip-user' : '';
-                    
-                    const avatar = (u.photoURL && u.photoURL.startsWith('http')) ? u.photoURL : 'https://wibey.netlify.app/Guest.webp';
-                    const name = u.displayName || 'Ẩn danh';
-                    const coin = u.coinBalance || 0;
-                    
-                    lbHtml += `
-                        <div class="lb-item ${vipClass}">
-                            <div class="lb-left">
-                                <div class="lb-rank">${rank}</div>
-                                <img src="${avatar}" class="lb-avatar" onerror="this.src='https://wibey.netlify.app/Guest.webp'">
-                                <div class="lb-info">
-                                    <div class="lb-name">${name} ${isVip ? '<i class="fas fa-crown" style="font-size:0.7rem; color:#FFD700;"></i>' : ''}</div>
-                                </div>
-                            </div>
-                            <div class="lb-coin"><i class="fas fa-coins"></i> ${coin.toLocaleString()}</div>
-                        </div>
-                    `;
-                    rank++;
-                });
-                if(lbContainer) lbContainer.innerHTML = lbHtml;
-                document.getElementById('totalUsers').innerText = (snapshot.size * 50 + "+"); 
-            }
-        } catch (e) { console.error("Lỗi BXH:", e); }
-
-        // --- 2. TẢI BÌNH LUẬN ---
-        try {
-            const commentsRef = collection(db, "comments");
-            const q = query(commentsRef, orderBy("timestamp", "desc"), limit(10)); 
-            const snapshot = await getDocs(q);
-            
-            const sliderTrackEl = document.getElementById('featuredTrack');
-            const recentContainer = document.getElementById('recentCommentsList');
-            
-            if (snapshot.empty) {
-                if(sliderTrackEl) sliderTrackEl.innerHTML = '<div class="loading-placeholder">Chưa có bình luận.</div>';
-                if(recentContainer) recentContainer.innerHTML = '<div class="loading-placeholder">Chưa có bình luận.</div>';
-                return;
-            }
-
-            const commentsData = [];
-            snapshot.forEach(doc => commentsData.push(doc.data()));
-
-            // Tải ảnh phim
-            const enriched = await Promise.all(commentsData.map(async (c) => {
-                let img = "https://wibey.netlify.app/home-background.jpg";
-                let title = "Phim Hay"; 
-                
-                const isYT = c.movieId && c.movieId.startsWith('yt_');
-                const realSlug = c.movieId;
-
-                if (isYT) {
-                    const yId = realSlug.split('yt_')[1];
-                    img = `https://img.youtube.com/vi/${yId}/hqdefault.jpg`;
-                    title = "Phim Độc Quyền Wibey";
-                } else if (realSlug) {
-                    try {
-                        const res = await fetch(`https://ophim1.com/v1/api/phim/${realSlug}`);
-                        const json = await res.json();
-                        if(json.status) {
-                            const m = json.data.item;
-                            title = m.name;
-                            if(m.episode_current) title += ` - ${m.episode_current}`; 
-                            img = m.thumb_url.startsWith('http') ? m.thumb_url : `https://img.ophim1.com/uploads/movies/${m.thumb_url}`;
-                        }
-                    } catch(err) { title = realSlug; }
-                }
-                return { ...c, movieName: title, movieImg: img };
-            }));
-
-            let sliderHtml = '';
-            let listHtml = '';
-
-            enriched.forEach((c, index) => {
-                const isVip = c.isVip || false;
-                const vipClass = isVip ? 'is-vip-user' : '';
-                const nameClass = isVip ? 'vip-username' : 'rc-username';
-                const timeStr = timeAgo(c.timestamp);
-                const avatar = (c.userAvatar && c.userAvatar.startsWith('http')) ? c.userAvatar : 'https://wibey.netlify.app/Guest.webp';
-
-                // 🔥 Label VIP Member (Thin, Bright)
-                const roleLabel = isVip 
-                    ? `<div class="rc-user-role"><i class="fas fa-gem"></i> VIP MEMBER</div>` 
-                    : `<div class="normal-user-role">Ẩn Danh</div>`;
-
-                // --- TOP 6 -> SLIDER ---
-                if (index < 6) {
-                    sliderHtml += `
-                        <div class="review-card ${vipClass}" onclick="window.location.href='/xem-phim/${c.movieId}'">
-                            <div class="review-bg-blur" style="background-image: url('${c.movieImg}');"></div>
-                            <div class="review-overlay"></div>
-                            
-                            <div style="position:absolute; top:15px; right:15px; z-index:3;">
-                                <img src="${c.movieImg}" class="rc-mini-poster" onerror="this.style.display='none'">
-                            </div>
-
-                            <div class="rc-content-wrapper">
-                                <div class="rc-user-info">
-                                    <img src="${avatar}" class="rc-avatar-img" onerror="this.src='https://wibey.netlify.app/Guest.webp'">
-                                    <div class="rc-user-text">
-                                        <div class="${nameClass}">${c.userName} ${isVip ? '<i class="fas fa-crown" style="color:#FFD70; font-size:0.7rem;"></i>' : ''}</div>
-                                        ${roleLabel}
-                                    </div>
-                                </div>
-                                <div class="rc-comment-text">"${c.content}"</div>
-                            </div>
-                        </div>
-                    `;
-                } 
-                // --- 4 TIẾP THEO -> LIST ---
-                else if (index < 10) {
-                    listHtml += `
-                        <div class="rc-item ${vipClass}" onclick="window.location.href='/xem-phim/${c.movieId}'">
-                            <img src="${avatar}" class="rc-avatar-small" onerror="this.src='https://wibey.netlify.app/Guest.webp'">
-                            <div class="rc-content">
-                                <div class="rc-header">
-                                    <span class="${nameClass}" style="font-size:0.9rem;">${c.userName} ${isVip ? '<i class="fas fa-crown" style="font-size:0.7rem;"></i>' : ''}</span>
-                                    <span class="rc-time">${timeStr}</span>
-                                </div>
-                                <div class="rc-text">${c.content}</div>
-                                <div class="rc-movie-tag">
-                                    <i class="fas fa-film"></i> ${c.movieName}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-
-            if(sliderTrackEl) sliderTrackEl.innerHTML = sliderHtml;
-            if(recentContainer) recentContainer.innerHTML = listHtml;
-            document.getElementById('totalComments').innerText = snapshot.size + "+";
-
-            setupCarousel();
-
-        } catch (e) { console.error("Lỗi tải comment:", e); }
     }
 
     // --- CAROUSEL LOGIC (FIXED WHITESPACE - GIỮ NGUYÊN SIZE) ---
@@ -3276,8 +2742,8 @@ footer {
         // ============================================================
         async function fetchHeroMultiSource(slug) {
             const endpoints = [
-                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
-                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' },
+                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com' }, // ƯU TIÊN KKPHIM
+                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies' },
                 { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' }
             ];
 
@@ -3293,18 +2759,23 @@ footer {
                     else if (data.movie) movie = data.movie; 
                     
                     if (movie) {
-                        if (movie.poster_url && !movie.poster_url.startsWith('http')) movie.poster_url = api.imgBase + movie.poster_url;
-                        if (movie.thumb_url && !movie.thumb_url.startsWith('http')) movie.thumb_url = api.imgBase + movie.thumb_url;
+                        movie.poster_url = buildImageUrl(movie.poster_url, api.imgBase);
+                        movie.thumb_url = buildImageUrl(movie.thumb_url, api.imgBase);
+
+                        // Fix hiển thị riêng cho 1 phim
+                        if (slug === 'vi-me-anh-phan-chia-tay') {
+                            let temp = movie.poster_url;
+                            movie.poster_url = movie.thumb_url;
+                            movie.thumb_url = temp;
+                        }
 
                         return { status: true, item: movie };
                     }
-                } catch (e) {
-                    console.warn(`[Fallback] Lỗi lấy Hero cho ${slug} từ ${api.url}`);
-                }
+                } catch (e) {}
             }
             return { status: false, item: null };
         }
-
+        
         // ============================================================
         // --- LOGIC XỬ LÝ ---
         // ============================================================
@@ -3473,12 +2944,26 @@ footer {
 
 <script>
         // ============================================================
-        // 🔥 HỆ THỐNG FETCH ĐA NGUỒN (ƯU TIÊN: KKPHIM -> OPHIM -> NGUỒN C)
+        // 🔥 HÀM XỬ LÝ ẢNH THÔNG MINH (CHỐNG LỖI MẤT ĐƯỜNG DẪN)
+        // ============================================================
+        function buildImageUrl(url, imgBase = 'https://phimimg.com') {
+            if (!url) return 'https://wibey.netlify.app/home-background.jpg';
+            if (url.startsWith('http')) return url; // Nếu đã có sẵn http thì không đụng vào
+            
+            // Xóa dấu '/' ở cuối imgBase và đầu url để nối cho mượt, không bị lỗi //
+            const cleanBase = imgBase.endsWith('/') ? imgBase.slice(0, -1) : imgBase;
+            const cleanUrl = url.startsWith('/') ? url : '/' + url;
+            
+            return cleanBase + cleanUrl;
+        }
+
+        // ============================================================
+        // 🔥 HỆ THỐNG FETCH ĐA NGUỒN CỰC MẠNH (ƯU TIÊN: KKPHIM -> OPHIM)
         // ============================================================
         async function fetchHeroMultiSource(slug) {
             const endpoints = [
-                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' }, // Đưa KKPhim lên làm nguồn CHÍNH
-                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
+                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com' }, // ƯU TIÊN KKPHIM
+                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies' },
                 { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' }
             ];
 
@@ -3494,23 +2979,27 @@ footer {
                     else if (data.movie) movie = data.movie; 
                     
                     if (movie) {
-                        if (movie.poster_url && !movie.poster_url.startsWith('http')) movie.poster_url = api.imgBase + movie.poster_url;
-                        if (movie.thumb_url && !movie.thumb_url.startsWith('http')) movie.thumb_url = api.imgBase + movie.thumb_url;
+                        movie.poster_url = buildImageUrl(movie.poster_url, api.imgBase);
+                        movie.thumb_url = buildImageUrl(movie.thumb_url, api.imgBase);
+
+                        // Fix hiển thị riêng cho 1 phim
+                        if (slug === 'vi-me-anh-phan-chia-tay') {
+                            let temp = movie.poster_url;
+                            movie.poster_url = movie.thumb_url;
+                            movie.thumb_url = temp;
+                        }
 
                         return { status: true, item: movie };
                     }
-                } catch (e) {
-                    console.warn(`[Fallback] Lỗi lấy Hero cho ${slug} từ ${api.url}`);
-                }
+                } catch (e) {}
             }
             return { status: false, item: null };
         }
 
-        // Hàm 1: Lấy chi tiết 1 bộ phim (Quét qua 3 Server)
         async function fetchMovieMultiSource(slug) {
             const endpoints = [
-                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com/' }, // Đưa KKPhim lên làm nguồn CHÍNH
-                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies/' },
+                { url: `https://phimapi.com/phim/${slug}`, imgBase: 'https://phimimg.com' }, // ƯU TIÊN KKPHIM
+                { url: `https://ophim1.com/v1/api/phim/${slug}`, imgBase: 'https://img.ophim1.com/uploads/movies' },
                 { url: `https://phim.nguonc.com/api/film/${slug}`, imgBase: '' } 
             ];
 
@@ -3526,24 +3015,19 @@ footer {
                     else if (data.movie) movie = data.movie; 
                     
                     if (movie) {
-                        // Chuẩn hoá link ảnh để card hiển thị không bị lỗi
-                        if (movie.poster_url && !movie.poster_url.startsWith('http')) movie.poster_url = api.imgBase + movie.poster_url;
-                        if (movie.thumb_url && !movie.thumb_url.startsWith('http')) movie.thumb_url = api.imgBase + movie.thumb_url;
-
+                        movie.poster_url = buildImageUrl(movie.poster_url, api.imgBase);
+                        movie.thumb_url = buildImageUrl(movie.thumb_url, api.imgBase);
                         return { status: true, item: movie };
                     }
-                } catch (e) {
-                    console.warn(`[Fallback] Bỏ qua ${api.url} vì lỗi kết nối.`);
-                }
+                } catch (e) {}
             }
             return { status: false, item: null };
         }
 
-        // Hàm 2: Lấy Danh sách phim / Thể loại / Quốc gia (KKPhim -> Ophim)
         async function fetchListMultiSource(endpoint) {
             const endpoints = [
-                { base: 'https://phimapi.com/v1/api', imgBase: 'https://phimimg.com/' }, // KKPhim làm chính
-                { base: 'https://ophim1.com/v1/api', imgBase: 'https://img.ophim1.com/uploads/movies/' }
+                { base: 'https://phimapi.com/v1/api', imgBase: 'https://phimimg.com' }, // ƯU TIÊN KKPHIM
+                { base: 'https://ophim1.com/v1/api', imgBase: 'https://img.ophim1.com/uploads/movies' }
             ];
 
             for (let api of endpoints) {
@@ -3552,23 +3036,37 @@ footer {
                     if (!res.ok) continue;
                     const data = await res.json();
                     
+                    let items = [];
                     if (data.status && data.data && data.data.items) {
-                        data.data.items.forEach(m => {
-                            if (m.poster_url && !m.poster_url.startsWith('http')) m.poster_url = api.imgBase + m.poster_url;
-                            if (m.thumb_url && !m.thumb_url.startsWith('http')) m.thumb_url = api.imgBase + m.thumb_url;
+                        items = data.data.items;
+                    } else if (data.status && data.items) {
+                        items = data.items;
+                    } else if (data.items) {
+                        items = data.items;
+                    }
+
+                    if (items.length > 0) {
+                        // Lấy domain ảnh từ JSON nếu API có trả về
+                        let currentImgBase = api.imgBase;
+                        if (data.data && data.data.APP_DOMAIN_CDN_IMAGE) currentImgBase = data.data.APP_DOMAIN_CDN_IMAGE;
+                        else if (data.pathImage) currentImgBase = data.pathImage;
+
+                        items.forEach(m => {
+                            m.poster_url = buildImageUrl(m.poster_url, currentImgBase);
+                            m.thumb_url = buildImageUrl(m.thumb_url, currentImgBase);
                         });
-                        return data;
+                        
+                        return { status: true, data: { items: items } };
                     }
                 } catch (e) {}
             }
             return { status: false, data: { items: [] } };
         }
 
-        // Hàm 3: Tìm kiếm phim Đa luồng (KKPhim -> Ophim)
         async function searchMultiSource(keyword) {
             const endpoints = [
-                { url: `https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com/' }, // KKPhim làm chính
-                { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://img.ophim1.com/uploads/movies/' }
+                { url: `https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://phimimg.com' }, // ƯU TIÊN KKPHIM
+                { url: `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, imgBase: 'https://img.ophim1.com/uploads/movies' }
             ];
             
             for (let api of endpoints) {
@@ -3576,11 +3074,19 @@ footer {
                     const res = await fetch(api.url);
                     if (!res.ok) continue;
                     const data = await res.json();
-                    if (data.status && data.data && data.data.items && data.data.items.length > 0) {
-                        data.data.items.forEach(m => {
-                            if (m.thumb_url && !m.thumb_url.startsWith('http')) m.thumb_url = api.imgBase + m.thumb_url;
+                    
+                    let items = [];
+                    if (data.status && data.data && data.data.items) items = data.data.items;
+
+                    if (items.length > 0) {
+                        let currentImgBase = api.imgBase;
+                        if (data.data && data.data.APP_DOMAIN_CDN_IMAGE) currentImgBase = data.data.APP_DOMAIN_CDN_IMAGE;
+
+                        items.forEach(m => {
+                            m.thumb_url = buildImageUrl(m.thumb_url, currentImgBase);
+                            m.poster_url = buildImageUrl(m.poster_url, currentImgBase);
                         });
-                        return data;
+                        return { status: true, data: { items: items } };
                     }
                 } catch (e) {}
             }
@@ -3957,45 +3463,53 @@ footer {
             if(el) el.scrollBy({ left: direction * el.clientWidth, behavior: 'smooth' });
         };
 
-        // 6. SHORT DRAMA SLIDER (ƯU TIÊN KKPHIM)
+        // ============================================================
+        // 🔥 6. SHORT DRAMA SLIDER (ƯU TIÊN KKPHIM & CHỐNG CRASH SỐ)
+        // ============================================================
         async function loadShortDramaSection() {
             const container = document.getElementById('shortDramaContainer');
             if(!container) return;
 
-            // Quét slug 'short-drama' trước
-            let data = await fetchListMultiSource(`/the-loai/short-drama?page=1`);
-            
-            // Nếu KKPhim không có thư mục 'short-drama', tự động đổi sang quét 'phim-ngan'
-            if (!data.status || !data.data || !data.data.items || data.data.items.length === 0) {
-                data = await fetchListMultiSource(`/the-loai/phim-ngan?page=1`);
-            }
+            try {
+                // Tận dụng hàm fetchListMultiSource siêu mạnh (KKPhim dùng "phim-ngan", Ophim dùng "short-drama")
+                let data = await fetchListMultiSource(`/the-loai/phim-ngan?page=1`);
+                if (!data.status || data.data.items.length === 0) {
+                    data = await fetchListMultiSource(`/the-loai/short-drama?page=1`);
+                }
 
-            if (data.status && data.data && data.data.items && data.data.items.length > 0) {
-                let html = '';
-                data.data.items.slice(0, 24).forEach(m => {
-                    const cleanName = m.name.replace('Phim', '').trim();
-                    let epText = m.episode_current || 'Full';
-                    if (epText.includes('(') && epText.includes(')')) {
-                        let match = epText.match(/\((.*?)\)/);
-                        if (match) epText = match[1];
-                    }
+                if (data.status && data.data.items && data.data.items.length > 0) {
+                    let html = '';
+                    data.data.items.slice(0, 24).forEach(m => {
+                        // Ép kiểu chống crash API trả về Number
+                        const rawName = String(m.name || 'Phim Ngắn');
+                        const cleanName = rawName.replace('Phim', '').trim();
+                        
+                        let epText = String(m.episode_current || 'Full');
+                        if (epText.includes('(') && epText.includes(')')) {
+                            let match = epText.match(/\((.*?)\)/);
+                            if (match) epText = match[1];
+                        }
 
-                    // Ép dùng ảnh dọc cho định dạng Tiktok / Short Drama
-                    let img = m.poster_url || m.thumb_url;
+                        // Không cần nối link nữa vì fetchListMultiSource đã lo việc đó rồi
+                        let img = m.poster_url || m.thumb_url;
 
-                    html += `
-                        <div class="short-card" onclick="window.location.href='/short/${m.slug}'" title="${m.name}">
-                            <div class="short-ep-badge">${epText}</div>
-                            <img src="${img}" loading="lazy" alt="${m.name}" onerror="this.src='https://wibey.netlify.app/panel.webp'">
-                            <div class="short-info">
-                                <div class="short-title">${cleanName}</div>
+                        html += `
+                            <div class="short-card" onclick="window.location.href='/short/${m.slug}'" title="${m.name}">
+                                <div class="short-ep-badge">${epText}</div>
+                                <img src="${img}" loading="lazy" alt="${m.name}" onerror="this.src='https://wibey.netlify.app/home-background.jpg'">
+                                <div class="short-info">
+                                    <div class="short-title">${cleanName}</div>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            } else {
-                container.innerHTML = `<div style="padding:20px; color:#ff4757">Đang cập nhật phim ngắn...</div>`;
+                        `;
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `<div style="padding:20px; color:#ff4757">Đang cập nhật phim ngắn...</div>`;
+                }
+            } catch (e) {
+                console.error("Lỗi tải Short Drama:", e);
+                container.innerHTML = `<div style="padding:20px; color:#ff4757">Lỗi kết nối máy chủ!</div>`;
             }
         }
 
