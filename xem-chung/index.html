@@ -32,7 +32,7 @@
             --bg-card: #23252f;
             --text-main: #ffffff; 
             --text-sub: #9ca3af; 
-            --primary-color: #FF5E62;
+            --primary-color: #FF8F50;
             --gradient-main: linear-gradient(90deg, #FF8F50, #FF5E62);
             --border-light: rgba(255, 255, 255, 0.08);
             --font-main: 'Inter', sans-serif;
@@ -365,13 +365,13 @@
             position: relative; z-index: 2; height: 100%; width: auto; max-width: 100%; 
             object-fit: contain; box-shadow: 0 0 20px rgba(0,0,0,0.8); transition: 0.3s;
         }
-        .room-card:hover .poster-img { transform: scale(1.05); }
-        .room-card:hover .thumb-blur-bg { filter: blur(15px) brightness(0.6); }
+        .room-card:hover .poster-img { transform: scale(1.02); }
+        .room-card:hover .thumb-blur-bg { filter: blur(15px) brightness(0.7); }
 
         /* Badge LIVE mới xịn xò (Gradient + Chấm nháy) */
         .badge-live { 
             position: absolute; top: 12px; left: 12px; z-index: 3; 
-            background: linear-gradient(135deg, #ff0f7b, #f89b29); 
+            background: linear-gradient(90deg, #FF8F50, #FF5E62); 
             color: #fff; font-size: 0.7rem; font-weight: 900; 
             padding: 4px 12px; border-radius: 50px; 
             display: flex; align-items: center; gap: 6px; 
@@ -397,8 +397,10 @@
 
         .card-info { display: flex; gap: 15px; align-items: center; }
         .host-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-light); flex-shrink: 0;}
+        .host-avatar:hover {transform: scale(1.036);}
         .info-text { display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
         .room-title { color: #fff; font-size: 1rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
+        .room-title:hover {color: #FF8F50}
         .ep-info { color: var(--text-sub); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
         .host-meta { color: #6b7280; font-size: 0.8rem; margin: 0; display: flex; align-items: center; gap: 5px;}
 
@@ -531,8 +533,8 @@
         /* Buttons Tool */
         .btn-tool { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-light); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px;}
         .btn-tool:hover { background: rgba(255,255,255,0.1); }
-        .btn-tool.primary { background: var(--primary-color); border-color: var(--primary-color);}
-        .btn-tool.primary:hover { background: #e04a50; }
+        .btn-tool.primary { background: var(--gradient-main);}
+        .btn-tool.primary:hover { filter: brightness(1.1); }
 
         /* Chat Section */
         .chat-section { width: 350px; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; display: flex; flex-direction: column; flex-shrink: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.3); overflow: hidden; }
@@ -619,20 +621,35 @@
         .footer-desc { color: var(--text-sub); line-height: 1.6; font-size: 0.95rem; margin-bottom: 25px; max-width: 90%;}
         .footer-socials { display: flex; gap: 12px;}
         .social-link { width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; color: #ccc; transition: 0.3s; text-decoration: none; font-size: 1.1rem;}
-        .social-link:hover { background: var(--gradient-main); color: #fff; border-color: transparent; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 94, 98, 0.3);}
-        .footer-col h4 { color: #fff; font-size: 1rem; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .social-link:hover {
+            background: var(--gradient-main);
+            color: #fff;
+            border-color: transparent;
+            transform: scale(1.036);
+            box-shadow: 0 5px 15px rgba(255, 94, 98, 0.3);
+        }        .footer-col h4 { color: #fff; font-size: 1rem; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px;}
         .footer-links { list-style: none; padding: 0;}
         .footer-links li { margin-bottom: 15px;}
         .footer-links a { color: var(--text-sub); text-decoration: none; transition: 0.3s; font-size: 0.95rem; display: block; font-weight: 500;}
-        .footer-links a:hover { color: var(--primary-color); transform: translateX(5px);}
+        .footer-links a:hover {
+            color: #FF8F50;
+            transform: translateX(1.036px);
+        }
         .download-group { display: flex; flex-direction: column; gap: 12px;}
         .btn-download-app { background: rgba(255, 255, 255, 0.03); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 16px; border-radius: 10px; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 12px; transition: all 0.3s ease; width: 100%; max-width: 220px;}
         .btn-download-app i { font-size: 1.6rem; color: #ccc; transition: 0.3s;}
         .btn-content { line-height: 1.3;}
         .btn-small-text { font-size: 0.7rem; color: #888; display: block;}
         .btn-big-text { font-size: 1rem; font-weight: 700; color: #fff;}
-        .btn-download-app:hover { border-color: var(--primary-color); background: rgba(255, 94, 98, 0.05); transform: translateY(-2px);}
-        .btn-download-app:hover i { color: var(--primary-color);}
+        .btn-download-app:hover {
+            border-color: #FF8F50;
+            background: rgba(255, 94, 98, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .btn-download-app:hover i {
+            color: #FF8F50;
+        }
         .footer-bottom { border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 30px; text-align: center; color: #555; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; max-width: 1600px; margin: 0 auto;}
 
         @media (max-width: 900px) {
@@ -1240,6 +1257,10 @@
                     const lockBadge = data.isPrivate ? '<div class="badge-lock badge-live" style="left: auto; right: 10px;"><i class="fas fa-lock"></i></div>' : '';
                     const timeAgo = formatTimeAgo(data.updatedAt);
                     
+                    // 🔥 ĐÃ SỬA: Lấy đúng số tập dựa vào epIndex lưu trong database
+                    const epNumber = (data.epIndex !== undefined) ? (data.epIndex + 1) : 1;
+                    const epText = `Tập ${epNumber}`;
+
                     grid.innerHTML += `
                         <div class="room-card" onclick="window.location.href='/xem-chung/?room=${docSnap.id}'">
                             <div class="card-thumb-container">
@@ -1253,7 +1274,7 @@
                                 <img src="${data.hostAvatar || '/Guest.webp'}" class="host-avatar" onerror="this.src='/Guest.webp'">
                                 <div class="info-text">
                                     <h3 class="room-title">Cùng xem ${data.movieName}</h3>
-                                    <p class="ep-info">Tập đang phát - ${data.movieName}</p>
+                                    <p class="ep-info">Tập đang phát - ${epText}</p>
                                     <p class="host-meta">${data.hostName} • ${timeAgo}</p>
                                 </div>
                             </div>
@@ -1672,7 +1693,7 @@
 
                         const currentEp = globalEpisodes[epIndex];
                         document.getElementById('ui-movie-title').innerText = movie.name;
-                        document.getElementById('ui-movie-ep').innerHTML = `<i class="fas fa-play-circle"></i> Đang phát: Tập ${currentEp.name}`;
+                        document.getElementById('ui-movie-ep').innerHTML = `<i class="fas fa-play-circle"></i> Đang phát: ${currentEp.name}`;
 
                         const m3u8Url = currentEp.link_m3u8 || currentEp.link_embed;
                         
