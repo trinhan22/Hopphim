@@ -3482,17 +3482,22 @@ footer {
             ];
 
             let items = [];
+            let imgDomain = 'https://phimimg.com/'; // Mặc định là KKPhim
+
             for (let url of endpoints) {
                 try {
                     const res = await fetch(url);
                     if (!res.ok) continue;
                     const data = await res.json();
                     
+                    // Lấy data và domain ảnh chuẩn của nguồn đó
                     if (data.status && data.items) {
-                        items = data.items; // KKPhim data
+                        items = data.items; 
+                        if(data.pathImage) imgDomain = data.pathImage;
                         break;
                     } else if (data.status && data.data && data.data.items) {
-                        items = data.data.items; // Ophim data
+                        items = data.data.items;
+                        if(data.data.APP_DOMAIN_CDN_IMAGE) imgDomain = data.data.APP_DOMAIN_CDN_IMAGE;
                         break;
                     }
                 } catch(e) {}
@@ -3504,7 +3509,8 @@ footer {
 
                 let html = '';
                 selectedMovies.forEach(m => {
-                    let img = getCleanImageUrl(m.thumb_url || m.poster_url); 
+                    // 🔥 ĐÃ SỬA: Dùng đúng hàm buildImageUrl đang có trong file của bạn
+                    let img = buildImageUrl(m.thumb_url || m.poster_url, imgDomain); 
                     
                     const movieQuality = m.quality || 'FHD';
                     const movieLang = m.lang || 'Vietsub';
