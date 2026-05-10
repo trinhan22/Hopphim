@@ -203,14 +203,34 @@
         /* 1. Các nút cơ bản bên lề trái (Tua, Play, Volume) */
         .plyr__controls > button,
         .plyr__controls > .plyr__volume {
-            margin: 0 5px !important;
+            margin: 0 2px !important; /* Kéo xích lại gần nhau hơn */
         }
 
-        /* Cụm thời gian đẩy ra một chút cho thoáng */
+        /* Đồng bộ màu sắc nhạt (Xám & Mờ 20%) giống hệt các nút Custom mới */
+        .plyr__controls > button,
+        .plyr__controls > .plyr__volume > button {
+            color: #e5e5e5 !important;
+            opacity: 0.8 !important;
+            transition: all 0.2s ease !important;
+            border-radius: 6px !important; /* Bo nhẹ góc cho mượt mà */
+        }
+
+        /* Hiệu ứng rê chuột: Sáng lên 100%, đổi icon Đỏ Hồng, nền trong suốt nhẹ */
+        .plyr__controls > button:hover,
+        .plyr__controls > .plyr__volume > button:hover,
+        .plyr__controls > button[aria-expanded=true] {
+            opacity: 1 !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: var(--plyr-color-main) !important;
+        }
+
+        /* Cụm thời gian: Xích gần lại và đồng bộ màu nhạt */
         .plyr__controls > .plyr__time {
-            margin: 0 15px 0 10px !important; 
+            margin: 0 10px 0 5px !important; /* Kéo gần lại cụm nút */
             font-size: 0.95rem !important;
             font-weight: 600 !important;
+            color: #e5e5e5 !important;
+            opacity: 0.8 !important;
         }
 
         /* 2. Thanh tiến trình (Progress) bung rộng chiếm hết khoảng trống ở giữa */
