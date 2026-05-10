@@ -195,78 +195,96 @@
         /* 1. Cho phép thanh điều khiển rớt dòng */
         .plyr__controls {
             flex-wrap: wrap !important;
-            padding: 15px 25px 10px 25px !important; /* Tăng lề 2 bên cho thoáng */
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%) !important;
+            padding: 10px 25px 10px 25px !important; /* Tạo lề thoáng 2 bên */
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%) !important;
         }
 
         /* 2. Ép thanh tiến trình (Progress) bung 100% và nằm trên cùng */
-        .plyr__progress {
+        .plyr__controls > .plyr__progress {
             flex: 1 1 100% !important; 
             width: 100% !important;
-            margin: 0 0 15px 0 !important; /* Khoảng cách từ thanh tua đến hàng nút */
-            order: 1 !important; 
+            min-width: 100% !important;
+            margin: 0 0 10px 0 !important; /* Khoảng cách từ thanh tua xuống hàng nút */
+            order: -1 !important; /* Bắt buộc đứng đầu tiên */
         }
 
-        /* 3. Gom tất cả các nút bấm xuống hàng thứ 2 */
+        /* 3. Gom các nút bấm mặc định xuống hàng thứ 2 */
         .plyr__controls > button,
         .plyr__controls > .plyr__volume,
         .plyr__controls > .plyr__time,
-        .plyr__controls > .custom-controls-group {
-            order: 2 !important;
+        .plyr__controls > .plyr__menu {
+            order: 1 !important;
         }
 
-        /* 4. Đẩy cụm Menu (Tốc độ, Chất lượng...) sang sát lề phải (chỉ đứng trước nút Fullscreen) */
+        /* 4. Đẩy cụm Menu Custom của chúng ta sang lề phải */
         .plyr__controls .custom-controls-group {
+            order: 1 !important;
             margin-left: auto !important; 
         }
 
-        /* --- FIX LỖI VOLUME BỊ LỆCH DO BỐ CỤC MỚI --- */
-        .plyr__volume input[type=range] {
-            bottom: 35px !important; /* Đẩy thanh âm lượng dọc lên cao một chút */
-        }
-        .plyr__volume:hover input[type=range],
-        .plyr__volume input[type=range]:hover {
-            bottom: 85px !important; 
-        }
+        /* --- FIX LỖI VOLUME BỊ LỆCH --- */
+        .plyr__volume input[type=range] { bottom: 35px !important; }
+        .plyr__volume:hover input[type=range], .plyr__volume input[type=range]:hover { bottom: 85px !important; }
 
         /* ==========================================================================
-           🔥 FIX LỖI Z-INDEX (POPUP CHE NÚT BỎ QUA)
+           🔥 GIAO DIỆN POPUP MỚI (NẰM NGAY TRÊN ĐẦU NÚT BẤM)
            ========================================================================== */
         
-        /* 1. Đẩy Popup Box lên quyền lực TỐI CAO (Cao nhất màn hình) */
-        .plyr-popup-box {
-            bottom: 85px !important; /* Nâng cao lên tránh bị hàng nút dưới che */
-            z-index: 2147483647 !important; /* Z-index cao nhất hệ mặt trời */
+        /* Bọc mỗi nút và popup của nó vào 1 khối (để neo vị trí) */
+        .custom-control-wrapper {
+            position: relative;
         }
 
-        /* 2. Hạ nút "Bỏ qua giới thiệu / Tập tiếp theo" xuống 1 bậc */
-        .skip-intro-btn {
-            z-index: 2147483640 !important; /* Thấp hơn Popup để bị đè lên */
+        /* Box Popup */
+        .plyr-popup-box {
+            position: absolute;
+            bottom: calc(100% + 15px); /* Trồi lên ngay trên đầu nút bấm */
+            background: rgba(20, 20, 25, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            z-index: 2147483647 !important; /* Quyền lực tối cao, không ai che được */
+            opacity: 0;
+            visibility: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            overflow: hidden;
+            font-family: var(--font-main);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* Các popup ở giữa -> Căn giữa nút */
+        #popup-speed, #popup-quality, #popup-episodes {
+            left: 50%;
+            transform: translateX(-50%) translateY(15px);
+        }
+        #popup-speed.active, #popup-quality.active, #popup-episodes.active {
+            opacity: 1; visibility: visible;
+            transform: translateX(-50%) translateY(0); /* Trượt mượt lên */
         }
         
-        /* 3. Trên mobile nếu hiện popup thì căn lại bottom cho vừa vặn */
-        @media (max-width: 900px) {
-            .plyr-popup-box {
-                bottom: 75px !important; 
-            }
+        /* Riêng popup Âm thanh ở góc phải -> Căn lề phải để không bị tràn ra ngoài viền video */
+        #popup-audiosub {
+            right: 0;
+            transform: translateY(15px);
+        }
+        #popup-audiosub.active {
+            opacity: 1; visibility: visible;
+            transform: translateY(0);
         }
 
-        /* Giao diện Popup: Danh sách tập */
+        /* Tinh chỉnh bên trong Popup */
         .popup-episodes { width: 450px; display: flex; flex-direction: column; }
         .pep-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 700; display: flex; justify-content: space-between; font-size: 1.1rem; color: #fff; background: rgba(0,0,0,0.5);}
         .pep-list { max-height: 350px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 5px; }
-        .pep-list::-webkit-scrollbar { width: 4px; }
-        .pep-list::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
-        
         .pep-item { display: flex; gap: 15px; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; align-items: center;}
         .pep-item:hover { background: rgba(255,255,255,0.1); }
         .pep-item.active { background: rgba(255,255,255,0.05); border-left: 3px solid var(--primary-color); }
         .pep-item.active .pep-ep-name { color: var(--primary-color); }
         .pep-item img { width: 120px; aspect-ratio: 16/9; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
         .pep-ep-name { font-weight: 700; margin-bottom: 6px; font-size: 0.95rem; color: #fff; transition: 0.2s;}
-        .pep-desc { font-size: 0.8rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+        .pep-desc { font-size: 0.8rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; overflow: hidden; line-height: 1.4; }
         
-        /* Giao diện Popup: Âm thanh & Phụ đề */
         .popup-audiosub { width: 380px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
         .pas-col h4 { font-size: 1rem; color: #fff; margin-bottom: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;}
         .pas-item { padding: 10px; border-radius: 6px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; display: flex; align-items: center; gap: 10px; color: #aaa;}
@@ -2969,60 +2987,103 @@ footer {
         }, 1000);
     }
 
-    // =========================================================
-        // 🔥 HÀM BƠM NÚT ĐIỀU KHIỂN CHUYÊN NGHIỆP (STYLE TƯƠNG TỰ ẢNH)
+        // =========================================================
+        // 🔥 HÀM BƠM NÚT ĐIỀU KHIỂN CHUYÊN NGHIỆP (TỰ ĐỘNG NEO POPUP)
         // =========================================================
         function injectCustomPlayerMenus(plyrInstance) {
-            if (window.innerWidth < 900) return; // Không vẽ trên mobile, để giao diện mặc định cho gọn
+            if (window.innerWidth < 900) return; // Không vẽ trên mobile
 
-            // Dùng setInterval săn tìm bằng được thanh controls của Plyr
             let retryCount = 0;
             let checkExist = setInterval(function() {
                 retryCount++;
-                if(retryCount > 50) clearInterval(checkExist); // Dừng sau 10 giây nếu lỗi
+                if(retryCount > 50) clearInterval(checkExist); 
 
                 const controls = document.querySelector('.plyr__controls');
                 
                 if (controls) {
                     clearInterval(checkExist); 
                     
-                    // Nếu đã bơm rồi thì bỏ qua
                     if (controls.querySelector('.custom-controls-group')) return;
 
-                    // 1. ẨN NÚT CÀI ĐẶT MẶC ĐỊNH CỦA PLYR CHO ĐỠ VƯỚNG
+                    // 1. ẨN NÚT CÀI ĐẶT MẶC ĐỊNH
                     const plyrSettings = controls.querySelector('[data-plyr="settings"]');
                     if(plyrSettings) plyrSettings.style.display = 'none';
 
-                    // 2. TẠO CỤM NÚT BẤM (GIỐNG HỆT ẢNH MẪU)
+                    // 2. TẠO CỤM NÚT BẤM (GẮN LIỀN POPUP BÊN TRONG)
                     const customGroup = document.createElement('div');
                     customGroup.className = 'custom-controls-group';
                     customGroup.style.display = 'flex';
                     customGroup.style.alignItems = 'center';
                     customGroup.style.gap = '8px';
-                    customGroup.style.marginLeft = '15px';
-                    customGroup.style.marginRight = 'auto'; // Đẩy các nút khác (fullscreen) về bên phải
 
                     customGroup.innerHTML = `
-                        <button class="plyr__custom-btn" id="btn-speed-custom" title="Tốc độ phát">
-                            <i class="fas fa-play-circle"></i> Tốc độ phát
-                        </button>
+                        <div class="custom-control-wrapper">
+                            <button class="plyr__custom-btn" id="btn-speed-custom" title="Tốc độ phát">
+                                <i class="fas fa-play-circle"></i> Tốc độ phát
+                            </button>
+                            <div class="plyr-popup-box" id="popup-speed" style="width:200px; display:flex; flex-direction:column; gap:5px; padding:15px;">
+                                <h4 style="font-size:1rem; color:#fff; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Tốc độ phát</h4>
+                                <div class="pas-item speed-item" data-val="0.5"><i class="fas fa-check"></i> 0.5x</div>
+                                <div class="pas-item speed-item" data-val="0.75"><i class="fas fa-check"></i> 0.75x</div>
+                                <div class="pas-item speed-item active" data-val="1"><i class="fas fa-check"></i> Chuẩn (1x)</div>
+                                <div class="pas-item speed-item" data-val="1.25"><i class="fas fa-check"></i> 1.25x</div>
+                                <div class="pas-item speed-item" data-val="1.5"><i class="fas fa-check"></i> 1.5x</div>
+                                <div class="pas-item speed-item" data-val="2"><i class="fas fa-check"></i> 2x</div>
+                            </div>
+                        </div>
                         
-                        <button class="plyr__custom-btn" id="btn-quality-custom" style="position:relative;" title="Chất lượng">
-                            <span id="quality-badge-ui" style="position:absolute; top:-6px; left:5px; background:#2ecc71; color:#fff; font-size:9px; padding:1px 4px; border-radius:3px; font-weight:800; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">Auto</span>
-                            <i class="fas fa-cog"></i> Chất lượng
-                        </button>
+                        <div class="custom-control-wrapper">
+                            <button class="plyr__custom-btn" id="btn-quality-custom" style="position:relative;" title="Chất lượng">
+                                <span id="quality-badge-ui" style="position:absolute; top:-6px; left:5px; background:#2ecc71; color:#fff; font-size:9px; padding:1px 4px; border-radius:3px; font-weight:800; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">Auto</span>
+                                <i class="fas fa-cog"></i> Chất lượng
+                            </button>
+                            <div class="plyr-popup-box" id="popup-quality" style="width:220px; display:flex; flex-direction:column; gap:5px; padding:15px;">
+                                <h4 style="font-size:1rem; color:#fff; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Chất lượng</h4>
+                                <div class="pas-item quality-item active" data-val="-1"><i class="fas fa-check"></i> Tự động (Auto)</div>
+                                <div class="pas-item quality-item" data-val="1080"><i class="fas fa-check"></i> 1080p FHD</div>
+                                <div class="pas-item quality-item" data-val="720"><i class="fas fa-check"></i> 720p HD</div>
+                                <div class="pas-item quality-item" data-val="480"><i class="fas fa-check"></i> 480p SD</div>
+                            </div>
+                        </div>
                         
-                        <button class="plyr__custom-btn" id="btn-next-ep-mini" title="Tập tiếp theo">
-                            <i class="fas fa-step-forward"></i> Tập tiếp theo
-                        </button>
+                        <div class="custom-control-wrapper">
+                            <button class="plyr__custom-btn" id="btn-next-ep-mini" title="Tập tiếp theo">
+                                <i class="fas fa-step-forward"></i> Tập tiếp theo
+                            </button>
+                        </div>
                         
-                        <button class="plyr__custom-btn" id="btn-show-episodes-mini" title="Danh sách tập">
-                            <i class="fas fa-clone"></i> Danh sách tập
-                        </button>
+                        <div class="custom-control-wrapper">
+                            <button class="plyr__custom-btn" id="btn-show-episodes-mini" title="Danh sách tập">
+                                <i class="fas fa-clone"></i> Danh sách tập
+                            </button>
+                            <div class="plyr-popup-box popup-episodes" id="popup-episodes">
+                                <div class="pep-header">
+                                    <span>${currentMovieData?.name || 'Danh sách tập'}</span>
+                                    <i class="fas fa-times" style="cursor:pointer;" onclick="document.getElementById('popup-episodes').classList.remove('active')"></i>
+                                </div>
+                                <div class="pep-list" id="dynamic-pep-list"></div>
+                            </div>
+                        </div>
                         
-                        <button class="plyr__custom-btn" id="btn-show-audiosub-mini" title="Âm thanh & Phụ đề">
-                            <i class="fa-solid fa-closed-captioning"></i> Âm thanh & Phụ đề
-                        </button>
+                        <div class="custom-control-wrapper">
+                            <button class="plyr__custom-btn" id="btn-show-audiosub-mini" title="Âm thanh & Phụ đề">
+                                <i class="fa-solid fa-closed-captioning"></i> Âm thanh & Phụ đề
+                            </button>
+                            <div class="plyr-popup-box popup-audiosub" id="popup-audiosub"> 
+                                <div class="pas-col">
+                                    <h4>Phụ đề</h4>
+                                    <div class="pas-item active"><i class="fas fa-check"></i> Tiếng Việt</div>
+                                    <div class="pas-item"><i class="fas fa-check"></i> Tiếng Anh</div>
+                                    <div class="pas-item"><i class="fas fa-check"></i> Tắt</div>
+                                </div>
+                                <div class="pas-col">
+                                    <h4>Âm thanh</h4>
+                                    <div class="pas-item active"><i class="fas fa-check"></i> Tiếng Gốc</div>
+                                    <div class="pas-item"><i class="fas fa-check"></i> Lồng Tiếng</div>
+                                    <div class="pas-item"><i class="fas fa-check"></i> Thuyết Minh</div>
+                                </div>
+                            </div>
+                        </div>
                     `;
 
                     // Chèn cụm nút vào trước nút Fullscreen
@@ -3033,94 +3094,47 @@ footer {
                         controls.appendChild(customGroup);
                     }
 
-                    // 3. RENDER HTML CHO CÁC POPUP
-                    const wrapper = document.querySelector('.plyr');
-                    
-                    // -- Xử lý HTML Danh sách tập
-                    let epsHtml = '';
-                    const currentServer = (window.currentMovieEpisodesData && window.currentMovieEpisodesData.length > 0) 
-                                            ? window.currentMovieEpisodesData[window.currentServerIndex].server_data : [];
-                    let fallbackImg = currentMovieData?.poster_url || currentMovieData?.thumb_url || '/Guest.webp';
-                    if (fallbackImg && !fallbackImg.startsWith('http')) fallbackImg = IMG_BASE + fallbackImg;
+                    // 3. ĐỔ DỮ LIỆU TẬP PHIM VÀO POPUP TƯƠNG ỨNG
+                    const pepListContainer = document.getElementById('dynamic-pep-list');
+                    if(pepListContainer) {
+                        let epsHtml = '';
+                        const currentServer = (window.currentMovieEpisodesData && window.currentMovieEpisodesData.length > 0) 
+                                                ? window.currentMovieEpisodesData[window.currentServerIndex].server_data : [];
+                        let fallbackImg = currentMovieData?.poster_url || currentMovieData?.thumb_url || '/Guest.webp';
+                        if (fallbackImg && !fallbackImg.startsWith('http')) fallbackImg = IMG_BASE + fallbackImg;
 
-                    currentServer.forEach((ep, idx) => {
-                        let epName = ep.name;
-                        if (!epName.toLowerCase().includes('tập')) epName = `Tập ${epName}`;
-                        const isActive = (currentEpName === epName) ? 'active' : '';
-                        const link = ep.link_m3u8 || ep.link_embed;
-                        const type = ep.link_m3u8 ? 'hls' : 'iframe';
-                        
-                        epsHtml += `
-                            <div class="pep-item ${isActive}" onclick="window.changeEp('${link}', '${type}', null, '${epName}', 0, ${idx})">
-                                <img src="${fallbackImg}" alt="${epName}">
-                                <div style="flex:1;">
-                                    <div class="pep-ep-name">${epName}</div>
-                                    <div class="pep-desc">Khám phá diễn biến tiếp theo...</div>
+                        currentServer.forEach((ep, idx) => {
+                            let epName = ep.name;
+                            if (!epName.toLowerCase().includes('tập')) epName = `Tập ${epName}`;
+                            const isActive = (currentEpName === epName) ? 'active' : '';
+                            const link = ep.link_m3u8 || ep.link_embed;
+                            const type = ep.link_m3u8 ? 'hls' : 'iframe';
+                            
+                            epsHtml += `
+                                <div class="pep-item ${isActive}" onclick="window.changeEp('${link}', '${type}', null, '${epName}', 0, ${idx})">
+                                    <img src="${fallbackImg}" alt="${epName}">
+                                    <div style="flex:1;">
+                                        <div class="pep-ep-name">${epName}</div>
+                                        <div class="pep-desc">Khám phá diễn biến tiếp theo...</div>
+                                    </div>
                                 </div>
-                            </div>
-                        `;
-                    });
-
-                    // -- Tạo Khối HTML Gộp Cả 4 Popup
-                    const popupsHtml = `
-                        <div class="plyr-popup-box popup-episodes" id="popup-episodes">
-                            <div class="pep-header">
-                                <span>${currentMovieData?.name || 'Danh sách tập'}</span>
-                                <i class="fas fa-times" style="cursor:pointer;" onclick="document.getElementById('popup-episodes').classList.remove('active')"></i>
-                            </div>
-                            <div class="pep-list">${epsHtml}</div>
-                        </div>
-
-                        <div class="plyr-popup-box popup-audiosub" id="popup-audiosub">
-                            <div class="pas-col">
-                                <h4>Phụ đề</h4>
-                                <div class="pas-item active"><i class="fas fa-check"></i> Tiếng Việt</div>
-                                <div class="pas-item"><i class="fas fa-check"></i> Tiếng Anh</div>
-                                <div class="pas-item"><i class="fas fa-check"></i> Tắt</div>
-                            </div>
-                            <div class="pas-col">
-                                <h4>Âm thanh</h4>
-                                <div class="pas-item active"><i class="fas fa-check"></i> Tiếng Gốc</div>
-                                <div class="pas-item"><i class="fas fa-check"></i> Lồng Tiếng</div>
-                                <div class="pas-item"><i class="fas fa-check"></i> Thuyết Minh</div>
-                            </div>
-                        </div>
-
-                        <div class="plyr-popup-box popup-audiosub" id="popup-speed" style="width:200px; display:flex; flex-direction:column; gap:5px; padding:15px;">
-                            <h4 style="font-size:1rem; color:#fff; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Tốc độ phát</h4>
-                            <div class="pas-item speed-item" data-val="0.5"><i class="fas fa-check"></i> 0.5x</div>
-                            <div class="pas-item speed-item" data-val="0.75"><i class="fas fa-check"></i> 0.75x</div>
-                            <div class="pas-item speed-item active" data-val="1"><i class="fas fa-check"></i> Chuẩn (1x)</div>
-                            <div class="pas-item speed-item" data-val="1.25"><i class="fas fa-check"></i> 1.25x</div>
-                            <div class="pas-item speed-item" data-val="1.5"><i class="fas fa-check"></i> 1.5x</div>
-                            <div class="pas-item speed-item" data-val="2"><i class="fas fa-check"></i> 2x</div>
-                        </div>
-                        
-                        <div class="plyr-popup-box popup-audiosub" id="popup-quality" style="width:220px; display:flex; flex-direction:column; gap:5px; padding:15px;">
-                            <h4 style="font-size:1rem; color:#fff; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Chất lượng</h4>
-                            <div class="pas-item quality-item active" data-val="-1"><i class="fas fa-check"></i> Tự động (Auto)</div>
-                            <div class="pas-item quality-item" data-val="1080"><i class="fas fa-check"></i> 1080p FHD</div>
-                            <div class="pas-item quality-item" data-val="720"><i class="fas fa-check"></i> 720p HD</div>
-                            <div class="pas-item quality-item" data-val="480"><i class="fas fa-check"></i> 480p SD</div>
-                        </div>
-                    `;
-                    wrapper.insertAdjacentHTML('beforeend', popupsHtml);
+                            `;
+                        });
+                        pepListContainer.innerHTML = epsHtml;
+                    }
 
                     // ==========================================
                     // 4. GẮN SỰ KIỆN LOGIC CHO NÚT BẤM
                     // ==========================================
                     
-                    // Hàm gỡ bỏ tất cả popup đang mở
                     const closeAllPopups = () => {
                         document.querySelectorAll('.plyr-popup-box').forEach(p => p.classList.remove('active'));
                     };
 
-                    // --- Nút: Tập Tiếp Theo
                     document.getElementById('btn-next-ep-mini').addEventListener('click', (e) => {
                         e.stopPropagation(); window.playNextEpisode(); closeAllPopups();
                     });
 
-                    // --- Nút: Danh sách tập
                     document.getElementById('btn-show-episodes-mini').addEventListener('click', (e) => {
                         e.stopPropagation(); 
                         const p = document.getElementById('popup-episodes');
@@ -3129,7 +3143,6 @@ footer {
                         if(!isActive) p.classList.add('active');
                     });
 
-                    // --- Nút: Âm thanh & Phụ đề
                     document.getElementById('btn-show-audiosub-mini').addEventListener('click', (e) => {
                         e.stopPropagation();
                         const p = document.getElementById('popup-audiosub');
@@ -3138,7 +3151,6 @@ footer {
                         if(!isActive) p.classList.add('active');
                     });
                     
-                    // --- Nút: Tốc độ phát
                     document.getElementById('btn-speed-custom').addEventListener('click', (e) => {
                         e.stopPropagation();
                         const p = document.getElementById('popup-speed');
@@ -3147,7 +3159,6 @@ footer {
                         if(!isActive) p.classList.add('active');
                     });
                     
-                    // --- Nút: Chất lượng
                     document.getElementById('btn-quality-custom').addEventListener('click', (e) => {
                         e.stopPropagation();
                         const p = document.getElementById('popup-quality');
@@ -3156,63 +3167,49 @@ footer {
                         if(!isActive) p.classList.add('active');
                     });
 
-                    // ==========================================
-                    // 5. GẮN LOGIC CHO MENU BÊN TRONG POPUP
-                    // ==========================================
-
                     // Logic Tốc Độ Phát
                     document.querySelectorAll('.speed-item').forEach(item => {
                         item.addEventListener('click', function(e) {
                             e.stopPropagation();
                             document.querySelectorAll('.speed-item').forEach(s => s.classList.remove('active'));
                             this.classList.add('active');
-                            
                             const speedVal = parseFloat(this.getAttribute('data-val'));
-                            if (plyrInstance) plyrInstance.speed = speedVal; // API chuẩn của Plyr
-                            
+                            if (plyrInstance) plyrInstance.speed = speedVal; 
                             closeAllPopups();
                             window.showToast("Đã đổi tốc độ: " + speedVal + "x");
                         });
                     });
 
-                    // Logic Chất Lượng (Hỗ trợ HLS.js)
+                    // Logic Chất Lượng
                     document.querySelectorAll('.quality-item').forEach(item => {
                         item.addEventListener('click', function(e) {
                             e.stopPropagation();
                             document.querySelectorAll('.quality-item').forEach(s => s.classList.remove('active'));
                             this.classList.add('active');
-                            
                             const qVal = parseInt(this.getAttribute('data-val'));
                             const badge = document.getElementById('quality-badge-ui');
                             
-                            // Đổi màu Label trên thanh controls
                             if(qVal === -1) {
                                 badge.innerText = "Auto";
-                                badge.style.background = "#2ecc71"; // Xanh
+                                badge.style.background = "#2ecc71"; 
                             } else {
                                 badge.innerText = qVal + "p";
-                                badge.style.background = "var(--primary-color)"; // Cam
+                                badge.style.background = "var(--primary-color)"; 
                             }
 
-                            // Chỉnh chất lượng qua HLS
                             if (window.hls) {
                                 if (qVal === -1) {
-                                    window.hls.currentLevel = -1; // Auto
+                                    window.hls.currentLevel = -1; 
                                 } else {
-                                    // Tìm level khớp với độ phân giải yêu cầu
                                     const levels = window.hls.levels;
                                     let targetLevel = -1;
                                     levels.forEach((lvl, i) => {
                                         if (lvl.height === qVal) targetLevel = i;
                                     });
-                                    if(targetLevel !== -1) {
-                                        window.hls.currentLevel = targetLevel;
-                                    } else {
-                                        window.showToast("Video không hỗ trợ độ phân giải này", "error");
-                                    }
+                                    if(targetLevel !== -1) window.hls.currentLevel = targetLevel;
+                                    else window.showToast("Video không hỗ trợ độ phân giải này", "error");
                                 }
                             }
-                            
                             closeAllPopups();
                         });
                     });
@@ -3228,13 +3225,13 @@ footer {
                     });
 
                     // Bấm ra ngoài video thì đóng tất cả popup
-                    wrapper.addEventListener('click', (e) => {
+                    document.querySelector('.plyr').addEventListener('click', (e) => {
                         if (!e.target.closest('.plyr-popup-box') && !e.target.closest('.custom-controls-group')) {
                             closeAllPopups();
                         }
                     });
                 }
-            }, 200); // Check liên tục mỗi 200ms
+            }, 200); 
         }
 
     // --- SKIP INTRO ---
