@@ -188,6 +188,69 @@
         }
         .plyr-popup-box.active { opacity: 1; visibility: visible; transform: translateY(0); }
 
+        /* ==========================================================================
+           🔥 BỐ CỤC PLAYER HIỆN ĐẠI (TIẾN TRÌNH TRÊN - NÚT DƯỚI)
+           ========================================================================== */
+        
+        /* 1. Cho phép thanh điều khiển rớt dòng */
+        .plyr__controls {
+            flex-wrap: wrap !important;
+            padding: 15px 25px 10px 25px !important; /* Tăng lề 2 bên cho thoáng */
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%) !important;
+        }
+
+        /* 2. Ép thanh tiến trình (Progress) bung 100% và nằm trên cùng */
+        .plyr__progress {
+            flex: 1 1 100% !important; 
+            width: 100% !important;
+            margin: 0 0 15px 0 !important; /* Khoảng cách từ thanh tua đến hàng nút */
+            order: 1 !important; 
+        }
+
+        /* 3. Gom tất cả các nút bấm xuống hàng thứ 2 */
+        .plyr__controls > button,
+        .plyr__controls > .plyr__volume,
+        .plyr__controls > .plyr__time,
+        .plyr__controls > .custom-controls-group {
+            order: 2 !important;
+        }
+
+        /* 4. Đẩy cụm Menu (Tốc độ, Chất lượng...) sang sát lề phải (chỉ đứng trước nút Fullscreen) */
+        .plyr__controls .custom-controls-group {
+            margin-left: auto !important; 
+        }
+
+        /* --- FIX LỖI VOLUME BỊ LỆCH DO BỐ CỤC MỚI --- */
+        .plyr__volume input[type=range] {
+            bottom: 35px !important; /* Đẩy thanh âm lượng dọc lên cao một chút */
+        }
+        .plyr__volume:hover input[type=range],
+        .plyr__volume input[type=range]:hover {
+            bottom: 85px !important; 
+        }
+
+        /* ==========================================================================
+           🔥 FIX LỖI Z-INDEX (POPUP CHE NÚT BỎ QUA)
+           ========================================================================== */
+        
+        /* 1. Đẩy Popup Box lên quyền lực TỐI CAO (Cao nhất màn hình) */
+        .plyr-popup-box {
+            bottom: 85px !important; /* Nâng cao lên tránh bị hàng nút dưới che */
+            z-index: 2147483647 !important; /* Z-index cao nhất hệ mặt trời */
+        }
+
+        /* 2. Hạ nút "Bỏ qua giới thiệu / Tập tiếp theo" xuống 1 bậc */
+        .skip-intro-btn {
+            z-index: 2147483640 !important; /* Thấp hơn Popup để bị đè lên */
+        }
+        
+        /* 3. Trên mobile nếu hiện popup thì căn lại bottom cho vừa vặn */
+        @media (max-width: 900px) {
+            .plyr-popup-box {
+                bottom: 75px !important; 
+            }
+        }
+
         /* Giao diện Popup: Danh sách tập */
         .popup-episodes { width: 450px; display: flex; flex-direction: column; }
         .pep-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 700; display: flex; justify-content: space-between; font-size: 1.1rem; color: #fff; background: rgba(0,0,0,0.5);}
