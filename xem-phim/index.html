@@ -359,20 +359,77 @@
         }
 
         /* Tinh chỉnh bên trong Popup */
-        .popup-episodes { width: 450px; display: flex; flex-direction: column; }
-        .pep-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 700; display: flex; justify-content: space-between; font-size: 1.1rem; color: #fff; background: rgba(0,0,0,0.5);}
-        .pep-list { max-height: 350px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 5px; }
-        .pep-item { display: flex; gap: 15px; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; align-items: center;}
-        .pep-item:hover { background: rgba(255,255,255,0.1); }
-        .pep-item.active { 
-            background: rgba(255, 94, 98, 0.15) !important; 
-            border-left: 3px solid #FF5E62 !important; 
+        .popup-episodes { 
+            width: 420px; 
+            display: flex; 
+            flex-direction: column; 
         }
-        .pep-item.active .pep-ep-name { color: #FF5E62 !important; }
-        .pep-item img { width: 120px; aspect-ratio: 16/9; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
-        .pep-ep-name { font-weight: 700; margin-bottom: 6px; font-size: 0.95rem; color: #fff; transition: 0.2s;}
-        .pep-desc { font-size: 0.8rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; overflow: hidden; line-height: 1.4; }
         
+        .pep-header { 
+            padding: 15px 20px; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
+            font-weight: 800; 
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 1.05rem; color: #fff; 
+            background: rgba(0,0,0,0.3);
+        }
+        .pep-header i { color: #888; transition: 0.2s; }
+        .pep-header i:hover { color: var(--primary-color); transform: scale(1.1); }
+        
+        .pep-list { 
+            max-height: 350px; overflow-y: auto; padding: 12px; 
+            display: flex; flex-direction: column; gap: 8px; 
+        }
+        
+        /* Làm đẹp thanh cuộn */
+        .pep-list::-webkit-scrollbar { width: 5px; }
+        .pep-list::-webkit-scrollbar-track { background: transparent; }
+        .pep-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        .pep-list::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+        
+        .pep-item { 
+            display: flex; gap: 15px; padding: 8px; border-radius: 10px; 
+            cursor: pointer; transition: all 0.3s ease; align-items: center;
+            border: 1px solid transparent;
+        }
+        .pep-item:hover { background: rgba(255,255,255,0.08); }
+        .pep-item.active { 
+            background: rgba(255, 94, 98, 0.1) !important; 
+            border: 1px solid rgba(255, 94, 98, 0.3);
+        }
+
+        .pep-img-box {
+            position: relative;
+            width: 115px;      /* Cố định chiều rộng */
+            min-width: 115px;  /* Không cho phép bóp nhỏ hơn */
+            flex-shrink: 0;    /* KHÓA KÍCH THƯỚC ẢNH */
+            aspect-ratio: 16/9; /* Luôn giữ tỉ lệ 16:9 */
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .pep-img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        
+        /* Hiệu ứng khi rê chuột vào từng tập */
+        .pep-item:hover .pep-img-box img { filter: brightness(0.5); transform: scale(1.05); }
+        .pep-item.active .pep-img-box img { filter: brightness(0.6); }
+        
+        .pep-play-overlay {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 1.5rem; opacity: 0; transition: 0.3s; z-index: 2;
+        }
+        .pep-item:hover .pep-play-overlay { opacity: 1; }
+        .pep-item.active .pep-play-overlay { opacity: 1; color: var(--primary-color); }
+        
+        .pep-item.active .pep-ep-name { color: var(--primary-color) !important; }
+        .pep-item img { width: 120px; aspect-ratio: 16/9; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
+        .pep-ep-name { 
+            font-weight: 700; margin-bottom: 4px; font-size: 0.95rem; color: #fff; transition: 0.2s;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* Cắt chữ nếu quá dài */
+        }
+        .pep-info { display: flex; flex-direction: column; justify-content: center; flex: 1; overflow: hidden; }
+        .pep-desc { font-size: 0.75rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+
         .popup-audiosub { width: 380px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
         .pas-col h4 { font-size: 1rem; color: #fff; margin-bottom: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;}
         .pas-item { padding: 10px; border-radius: 6px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; display: flex; align-items: center; gap: 10px; color: #aaa;}
@@ -3192,7 +3249,7 @@ footer {
                         let fallbackImg = currentMovieData?.poster_url || currentMovieData?.thumb_url || '/Guest.webp';
                         if (fallbackImg && !fallbackImg.startsWith('http')) fallbackImg = IMG_BASE + fallbackImg;
 
-                        currentServer.forEach((ep, idx) => {
+                            currentServer.forEach((ep, idx) => {
                             let epName = ep.name;
                             if (!epName.toLowerCase().includes('tập')) epName = `Tập ${epName}`;
                             const isActive = (currentEpName === epName) ? 'active' : '';
@@ -3201,10 +3258,14 @@ footer {
                             
                             epsHtml += `
                                 <div class="pep-item ${isActive}" onclick="window.changeEp('${link}', '${type}', null, '${epName}', 0, ${idx})">
-                                    <img src="${fallbackImg}" alt="${epName}">
-                                    <div style="flex:1;">
+                                    <div class="pep-img-box">
+                                        <img src="${fallbackImg}" alt="${epName}">
+                                        <div class="pep-play-overlay"><i class="fas fa-play"></i></div>
+                                    </div>
+                                    
+                                    <div class="pep-info">
                                         <div class="pep-ep-name">${epName}</div>
-                                        <div class="pep-desc">Khám phá diễn biến tiếp theo...</div>
+                                        <div class="pep-desc">Khám phá diễn biến tiếp theo của phim...</div>
                                     </div>
                                 </div>
                             `;
