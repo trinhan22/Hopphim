@@ -254,7 +254,7 @@
         .plyr__volume:hover input[type=range], .plyr__volume input[type=range]:hover { bottom: 80px !important; }
 
 
-        /* ==========================================================================
+/* ==========================================================================
            🔥 ĐỒNG BỘ TUYỆT ĐỐI 100% HIỆU ỨNG HOVER CHO TẤT CẢ CÁC NÚT
            ========================================================================== */
         
@@ -289,6 +289,15 @@
         }
         .plyr--video .plyr__controls .plyr__custom-btn:hover i {
             color: var(--plyr-color-main) !important; /* Dành cho nút tự thêm */
+        }
+        
+        /* Giữ icon màu trắng khi hover để đồng bộ */
+        .plyr__custom-btn:hover i { color: #fff !important; }
+
+        /* Đổi nền thanh Âm lượng (Volume) thành màu Tối giống các Popup mới */
+        .plyr__volume input[type=range] {
+            background: rgba(20, 20, 25, 0.95) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
         }
 
         /* ==========================================================================
