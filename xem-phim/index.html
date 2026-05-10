@@ -3295,10 +3295,12 @@ footer {
                         let epsHtml = '';
                         const currentServer = (window.currentMovieEpisodesData && window.currentMovieEpisodesData.length > 0) 
                                                 ? window.currentMovieEpisodesData[window.currentServerIndex].server_data : [];
-                        let fallbackImg = currentMovieData?.poster_url || currentMovieData?.thumb_url || '/home-background.jpg';
+                                                
+                        // 🔥 ĐÃ SỬA: Ưu tiên lấy thumb_url (Ảnh ngang) trước poster_url (Ảnh dọc)
+                        let fallbackImg = currentMovieData?.thumb_url || currentMovieData?.poster_url || '/home-background.jpg';
                         if (fallbackImg && !fallbackImg.startsWith('http')) fallbackImg = IMG_BASE + fallbackImg;
 
-                            currentServer.forEach((ep, idx) => {
+                        currentServer.forEach((ep, idx) => {
                             let epName = ep.name;
                             if (!epName.toLowerCase().includes('tập')) epName = `Tập ${epName}`;
                             const isActive = (currentEpName === epName) ? 'active' : '';
