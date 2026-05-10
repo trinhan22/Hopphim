@@ -254,20 +254,9 @@
         .plyr__controls {
             z-index: 99 !important; 
         }
-
-        .plyr--video .plyr__controls {
-            z-index: 9999 !important; 
-            overflow: visible !important; 
-        }
-        
-        /* Hạ quyền lực của nút Bỏ qua / Tập tiếp theo xuống */
+        /* Ép nút Bỏ qua giới thiệu / Chuyển tập chìm xuống dưới */
         .skip-intro-btn {
-            z-index: 10 !important; 
-        }
-
-        /* Khung Popup vươn lên tối cao */
-        .plyr-popup-box {
-            z-index: 99999 !important;
+            z-index: 40 !important; 
         }
 
         /* ==========================================================================
@@ -278,21 +267,21 @@
         
         .plyr-preview-container {
             position: absolute;
-            bottom: 100%; /* Nằm ngay sát mép trên của thanh controls */
-            margin-bottom: 5px; /* Cách thanh tua 1 xíu */
+            bottom: calc(100% + 10px); /* Nổi ngay trên thanh thời gian */
+            left: 0;
             transform: translateX(-50%);
             width: 160px;
             aspect-ratio: 16/9;
             background: #000;
-            border: 2px solid var(--plyr-color-main); /* Viền màu đỏ chủ đạo */
+            border: 2px solid #fff;
             border-radius: 8px;
             overflow: hidden;
-            pointer-events: none; /* Xuyên qua chuột, không làm kẹt nút tua */
+            pointer-events: none; /* Không chặn click */
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.15s ease, visibility 0.15s ease;
-            z-index: 999999 !important; /* Luôn luôn nằm trên cùng */
-            box-shadow: 0 5px 20px rgba(0,0,0,0.9);
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            z-index: 100;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8);
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
@@ -308,22 +297,20 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             object-fit: cover;
-            opacity: 0.9;
+            opacity: 0.8;
         }
         
         .plyr-preview-time {
             position: relative;
             z-index: 2;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.75);
             color: #fff;
             font-size: 0.85rem;
             font-weight: 700;
             text-align: center;
-            padding: 3px 0;
+            padding: 4px 0;
             letter-spacing: 1px;
-            border-top: 1px solid rgba(255,255,255,0.2);
         }
-
         /* ==========================================================================
            🔥 GIAO DIỆN POPUP MỚI (NẰM NGAY TRÊN ĐẦU NÚT BẤM)
            ========================================================================== */
@@ -3374,78 +3361,65 @@ footer {
     // 🔥 HÀM TẠO PREVIEW THUMBNAIL KHI HOVER THANH TIẾN TRÌNH
     // =========================================================
     function setupThumbnailPreview(player) {
-        if (window.innerWidth < 900) return; // Bỏ qua trên mobile
+        if (window.innerWidth < 900) return; // Không cần thiết trên mobile (vì dùng cảm ứng)
 
         let checkExist = setInterval(() => {
-            const controls = document.querySelector('.plyr__controls');
-            const progressInput = document.querySelector('.plyr__progress input[type="range"]');
+            const progressContainer = document.querySelector('.plyr__progress');
+            const progressBar = document.querySelector('.plyr__progress input[type="range"]');
             
-            if (controls && progressInput) {
+            if (progressContainer && progressBar) {
                 clearInterval(checkExist);
 
-                // 1. Khởi tạo HTML cho khung xem trước (Nhúng thẳng vào controls để không bị cắt)
-                if(!document.getElementById('custom-preview-box')) {
-                    const previewHTML = `
-                        <div class="plyr-preview-container" id="custom-preview-box">
-                            <img class="plyr-preview-img" id="custom-preview-img" src="/Guest.webp" alt="Preview">
-                            <div class="plyr-preview-time" id="custom-preview-time">00:00</div>
-                        </div>
-                    `;
-                    controls.insertAdjacentHTML('beforeend', previewHTML);
-                }
+                // 1. Tạo khối HTML Popup Preview
+                const previewHTML = `
+                    <div class="plyr-preview-container" id="custom-preview-box">
+                        <img class="plyr-preview-img" id="custom-preview-img" src="/home-background.jpg" alt="Preview">
+                        <div class="plyr-preview-time" id="custom-preview-time">00:00</div>
+                    </div>
+                `;
+                progressContainer.insertAdjacentHTML('beforeend', previewHTML);
 
                 const previewBox = document.getElementById('custom-preview-box');
                 const previewTime = document.getElementById('custom-preview-time');
                 const previewImg = document.getElementById('custom-preview-img');
 
-                // 2. Lắng nghe sự kiện rê chuột trên thanh tua (bắt tọa độ siêu chuẩn)
-                progressInput.addEventListener('mousemove', (e) => {
-                    if (!player.duration) return; // Nếu phim chưa có thời lượng thì bỏ qua
+                // 2. Lắng nghe sự kiện di chuột
+                progressBar.addEventListener('mousemove', (e) => {
+                    if (!player.duration) return; // Phim chưa load xong thì bỏ qua
 
-                    const rect = progressInput.getBoundingClientRect();
+                    const rect = progressBar.getBoundingClientRect();
                     let percent = (e.clientX - rect.left) / rect.width;
                     
-                    // Giới hạn phần trăm 0 - 1
+                    // Giới hạn không cho văng ra ngoài khung
                     if (percent < 0) percent = 0;
                     if (percent > 1) percent = 1;
 
-                    // Tính vị trí hiển thị của hộp Preview so với thanh Controls
-                    const controlsRect = controls.getBoundingClientRect();
-                    let pxPos = (e.clientX - controlsRect.left);
-                    
-                    // Khóa viền 2 bên: Tránh hộp ảnh lòi ra ngoài mép video
-                    const boxWidthHalf = 80; // Box rộng 160px -> một nửa là 80px
-                    if (pxPos < boxWidthHalf) pxPos = boxWidthHalf;
-                    if (pxPos > controlsRect.width - boxWidthHalf) pxPos = controlsRect.width - boxWidthHalf;
-
+                    // Tính toán vị trí hiển thị
+                    const pxPos = percent * rect.width;
                     previewBox.style.left = `${pxPos}px`;
 
-                    // Tính thời gian dựa trên % rê chuột
+                    // Cập nhật thời gian
                     const hoverTime = percent * player.duration;
                     previewTime.innerText = formatPreviewTime(hoverTime);
 
-                    // Render ảnh nền của phim hiện tại
+                    // Cập nhật ảnh động (Lấy ảnh ngang của phim hiện tại)
                     if (window.currentMovieData) {
-                        // Dùng hàm buildImageUrl để luôn lấy link ảnh xịn nhất
-                        let imgUrl = window.currentMovieData.thumb_url || window.currentMovieData.poster_url;
-                        if (imgUrl && !imgUrl.startsWith('http')) {
-                            imgUrl = 'https://phimimg.com/' + imgUrl; // Đắp link dự phòng nếu mảng thiếu
-                        }
-                        previewImg.src = imgUrl;
+                        const img = window.currentMovieData.thumb_url || window.currentMovieData.poster_url;
+                        if (img) previewImg.src = img;
                     }
 
                     previewBox.classList.add('active');
                 });
 
-                // 3. Ẩn đi khi đưa chuột ra ngoài thanh tiến trình
-                progressInput.addEventListener('mouseleave', () => {
+                // 3. Ẩn đi khi đưa chuột ra ngoài
+                progressBar.addEventListener('mouseleave', () => {
                     previewBox.classList.remove('active');
                 });
             }
         }, 500);
     }
 
-    // Hàm chuyển đổi giây sang định dạng hh:mm:ss chuẩn
+    // Hàm chuyển đổi giây sang hh:mm:ss
     function formatPreviewTime(seconds) {
         if (isNaN(seconds) || seconds < 0) return "00:00";
         const h = Math.floor(seconds / 3600);
@@ -3456,7 +3430,7 @@ footer {
         }
         return `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
     }
-
+    
     // --- 🔥 NÚT CHUYỂN TẬP MỚI (TỰ NỔI Ở 60s CUỐI) ---
     function setupNextEpisodeBtn(player) {
         const oldBtn = document.querySelector('.next-ep-float-btn');
