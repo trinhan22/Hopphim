@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://wibey.netlify.app/sitemap.xml
