@@ -290,25 +290,6 @@
         .plyr--video .plyr__controls .plyr__custom-btn:hover i {
             color: var(--plyr-color-main) !important; /* Dành cho nút tự thêm */
         }
-        
-        /* ==========================================================================
-           🔥 1. ĐỒNG BỘ HIỆU ỨNG HOVER & MÀU NỀN VOLUME
-           ========================================================================== */
-        
-        /* Ép các nút mới có hiệu ứng nền Đỏ Hồng giống hệt nút mặc định của Plyr */
-        .plyr--video .plyr__controls .plyr__custom-btn:hover,
-        .plyr--video .plyr__controls .plyr__custom-btn[aria-expanded=true] {
-            background: var(--plyr-color-main) !important;
-            color: #fff !important;
-        }
-        /* Giữ icon màu trắng khi hover để đồng bộ */
-        .plyr__custom-btn:hover i { color: #fff !important; }
-
-        /* Đổi nền thanh Âm lượng (Volume) thành màu Tối giống các Popup mới */
-        .plyr__volume input[type=range] {
-            background: rgba(20, 20, 25, 0.95) !important;
-            border: 1px solid rgba(255,255,255,0.1) !important;
-        }
 
         /* ==========================================================================
            🔥 2. FIX LỖI Z-INDEX (NÚT BỎ QUA CHE POPUP)
