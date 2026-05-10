@@ -255,6 +255,43 @@
 
 
         /* ==========================================================================
+           🔥 ĐỒNG BỘ TUYỆT ĐỐI 100% HIỆU ỨNG HOVER CHO TẤT CẢ CÁC NÚT
+           ========================================================================== */
+        
+        /* 1. Trạng thái đứng im (Idle) cho TẤT CẢ nút: Nền trong suốt, xám nhạt, mờ 80% */
+        .plyr--video .plyr__controls .plyr__control,
+        .plyr--video .plyr__controls .plyr__custom-btn {
+            background: transparent !important;
+            color: #e5e5e5 !important;
+            opacity: 0.8 !important;
+            border-radius: 8px !important;
+            transition: all 0.25s ease !important;
+        }
+
+        /* Đồng bộ màu của icon bên trong nút custom */
+        .plyr--video .plyr__controls .plyr__custom-btn i {
+            color: #e5e5e5 !important;
+            transition: all 0.25s ease !important;
+        }
+
+        /* 2. Trạng thái rê chuột (Hover): Sáng lên 100%, nền xám mờ 12% sang trọng */
+        .plyr--video .plyr__controls .plyr__control:hover,
+        .plyr--video .plyr__controls .plyr__control[aria-expanded=true],
+        .plyr--video .plyr__controls .plyr__custom-btn:hover {
+            background: rgba(255, 255, 255, 0.12) !important;
+            opacity: 1 !important;
+            color: var(--plyr-color-main) !important;
+        }
+
+        /* Đổi màu Icon sang Đỏ Hồng (#FF5E62) khi hover */
+        .plyr--video .plyr__controls .plyr__control:hover svg {
+            fill: var(--plyr-color-main) !important; /* Dành cho nút mặc định của Plyr */
+        }
+        .plyr--video .plyr__controls .plyr__custom-btn:hover i {
+            color: var(--plyr-color-main) !important; /* Dành cho nút tự thêm */
+        }
+        
+        /* ==========================================================================
            🔥 1. ĐỒNG BỘ HIỆU ỨNG HOVER & MÀU NỀN VOLUME
            ========================================================================== */
         
