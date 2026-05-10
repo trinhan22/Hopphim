@@ -290,7 +290,7 @@
         .plyr--video .plyr__controls .plyr__custom-btn:hover i {
             color: var(--plyr-color-main) !important; /* Dành cho nút tự thêm */
         }
-        
+
         /* Giữ icon màu trắng khi hover để đồng bộ */
         .plyr__custom-btn:hover i { color: #fff !important; }
 
@@ -461,7 +461,7 @@
             color: #fff; font-size: 1.5rem; opacity: 0; transition: 0.3s; z-index: 2;
         }
         .pep-item:hover .pep-play-overlay { opacity: 1; }
-        .pep-item.active .pep-play-overlay { opacity: 1; color: var(--primary-color); }
+        .pep-item.active .pep-play-overlay { opacity: 1; color: #FF5E62; }
         
         /* ÉP CHỮ CĂN LỀ TRÁI TUYỆT ĐỐI */
         .pep-info { 
@@ -3295,7 +3295,7 @@ footer {
                         let epsHtml = '';
                         const currentServer = (window.currentMovieEpisodesData && window.currentMovieEpisodesData.length > 0) 
                                                 ? window.currentMovieEpisodesData[window.currentServerIndex].server_data : [];
-                        let fallbackImg = currentMovieData?.poster_url || currentMovieData?.thumb_url || '/Guest.webp';
+                        let fallbackImg = currentMovieData?.poster_url || currentMovieData?.thumb_url || '/home-background.jpg';
                         if (fallbackImg && !fallbackImg.startsWith('http')) fallbackImg = IMG_BASE + fallbackImg;
 
                             currentServer.forEach((ep, idx) => {
