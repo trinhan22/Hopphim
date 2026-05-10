@@ -189,52 +189,49 @@
         .plyr-popup-box.active { opacity: 1; visibility: visible; transform: translateY(0); }
 
         /* ==========================================================================
-           🔥 BỐ CỤC PLAYER HIỆN ĐẠI (TIẾN TRÌNH TRÊN - DỒN NÚT TRÁI)
+           🔥 BỐ CỤC PLAYER 1 HÀNG (NÚT BÊN TRÁI - TIẾN TRÌNH GIỮA)
            ========================================================================== */
         
-        /* 1. Cho phép thanh điều khiển rớt dòng */
         .plyr__controls {
-            flex-wrap: wrap !important;
-            padding: 10px 25px 10px 25px !important; 
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%) !important;
+            display: flex !important;
+            flex-wrap: nowrap !important; /* Ép tất cả nằm trên 1 hàng ngang */
+            align-items: center !important;
+            padding: 10px 20px !important; 
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, transparent 100%) !important;
         }
 
-        /* 2. Ép thanh tiến trình (Progress) bung 100% và nằm trên cùng */
-        .plyr__controls > .plyr__progress {
-            flex: 1 1 100% !important; 
-            width: 100% !important;
-            min-width: 100% !important;
-            margin: 0 0 10px 0 !important; 
-            order: -1 !important; /* Đứng đầu tiên */
-        }
-
-        /* 3. Gom và dồn các nút bấm mặc định sát vào LỀ TRÁI */
+        /* 1. Các nút cơ bản bên lề trái (Tua, Play, Volume) */
         .plyr__controls > button,
-        .plyr__controls > .plyr__time,
         .plyr__controls > .plyr__volume {
-            order: 1 !important;
-            margin-left: 5px !important;
-            margin-right: 5px !important;
+            margin: 0 5px !important;
         }
-        
-        /* Chỉnh riêng thời gian cho thoáng giống ảnh mẫu */
+
+        /* Cụm thời gian đẩy ra một chút cho thoáng */
         .plyr__controls > .plyr__time {
-            margin-left: 15px !important;
-            margin-right: 15px !important;
-            font-size: 1rem !important;
+            margin: 0 15px 0 10px !important; 
+            font-size: 0.95rem !important;
             font-weight: 600 !important;
         }
 
-        /* 4. Đẩy cụm Menu Custom của chúng ta sang LỀ PHẢI */
-        .plyr__controls .custom-controls-group {
-            order: 1 !important;
-            margin-left: auto !important; /* Lệnh này đẩy nó sang sát mép phải */
+        /* 2. Thanh tiến trình (Progress) bung rộng chiếm hết khoảng trống ở giữa */
+        .plyr__controls > .plyr__progress {
+            flex: 1 !important; /* Lệnh thần thánh giúp thanh tua co giãn lấp đầy ở giữa */
+            width: auto !important;
+            min-width: 0 !important;
+            margin: 0 15px !important; 
         }
 
-        /* --- FIX LỖI VOLUME --- */
+        /* 3. Cụm Menu Custom (Tốc độ, Chất lượng...) tự động bị đẩy sát lề phải */
+        .plyr__controls .custom-controls-group {
+            margin-left: 0 !important; 
+            display: flex;
+            align-items: center;
+        }
+
+        /* --- FIX LỖI THANH ÂM LƯỢNG KHI NẰM 1 HÀNG --- */
         .plyr__volume { max-width: 35px !important; }
-        .plyr__volume input[type=range] { bottom: 35px !important; }
-        .plyr__volume:hover input[type=range], .plyr__volume input[type=range]:hover { bottom: 85px !important; }
+        .plyr__volume input[type=range] { bottom: 25px !important; }
+        .plyr__volume:hover input[type=range], .plyr__volume input[type=range]:hover { bottom: 65px !important; }
 
 
         /* ==========================================================================
