@@ -3229,9 +3229,9 @@ footer {
     }
 
         // =========================================================
-        // 🔥 HÀM BƠM NÚT ĐIỀU KHIỂN CHUYÊN NGHIỆP (ĐỒNG BỘ MÀU #FF5E62)
-        // =========================================================
-        function injectCustomPlayerMenus(plyrInstance) {
+    // 🔥 HÀM BƠM NÚT ĐIỀU KHIỂN CHUYÊN NGHIỆP & CHUẨN HÓA POPUP
+    // =========================================================
+    function injectCustomPlayerMenus(plyrInstance) {
         if (window.innerWidth < 900) return;
 
         let retryCount = 0;
@@ -3305,13 +3305,13 @@ footer {
                         <div class="plyr-popup-box popup-audiosub" id="popup-audiosub"> 
                             <div class="pas-col">
                                 <h4>Phụ đề</h4>
-                                <div class="pas-item active"><i class="fas fa-check"></i> Tiếng Việt</div>
-                                <div class="pas-item"><i class="fas fa-check"></i> Tắt</div>
+                                <div class="pas-item sub-item active" data-val="vi"><i class="fas fa-check"></i> Tiếng Việt</div>
+                                <div class="pas-item sub-item" data-val="off"><i class="fas fa-check"></i> Tắt</div>
                             </div>
                             <div class="pas-col">
                                 <h4>Âm thanh</h4>
-                                <div class="pas-item active"><i class="fas fa-check"></i> Tiếng Gốc</div>
-                                <div class="pas-item"><i class="fas fa-check"></i> Thuyết Minh</div>
+                                <div class="pas-item audio-item active" data-val="vietsub"><i class="fas fa-check"></i> Tiếng Gốc</div>
+                                <div class="pas-item audio-item" data-val="thuyetminh"><i class="fas fa-check"></i> Thuyết Minh</div>
                             </div>
                         </div>
                     </div>
@@ -3321,10 +3321,9 @@ footer {
                 if(fullscreenBtn) controls.insertBefore(customGroup, fullscreenBtn);
                 else controls.appendChild(customGroup);
 
-                // Quan trọng: Gọi hàm này để in danh sách vào Popup sau khi HTML vừa chèn xong
                 window.renderChunkToDOM(window.currentActiveChunkIdx);
 
-                // --- SỰ KIỆN MỞ POPUP ---
+                // --- SỰ KIỆN MỞ CÁC POPUP CHUNG ---
                 const closeAllPopups = () => document.querySelectorAll('.plyr-popup-box').forEach(p => p.classList.remove('active'));
 
                 ['episodes', 'audiosub', 'speed', 'quality'].forEach(key => {
@@ -3340,7 +3339,51 @@ footer {
                     }
                 });
 
-                // Xử lý Speed & Quality logic (giữ nguyên của bạn)
+                // --- LOGIC PHỤ ĐỀ (SUBTITLE) ---
+                document.querySelectorAll('#popup-audiosub .sub-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const siblings = this.parentElement.querySelectorAll('.sub-item');
+                        siblings.forEach(s => s.classList.remove('active'));
+                        this.classList.add('active');
+                        window.showToast("Phụ đề được tích hợp mặc định bởi máy chủ video.", "success");
+                        closeAllPopups();
+                    });
+                });
+
+                // --- LOGIC ÂM THANH (AUDIO - CHUYỂN SERVER) ---
+                document.querySelectorAll('#popup-audiosub .audio-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const val = this.getAttribute('data-val');
+                        
+                        let targetServerIndex = -1;
+                        const servers = window.currentMovieEpisodesData || [];
+                        
+                        // Tìm Server Thuyết Minh hoặc Vietsub tương ứng
+                        if (val === 'thuyetminh') {
+                            targetServerIndex = servers.findIndex(s => s.server_name.toLowerCase().includes('thuyết minh') || s.server_name.toLowerCase().includes('lồng tiếng'));
+                        } else {
+                            targetServerIndex = servers.findIndex(s => s.server_name.toLowerCase().includes('vietsub') || !s.server_name.toLowerCase().includes('thuyết minh'));
+                        }
+                        
+                        if (targetServerIndex !== -1 && targetServerIndex !== window.currentServerIndex) {
+                            const siblings = this.parentElement.querySelectorAll('.audio-item');
+                            siblings.forEach(s => s.classList.remove('active'));
+                            this.classList.add('active');
+                            
+                            // Gọi hàm chuyển server
+                            window.changeServer(targetServerIndex);
+                            closeAllPopups();
+                        } else if (targetServerIndex === window.currentServerIndex) {
+                            closeAllPopups();
+                        } else {
+                            window.showToast("Phim hiện chưa có định dạng âm thanh này!", "error");
+                        }
+                    });
+                });
+
+                // Xử lý Speed
                 document.querySelectorAll('.speed-item').forEach(item => {
                     item.addEventListener('click', function(e) {
                         e.stopPropagation();
@@ -3353,6 +3396,7 @@ footer {
                     });
                 });
 
+                // Xử lý Quality
                 document.querySelectorAll('.quality-item').forEach(item => {
                     item.addEventListener('click', function(e) {
                         e.stopPropagation();
@@ -3374,21 +3418,27 @@ footer {
                     });
                 });
 
-                document.querySelectorAll('#popup-audiosub .pas-item').forEach(item => {
-                    item.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const siblings = this.parentElement.querySelectorAll('.pas-item');
-                        siblings.forEach(s => s.classList.remove('active'));
-                        this.classList.add('active');
-                    });
-                });
-
                 document.querySelector('.plyr').addEventListener('click', (e) => {
                     if (!e.target.closest('.plyr-popup-box') && !e.target.closest('.custom-controls-group')) closeAllPopups();
                 });
             }
         }, 200); 
     }
+
+    // --- HÀM ĐỒNG BỘ GIAO DIỆN POPUP VỚI NÚT CHỌN SERVER Ở DƯỚI ---
+    window.syncAudioPopupUI = function(serverName) {
+        if (!serverName) return;
+        const isDub = serverName.toLowerCase().includes('thuyết minh') || serverName.toLowerCase().includes('lồng tiếng');
+        const items = document.querySelectorAll('.audio-item');
+        if(items.length > 0) {
+            items.forEach(item => item.classList.remove('active'));
+            if(isDub) {
+                document.querySelector('.audio-item[data-val="thuyetminh"]')?.classList.add('active');
+            } else {
+                document.querySelector('.audio-item[data-val="vietsub"]')?.classList.add('active');
+            }
+        }
+    };
 
     // --- SKIP INTRO ---
     function setupSkipIntro(player) {
@@ -3649,8 +3699,8 @@ footer {
                 icon = '<i class="fas fa-microphone-alt"></i>';
             }
             const activeClass = index === 0 ? 'active' : '';
-            // Gán chung ID desk cho cả điện thoại và máy tính
-            btnHtmlDesk += `<button class="server-btn ${activeClass}" id="btn-sv-desk-${index}" onclick="window.changeServer(${index}, '${savedEpName}', ${savedTime})">${icon} ${server.server_name}</button>`;
+            // Gỡ bỏ việc truyền tham số string rườm rà gây lỗi crash JS
+            btnHtmlDesk += `<button class="server-btn ${activeClass}" id="btn-sv-desk-${index}" onclick="window.changeServer(${index})">${icon} ${server.server_name}</button>`;
         });
 
         containerDesktop.style.display = 'flex';
@@ -3658,21 +3708,25 @@ footer {
 
         // Khởi tạo danh sách tập của Server đầu tiên
         renderEpisodeList(episodesArray[0].server_data, savedEpName, savedTime);
+        if (window.syncAudioPopupUI) window.syncAudioPopupUI(episodesArray[0].server_name);
     }
 
-    window.currentActiveChunkIdx = 0; // Lưu trang hiện tại đang hiển thị
+    window.currentActiveChunkIdx = 0;
 
-    // HÀM 1: KHỞI TẠO TÍNH TOÁN LÚC ĐẦU
+    // HÀM 1.5: KHỞI TẠO TÍNH TOÁN LÚC ĐẦU
     function renderEpisodeList(svData, savedEpName, savedTime) {
         document.getElementById('mTotalEps').innerText = `${svData.length} tập`;
 
         let targetIndex = 0;
-        if (savedEpName) {
+        // Fix lỗi 'null' text
+        if (savedEpName && savedEpName !== 'null') {
             svData.forEach((ep, idx) => {
                 const n1 = ep.name.toLowerCase().replace(/tập\s*/g, '').replace(/^0+/, '').trim();
-                const n2 = savedEpName.toLowerCase().replace(/tập\s*/g, '').replace(/^0+/, '').trim();
+                const n2 = String(savedEpName).toLowerCase().replace(/tập\s*/g, '').replace(/^0+/, '').trim();
                 if (n1 === n2 || ep.name === savedEpName) targetIndex = idx;
             });
+        } else if (window.currentEpIndex !== undefined && window.currentEpIndex < svData.length) {
+            targetIndex = window.currentEpIndex;
         }
         
         window.currentEpIndex = targetIndex;
@@ -3682,7 +3736,7 @@ footer {
         // Vẽ UI phân trang ra màn hình
         window.renderChunkToDOM(window.currentActiveChunkIdx);
 
-        // Kích hoạt tập phim đầu tiên hoặc tập đang xem dở
+        // Kích hoạt tập phim
         const targetEp = svData[targetIndex];
         if (targetEp) {
             let epDisplay = targetEp.name;
@@ -3697,6 +3751,33 @@ footer {
 
             window.changeEp(link, type, null, epDisplay, savedTime, targetIndex);
         }
+    }
+
+    // --- HÀM 3: SỰ KIỆN KHI BẤM CHUYỂN SERVER (ĐÃ FIX LỖI TREO LOADING) ---
+    window.changeServer = function(serverIndex) {
+        window.currentServerIndex = serverIndex;
+        
+        // Cập nhật giao diện nút server
+        document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll(`#btn-sv-desk-${serverIndex}`).forEach(btn => btn.classList.add('active'));
+
+        const serverData = window.currentMovieEpisodesData[serverIndex].server_data;
+        
+        // Cố gắng giữ nguyên tập đang xem khi đổi server
+        let tIdx = window.currentEpIndex || 0;
+        if (tIdx >= serverData.length) tIdx = serverData.length - 1;
+        
+        // Giữ nguyên thời gian đang phát
+        let cTime = 0;
+        if (player) cTime = Math.floor(player.currentTime || 0);
+
+        // Gọi lại hàm vẽ danh sách tập
+        renderEpisodeList(serverData, serverData[tIdx].name, cTime);
+        
+        window.showToast(`Đã chuyển: ${window.currentMovieEpisodesData[serverIndex].server_name}`, "success");
+        
+        // Đồng bộ lên Popup
+        if (window.syncAudioPopupUI) window.syncAudioPopupUI(window.currentMovieEpisodesData[serverIndex].server_name);
     }
 
     // HÀM 2: VẼ GIAO DIỆN CHÍNH (IN TAB & IN LIST TẬP)
@@ -3784,20 +3865,6 @@ footer {
         document.getElementById('episodeListDesktop').innerHTML = bottomHtml;
         const pepList = document.getElementById('dynamic-pep-list');
         if(pepList) pepList.innerHTML = popupHtml;
-    }
-
-    // --- HÀM 3: SỰ KIỆN KHI BẤM CHUYỂN SERVER ---
-    window.changeServer = function(serverIndex, savedEpName, savedTime) {
-        window.currentServerIndex = serverIndex;
-        // Cập nhật giao diện nút
-        document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll(`#btn-sv-desk-${serverIndex}`).forEach(btn => btn.classList.add('active'));
-
-        // Gọi lại hàm vẽ danh sách tập
-        const serverData = window.currentMovieEpisodesData[serverIndex].server_data;
-        renderEpisodeList(serverData, savedEpName, savedTime);
-        
-        window.showToast(`Đã chuyển: ${window.currentMovieEpisodesData[serverIndex].server_name}`, "success");
     }
 
     // --- CÁC HÀM HỖ TRỢ KHÁC ---
