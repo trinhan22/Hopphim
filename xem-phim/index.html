@@ -3308,12 +3308,14 @@ footer {
                             <div class="pas-col">
                                 <h4>Phụ đề</h4>
                                 <div class="pas-item sub-item active" data-val="vi"><i class="fas fa-check"></i> Tiếng Việt</div>
+                                <div class="pas-item sub-item" data-val="off"><i class="fas fa-check"></i> Tiếng Anh</div>
+                                <div class="pas-item sub-item" data-val="off"><i class="fas fa-check"></i> Tiếng Trung</div>
                                 <div class="pas-item sub-item" data-val="off"><i class="fas fa-check"></i> Tắt</div>
                             </div>
                             <div class="pas-col">
                                 <h4>Âm thanh</h4>
                                 <div class="pas-item audio-item active" data-val="vietsub"><i class="fas fa-check"></i> Tiếng Gốc</div>
-                                <div class="pas-item audio-item" data-val="thuyetminh"><i class="fas fa-check"></i> Thuyết Minh</div>
+                                <div class="pas-item audio-item" data-val="longtieng"><i class="fas fa-check"></i> Lồng Tiếng</div>
                             </div>
                         </div>
                     </div>
@@ -3363,7 +3365,7 @@ footer {
                         const servers = window.currentMovieEpisodesData || [];
                         
                         // Tìm Server Thuyết Minh hoặc Vietsub tương ứng
-                        if (val === 'thuyetminh') {
+                        if (val === 'longtieng') {
                             targetServerIndex = servers.findIndex(s => s.server_name.toLowerCase().includes('thuyết minh') || s.server_name.toLowerCase().includes('lồng tiếng'));
                         } else {
                             targetServerIndex = servers.findIndex(s => s.server_name.toLowerCase().includes('vietsub') || !s.server_name.toLowerCase().includes('thuyết minh'));
@@ -3435,7 +3437,7 @@ footer {
         if(items.length > 0) {
             items.forEach(item => item.classList.remove('active'));
             if(isDub) {
-                document.querySelector('.audio-item[data-val="thuyetminh"]')?.classList.add('active');
+                document.querySelector('.audio-item[data-val="longtieng"]')?.classList.add('active');
             } else {
                 document.querySelector('.audio-item[data-val="vietsub"]')?.classList.add('active');
             }
