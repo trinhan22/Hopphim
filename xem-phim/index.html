@@ -2614,14 +2614,12 @@ footer {
                 let movie = null;
                 let eps = [];
 
-                // 1. Lấy thông tin chung của Phim
                 if (data.status && data.data && data.data.item) movie = data.data.item;
                 else if (data.status && data.movie) movie = data.movie;
                 else if (data.movie) movie = data.movie;
                 
                 if (movie && !finalMovie) {
                     finalMovie = movie;
-                    // Bắt trúng server ảnh xịn nếu KKPhim trả về
                     if (data.data && data.data.APP_DOMAIN_CDN_IMAGE) {
                         finalImgBase = data.data.APP_DOMAIN_CDN_IMAGE;
                     } else {
@@ -2629,7 +2627,6 @@ footer {
                     }
                 }
 
-                // 2. Gom nhặt các tập phim từ MỌI NGUỒN (Gom thành các server Vietsub, Thuyết minh...)
                 if (data.episodes && data.episodes.length > 0) {
                     eps = data.episodes;
                 } else if (movie && movie.episodes && movie.episodes.length > 0) {
@@ -2640,25 +2637,30 @@ footer {
                     eps.forEach(serverGroup => {
                         let srvName = serverGroup.server_name || "Vietsub";
                         
-                        // Chuẩn hóa tên tập phim
-                        let srvData = (serverGroup.server_data || serverGroup.items || []).map(ep => ({
-                            name: ep.name,
-                            link_m3u8: ep.link_m3u8 || ep.link_embed,
-                            link_embed: ep.link_embed || ep.link_m3u8
-                        }));
+                        // 🔥 ĐÃ FIX LỖI LINK: Quét mọi biến thể tên link từ các API khác nhau
+                        let srvData = (serverGroup.server_data || serverGroup.items || []).map(ep => {
+                            let m3u8 = ep.link_m3u8 || ep.m3u8 || ep.url_m3u8 || "";
+                            let embed = ep.link_embed || ep.embed || ep.url_embed || "";
+                            
+                            // Dự phòng chéo nếu 1 trong 2 bị trống
+                            if (!m3u8 && embed.includes('.m3u8')) m3u8 = embed;
+                            if (!embed && m3u8 && !m3u8.includes('.m3u8')) embed = m3u8;
 
-                        // Nếu server này chưa có trong danh sách thì thêm vào
+                            return {
+                                name: ep.name || "Full",
+                                link_m3u8: m3u8,
+                                link_embed: embed
+                            };
+                        });
+
                         if (!finalEpisodes.some(g => g.server_name === srvName) && srvData.length > 0) {
                             finalEpisodes.push({ server_name: srvName, server_data: srvData });
                         }
                     });
                 }
-            } catch (e) {
-                console.warn(`[Fallback] Lỗi lấy nguồn ${api.url}`);
-            }
+            } catch (e) { console.warn(`[Fallback] Lỗi lấy nguồn ${api.url}`); }
         }
 
-        // 3. Xử lý ảnh mượt mà cho kết quả cuối
         if (finalMovie && finalEpisodes.length > 0) {
             finalMovie.poster_url = buildImageUrl(finalMovie.poster_url, finalImgBase);
             finalMovie.thumb_url = buildImageUrl(finalMovie.thumb_url, finalImgBase);
@@ -3699,26 +3701,22 @@ footer {
                 icon = '<i class="fas fa-microphone-alt"></i>';
             }
             const activeClass = index === 0 ? 'active' : '';
-            // Gỡ bỏ việc truyền tham số string rườm rà gây lỗi crash JS
             btnHtmlDesk += `<button class="server-btn ${activeClass}" id="btn-sv-desk-${index}" onclick="window.changeServer(${index})">${icon} ${server.server_name}</button>`;
         });
 
         containerDesktop.style.display = 'flex';
         containerDesktop.innerHTML = btnHtmlDesk;
 
-        // Khởi tạo danh sách tập của Server đầu tiên
         renderEpisodeList(episodesArray[0].server_data, savedEpName, savedTime);
         if (window.syncAudioPopupUI) window.syncAudioPopupUI(episodesArray[0].server_name);
     }
 
     window.currentActiveChunkIdx = 0;
 
-    // HÀM 1.5: KHỞI TẠO TÍNH TOÁN LÚC ĐẦU
     function renderEpisodeList(svData, savedEpName, savedTime) {
         document.getElementById('mTotalEps').innerText = `${svData.length} tập`;
 
         let targetIndex = 0;
-        // Fix lỗi 'null' text
         if (savedEpName && savedEpName !== 'null') {
             svData.forEach((ep, idx) => {
                 const n1 = ep.name.toLowerCase().replace(/tập\s*/g, '').replace(/^0+/, '').trim();
@@ -3730,19 +3728,17 @@ footer {
         }
         
         window.currentEpIndex = targetIndex;
-        // Tính xem tập đang phát nằm ở trang (chunk) số mấy
         window.currentActiveChunkIdx = Math.floor(targetIndex / 30); 
-
-        // Vẽ UI phân trang ra màn hình
         window.renderChunkToDOM(window.currentActiveChunkIdx);
 
-        // Kích hoạt tập phim
         const targetEp = svData[targetIndex];
         if (targetEp) {
             let epDisplay = targetEp.name;
             if (!epDisplay.toLowerCase().includes('tập')) epDisplay = `Tập ${epDisplay}`;
-            const link = targetEp.link_m3u8 || targetEp.link_embed;
-            const type = targetEp.link_m3u8 ? 'hls' : 'iframe';
+            
+            // 🔥 ĐÃ FIX LỖI XÁC ĐỊNH LOẠI LINK
+            const link = targetEp.link_m3u8 || targetEp.link_embed || "";
+            const type = (targetEp.link_m3u8 && targetEp.link_m3u8.includes('.m3u8')) ? 'hls' : 'iframe';
             
             setTimeout(() => {
                 const targetBtn = document.getElementById(`btn-ep-premium-${targetIndex}`);
@@ -3753,30 +3749,108 @@ footer {
         }
     }
 
-    // --- HÀM 3: SỰ KIỆN KHI BẤM CHUYỂN SERVER (ĐÃ FIX LỖI TREO LOADING) ---
+    // --- HÀM 2: VẼ GIAO DIỆN CHÍNH (IN TAB & IN LIST TẬP) ---
+    window.renderChunkToDOM = function(chunkIdx) {
+        if(!window.currentMovieEpisodesData || window.currentMovieEpisodesData.length === 0) return;
+        const svData = window.currentMovieEpisodesData[window.currentServerIndex].server_data;
+        if(!svData) return;
+
+        window.currentActiveChunkIdx = chunkIdx;
+        const CHUNK_SIZE = 30;
+        const totalChunks = Math.ceil(svData.length / CHUNK_SIZE);
+        
+        let tabsHtmlBottom = '';
+        let tabsHtmlPopup = '';
+        
+        if (totalChunks > 1) {
+            for(let i = 0; i < totalChunks; i++) {
+                const start = i * CHUNK_SIZE + 1;
+                let end = start + CHUNK_SIZE - 1;
+                if(end > svData.length) end = svData.length;
+                
+                const label = start === end ? start : `${start < 10 ? '0'+start : start} - ${end}`;
+                const activeCls = i === chunkIdx ? 'active' : '';
+                
+                tabsHtmlBottom += `<div class="ep-tab-btn ${activeCls}" onclick="window.renderChunkToDOM(${i})">${label}</div>`;
+                tabsHtmlPopup += `<div class="pep-tab-btn ${activeCls}" onclick="window.renderChunkToDOM(${i})">${label}</div>`;
+            }
+        }
+        
+        const bottomTabsContainer = document.getElementById('epGroupTabsBottom');
+        if(bottomTabsContainer) bottomTabsContainer.innerHTML = tabsHtmlBottom;
+        
+        const popupTabsContainer = document.getElementById('popupEpTabs');
+        if(popupTabsContainer) popupTabsContainer.innerHTML = tabsHtmlPopup;
+
+        const startIdx = chunkIdx * CHUNK_SIZE;
+        const endIdx = Math.min(startIdx + CHUNK_SIZE, svData.length);
+        const chunkData = svData.slice(startIdx, endIdx);
+        
+        let bottomHtml = ''; let popupHtml = '';
+        let fallbackImg = currentMovieData?.thumb_url || currentMovieData?.poster_url || '/home-background.jpg';
+        if (fallbackImg && !fallbackImg.startsWith('http')) fallbackImg = IMG_BASE + fallbackImg;
+        const movieQuality = currentMovieData?.quality || 'FHD';
+        const movieTime = currentMovieData?.time || 'Đang cập nhật';
+        const movieLang = currentMovieData?.lang || 'Vietsub';
+
+        chunkData.forEach((ep, i) => {
+            const globalIdx = startIdx + i; 
+            let epName = ep.name;
+            if (!epName.toLowerCase().includes('tập')) epName = `Tập ${epName}`;
+            
+            const isActive = (window.currentEpIndex === globalIdx) ? 'active' : '';
+            
+            // 🔥 ĐÃ FIX: CHỐNG LỖI KHI BẤM NÚT DƯỚI LIST
+            const link = ep.link_m3u8 || ep.link_embed || "";
+            const type = (ep.link_m3u8 && ep.link_m3u8.includes('.m3u8')) ? 'hls' : 'iframe';
+            
+            bottomHtml += `
+                <div class="ep-card-premium ${isActive}" id="btn-ep-premium-${globalIdx}" onclick="window.changeEp('${link}', '${type}', this, '${epName}', 0, ${globalIdx})">
+                    <div class="ep-thumb">
+                        <img src="${fallbackImg}" loading="lazy" alt="${epName}">
+                        <div class="ep-play-icon"><i class="fas fa-play"></i></div>
+                    </div>
+                    <div class="ep-name">${epName}</div>
+                    <div class="ep-meta"><span>${movieLang}</span><span>|</span><span>${movieTime}</span></div>
+                    <div class="ep-desc-mini">Đón xem những tình tiết mới nhất của phim trong ${epName}...</div>
+                </div>`;
+                
+            popupHtml += `
+                <div class="pep-item ${isActive}" id="btn-pep-popup-${globalIdx}" onclick="window.changeEp('${link}', '${type}', null, '${epName}', 0, ${globalIdx})">
+                    <div class="pep-img-box">
+                        <img src="${fallbackImg}" alt="${epName}">
+                        <div class="pep-play-overlay"><i class="fas fa-play"></i></div>
+                    </div>
+                    <div class="pep-info">
+                        <div class="pep-ep-name">${epName}</div>
+                        <div class="pep-desc">Khám phá diễn biến tiếp theo của phim...</div>
+                    </div>
+                </div>`;
+        });
+        
+        document.getElementById('episodeListDesktop').innerHTML = bottomHtml;
+        const pepList = document.getElementById('dynamic-pep-list');
+        if(pepList) pepList.innerHTML = popupHtml;
+    }
+
+    // --- HÀM 3: SỰ KIỆN KHI BẤM CHUYỂN SERVER ---
     window.changeServer = function(serverIndex) {
         window.currentServerIndex = serverIndex;
         
-        // Cập nhật giao diện nút server
         document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll(`#btn-sv-desk-${serverIndex}`).forEach(btn => btn.classList.add('active'));
 
         const serverData = window.currentMovieEpisodesData[serverIndex].server_data;
         
-        // Cố gắng giữ nguyên tập đang xem khi đổi server
         let tIdx = window.currentEpIndex || 0;
         if (tIdx >= serverData.length) tIdx = serverData.length - 1;
         
-        // Giữ nguyên thời gian đang phát
         let cTime = 0;
         if (player) cTime = Math.floor(player.currentTime || 0);
 
-        // Gọi lại hàm vẽ danh sách tập
         renderEpisodeList(serverData, serverData[tIdx].name, cTime);
         
         window.showToast(`Đã chuyển: ${window.currentMovieEpisodesData[serverIndex].server_name}`, "success");
-        
-        // Đồng bộ lên Popup
         if (window.syncAudioPopupUI) window.syncAudioPopupUI(window.currentMovieEpisodesData[serverIndex].server_name);
     }
 
@@ -3882,25 +3956,27 @@ footer {
     
     // HÀM 3: SỰ KIỆN ĐỔI TẬP (TỰ ĐỘNG CHUYỂN TRANG NẾU CẦN)
     window.changeEp = function(link, type, btn, epName, startTime = 0, index = 0) {
+        // 🔥 ĐÃ FIX LỖI TRUYỀN LINK RỖNG
+        if (!link || link === "undefined") {
+            window.showToast("Tập phim này đang bị lỗi đường dẫn từ máy chủ!", "error");
+            return;
+        }
+
         window.currentEpIndex = index;
         
-        // KIỂM TRA ĐỘТ PHÁ: Nếu tập bấm sang nằm ở trang khác, tự động vẽ lại DOM trang đó
         const targetChunk = Math.floor(index / 30);
         if (targetChunk !== window.currentActiveChunkIdx) {
             window.renderChunkToDOM(targetChunk);
         }
         
-        // Xóa sạch trạng thái active cũ
         document.querySelectorAll('.ep-card-premium, .pep-item').forEach(b => b.classList.remove('active'));
         
-        // Cấp trạng thái active cho nút List dưới
         const targetBtnBottom = document.getElementById(`btn-ep-premium-${index}`);
         if(targetBtnBottom) {
             targetBtnBottom.classList.add('active');
             targetBtnBottom.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
         }
 
-        // Cấp trạng thái active cho nút List Popup
         const targetBtnPopup = document.getElementById(`btn-pep-popup-${index}`);
         if(targetBtnPopup) targetBtnPopup.classList.add('active');
         
@@ -3919,9 +3995,7 @@ footer {
 
         if (saveHistoryTimeout) clearTimeout(saveHistoryTimeout);
         saveHistoryTimeout = setTimeout(() => {
-            if(window.currentUser) {
-                window.saveToHistory(currentMovieData, currentEpName, 0); 
-            }
+            if(window.currentUser) window.saveToHistory(currentMovieData, currentEpName, 0); 
         }, 10000); 
     }
 
