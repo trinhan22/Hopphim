@@ -588,11 +588,90 @@
         .pwd-input-group label { display: block; color: var(--text-sub); margin-bottom: 8px; font-size: 0.9rem;}
         .pwd-input-group input { width: 100%; padding: 12px; background: var(--bg-body); border: 1px solid var(--border-light); border-radius: 8px; color: #fff; font-family: var(--font-main); outline: none; text-align: center; letter-spacing: 2px;}
 
-        /* Wibey Toast */
-        .wibu-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--bg-card); color: #fff; padding: 12px 20px; border-radius: 8px; z-index: 9999; box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.9rem; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid var(--border-light);}
-        .wibu-toast.show { top: 20px; }
-        .wibu-toast.success i { color: #2ecc71;}
-        .wibu-toast.error i { color: #ff4757;}
+        /* ==========================================================================
+           🌟 WIBEY TOAST - MODERN GLASSMORPHISM (NÂNG CẤP)
+           ========================================================================== */
+        .wibu-toast { 
+            position: fixed; 
+            top: -100px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: rgba(30, 32, 40, 0.85); 
+            backdrop-filter: blur(12px);
+            color: #fff; 
+            padding: 14px 28px; 
+            border-radius: 50px; /* Bo tròn dạng viên thuốc */
+            z-index: 99999; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            font-weight: 600; 
+            font-size: 0.95rem; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
+            /* Hiệu ứng trượt nảy Bounce */
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+            border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0;
+            overflow: hidden; /* Cắt phần thanh thời gian dư ra */
+        }
+        
+        .wibu-toast.show { 
+            top: 80px; 
+            opacity: 1;
+        }
+
+        /* Tùy chỉnh màu sắc & Hào quang cho SUCCESS */
+        .wibu-toast.success {
+            border-color: rgba(46, 204, 113, 0.4);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.2);
+        }
+        .wibu-toast.success i { 
+            color: #2ecc71; 
+            font-size: 1.3rem; 
+            filter: drop-shadow(0 0 8px rgba(46, 204, 113, 0.6));
+        }
+
+        /* Tùy chỉnh màu sắc & Hào quang cho ERROR */
+        .wibu-toast.error {
+            border-color: rgba(255, 71, 87, 0.4);
+            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.2);
+            background: rgba(255, 71, 87, 0.1); /* Nền ám đỏ nhẹ */
+        }
+        .wibu-toast.error i { 
+            color: #ff4757; 
+            font-size: 1.3rem; 
+            filter: drop-shadow(0 0 8px rgba(255, 71, 87, 0.6));
+            animation: shakeErrorIcon 0.4s ease-in-out forwards;
+        }
+
+        /* Animation rung lắc nhẹ cho Icon Lỗi */
+        @keyframes shakeErrorIcon {
+            0%, 100% { transform: translateX(0) rotate(0); }
+            25% { transform: translateX(-3px) rotate(-10deg); }
+            50% { transform: translateX(3px) rotate(10deg); }
+            75% { transform: translateX(-3px) rotate(-5deg); }
+        }
+
+        /* Thanh đếm ngược thời gian (Progress Bar) */
+        .wibu-toast::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+        }
+        .wibu-toast.success::after { background: #2ecc71; }
+        .wibu-toast.error::after { background: #ff4757; }
+        
+        .wibu-toast.show::after {
+            animation: toastProgress 3s linear forwards;
+        }
+
+        @keyframes toastProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
 
         /* Animations */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -693,6 +772,7 @@
             36% { transform: scale(1); opacity: 1; } 
             100% { transform: scale(0.36); opacity: 0; } /* scale(0) là thu nhỏ biến mất */
         }
+        
     </style>
 </head>
 <body>
@@ -702,6 +782,18 @@
 
     <div id="loadingScreen">
         <img src="/Loading.png" class="loading-img" alt="Wibey">
+    </div>
+
+    <div id="confirmModal" class="custom-confirm-overlay">
+        <div class="confirm-box">
+            <div class="confirm-icon"><i class="fas fa-exclamation"></i></div>
+            <h3 class="confirm-title">Xác nhận yêu cầu</h3>
+            <p class="confirm-desc" id="confirmMsg">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+            <div class="confirm-actions">
+                <button class="btn-confirm btn-cancel" id="btnConfirmNo">Hủy bỏ</button>
+                <button class="btn-confirm btn-ok" id="btnConfirmYes">Đồng ý</button>
+            </div>
+        </div>
     </div>
 
     <!-- Mobile Overlays -->
@@ -821,7 +913,7 @@
             <div class="dl-mini-label">Chọn thiết bị</div>
             
             <div class="dl-device-list">
-                <a href="javascript:void(0)" class="dl-item-btn" onclick="window.showToast('Phiên bản Smart TV đang phát triển!', 'error')">
+                <a href="javascript:void(0)" class="dl-item-btn" onclick="window.showToast('Phiên bản Smart TV đang được phát triển!', 'error')">
                     <i class="fas fa-tv"></i>
                     <span>Android TV</span>
                 </a>
@@ -844,12 +936,13 @@
                         <i class="fas fa-crown"></i> Free Plan
                     </div>
 
+                    <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
+
                     <button class="dropdown-item" onclick="window.buyVipPackage()">
-                        <i class="fas fa-star" style="color: #FFD700;"></i> Mua VIP
+                        <i class="fas fa-star" style="color: #FFD700;"></i> Nhận VIP
                     </button>
 
-                    <button class="dropdown-item" onclick="window.location.href='/nap-coin.html'"><i class="fa-duotone fa-solid fa-wallet"></i> Nạp Coin</button>
-                    <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
+                    <button class="dropdown-item" onclick="window.location.href='/nhan-coin.html'"><i class="fa-duotone fa-solid fa-wallet"></i> Nhận Coin</button>
                     <button class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
                 </div>
             </div>
@@ -1114,12 +1207,19 @@
         const hlsConfig = { maxBufferLength: 30, enableWorker: true, lowLatencyMode: true };
 
         // ================= HÀM ẨN LOADING =================
+        let isLoadingHidden = false; // Cờ đảm bảo chỉ tắt loading 1 lần
         function hideLoadingState() {
+            if (isLoadingHidden) return;
+            isLoadingHidden = true;
+
             const screen = document.getElementById('loadingScreen');
             if (!screen || screen.style.display === 'none') return;
             const img = screen.querySelector('.loading-img');
             if (img) img.classList.add('zoom-out');
-            setTimeout(() => { screen.style.display = 'none'; }, 500);
+            setTimeout(() => { 
+                screen.style.display = 'none'; 
+                if (window.showChatbot) window.showChatbot();
+            }, 480);
         }
 
         // ================= HEADER & MENU LOGIC =================
@@ -1153,7 +1253,7 @@
             return `${Math.floor(hours / 24)} ngày trước`;
         }
 
-        // ================= MUA VIP & XÁC THỰC NGƯỜI DÙNG =================
+        // ================= Nhận VIP & XÁC THỰC NGƯỜI DÙNG =================
         window.buyVipPackage = async () => {
             if (!currentUser) return window.showToast("Vui lòng đăng nhập!", "error");
             if (!confirm("Gia hạn VIP 30 ngày với 50 Coin?")) return;
@@ -1164,15 +1264,17 @@
                 const data = snap.data();
                 if ((data.coinBalance || 0) < 50) {
                     window.showToast("Số dư không đủ 50 Coin!", "error");
-                    setTimeout(() => window.location.href = '/nap-coin.html', 1500);
+                    setTimeout(() => window.location.href = '/nhan-coin.html', 1500);
                     return;
                 }
                 let newExpiration = Date.now() + 2592000000;
                 if (data.vipExpiration && data.vipExpiration > Date.now()) newExpiration = data.vipExpiration + 2592000000;
                 await updateDoc(userRef, { coinBalance: increment(-50), vipExpiration: newExpiration });
-                window.showToast("Đã mua VIP thành công!", "success");
+                window.showToast("Đã Nhận VIP thành công!", "success");
             } catch (e) { window.showToast("Lỗi giao dịch!", "error"); }
         };
+
+        let isAppInitialized = false; // Thêm cờ chặn chạy lặp
 
         onAuthStateChanged(auth, async (user) => {
             const btnLogin = document.getElementById('btnLogin');
@@ -1221,12 +1323,16 @@
                              mobileMemberBtn.innerHTML = `<img src="${currentUser.avatar}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #fff;" class="${isVip ? 'vip-glow' : ''}"> ${nameHtmlMobile} <br> ${balanceHTML}`;
                              mobileMemberBtn.onclick = () => window.location.href = '/profile.html';
                         }
+
+                        // 🔥 QUAN TRỌNG: CHỈ GỌI VÀO PHÒNG/SẢNH SAU KHI ĐÃ CÓ DATA VIP
+                        // Nhờ vậy hàm hideLoadingState() bên trong initLobby/checkAndJoinRoom mới được chạy đúng thời điểm!
+                        if (!isAppInitialized) {
+                            isAppInitialized = true;
+                            if (roomIdParam) { checkAndJoinRoom(roomIdParam); } 
+                            else { initLobby(); }
+                        }
                     }
                 });
-
-                if (roomIdParam) { checkAndJoinRoom(roomIdParam); } 
-                else { initLobby(); }
-                
             } else {
                 window.location.href = "/login.html"; 
             }

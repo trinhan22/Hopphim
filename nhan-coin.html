@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhận Coin - Wibey</title>
+    
+    <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- CORE VARIABLES --- */            
+        :root {
+            --bg-body: #191b24; 
+            --bg-card: #23252f; 
+            --bg-card-hover: #303341;
+            --primary: #FF8F50;
+            --secondary: #FF8F50;
+            --gradient: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%);
+            --gradient-main: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%); 
+            --text-main: #ffffff;
+            --text-sub: #9ca3af;
+            --border-color: rgba(255,255,255,0.08);
+            --gold: #FFD700;
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.5; overflow-x: hidden; min-height: 100vh; }
+
+        /* Header gọn gàng */
+        .text-gradient { 
+            background: var(--gradient-main); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            display: inline-block; 
+            font-weight: 800;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo img { height: 35px; }
+        .logo span { font-weight: 900; font-size: 1.2rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* --- MAIN CONTAINER --- */
+        .main-container { max-width: 1000px; margin: 100px auto 60px; padding: 0 20px; }
+
+        /* USER INFO SECTION (CENTERED) */
+        .user-section { text-align: center; margin-bottom: 50px; }
+        .page-title { font-size: 2rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; color: #fff; text-shadow: 0 4px 15px rgba(255, 94, 98, 0.4);}
+        .user-card { 
+            display: inline-flex; align-items: center; gap: 15px; 
+            background: var(--bg-card); padding: 10px 25px 10px 10px; 
+            border-radius: 50px; border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .user-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        .user-details { text-align: left; }
+        .user-name { font-weight: 700; font-size: 1rem; color: #fff; display: flex; align-items: center; gap: 5px; }
+        .user-balance { font-size: 0.9rem; color: var(--gold); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+        /* --- SELECTION STEPS --- */
+        .step-label { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--secondary); display: block; }
+        
+        /* GRID PACKAGES */
+        .pack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 40px; }
+        .pack-item {
+            background: var(--bg-card); border-radius: var(--radius); padding: 20px;
+            border: 2px solid transparent; cursor: pointer; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .pack-item:hover { background: var(--bg-card-hover); transform: translateY(-5px); }
+        .pack-item.active { background: rgba(255, 94, 98, 0.05); border-color: var(--primary); box-shadow: 0 10px 25px rgba(255, 94, 98, 0.2);}
+        
+        .pack-coin { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 5px; }
+        .pack-bonus { font-size: 0.8rem; color: var(--gold); font-weight: 600; min-height: 20px; }
+        .pack-price { font-size: 0.9rem; font-weight: 800; color: #2ecc71; margin-top: 10px; background: rgba(46, 204, 113, 0.1); padding: 5px 15px; border-radius: 20px; border: 1px solid rgba(46, 204, 113, 0.3);}
+        .pack-item.active .pack-price { background: #2ecc71; color: #000; border-color: #2ecc71;}
+
+        /* ACTION BUTTON */
+        .action-area { text-align: center; margin-bottom: 60px; }
+        .btn-pay {
+            background: var(--gradient); color: #fff; border: none;
+            padding: 15px 50px; font-size: 1.1rem; font-weight: 800;
+            border-radius: 50px; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(255, 94, 98, 0.3);
+            text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 10px;
+        }
+        .btn-pay:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(255, 94, 98, 0.5); }
+        .btn-pay:disabled { background: #444; cursor: not-allowed; box-shadow: none; transform: none; }
+
+        /* --- HISTORY SECTION (TABLE STYLE) --- */
+        .history-section { border-top: 1px solid var(--border-color); padding-top: 40px; }
+        .history-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        .history-table-wrapper { 
+            overflow-x: auto; overflow-y: auto; background: var(--bg-card); 
+            border-radius: var(--radius); border: 1px solid var(--border-color);
+            max-height: 600px; 
+        }
+
+        .history-table-wrapper::-webkit-scrollbar { width: 6px; height: 6px; }
+        .history-table-wrapper::-webkit-scrollbar-track { background: #1a1d26; }
+        .history-table-wrapper::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+        .history-table-wrapper::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .history-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .history-table th { 
+            position: sticky; top: 0; z-index: 5; text-align: left; padding: 18px 20px; 
+            color: #ccc; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; 
+            background: #23252f; border-bottom: 2px solid var(--border-color); 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .history-table td { padding: 18px 20px; color: #fff; font-size: 0.95rem; border-bottom: 1px solid var(--border-color); }
+        .history-table tr:hover { background: rgba(255,255,255,0.02); }
+
+        /* Badges */
+        .status-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .status-pending { background: rgba(255, 193, 7, 0.15); color: #FFC107; }
+        .status-completed { background: rgba(0, 230, 118, 0.15); color: #00E676; }
+        .status-rejected { background: rgba(255, 82, 82, 0.15); color: #FF5252; }
+        
+        /* --- MODAL THÔNG BÁO --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal.open { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-content { background: #1a1d26; width: 380px; border-radius: 20px; padding: 35px 30px; border: 1px solid var(--border-color); position: relative; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.6); transform: scale(0.9); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);}
+        .modal.open .modal-content { transform: scale(1); }
+        .copy-box { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px dashed #555; transition: 0.3s;}
+        .copy-box:hover { border-color: var(--primary); background: rgba(255, 94, 98, 0.05); }
+
+        /* ==========================================================================
+           🌟 WIBEY TOAST - MODERN GLASSMORPHISM (NÂNG CẤP)
+           ========================================================================== */
+        .wibu-toast { 
+            position: fixed; 
+            top: -100px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: rgba(30, 32, 40, 0.85); 
+            backdrop-filter: blur(12px);
+            color: #fff; 
+            padding: 14px 28px; 
+            border-radius: 50px; /* Bo tròn dạng viên thuốc */
+            z-index: 99999; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            font-weight: 600; 
+            font-size: 0.95rem; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
+            /* Hiệu ứng trượt nảy Bounce */
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+            border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0;
+            overflow: hidden; /* Cắt phần thanh thời gian dư ra */
+        }
+        
+        .wibu-toast.show { 
+            top: 80px; 
+            opacity: 1;
+        }
+
+        /* Tùy chỉnh màu sắc & Hào quang cho SUCCESS */
+        .wibu-toast.success {
+            border-color: rgba(46, 204, 113, 0.4);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.2);
+        }
+        .wibu-toast.success i { 
+            color: #2ecc71; 
+            font-size: 1.3rem; 
+            filter: drop-shadow(0 0 8px rgba(46, 204, 113, 0.6));
+        }
+
+        /* Tùy chỉnh màu sắc & Hào quang cho ERROR */
+        .wibu-toast.error {
+            border-color: rgba(255, 71, 87, 0.4);
+            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.2);
+            background: rgba(255, 71, 87, 0.1); /* Nền ám đỏ nhẹ */
+        }
+        .wibu-toast.error i { 
+            color: #ff4757; 
+            font-size: 1.3rem; 
+            filter: drop-shadow(0 0 8px rgba(255, 71, 87, 0.6));
+            animation: shakeErrorIcon 0.4s ease-in-out forwards;
+        }
+
+        /* Animation rung lắc nhẹ cho Icon Lỗi */
+        @keyframes shakeErrorIcon {
+            0%, 100% { transform: translateX(0) rotate(0); }
+            25% { transform: translateX(-3px) rotate(-10deg); }
+            50% { transform: translateX(3px) rotate(10deg); }
+            75% { transform: translateX(-3px) rotate(-5deg); }
+        }
+
+        /* Thanh đếm ngược thời gian (Progress Bar) */
+        .wibu-toast::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+        }
+        .wibu-toast.success::after { background: #2ecc71; }
+        .wibu-toast.error::after { background: #ff4757; }
+        
+        .wibu-toast.show::after {
+            animation: toastProgress 3s linear forwards;
+        }
+
+        @keyframes toastProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .pack-grid { grid-template-columns: 1fr; }
+            .page-title { font-size: 1.5rem; }
+            .main-container { margin-top: 80px; }
+        }
+
+        /* --- HEADER & USER MENU --- */
+        header {
+            height: 70px; padding: 0 4%; position: fixed; top: 0; width: 100%; z-index: 1000;
+            display: flex; align-items: center; justify-content: space-between;
+            background: #191b24; border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
+        }
+        .header-left { display: flex; align-items: center; gap: 25px; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .balance-box { background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); color: #FFD700; padding: 6px 16px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .user-menu-container { position: relative; }
+        .header-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); cursor: pointer; transition: 0.3s; }
+        .header-avatar:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 94, 98, 0.4); }
+        
+        .user-dropdown { position: absolute; top: 120%; right: 0; width: 220px; background: #23252f; border-radius: 12px; padding: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; animation: fadeIn 0.2s ease; }
+        .user-dropdown.active { display: flex; }
+        .ud-item { padding: 10px 15px; color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 10px; border-radius: 8px; transition: 0.2s; cursor: pointer; }
+        .ud-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .ud-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 5px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- HIỆU ỨNG VIP --- */
+        .vip-glow { 
+            border: 2px solid #FFD700 !important; 
+            box-shadow: 0 0 15px #FFD700, 0 0 25px rgba(255, 215, 0, 0.4) !important;
+            animation: vipPulse 2s infinite !important;
+        }
+        .vip-name { 
+            background: linear-gradient(to right, #FFD700, #FFF5C3, #FFD700); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            font-weight: 900 !important; 
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        @keyframes vipPulse { 
+            0% { box-shadow: 0 0 5px #FFD700; } 
+            50% { box-shadow: 0 0 20px #FFD700; } 
+            100% { box-shadow: 0 0 5px #FFD700; } 
+        }
+        
+        /* ==========================================================================
+           🌟 HỆ THỐNG MODAL & POPUP - FADE IN / FADE OUT MƯỢT MÀ VÀ SANG TRỌNG
+           ========================================================================== */
+        
+        /* 1. CONFIRM POPUP (HỎI XÁC NHẬN) */
+        .custom-confirm-overlay { 
+            position: fixed; inset: 0; 
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
+            z-index: 20001; display: flex; justify-content: center; align-items: center; 
+            /* Setup Fade */
+            opacity: 0; visibility: hidden; pointer-events: none; 
+            transition: opacity 0.3s ease, visibility 0.3s ease; 
+        }
+        .custom-confirm-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+        
+        .confirm-box { 
+            background: #1c1e29; width: 90%; max-width: 360px; padding: 35px 25px; 
+            border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
+            /* Setup trượt nhẹ từ dưới lên */
+            transform: scale(0.95) translateY(15px); 
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
+        }
+        .custom-confirm-overlay.active .confirm-box { transform: scale(1) translateY(0); }
+        
+        .confirm-icon { 
+            width: 60px; height: 60px; margin: 0 auto 15px; 
+            background: rgba(255, 94, 98, 0.1); border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            color: #FF8F50; font-size: 1.8rem; 
+        }
+        .confirm-title { font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .confirm-desc { font-size: 0.95rem; color: #a0a0a0; margin-bottom: 25px; line-height: 1.5; padding: 0 10px; }
+        .confirm-actions { display: flex; gap: 12px; justify-content: center; }
+        .btn-confirm { flex: 1; padding: 12px 0; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; font-size: 0.95rem; font-family: var(--font-main); outline: none;}
+        .btn-cancel { background: rgba(255,255,255,0.05); color: #ccc; } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-ok { background: var(--gradient-main); color: #fff; } .btn-ok:hover { filter: brightness(1.1); box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3); }
+
+        /* 2. CÁC BẢNG (MODAL) CỦA PHÒNG XEM CHUNG (CHỌN PHIM, SETUP...) */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(10, 12, 18, 0.85); z-index: 2000; 
+            backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; 
+            /* Setup Fade */
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transition: opacity 0.3s ease, visibility 0.3s ease; 
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+
+        .modal-box { 
+            background: var(--bg-card); padding: 30px; border-radius: 20px; border: 1px solid var(--border-light); 
+            width: 850px; max-width: 95%; max-height: 90vh; display: flex; flex-direction: column; 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8); 
+            /* Trượt lên mượt mà */
+            transform: scale(0.95) translateY(20px); 
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .modal-overlay.active .modal-box { transform: scale(1) translateY(0); }
+        .modal-box.small { width: 450px; height: auto; }
+        
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;}
+        .modal-header h2 { color: #fff; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 10px;}
+        .modal-close { background: rgba(255,255,255,0.05); border: none; color: #ccc; font-size: 1.2rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center;}
+        .modal-close:hover { background: #ff4757; color: #fff; transform: rotate(90deg);}
+
+        /* Custom Scroller */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <a href="/" class="logo">
+                <img src="/LOGO.WEBP" alt="Wibey">
+                <span>WIBEY</span>
+            </a>
+        </div>
+        
+        <div class="header-right">
+            <div class="balance-box" id="header-balance-box" style="display: none;">
+                <i class="fas fa-coins"></i> <span id="header-coin">0</span>
+            </div>
+
+            <div class="user-menu-container">
+                <img src="/Guest.webp" id="header-avatar" class="header-avatar" onclick="toggleDropdown()">
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="ud-item" style="pointer-events: none; font-weight: 800; font-size: 1rem; color: #fff; padding-bottom: 5px;">
+                        <span id="dropdown-name">Khách</span>
+                    </div>
+                    
+                    <div class="ud-divider"></div>
+                    
+                    <div class="ud-item" onclick="window.location.href='/profile.html'">
+                        <i class="fas fa-user" style="width: 20px;"></i> Tài khoản
+                    </div>
+                    
+                    <div class="ud-item" onclick="scrollToHistory()">
+                        <i class="fas fa-history" style="width: 20px;"></i> Lịch sử nhận quà
+                    </div>
+                    
+                    <div class="ud-divider"></div>
+                    
+                    <div class="ud-item" id="menuLogout" onclick="logout()" style="color: #ff4757; display: none;">
+                        <i class="fas fa-sign-out-alt" style="width: 20px;"></i> Đăng xuất
+                    </div>
+                </div>
+
+                <button id="header-login-btn" onclick="window.location.href='/login.html'" 
+                        style="display: block; background: var(--gradient); border: none; color: #fff; padding: 6px 18px; border-radius: 30px; font-weight: 700; cursor: pointer; margin-left: 10px;">
+                    Đăng nhập
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <div class="user-section">
+            <h1 class="page-title">Nhận Coin Wibey Miễn Phí</h1>
+            <div class="user-card" id="userInfoBox" style="display: none;">
+                <img src="/Guest.webp" id="user-avatar-display" class="user-avatar">
+                <div class="user-details">
+                    <div class="user-name"><span id="user-name-display"></span> <i class="fas fa-check-circle" style="color:#4ade80; font-size:0.8rem;"></i></div>
+                    <div class="user-balance"><i class="fas fa-coins"></i> Đang có: <span id="user-balance-display">0</span> <span style="background:#FFD700; color:#000; font-size:0.6rem; padding:1px 4px; border-radius:4px; font-weight:800;">W</span></div>
+                </div>
+            </div>
+            <div id="login-warning" style="color: #aaa;"><i class="fas fa-exclamation-triangle" style="color: #FFC107;"></i> Vui lòng đăng nhập để nhận quà từ hệ thống.</div>
+        </div>
+
+        <label class="step-label">Bước 1: Chọn gói quà bạn muốn nhận</label>
+        <div class="pack-grid">
+            <div class="pack-item" onclick="selectPack(this, 20, 0)">
+                <div class="pack-coin">20 <small>COIN</small></div>
+                <div class="pack-bonus"></div>
+                <div class="pack-price">MIỄN PHÍ</div>
+            </div>
+            <div class="pack-item active" onclick="selectPack(this, 50, 5)">
+                <div style="position:absolute; top:0; right:0; background:var(--gradient); color:#fff; font-size:0.6rem; padding:3px 8px; border-bottom-left-radius:8px; font-weight:700;">ĐỀ XUẤT</div>
+                <div class="pack-coin">50 <small>COIN</small></div>
+                <div class="pack-bonus">+5 Coin tặng thêm</div>
+                <div class="pack-price">MIỄN PHÍ</div>
+            </div>
+            <div class="pack-item" onclick="selectPack(this, 100, 15)">
+                <div class="pack-coin">100 <small>COIN</small></div>
+                <div class="pack-bonus">+15 Coin tặng thêm</div>
+                <div class="pack-price">MIỄN PHÍ</div>
+            </div>
+            <div class="pack-item" onclick="selectPack(this, 200, 40)">
+                <div class="pack-coin">200 <small>COIN</small></div>
+                <div class="pack-bonus">+40 Coin tặng thêm</div>
+                <div class="pack-price">MIỄN PHÍ</div>
+            </div>
+            <div class="pack-item" onclick="selectPack(this, 500, 150)">
+                <div class="pack-coin">500 <small>COIN</small></div>
+                <div class="pack-bonus">+150 Coin tặng thêm</div>
+                <div class="pack-price">MIỄN PHÍ</div>
+            </div>
+            <div class="pack-item" onclick="selectPack(this, 1000, 400)">
+                <div style="position:absolute; top:0; right:0; background:linear-gradient(to right, #FFD700, #FDB931); color:#000; font-size:0.6rem; padding:3px 8px; border-bottom-left-radius:8px; font-weight:700;">SIÊU CẤP</div>
+                <div class="pack-coin" style="color:var(--gold)">1.000 <small>COIN</small></div>
+                <div class="pack-bonus">+400 Coin tặng thêm</div>
+                <div class="pack-price">MIỄN PHÍ</div>
+            </div>
+        </div>
+
+        <div class="action-area">
+            <button class="btn-pay" id="btn-submit" onclick="processRequest()">
+                GỬI YÊU CẦU NHẬN <span id="btn-price">55 COIN</span> <i class="fas fa-gift"></i>
+            </button>
+            <p style="margin-top: 15px; color: #888; font-size: 0.85rem;">
+                <i class="fas fa-user-shield"></i> Yêu cầu của bạn sẽ được Admin phê duyệt thủ công trong vòng 24h.
+            </p>
+        </div>
+
+        <div class="history-section">
+            <div class="history-title">Lịch sử nhận quà</div>
+            
+            <div class="history-table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Thời gian</th>
+                            <th>Mã yêu cầu</th>
+                            <th>Số Coin Xin</th>
+                            <th style="text-align: right;">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-list">
+                        <tr><td colspan="4" style="text-align:center; padding: 30px; color: #666;">Đang tải dữ liệu...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL THÀNH CÔNG -->
+    <div class="modal" id="success-modal">
+        <div class="modal-content">
+            <i class="fas fa-times" onclick="closeModal()" style="position:absolute; top:15px; right:15px; cursor:pointer; font-size:1.2rem; color:#aaa;"></i>
+            
+            <i class="fas fa-check-circle" style="font-size: 4.5rem; color: #2ecc71; margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(46,204,113,0.4));"></i>
+            <h3 style="color:#fff; margin-bottom:5px; font-weight:900; font-size:1.3rem;">YÊU CẦU THÀNH CÔNG!</h3>
+            <p style="font-size:0.9rem; color:#aaa;">Hệ thống đã ghi nhận đơn xin Coin của bạn.</p>
+            
+            <div style="text-align: left; margin-top: 20px;">
+                <div style="font-size: 0.85rem; color: #888; margin-bottom: 5px;">Mã xác nhận (Có thể copy nếu cần hỗ trợ):</div>
+                <div class="copy-box" onclick="copy(document.getElementById('modal-code').innerText)">
+                    <strong id="modal-code" style="font-size: 1.1rem; color: var(--gold); letter-spacing: 1px;">...</strong>
+                    <i class="fas fa-copy" style="color: #aaa;"></i>
+                </div>
+            </div>
+
+            <p style="margin-top: 25px; font-size: 0.85rem; color: #fff; font-weight: 600; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                <i class="fas fa-clock" style="color: var(--secondary);"></i> Admin sẽ xét duyệt và cộng Coin sớm nhất nhé!
+            </p>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="custom-confirm-overlay">
+        <div class="confirm-box">
+            <div class="confirm-icon"><i class="fas fa-exclamation"></i></div>
+            <h3 class="confirm-title">Xác nhận yêu cầu</h3>
+            <p class="confirm-desc" id="confirmMsg">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+            <div class="confirm-actions">
+                <button class="btn-confirm btn-cancel" id="btnConfirmNo">Hủy bỏ</button>
+                <button class="btn-confirm btn-ok" id="btnConfirmYes">Đồng ý</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="wibu-toast" id="wibu-toast"><i class="fas fa-info-circle"></i> <span id="toast-msg">Thông báo</span></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, addDoc, collection, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // CONFIG
+        const firebaseConfig = { apiKey: "AIzaSyAT6SnKojUmsisDhnuEtsL3H59NwrhZxDc", authDomain: "hopphim-29e1c.firebaseapp.com", projectId: "hopphim-29e1c", storageBucket: "hopphim-29e1c.firebasestorage.app", messagingSenderId: "1076044580405", appId: "1:1076044580405:web:a3485f8533604f305e537c", measurementId: "G-6RT4CX2NR0" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentCoin = 50, currentBonus = 5, userUID = "";
+
+        // --- 1. QUẢN LÝ TRẠNG THÁI USER & VIP ---
+        onAuthStateChanged(auth, async (user) => {
+            const btnLogin = document.getElementById('header-login-btn');
+            const menuLogout = document.getElementById('menuLogout');
+            const userAvatar = document.getElementById('header-avatar');
+            const dropdownName = document.getElementById('dropdown-name');
+            
+            const warning = document.getElementById('login-warning');
+            const infoBox = document.getElementById('userInfoBox');
+
+            if (user) {
+                // === ĐÃ ĐĂNG NHẬP ===
+                userUID = user.uid;
+                btnLogin.style.display = 'none';
+                menuLogout.style.display = 'flex';
+                warning.style.display = 'none';
+                infoBox.style.display = 'inline-flex';
+                
+                const photo = user.photoURL || '/Guest.webp';
+                userAvatar.src = photo;
+                document.getElementById('user-avatar-display').src = photo;
+
+                onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        const balance = data.coinBalance || 0;
+                        const isVip = (data.vipExpiration || 0) > Date.now();
+                        const name = user.displayName || "Thành viên";
+                        
+                        document.getElementById('header-coin').innerText = balance.toLocaleString();
+                        document.getElementById('header-balance-box').style.display = 'flex';
+                        document.getElementById('user-balance-display').innerText = balance.toLocaleString();
+
+                        if (isVip) {
+                            userAvatar.classList.add('vip-glow');
+                            dropdownName.innerHTML = `<span class="vip-name">${name} <i class="fas fa-crown"></i></span>`;
+                            document.getElementById('user-name-display').innerHTML = `<span class="vip-name">${name}</span>`;
+                            document.getElementById('user-avatar-display').classList.add('vip-glow');
+                        } else {
+                            userAvatar.classList.remove('vip-glow');
+                            dropdownName.innerText = name;
+                            document.getElementById('user-name-display').innerText = name;
+                            document.getElementById('user-avatar-display').classList.remove('vip-glow');
+                        }
+                    }
+                });
+
+                loadTransactionHistory(user.uid);
+
+            } else {
+                // === KHÁCH ===
+                btnLogin.style.display = 'block';
+                menuLogout.style.display = 'none';
+                userAvatar.src = '/Guest.webp';
+                userAvatar.classList.remove('vip-glow');
+                dropdownName.innerText = "Khách";
+                document.getElementById('header-balance-box').style.display = 'none';
+                
+                infoBox.style.display = 'none';
+                warning.style.display = 'block';
+            }
+        });
+
+        // 🔥 HÀM CUỘN XUỐNG LỊCH SỬ 🔥
+        window.scrollToHistory = () => {
+            const section = document.querySelector('.history-section');
+            if(section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                document.getElementById('userDropdown').classList.remove('active');
+            }
+        };
+
+        // --- HÀM LOAD LỊCH SỬ ---
+        function loadTransactionHistory(uid) {
+            const list = document.getElementById('history-list');
+            const q = query(collection(db, "topupRequests"), where("uid", "==", uid));
+            
+            onSnapshot(q, (snapshot) => {
+                if(snapshot.empty) {
+                    list.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:40px; color:#666; font-style:italic;">Bạn chưa xin đồng xu nào cả</td></tr>`;
+                    return;
+                }
+                
+                let requests = [];
+                snapshot.forEach(doc => { requests.push(doc.data()); });
+
+                // Sắp xếp mới nhất lên đầu
+                requests.sort((a, b) => b.timestamp - a.timestamp);
+                const displayList = requests.slice(0, 50);
+
+                let html = '';
+                displayList.forEach(d => {
+                    const date = new Date(d.timestamp).toLocaleString('vi-VN');
+                    
+                    let statusClass = 'status-pending'; 
+                    let statusText = 'Đang chờ duyệt';
+                    
+                    if(d.status === 'completed') { statusClass = 'status-completed'; statusText = 'Đã nhận'; }
+                    else if(d.status === 'rejected') { statusClass = 'status-rejected'; statusText = 'Bị từ chối'; }
+
+                    html += `
+                        <tr>
+                            <td><span style="color:#aaa; font-size:0.85rem;">${date}</span></td>
+                            <td style="color:#ccc; font-family: monospace; letter-spacing: 1px;">${d.transferCode || 'N/A'}</td>
+                            <td style="color:#FFD700; font-weight:700;">+${d.coinRequested ? d.coinRequested.toLocaleString() : 0} W</td>
+                            <td style="text-align:right;"><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        </tr>
+                    `;
+                });
+                list.innerHTML = html;
+            }, (error) => {
+                list.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ff4757;">Lỗi kết nối máy chủ!</td></tr>`;
+            });
+        }
+
+        window.toggleDropdown = () => {
+            const drop = document.getElementById('userDropdown');
+            if(drop) drop.classList.toggle('active');
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.header-avatar')) {
+                const drop = document.getElementById('userDropdown');
+                if (drop && drop.classList.contains('active')) drop.classList.remove('active');
+            }
+        }
+
+        window.logout = async () => {
+            const ok = await window.customConfirm("Đăng xuất khỏi hệ thống?");
+            if (ok) {
+                await signOut(auth);
+                window.location.reload();
+            }
+        }
+
+        window.customConfirm = (msg) => {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirmModal');
+                document.getElementById('confirmMsg').innerText = msg;
+                modal.classList.add('active');
+                document.getElementById('btnConfirmYes').onclick = () => { modal.classList.remove('active'); resolve(true); };
+                document.getElementById('btnConfirmNo').onclick = () => { modal.classList.remove('active'); resolve(false); };
+            });
+        }
+
+        // UI LOGIC GIVEAWAY
+        window.selectPack = (el, coin, bonus) => {
+            document.querySelectorAll('.pack-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            currentCoin = coin; currentBonus = bonus;
+            document.getElementById('btn-price').innerText = `${(coin + bonus).toLocaleString()} COIN`;
+        };
+
+        window.processRequest = async () => {
+            if(!userUID) return showToast("Bạn phải đăng nhập mới xin được quà chứ!", "error");
+
+            const btn = document.getElementById('btn-submit');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi yêu cầu...';
+            
+            const transferCode = "GIFT-" + userUID.substring(0, 5).toUpperCase() + "-" + Math.floor(Math.random()*1000); 
+
+            try {
+                // Giữ nguyên collection topupRequests nhưng setup số tiền = 0
+                await addDoc(collection(db, "topupRequests"), { 
+                    uid: userUID, 
+                    email: auth.currentUser.email, 
+                    amount: 0, // 0 VND
+                    coinRequested: currentCoin + currentBonus, 
+                    method: "Giveaway", 
+                    status: "pending", 
+                    transferCode: transferCode, 
+                    timestamp: Date.now() 
+                });
+                
+                document.getElementById('modal-code').innerText = transferCode;
+                document.getElementById('success-modal').classList.add('open');
+            } catch (e) { showToast("Lỗi gửi yêu cầu!", "error"); } 
+            finally { btn.disabled = false; btn.innerHTML = `GỬI YÊU CẦU NHẬN ${(currentCoin + currentBonus).toLocaleString()} COIN <i class="fas fa-gift"></i>`; }
+        };
+
+        window.closeModal = () => document.getElementById('success-modal').classList.remove('open');
+        window.copy = (text) => { navigator.clipboard.writeText(text); showToast("Đã copy mã thành công!"); };
+        
+        window.showToast = (msg, type = "success") => {
+            const toast = document.getElementById('wibu-toast');
+            const msgSpan = document.getElementById('toast-msg');
+            if (!toast || !msgSpan) return;
+            
+            toast.className = `wibu-toast show ${type}`;
+            msgSpan.innerText = msg;
+            
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -664,24 +664,154 @@
             100% { transform: scale(0.36); opacity: 0; } /* scale(0) là thu nhỏ biến mất */
         }
 
-        /* Wibey Toast Đồng Bộ */
-        .wibu-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--bg-card); color: #fff; padding: 12px 20px; border-radius: 8px; z-index: 9999; box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.9rem; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid var(--border-light);}
-        .wibu-toast.show { top: 20px; }
-        .wibu-toast.success i { color: #2ecc71;}
-        .wibu-toast.error i { color: #ff4757;}
+        /* ==========================================================================
+           🌟 WIBEY TOAST - MODERN GLASSMORPHISM (NÂNG CẤP)
+           ========================================================================== */
+        .wibu-toast { 
+            position: fixed; 
+            top: -100px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: rgba(30, 32, 40, 0.85); 
+            backdrop-filter: blur(12px);
+            color: #fff; 
+            padding: 14px 28px; 
+            border-radius: 50px; /* Bo tròn dạng viên thuốc */
+            z-index: 99999; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            font-weight: 600; 
+            font-size: 0.95rem; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
+            /* Hiệu ứng trượt nảy Bounce */
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+            border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0;
+            overflow: hidden; /* Cắt phần thanh thời gian dư ra */
+        }
+        
+        .wibu-toast.show { 
+            top: 80px; 
+            opacity: 1;
+        }
 
-        /* --- CONFIRM POPUP --- */
-        .custom-confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10001; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.3s; backdrop-filter: blur(5px); }
-        .custom-confirm-overlay.active { display: flex; opacity: 1; }
-        .confirm-box { background: #1f222e; width: 90%; max-width: 400px; padding: 30px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1); transform: scale(0.9); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-        .custom-confirm-overlay.active .confirm-box { transform: scale(1); }
-        .confirm-icon { font-size: 3rem; margin-bottom: 15px; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .confirm-title { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
-        .confirm-desc { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 25px; line-height: 1.5; }
-        .confirm-actions { display: flex; gap: 15px; justify-content: center; }
-        .btn-confirm { padding: 10px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; font-size: 0.95rem; }
-        .btn-cancel { background: transparent; color: #ccc; border: 1px solid rgba(255,255,255,0.2); } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .btn-ok { background: var(--gradient-main); color: #fff; box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3); } .btn-ok:hover { transform: translateY(-2px); }
+        /* Tùy chỉnh màu sắc & Hào quang cho SUCCESS */
+        .wibu-toast.success {
+            border-color: rgba(46, 204, 113, 0.4);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.2);
+        }
+        .wibu-toast.success i { 
+            color: #2ecc71; 
+            font-size: 1.3rem; 
+            filter: drop-shadow(0 0 8px rgba(46, 204, 113, 0.6));
+        }
+
+        /* Tùy chỉnh màu sắc & Hào quang cho ERROR */
+        .wibu-toast.error {
+            border-color: rgba(255, 71, 87, 0.4);
+            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.2);
+            background: rgba(255, 71, 87, 0.1); /* Nền ám đỏ nhẹ */
+        }
+        .wibu-toast.error i { 
+            color: #ff4757; 
+            font-size: 1.3rem; 
+            filter: drop-shadow(0 0 8px rgba(255, 71, 87, 0.6));
+            animation: shakeErrorIcon 0.4s ease-in-out forwards;
+        }
+
+        /* Animation rung lắc nhẹ cho Icon Lỗi */
+        @keyframes shakeErrorIcon {
+            0%, 100% { transform: translateX(0) rotate(0); }
+            25% { transform: translateX(-3px) rotate(-10deg); }
+            50% { transform: translateX(3px) rotate(10deg); }
+            75% { transform: translateX(-3px) rotate(-5deg); }
+        }
+
+        /* Thanh đếm ngược thời gian (Progress Bar) */
+        .wibu-toast::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+        }
+        .wibu-toast.success::after { background: #2ecc71; }
+        .wibu-toast.error::after { background: #ff4757; }
+        
+        .wibu-toast.show::after {
+            animation: toastProgress 3s linear forwards;
+        }
+
+        @keyframes toastProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        /* ==========================================================================
+           🌟 HỆ THỐNG MODAL & POPUP - FADE IN / FADE OUT MƯỢT MÀ VÀ SANG TRỌNG
+           ========================================================================== */
+        
+        /* 1. CONFIRM POPUP (HỎI XÁC NHẬN) */
+        .custom-confirm-overlay { 
+            position: fixed; inset: 0; 
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
+            z-index: 20001; display: flex; justify-content: center; align-items: center; 
+            /* Setup Fade */
+            opacity: 0; visibility: hidden; pointer-events: none; 
+            transition: opacity 0.3s ease, visibility 0.3s ease; 
+        }
+        .custom-confirm-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+        
+        .confirm-box { 
+            background: #1c1e29; width: 90%; max-width: 360px; padding: 35px 25px; 
+            border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
+            /* Setup trượt nhẹ từ dưới lên */
+            transform: scale(0.95) translateY(15px); 
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
+        }
+        .custom-confirm-overlay.active .confirm-box { transform: scale(1) translateY(0); }
+        
+        .confirm-icon { 
+            width: 60px; height: 60px; margin: 0 auto 15px; 
+            background: rgba(255, 94, 98, 0.1); border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            color: #FF8F50; font-size: 1.8rem; 
+        }
+        .confirm-title { font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .confirm-desc { font-size: 0.95rem; color: #a0a0a0; margin-bottom: 25px; line-height: 1.5; padding: 0 10px; }
+        .confirm-actions { display: flex; gap: 12px; justify-content: center; }
+        .btn-confirm { flex: 1; padding: 12px 0; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; font-size: 0.95rem; font-family: var(--font-main); outline: none;}
+        .btn-cancel { background: rgba(255,255,255,0.05); color: #ccc; } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-ok { background: var(--gradient-main); color: #fff; } .btn-ok:hover { filter: brightness(1.1); box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3); }
+
+        /* 2. CÁC BẢNG (MODAL) CỦA PHÒNG XEM CHUNG (CHỌN PHIM, SETUP...) */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(10, 12, 18, 0.85); z-index: 2000; 
+            backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; 
+            /* Setup Fade */
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transition: opacity 0.3s ease, visibility 0.3s ease; 
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+
+        .modal-box { 
+            background: var(--bg-card); padding: 30px; border-radius: 20px; border: 1px solid var(--border-light); 
+            width: 850px; max-width: 95%; max-height: 90vh; display: flex; flex-direction: column; 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8); 
+            /* Trượt lên mượt mà */
+            transform: scale(0.95) translateY(20px); 
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .modal-overlay.active .modal-box { transform: scale(1) translateY(0); }
+        .modal-box.small { width: 450px; height: auto; }
+        
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;}
+        .modal-header h2 { color: #fff; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 10px;}
+        .modal-close { background: rgba(255,255,255,0.05); border: none; color: #ccc; font-size: 1.2rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center;}
+        .modal-close:hover { background: #ff4757; color: #fff; transform: rotate(90deg);}
 
         /* --- MODAL POPUP --- */
         .modal { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(15, 17, 26, 0.95); padding: 40px; overflow-y: auto; }
@@ -2183,13 +2313,6 @@ footer {
     </style>
 </head>
 <body>
-    
-    <div id="ad-overlay">
-        <div id="ad-container">
-            <button id="skip-button" disabled>Skip ad (<span>3</span>)</button>
-            <img id="ad-image" alt="Quảng cáo" title="Nhấn để xem chi tiết">
-        </div>
-    </div>
 
     <div id="loadingScreen">
         <img src="/Loading.png" class="loading-img" alt="Wibey">
@@ -2200,8 +2323,8 @@ footer {
 
     <div id="confirmModal" class="custom-confirm-overlay">
         <div class="confirm-box">
-            <div class="confirm-icon"><i class="fas fa-exclamation-circle"></i></div>
-            <h3 class="confirm-title">Xác nhận</h3>
+            <div class="confirm-icon"><i class="fas fa-exclamation"></i></div>
+            <h3 class="confirm-title">Xác nhận yêu cầu</h3>
             <p class="confirm-desc" id="confirmMsg">Bạn có chắc chắn muốn thực hiện hành động này?</p>
             <div class="confirm-actions">
                 <button class="btn-confirm btn-cancel" id="btnConfirmNo">Hủy bỏ</button>
@@ -2357,12 +2480,13 @@ footer {
                         <i class="fas fa-crown"></i> Free Plan
                     </div>
 
+                    <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
+
                     <button class="dropdown-item" onclick="window.buyVipPackage()">
-                        <i class="fas fa-star" style="color: #FFD700;"></i> Mua VIP
+                        <i class="fas fa-star" style="color: #FFD700;"></i> Nhận VIP
                     </button>
 
-                    <button class="dropdown-item" onclick="window.location.href='/nap-coin.html'"><i class="fa-duotone fa-solid fa-wallet"></i> Nạp Coin</button>
-                    <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
+                    <button class="dropdown-item" onclick="window.location.href='/nhan-coin.html'"><i class="fa-duotone fa-solid fa-wallet"></i> Nhận Coin</button>
                     <button class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
                 </div>
             </div>
@@ -2486,12 +2610,6 @@ footer {
             </div>
 
         </div>
-    </div>
-
-    <div class="ad-panel-wrapper">
-        <a href="https://wibey.netlify.app/nap-coin.html" target="_blank" class="ad-link">
-            <img src="https://wibey.netlify.app/WIBEYPHIMADSVIP.PNG" alt="Quảng cáo" class="ad-img-728">
-        </a>
     </div>
     
  <footer>
@@ -2815,7 +2933,7 @@ footer {
             const data = snap.data();
             if ((data.coinBalance || 0) < 50) {
                 window.showToast("Số dư không đủ 50 Coin!", "error");
-                setTimeout(() => window.location.href = '/nap-coin.html', 1500);
+                setTimeout(() => window.location.href = '/nhan-coin.html', 1500);
                 return;
             }
 
@@ -2829,7 +2947,7 @@ footer {
                 coinBalance: increment(-50),
                 vipExpiration: newExpiration
             });
-            window.showToast("Đã mua VIP thành công!", "success");
+            window.showToast("Đã Nhận VIP thành công!", "success");
         } catch (e) {
             console.error(e);
             window.showToast("Lỗi giao dịch!", "error");
@@ -3954,15 +4072,42 @@ footer {
     }
 
     // --- CÁC HÀM HỖ TRỢ KHÁC ---
+    let isLoadingHidden = false; // Cờ đảm bảo chỉ tắt loading 1 lần
+    
     function hideLoadingState() {
+        if (isLoadingHidden) return;
+        isLoadingHidden = true;
+
         setTimeout(() => {
             const screen = document.getElementById('loadingScreen');
             const img = screen?.querySelector('.loading-img');
-            if(img) img.classList.add('zoom-out');
-            setTimeout(() => { 
+            
+            if(img) {
+                img.classList.add('zoom-out');
+                setTimeout(() => { 
+                    if(screen) screen.style.display = 'none'; 
+                    if (window.showChatbot) window.showChatbot();
+                    
+                    // 🔥 CHỈ HIỆN BANNER VÀ QUẢNG CÁO NẾU LÀ TÀI KHOẢN THƯỜNG / KHÁCH
+                    if (!window.isCurrentVip) {
+                        const banner = document.getElementById('app-install-banner');
+                        if(banner) banner.classList.add('show-banner');
+
+                        const fsa = document.getElementById('floating-sidebar-ads');
+                        if(fsa) fsa.classList.add('show-fsa');
+                    }
+                }, 480);
+            } else {
                 if(screen) screen.style.display = 'none'; 
                 if (window.showChatbot) window.showChatbot();
-            }, 480);
+
+                if (!window.isCurrentVip) {
+                    const banner = document.getElementById('app-install-banner');
+                    if(banner) banner.classList.add('show-banner');
+                    const fsa = document.getElementById('floating-sidebar-ads');
+                    if(fsa) fsa.classList.add('show-fsa');
+                }
+            }
         }, 500);
     }
     
@@ -4017,7 +4162,7 @@ footer {
             // Đã thêm id="ad-video-element" và thuộc tính "muted" để đảm bảo autoplay trên mobile
             container.innerHTML = `
                 <div class="preroll-container">
-                    <video id="ad-video-element" src="https://wibey.netlify.app/fptshop.mp4" class="preroll-gif" autoplay loop playsinline style="cursor: pointer;" onclick="window.open('https://fptshop.com.vn/ctkm/kho-vang-uu-dai', '_blank')"></video>
+                    <video id="ad-video-element" src="https://hopvan.info.vn/HOPVAN.mp4" class="preroll-gif" autoplay loop playsinline style="cursor: pointer;" onclick="window.open('https://hopvan.info.vn', '_blank')"></video>
                     
                     <div class="preroll-info-box"><p>Quảng cáo</p></div>
                     <div class="preroll-skip-area">
@@ -4314,45 +4459,6 @@ footer {
 </script>
     
     <script>
-        // CẤU HÌNH QUẢNG CÁO GIF POPUP (BỎ ĐẾM GIỜ)
-        const adConfig = {
-            gifUrl: "https://tpc.googlesyndication.com/simgad/8576155517683601969",
-            targetUrl: "https://www.thegioididong.com/may-tinh-bang/xiaomi-pad-2-wifi-9-7-4gb-64gb"
-        };
-
-        const adOverlay = document.getElementById('ad-overlay');
-        const adImage = document.getElementById('ad-image');
-        const skipButton = document.getElementById('skip-button');
-
-        if (adOverlay && skipButton && adImage) { 
-            adImage.src = adConfig.gifUrl;
-            
-            // 🔥 MỞ NÚT SKIP NGAY LẬP TỨC
-            skipButton.textContent = 'Skip ad'; 
-            skipButton.classList.add('enabled');
-            skipButton.removeAttribute('disabled'); 
-
-            skipButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeAd();
-            });
-
-            adImage.addEventListener('click', () => {
-                openTarget();
-            });
-
-            function openTarget() {
-                window.open(adConfig.targetUrl, '_blank'); 
-                closeAd();
-            }
-
-            function closeAd() {
-                adOverlay.style.opacity = '0'; 
-                setTimeout(() => { adOverlay.style.display = 'none'; }, 500);
-            }
-        }
-
-
         // --- LOGIC DROPDOWN TẢI APP GỌN NHẸ ---
     window.toggleDlPanel = (event) => {
         event.stopPropagation();
