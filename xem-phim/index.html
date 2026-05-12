@@ -3230,7 +3230,7 @@ footer {
         }, 1000);
     }
 
-        // =========================================================
+    // =========================================================
     // 🔥 HÀM BƠM NÚT ĐIỀU KHIỂN CHUYÊN NGHIỆP & CHUẨN HÓA POPUP
     // =========================================================
     function injectCustomPlayerMenus(plyrInstance) {
@@ -3248,6 +3248,17 @@ footer {
 
                 const plyrSettings = controls.querySelector('[data-plyr="settings"]');
                 if(plyrSettings) plyrSettings.style.display = 'none';
+
+                // 🔥 FIX: Kiểm tra xem hiện tại phim đang phát ở Server Thuyết Minh hay Vietsub
+                let isDubActive = false;
+                if (window.currentMovieEpisodesData && window.currentMovieEpisodesData.length > window.currentServerIndex) {
+                    const srvName = window.currentMovieEpisodesData[window.currentServerIndex].server_name.toLowerCase();
+                    if (srvName.includes('thuyết minh') || srvName.includes('lồng tiếng')) {
+                        isDubActive = true;
+                    }
+                }
+                const vietsubClass = !isDubActive ? 'active' : '';
+                const dubClass = isDubActive ? 'active' : '';
 
                 const customGroup = document.createElement('div');
                 customGroup.className = 'custom-controls-group';
@@ -3308,13 +3319,12 @@ footer {
                             <div class="pas-col">
                                 <h4>Phụ đề</h4>
                                 <div class="pas-item sub-item active" data-val="vi"><i class="fas fa-check"></i> Tiếng Việt</div>
-                                <div class="pas-item sub-item" data-val="off"><i class="fas fa-check"></i> Tiếng Anh</div>
                                 <div class="pas-item sub-item" data-val="off"><i class="fas fa-check"></i> Tắt</div>
                             </div>
                             <div class="pas-col">
                                 <h4>Âm thanh</h4>
-                                <div class="pas-item audio-item active" data-val="vietsub"><i class="fas fa-check"></i> Tiếng Gốc</div>
-                                <div class="pas-item audio-item" data-val="thuyetminh"><i class="fas fa-check"></i> Thuyết Minh</div>
+                                <div class="pas-item audio-item ${vietsubClass}" data-val="vietsub"><i class="fas fa-check"></i> Tiếng Gốc</div>
+                                <div class="pas-item audio-item ${dubClass}" data-val="thuyetminh"><i class="fas fa-check"></i> Thuyết Minh</div>
                             </div>
                         </div>
                     </div>
@@ -3371,6 +3381,7 @@ footer {
                         }
                         
                         if (targetServerIndex !== -1 && targetServerIndex !== window.currentServerIndex) {
+                            // Update UI immediately for visual feedback
                             const siblings = this.parentElement.querySelectorAll('.audio-item');
                             siblings.forEach(s => s.classList.remove('active'));
                             this.classList.add('active');
@@ -3436,7 +3447,7 @@ footer {
         if(items.length > 0) {
             items.forEach(item => item.classList.remove('active'));
             if(isDub) {
-                document.querySelector('.audio-item[data-val="longtieng"]')?.classList.add('active');
+                document.querySelector('.audio-item[data-val="thuyetminh"]')?.classList.add('active');
             } else {
                 document.querySelector('.audio-item[data-val="vietsub"]')?.classList.add('active');
             }
