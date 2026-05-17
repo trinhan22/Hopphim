@@ -3,7 +3,7 @@
   
   <!-- Trang chủ (Quan trọng nhất) -->
   <url>
-    <loc>https://wibey.netlify.app/</loc>
+    <loc>https://wfix.top/</loc>
     <lastmod>2026-05-02</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
@@ -11,7 +11,7 @@
 
   <!-- Trang Xem Chung -->
   <url>
-    <loc>https://wibey.netlify.app/xem-chung.html</loc>
+    <loc>https://wfix.top/xem-chung.html</loc>
     <lastmod>2026-05-02</lastmod>
     <changefreq>always</changefreq>
     <priority>0.9</priority>
@@ -19,7 +19,7 @@
 
   <!-- Trang Profile / Tài khoản -->
   <url>
-    <loc>https://wibey.netlify.app/profile.html</loc>
+    <loc>https://wfix.top/profile.html</loc>
     <lastmod>2026-05-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -27,7 +27,7 @@
 
   <!-- Trang Nạp Coin / Nạp VIP -->
   <url>
-    <loc>https://wibey.netlify.app/nhan-coin.html</loc>
+    <loc>https://wfix.top/nhan-coin.html</loc>
     <lastmod>2026-05-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -35,7 +35,7 @@
 
   <!-- Trang Đăng nhập -->
   <url>
-    <loc>https://wibey.netlify.app/login.html</loc>
+    <loc>https://wfix.top/login.html</loc>
     <lastmod>2026-05-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -43,7 +43,7 @@
 
   <!-- Trang Điều khoản dịch vụ -->
   <url>
-    <loc>https://wibey.netlify.app/dieukhoan.html</loc>
+    <loc>https://wfix.top/dieukhoan.html</loc>
     <lastmod>2026-05-02</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>

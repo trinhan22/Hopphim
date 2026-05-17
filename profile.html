@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <script type="text/javascript">
+        // Tự động chuyển hướng từ wibey.netlify.app sang wflix.top
+        if (window.location.hostname === 'wibey.netlify.app') {
+            window.location.replace('https://wflix.top' + window.location.pathname + window.location.search);
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý tài khoản - Wibey</title>
+    <title>Quản lý tài khoản - WFlix</title>
     
     <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -33,7 +39,7 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         /* ==========================================================================
-           🌟 WIBEY TOAST - MODERN GLASSMORPHISM (NÂNG CẤP)
+           🌟 WFlix TOAST - MODERN GLASSMORPHISM (NÂNG CẤP)
            ========================================================================== */
         .wibu-toast { 
             position: fixed; 
@@ -366,7 +372,7 @@
     <div class="sidebar">
         <a href="/" class="brand">
             <img src="LOGO.WEBP" alt="Logo">
-            <span>WIBEY</span>
+            <span>WFlix</span>
         </a>
 
         <ul class="nav-menu" id="sidebarMenu">

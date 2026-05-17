@@ -2,9 +2,15 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <script type="text/javascript">
+        // Tự động chuyển hướng từ wibey.netlify.app sang wflix.top
+        if (window.location.hostname === 'wibey.netlify.app') {
+            window.location.replace('https://wflix.top' + window.location.pathname + window.location.search);
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wibey Shorts - Xem Phim Ngắn</title>
+    <title>WFlix Shorts - Xem Phim Ngắn</title>
     <link rel="icon" type="image/webp" href="/LOGO.WEBP" />
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -127,7 +133,7 @@
         }
 
         :root {           
-            /* Palette Wibey */
+            /* Palette WFlix */
             --primary: #FF8F50;
             --secondary: #FF8F50;
             --gradient: linear-gradient(135deg, #FF8F50 0%, #FF5E62 100%);
@@ -478,14 +484,14 @@
 <body>
 
     <div id="loadingScreen">
-        <img src="/Loading.png" class="loading-img" alt="Wibey">
+        <img src="/Loading.png" class="loading-img" alt="WFlix">
     </div>
 
     <div class="top-nav">
         <div class="nav-content">
             <a href="/" class="logo-box" style="text-decoration: none;">
                 <img src="/LOGO.WEBP" alt="Logo">
-                <span>WIBEY</span>
+                <span>WFlix</span>
             </a>
         </div>
     </div>
@@ -1033,7 +1039,7 @@
     };
 
     function renderInfo() {
-        document.title = `${movieData.name} - Wibey Shorts`;
+        document.title = `${movieData.name} - WFlix Shorts`;
         document.getElementById('mTitle').innerText = movieData.name;
         document.getElementById('mYear').innerText = movieData.year;
         document.getElementById('statLike').innerText = (Math.random()*20+5).toFixed(1) + 'K';

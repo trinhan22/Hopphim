@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <script type="text/javascript">
+        // Tự động chuyển hướng từ wibey.netlify.app sang wflix.top
+        if (window.location.hostname === 'wibey.netlify.app') {
+            window.location.replace('https://wflix.top' + window.location.pathname + window.location.search);
+        }
+    </script>
     <meta charset="utf-8">
-    <title>Xem Chung - Wibey</title>
+    <title>Xem Chung - WFlix</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <meta property="og:title" content="Xem Chung - Wibey" />
+    <meta property="og:title" content="Xem Chung - WFlix" />
     <meta property="og:description" content="Tạo phòng, mời bạn bè và xem phim đồng bộ thời gian thực." />
     <meta property="og:image" content="/live-cover2.webp" />
     
@@ -121,7 +127,7 @@
 
 
         /* =========================================
-        🔥 Wibey DOWNLOAD - MINIMALIST VERSION
+        🔥 WFlix DOWNLOAD - MINIMALIST VERSION
         ========================================= */
 
         .download-nav-item {
@@ -589,7 +595,7 @@
         .pwd-input-group input { width: 100%; padding: 12px; background: var(--bg-body); border: 1px solid var(--border-light); border-radius: 8px; color: #fff; font-family: var(--font-main); outline: none; text-align: center; letter-spacing: 2px;}
 
         /* ==========================================================================
-           🌟 WIBEY TOAST - MODERN GLASSMORPHISM (NÂNG CẤP)
+           🌟 WFlix TOAST - MODERN GLASSMORPHISM (NÂNG CẤP)
            ========================================================================== */
         .wibu-toast { 
             position: fixed; 
@@ -687,14 +693,14 @@
         }
 
         /* =========================================
-           7. FOOTER REDESIGN (Wibey x WIBUPAD STYLE)
+           7. FOOTER REDESIGN (WFlix x WIBUPAD STYLE)
            ========================================= */
         footer { background: #0b0c12; border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 80px 4% 30px; margin-top: auto; position: relative; z-index: 100;}
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.2fr; gap: 40px; margin-bottom: 50px; max-width: 1600px; margin-left: auto; margin-right: auto;}
         .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 20px;}
         .footer-logo img { height: 45px; width: auto; object-fit: contain;}
         
-        /* Chữ Wibey Dưới Footer Gradient */
+        /* Chữ WFlix Dưới Footer Gradient */
         .footer-logo .brand-text { font-size: 1.6rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
         
         .footer-desc { color: var(--text-sub); line-height: 1.6; font-size: 0.95rem; margin-bottom: 25px; max-width: 90%;}
@@ -780,13 +786,13 @@
     <div class="wibu-toast" id="wibu-toast"><i class="fas fa-info-circle"></i> <span id="toast-msg">Thông báo</span></div>
 
     <div id="loadingScreen">
-        <img src="/Loading.png" class="loading-img" alt="Wibey">
+        <img src="/Loading.png" class="loading-img" alt="WFlix">
     </div>
 
     <!-- Mobile Overlays -->
     <div id="mobileMenuOverlay" class="mobile-overlay">
         <div class="menu-header">
-            <div class="menu-logo"><img src="/LOGO.WEBP" alt="Wibey"><span class="text-gradient">Wibey</span></div>
+            <div class="menu-logo"><img src="/LOGO.WEBP" alt="WFlix"><span class="text-gradient">WFlix</span></div>
             <i class="fas fa-times close-btn-overlay" onclick="closeMobileMenu()"></i>
         </div>
         <button class="member-btn-large" id="mobileMemberBtn" onclick="window.location.href='/login.html'">
@@ -818,7 +824,7 @@
         <div class="header-left-group">
             <div class="menu-toggle" onclick="openMobileMenu()"><i class="fas fa-bars"></i></div>
             <div class="logo" onclick="window.location.href='/'">
-                <img src="/LOGO.WEBP" alt="Wibey"><span class="logo-text">Wibey</span>
+                <img src="/LOGO.WEBP" alt="WFlix"><span class="logo-text">WFlix</span>
             </div>
             
             <ul class="nav-links" id="navLinks">
@@ -886,7 +892,7 @@
             
             <div class="search-box desktop-auth" style="position: relative;"> 
                 <i class="fas fa-search" style="color: #ccc"></i>
-                <input type="search" id="searchInput" name="wibey_search" placeholder="Tìm kiếm phim..." autocomplete="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');">
+                <input type="search" id="searchInput" name="WFlix_search" placeholder="Tìm kiếm phim..." autocomplete="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');">
                 <div id="desktopSearchResults"></div> 
             </div>
 
@@ -905,7 +911,7 @@
                     <span>Android TV</span>
                 </a>
 
-                <a href="../Wibey.apk" class="dl-item-btn" download>
+                <a href="../WFlix.apk" class="dl-item-btn" download>
                     <i class="fas fa-mobile-screen-button"></i>
                     <span>Smartphone</span>
                 </a>
@@ -1093,69 +1099,75 @@
 
     <!-- FOOTER MỚI -->
     <footer>
-        <div class="footer-grid">
-            <div class="footer-col">
-                <div class="footer-logo">
-                    <img src="/LOGO.WEBP" alt="Wibey">
-                    <span class="text-gradient brand-text">Wibey</span>
-                </div>
-                <p class="footer-desc">
-                    Wibey - Nền tảng xem phim trực tuyến miễn phí chất lượng cao. Cập nhật liên tục, không giật lag, trải nghiệm điện ảnh đỉnh cao ngay tại nhà.
-                </p>
-                <div class="footer-socials">
-                    <a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-discord"></i></a>
-                    <a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-tiktok"></i></a>
-                    <a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-telegram-plane"></i></a>
-                </div>
+    <div class="footer-grid">
+        <div class="footer-col">
+            <div class="footer-logo">
+                <img src="/LOGO.WEBP" alt="WFlix">
+                <span class="text-gradient brand-text">WFlix</span>
             </div>
-
-            <div class="footer-col">
-                <h4>Khám Phá</h4>
-                <ul class="footer-links">
-                    <li><a href="#" onclick="loadCategory('phim-moi', 'Phim Mới')">Phim Mới Cập Nhật</a></li>
-                    <li><a href="#" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Chiếu Rạp</a></li>
-                    <li><a href="#" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ Độc Quyền</a></li>
-                    <li><a href="#" onclick="loadCategory('tv-shows', 'TV Shows')">TV Shows</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-col">
-                <h4>Hỗ Trợ</h4>
-                <ul class="footer-links">
-                    <li><a href='/lienhequangcao'>Liên hệ quảng cáo</a></li>
-                    <li><a href='/baoloi'>Báo lỗi phim</a></li>
-                    <li><a href="../dieukhoan.html">Điều khoản dịch vụ</a></li>
-                    <li><a href="https://wibey.netlify.app" target="_blank">Về WibeyTeam</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-col">
-                <h4>Tải Ứng Dụng</h4>
-                <div class="download-group">
-                    <a href="/Wibey.apk" class="btn-download-app" download style="text-decoration: none;">
-                        <i class="fab fa-android" style="font-size: 1.8rem; color: #a4c639;"></i>
-                        <div class="btn-content">
-                            <span class="btn-small-text">Tải file cài đặt</span>
-                            <span class="btn-big-text">APK Android</span>
-                        </div>
-                    </a>
-                    
-                    <button class="btn-download-app" onclick="window.showToast('Phiên bản Smart TV đang được phát triển!', 'error')">
-                        <i class="fas fa-tv" style="font-size: 1.6rem;"></i>
-                        <div class="btn-content">
-                            <span class="btn-small-text">Sắp ra mắt trên</span>
-                            <span class="btn-big-text">Smart TV / Box</span>
-                        </div>
-                    </button>
-                </div>
+            <p class="footer-desc">
+                WFlix - Nền tảng xem phim trực tuyến miễn phí chất lượng cao. Cập nhật liên tục, không giật lag, trải nghiệm điện ảnh đỉnh cao ngay tại nhà.
+            </p>
+            <div class="footer-socials">
+                <a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-discord"></i></a>
+                <a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.facebook.com/wibuteam2026" class="social-link"><i class="fab fa-telegram-plane"></i></a>
             </div>
         </div>
 
-        <div class="footer-bottom">
-            <span>&copy; 2026 Wibey. All Rights Reserved.</span>
+        <div class="footer-col">
+            <h4>Khám Phá</h4>
+            <ul class="footer-links">
+                <li><a href="#" onclick="loadCategory('phim-moi', 'Phim Mới')">Phim Mới Cập Nhật</a></li>
+                <li><a href="#" onclick="loadCategory('phim-le', 'Phim Lẻ')">Phim Chiếu Rạp</a></li>
+                <li><a href="#" onclick="loadCategory('phim-bo', 'Phim Bộ')">Phim Bộ Độc Quyền</a></li>
+                <li><a href="#" onclick="loadCategory('tv-shows', 'TV Shows')">TV Shows</a></li>
+            </ul>
         </div>
-    </footer>
+
+        <div class="footer-col">
+            <h4>Hỗ Trợ</h4>
+            <ul class="footer-links">
+                <li><a href="/lienhequangcao">Liên hệ quảng cáo</a></li>
+                <li><a href="/baoloi">Báo lỗi phim</a></li>
+                <li><a href="">Điều khoản dịch vụ</a></li>
+                <li><a href="">Về WFlixTeam</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Tải Ứng Dụng</h4>
+            <div class="download-group">
+                <a href="/WFlix.apk" class="btn-download-app" download style="text-decoration: none;">
+                    <i class="fab fa-android" style="font-size: 1.8rem; color: #a4c639;"></i>
+                    <div class="btn-content">
+                        <span class="btn-small-text">Tải file cài đặt</span>
+                        <span class="btn-big-text">APK Android</span>
+                    </div>
+                </a>
+                
+                <button class="btn-download-app" onclick="window.showToast('Phiên bản Smart TV đang được phát triển!', 'error')">
+                    <i class="fas fa-tv" style="font-size: 1.6rem;"></i>
+                    <div class="btn-content">
+                        <span class="btn-small-text">Sắp ra mắt trên</span>
+                        <span class="btn-big-text">Smart TV / Box</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div> <div class="footer-bottom" style="flex-direction: column; justify-content: center; gap: 12px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 30px; margin-top: 20px;">
+        <div style="max-width: 1000px; margin: 0 auto;">
+            <p style="color: #888; font-size: 0.8rem; line-height: 1.6; margin-bottom: 8px;">
+                Tất cả nội dung của trang web này được thu thập từ các trang web video chính thống trên Internet và không cung cấp phát trực tuyến chính hãng.<br>Nếu quyền lợi của bạn bị vi phạm, vui lòng thông báo cho chúng tôi, chúng tôi sẽ xóa nội dung vi phạm kịp thời, cảm ơn sự hợp tác của bạn!
+            </p>
+            <p style="color: #FF8F50; font-size: 0.8rem; font-weight: 600; line-height: 1.6;">
+                <i class="fas fa-info-circle"></i> Lưu ý: Đây là dự án cá nhân được xây dựng với mục đích học hỏi, nghiên cứu lập trình và làm Portfolio, hoàn toàn phi lợi nhuận và không mục đích thương mại.
+            </p>
+        </div>
+        <span style="color: #555; margin-top: 10px; display: block;">&copy; 2026 WFlix. All Rights Reserved.</span>
+    </div>
+</footer>
 
     <!-- ================= SCRIPT LOGIC FIREBASE ================= -->
     <script type="module">
@@ -1358,7 +1370,7 @@
                         <div class="room-card" onclick="window.location.href='/xem-chung/?room=${docSnap.id}'">
                             <div class="card-thumb-container">
                                 <div class="thumb-blur-bg" style="background-image: url('${data.movieThumb}')"></div>
-                                <img src="${data.movieThumb}" class="poster-img" onerror="this.src='https://wibey.netlify.app/home-background.jpg'">
+                                <img src="${data.movieThumb}" class="poster-img" onerror="this.src='https://wfix.top/home-background.jpg'">
                                 <div class="badge-live"><div class="live-dot"></div> LIVE</div>
                                 ${lockBadge}
                                 <div class="badge-status-bottom"><i class="fas fa-users"></i> ${data.viewers ? data.viewers.length : 1} Đang xem</div>
@@ -1399,7 +1411,7 @@
         // 🔥 HÀM CHUẨN HÓA ẢNH (FIX LỖI MẤT ĐƯỜNG DẪN CỦA KKPHIM)
         // ============================================================
         function getCleanImageUrl(url, baseDomain = '') {
-            if (!url) return 'https://wibey.netlify.app/home-background.jpg';
+            if (!url) return 'https://wfix.top/home-background.jpg';
             if (url.startsWith('http')) return url; // Nếu link đã hoàn chỉnh thì dùng luôn
             
             // Ghép domain của KKPhim với đường dẫn thư mục gốc (không được cắt mất thư mục)
@@ -1564,7 +1576,7 @@
         }
 
         function renderSetupMovies(items, defaultImgBase = 'https://phimimg.com/') {
-            const fallbackImg = 'https://wibey.netlify.app/home-background.jpg'; 
+            const fallbackImg = 'https://wfix.top/home-background.jpg'; 
             
             document.getElementById('setup-movie-grid').innerHTML = items.map(item => {
                 let img = getCleanImageUrl(item.thumb_url || item.poster_url, defaultImgBase);
@@ -1980,7 +1992,7 @@
                             
                             html += `
                                 <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
-                                    <img src="${img}" alt="${safeName}" loading="lazy" onerror="this.src='https://wibey.netlify.app/home-background.jpg'">
+                                    <img src="${img}" alt="${safeName}" loading="lazy" onerror="this.src='https://wfix.top/home-background.jpg'">
                                     <div class="search-result-info">
                                         <div class="search-result-title">${m.name}</div>
                                         <div class="search-result-meta">${m.year || '2026'} • ${m.origin_name || ''}</div>
