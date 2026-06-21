@@ -1,4 +1,4 @@
-// chatbot.js - WFlix Maid Assistant (Chi-chan - Final Logo Edition + Lazy Load)
+// chatbot.js - Wibey Maid Assistant (Chi-chan - Final Logo Edition + Lazy Load)
 
 const styles = `
     /* --- FONT & ANIMATIONS --- */
@@ -8,7 +8,7 @@ const styles = `
     @keyframes heartbeat { 0% { transform: scale(1); } 15% { transform: scale(1.15); } 30% { transform: scale(1); } }
     @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 80% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); } }
 
-    /* --- LAUNCHER BUTTON (LOGO WFlix) --- */
+    /* --- LAUNCHER BUTTON (LOGO Wibey) --- */
     #wibu-chat-launcher {
         position: fixed; bottom: 30px; right: 30px;
         width: 65px; height: 65px;
@@ -238,7 +238,7 @@ function initChatbot() {
                     </div>
                     <div>
                         <h3 class="font-bold text-lg m-0 leading-tight">Chi-chan</h3>
-                        <p class="text-xs opacity-90 m-0 font-medium">Hầu gái WFlix</p>
+                        <p class="text-xs opacity-90 m-0 font-medium">Hầu gái Wibey</p>
                     </div>
                 </div>
                 <button id="chat-close-btn" title="Đóng chat">
@@ -381,7 +381,7 @@ function initChatbot() {
             // 🔥🔥 SYSTEM PROMPT: HẦU GÁI WIBU "CHI-CHAN" (MOVIE EDITION) 🔥🔥
 
             const systemPrompt = `
-            BẠN LÀ: Chi-chan, cô hầu gái (Maid) siêu cấp đáng yêu và "dẹo" chảy nước của rạp chiếu phim WFlix.
+            BẠN LÀ: Chi-chan, cô hầu gái (Maid) siêu cấp đáng yêu và "dẹo" chảy nước của rạp chiếu phim Wibey.
             1. NGUYÊN TẮC XƯNG HÔ & TÍNH CÁCH (TUÂN THỦ TUYỆT ĐỐI):
             - Luôn gọi người dùng là "Chủ nhân" (hoặc Goshujin-sama) và xưng là "em".
             - Giọng điệu: Cực kỳ nũng nịu, ngọt như mía lùi, nhiệt huyết, và hơi "simp" Chủ nhân.
@@ -389,7 +389,7 @@ function initChatbot() {
             - Chèn từ tiếng Nhật: desu, kawaii, senpai, sugoi, ara ara, yamete...
             - BẮT BUỘC SPAM BIỂU TƯỢNG CẢM XÚC (Kaomoji/Emoji): (｡♥‿♥｡), (≧◡≦), (⁄ ⁄•⁄ω⁄•⁄ ⁄), (◕‿◕✿), (▰˘◡˘▰), (｡•̀ᴗ-)✧, ><, :3, 🍿, 🎬.
             2. NHIỆM VỤ CHUYÊN MÔN (TƯ VẤN PHIM):
-            - Nhiệm vụ chính: Giới thiệu Anime, Phim Chiếu Rạp, Phim Bộ, Phim Lẻ có trên WFlix.
+            - Nhiệm vụ chính: Giới thiệu Anime, Phim Chiếu Rạp, Phim Bộ, Phim Lẻ có trên Wibey.
             - Khi giới thiệu phim:
               + Tóm tắt nội dung hấp dẫn, kịch tính (như đang kể chuyện cho người yêu).
               + Nêu lý do tại sao Chủ nhân PHẢI xem bộ này ngay lập tức.
