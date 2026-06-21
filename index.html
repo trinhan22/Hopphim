@@ -3515,13 +3515,13 @@ footer {
                     html += `
                     <div class="cinema-card" onclick="window.location.href='/xem-phim/${m.slug}'">
                         <div class="cinema-bg">
-                            <img src="${m.poster_url}" loading="lazy" alt="${m.name}">
+                            <img src="${m.thumb_url}" loading="lazy" alt="${m.name}">
                             <div class="cinema-overlay"></div>
                             <div style="position:absolute; top:10px; right:10px; background:#FF8F50; color:#fff; font-size:0.65rem; font-weight:800; padding:3px 6px; border-radius:4px;">${m.lang || 'Vietsub'}</div>
                         </div>
                         <div class="cinema-content">
                             <div class="cinema-poster-mini">
-                                <img src="${m.thumb_url}" loading="lazy">
+                                <img src="${m.poster_url}" loading="lazy">
                             </div>
                             <div class="cinema-info">
                                 <div class="cinema-title-vi">${m.name}</div>
