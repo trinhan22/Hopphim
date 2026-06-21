@@ -2889,6 +2889,12 @@ footer {
 
         const HERO_CONFIG = [
             { 
+                slug: "bai-hoc-dang-doi",
+                titleImage: "https://wibey.netlify.app/4_title.webp",
+                customImage: "https://wibey.netlify.app/4_panel.webp",
+                imdb: "8.6"
+            },
+            { 
                 slug: "bong-ma-hanh-phuc",
                 titleImage: "https://wibey.netlify.app/1_title.webp",
                 customImage: "https://wibey.netlify.app/1_panel.webp",
@@ -2906,12 +2912,7 @@ footer {
                 customImage: "https://wibey.netlify.app/3_panel.webp",
                 imdb: "8.0"
             },
-            { 
-                slug: "ke-thu-hoang-gia-cua-toi",
-                titleImage: "https://wibey.netlify.app/4_title.webp",
-                customImage: "https://wibey.netlify.app/4_panel.webp",
-                imdb: "8.1"
-            },
+
             { 
                 slug: "tieng-yeu-nay-anh-dich-duoc-khong",
                 titleImage: "https://wibey.netlify.app/5_title.webp",
@@ -3460,7 +3461,7 @@ footer {
 
         // 1. TOP 5 PHIM BỘ
         async function loadTop5() {
-            const MANUAL_TOP_5 = ["bong-ma-hanh-phuc", "vi-me-anh-phan-chia-tay", "phu-nhan-dai-quan-the-ky-21", "ke-thu-hoang-gia-cua-toi", "tieng-yeu-nay-anh-dich-duoc-khong"];
+            const MANUAL_TOP_5 = ["bai-hoc-dang-doi", "bong-ma-hanh-phuc", "vi-me-anh-phan-chia-tay", "phu-nhan-dai-quan-the-ky-21", "tieng-yeu-nay-anh-dich-duoc-khong"];
             const container = document.getElementById('top5List');
             if(!container) return;
             let html = '';
