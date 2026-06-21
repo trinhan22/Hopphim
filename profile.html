@@ -696,7 +696,7 @@
         }
         
         function createCard(movie, isMyList, isHistory, extraInfo = '') {
-            let imgUrl = movie.thumb_url || movie.poster_url || '/home-background.jpg';
+            let imgUrl = movie.poster_url || movie.thumb_url || '/home-background.jpg';
             if (!imgUrl.startsWith('http') && !imgUrl.startsWith('/')) imgUrl = `https://img.ophim1.com/uploads/movies/${imgUrl}`;
             
             const deleteAction = isMyList ? `removeFromList('${movie.slug}', this)` : `removeFromHistory('${movie.slug}', this)`;
