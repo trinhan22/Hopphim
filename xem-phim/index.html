@@ -4395,7 +4395,7 @@ footer {
                     if (data.status && data.data.items && data.data.items.length > 0) {
                         let html = '';
                         data.data.items.slice(0, 10).forEach(m => {
-                            const img = m.thumb_url || m.poster_url;
+                            const img = m.poster_url || m.thumb_url;
                             const safeName = (m.name || "Phim Mới").replace(/'/g, "\\'"); 
                             
                             html += `

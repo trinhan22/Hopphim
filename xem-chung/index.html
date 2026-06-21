@@ -1981,7 +1981,7 @@
                     if (data.status && data.items && data.items.length > 0) {
                         let html = '';
                         data.items.slice(0, 10).forEach(m => {
-                            const img = m.thumb_url; // Đã được xử lý trong hàm fetchSearchMultiSource
+                            const img = m.poster_url; // Đã được xử lý trong hàm fetchSearchMultiSource
                             const safeName = m.name.replace(/'/g, "\\'"); 
                             
                             html += `

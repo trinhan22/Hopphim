@@ -3407,7 +3407,7 @@ footer {
                         data.data.items.slice(0, 10).forEach(m => {
                             html += `
                                 <div class="search-result-item" onclick="window.location.href='/xem-phim/${m.slug}'">
-                                    <img src="${m.thumb_url}" alt="${m.name}" loading="lazy" onerror="this.src='https://wibey.netlify.app/home-background.jpg'">
+                                    <img src="${m.poster_url}" alt="${m.name}" loading="lazy" onerror="this.src='https://wibey.netlify.app/home-background.jpg'">
                                     <div class="search-result-info">
                                         <div class="search-result-title">${m.name}</div>
                                         <div class="search-result-meta">${m.year || '2026'} • ${m.origin_name || 'Đang cập nhật'}</div>
