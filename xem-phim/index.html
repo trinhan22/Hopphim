@@ -1183,7 +1183,7 @@
             .theater-top-bar { display: none; } /* Ẩn topbar đè video trên mobile */
             .premium-watch-wrapper { padding-top: 60px; }
             .player-box { max-width: 100% !important; border-radius: 0 !important; }
-            .plyr { max-height: auto; width: 100% !important; }
+            .plyr { max-height: none; width: 100% !important; }
             
             .premium-info-container { grid-template-columns: 1fr; gap: 20px; padding: 20px 4%; }
             .info-left .movie-title-large { font-size: 1.6rem; }
@@ -1422,59 +1422,32 @@ footer {
                 overflow-x: hidden;
             }
 
-            /* 3. Wrapper: Đẩy sát lên Header */
-            .watch-wrapper { 
-                grid-template-columns: 1fr; 
-                padding-top: 60px !important; /* Bằng chiều cao header */
-                gap: 0 !important; 
-                display: flex;
-                flex-direction: column;
+            /* 3. Wrapper: Bổ sung khoảng trống trên cùng nếu header hiển thị */
+            .premium-watch-wrapper { 
+                padding-top: 60px !important; 
             }
 
-            /* 4. PLAYER BOX: TRÀN VIỀN & DÍNH TRÊN ĐẦU (STICKY) */
+            /* 4. PLAYER BOX: TRÀN VIỀN (Bỏ Sticky vì chiếm nhiều diện tích trên màn nhỏ) */
             .player-box { 
-                order: 1; 
                 border-radius: 0 !important; /* Vuông góc */
                 width: 100% !important;
+                max-width: 100% !important;
                 margin-bottom: 0 !important;
                 box-shadow: none !important;
-                
-                /* 🔥 Hiệu ứng dính video khi cuộn */
-                position: sticky;
-                top: 60px; /* Dính ngay dưới Header */
-                z-index: 900; 
             }
 
-            /* 5. Các thành phần bên dưới: Thêm padding lại vì container đã bỏ */
-            .episode-block-mobile,
-            .movie-info-block,
-            .comment-section,
-            .sidebar-right {
-                margin: 15px !important; /* Tạo khoảng cách 2 bên */
-                width: auto !important;
+            /* 5. Cụm thông tin phim: Thêm padding lại vì container đã bỏ padding */
+            .premium-info-container {
+                padding-left: 4% !important;
+                padding-right: 4% !important;
+                grid-template-columns: 1fr; /* Stack dọc ở Tablet */
             }
-
-            /* Info Phim gọn hơn */
-            .movie-title-large { font-size: 1.6rem; margin-top: 5px; }
-            .movie-info-block { padding: 15px; border-radius: 12px; }
-            
-            /* Danh sách tập (Mobile) */
-            .episode-block-mobile { order: 2; display: block !important; padding: 15px; }
-            .section-header { margin-bottom: 15px; font-size: 1rem; }
-            
-            /* Grid tập phim nhỏ gọn hơn */
-            .episode-grid { 
-                grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)) !important; 
-                gap: 8px !important;
-                max-height: 250px; /* Giới hạn chiều cao để không chiếm hết màn hình */
+            .premium-section-header, .premium-horizontal-list {
+                padding-left: 4% !important;
+                padding-right: 4% !important;
             }
-            .ep-btn { padding: 8px 0; font-size: 0.85rem; }
-
-            /* Các phần khác */
-            .comment-section { order: 4; padding: 15px; }
-            .sidebar-right { order: 5; position: static; }
-            .episode-block-desktop { display: none; }
             
+
             /* Footer */
             .footer-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
             .footer-col ul { display: flex; flex-direction: column; align-items: center; }
