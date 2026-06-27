@@ -883,10 +883,13 @@
 
         /* --- MOBILE OVERLAYS --- */
         .mobile-overlay { display: none; position: fixed; inset: 0; z-index: 3000; transition: 0.3s ease-in-out; }
-        .mobile-overlay.active { transform: translateX(0) !important; opacity: 1 !important; }
+        .mobile-overlay.active { display: block !important; }
+        .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.7); opacity: 0; transition: 0.4s; z-index: -1; }
+        .mobile-overlay.active .backdrop { opacity: 1; }
         .close-btn-overlay { position: absolute; font-size: 1.8rem; color: #fff; cursor: pointer; z-index: 10; }
         
-        #mobileMenuOverlay { display: block; background: var(--mobile-menu-bg); transform: translateX(-100%); padding: 25px; width: 300px; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
+        #mobileMenuContent { background: var(--mobile-menu-bg); height: 100vh; transform: translateX(-100%); padding: 25px; width: 300px; box-shadow: 5px 0 20px rgba(0,0,0,0.5); transition: 0.3s ease-in-out; }
+        .mobile-overlay.active #mobileMenuContent { transform: translateX(0); }
         .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .menu-logo { display: flex; align-items: center; gap: 10px; } .menu-logo img { height: 35px; } .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         #mobileMenuOverlay .close-btn-overlay { position: static; color: #fff; opacity: 0.7; }
@@ -1409,6 +1412,8 @@ footer {
             .mobile-search-trigger { display: block; font-size: 1.2rem; }
             .nav-links, .search-box, .desktop-auth { display: none !important; }
             #mobileMenuOverlay, #mobileSearchOverlay { display: block; }
+            .menu-logo img { height: 35px; width: auto; max-width: 100%; }
+            .logo img { height: 30px; width: auto; max-width: 100%; }
             
             /* 2. Container chính: Bỏ padding để Player tràn viền */
             .container { 
@@ -2347,22 +2352,26 @@ footer {
     </div>
 
     <div id="mobileMenuOverlay" class="mobile-overlay">
-        <div class="menu-header">
-            <div class="menu-logo"><img src="/LOGO.WEBP" alt="Wibey"><span>Wibey</span></div>
-             <i class="fas fa-times close-btn-overlay" onclick="closeMobileMenu()"></i>
-        </div>
-        <button class="member-btn-large" id="mobileMemberBtn" onclick="window.location.href='/login.html'">
-            <i class="fas fa-user-circle"></i> <span id="mobileMemberText">Đăng nhập / Đăng ký</span>
-        </button>
-        <div class="mobile-menu-grid">
-            <a href="/" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Trang chủ</a>
-            
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-tv"></i> Phim Bộ</a>
-            <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-film"></i> Phim Lẻ</a>
+        <div class="backdrop" onclick="closeMobileMenu()"></div>
+        <div id="mobileMenuContent">
+            <div class="menu-header">
+                <div class="menu-logo"><img src="/LOGO.WEBP" alt="Wibey"><span>WIBEY</span></div>
+                 <i class="fas fa-times close-btn-overlay" onclick="closeMobileMenu()"></i>
+            </div>
+            <button class="member-btn-large" id="mobileMemberBtn" onclick="window.location.href='/login.html'">
+                <i class="fas fa-user-circle"></i> <span id="mobileMemberText">Đăng nhập / Đăng ký</span>
+            </button>
+            <div class="mobile-menu-grid">
+                <a href="/" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Trang chủ</a>
+                
+                <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-tv"></i> Phim Bộ</a>
+                <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-film"></i> Phim Lẻ</a>
 
-            <div style="border-bottom: 1px solid var(--mobile-border); padding: 10px 0; color:#666; font-size:0.9rem; font-weight:700; text-transform:uppercase; margin-top:10px;">Quản Lý</div>
-            <a class='mobile-menu-link' href='/profile' onclick='closeMobileMenu()'><i class="fas fa-user-cog"></i> Tài Khoản</a>
-            <div id="drawerLogout" class="drawer-item" style="color:#ff4757; display:none;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</div>        </div>
+                <div style="border-bottom: 1px solid var(--mobile-border); padding: 10px 0; color:#666; font-size:0.9rem; font-weight:700; text-transform:uppercase; margin-top:10px;">Quản Lý</div>
+                <a class='mobile-menu-link' href='/profile.html' onclick='closeMobileMenu()'><i class="fas fa-user-cog"></i> Tài Khoản</a>
+                <div id="drawerLogout" class="drawer-item" style="color:#ff4757; display:none;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</div>        
+            </div>
+        </div>
     </div>
 
     <div id="mobileSearchOverlay" class="mobile-overlay">
@@ -2380,7 +2389,7 @@ footer {
         <div class="header-left-group">
             <div class="menu-toggle" onclick="openMobileMenu()"><i class="fas fa-bars"></i></div>
             <div class="logo" onclick="window.location.href='/'">
-                <img src="/LOGO.WEBP" alt="Wibey"><span class="logo-text">Wibey</span>
+                <img src="/LOGO.WEBP" alt="Wibey"><span class="logo-text">WIBEY</span>
             </div>
             
             <ul class="nav-links" id="navLinks">
@@ -2622,7 +2631,7 @@ footer {
         <div class="footer-col">
             <div class="footer-logo">
                 <img src="/LOGO.WEBP" alt="Wibey">
-                <span class="text-gradient brand-text">Wibey</span>
+                <span class="text-gradient brand-text">WIBEY</span>
             </div>
             <p class="footer-desc">
                 Wibey - Nền tảng xem phim trực tuyến miễn phí chất lượng cao. Cập nhật liên tục, không giật lag, trải nghiệm điện ảnh đỉnh cao ngay tại nhà.

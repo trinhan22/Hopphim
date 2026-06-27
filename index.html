@@ -359,27 +359,21 @@
 
             /* Hiện Mobile Right (Search) */
             .mobile-search-trigger { display: block !important; }
+            
+            /* Sửa lỗi logo to đùng trong menu hamburger trên tablet */
+            .menu-logo img { height: 35px; width: auto; max-width: 100%; }
+            .mobile-left-container .logo img { height: 32px; width: auto; max-width: 100%; }
         }
 
         /* --- MOBILE MENU DRAWER (NEW STYLE) --- */
         .mobile-overlay { position: fixed; inset: 0; z-index: 10000; transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1); visibility: hidden; }
         .mobile-overlay.active { visibility: visible; }
         
-            #mobileMenuOverlay { 
-                display: flex; 
-                flex-direction: column;
-                position: fixed; /* QUAN TRỌNG: Ghim menu vào màn hình */
-                top: 0; 
-                left: 0; 
-                width: 300px; 
-                height: 100vh; /* QUAN TRỌNG: Chiều cao bằng đúng màn hình thiết bị */
-                background: var(--mobile-menu-bg); 
-                box-shadow: 20px 0 60px rgba(0,0,0,0.8); 
+            #mobileMenuContent { 
                 transform: translateX(-100%); 
                 transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1); 
-                z-index: 10001; /* Đảm bảo nằm trên cùng */
             }
-            #mobileMenuOverlay.active { transform: translateX(0); }
+            #mobileMenuOverlay.active #mobileMenuContent { transform: translateX(0); }
 
         .drawer-header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .drawer-content { flex: 1; overflow-y: auto; padding: 10px 0; }
@@ -397,6 +391,19 @@
         .drawer-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
         .drawer-item i { width: 20px; text-align: center; color: var(--primary-color); }
         .drawer-label { color: #666; font-size: 0.75rem; font-weight: 800; padding: 15px 25px 5px; text-transform: uppercase; margin-top: 10px; }
+
+        /* --- EXTRACTED MOBILE MENU STYLES FOR TABLETS --- */
+        .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .menu-logo { display: flex; align-items: center; gap: 10px; } 
+        .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .member-btn-large { width: 100%; padding: 12px; background: var(--gradient-main); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 94, 98, 0.4); }
+        .mobile-menu-grid { display: flex; flex-direction: column; gap: 5px; max-height: 80vh; overflow-y: auto; }
+        .mobile-menu-link { color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem; padding: 12px 0; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--mobile-border); }
+        .mobile-menu-link i { width: 25px; color: var(--primary-color); text-align: center; }
+        .search-header-mobile { display: flex; align-items: center; padding: 15px 20px; background: #2a2d3a; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; font-family: var(--font-main); margin-right: 15px; }
+        .search-content-mobile { padding: 10px; }
+        .close-btn-overlay { position: static !important; }
         
         .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.7); opacity: 0; transition: 0.4s; z-index: -1; }
         .mobile-overlay.active .backdrop { opacity: 1; }
@@ -677,7 +684,7 @@
             transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
             isolation: isolate;
         }
-        .topic-card:hover { transform: scale(1.01); border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
+        .topic-card:hover { transform: scale(1.01); border-color: #ccc; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
         .topic-card::before { content: ''; position: absolute; top: 50%; left: 50%; width: 120px; height: 120px; border-radius: 50%; transform: translate(-50%, -50%); filter: blur(40px); opacity: 0.3; z-index: -2; transition: all 0.6s ease; }
         .topic-card:hover::before { width: 160px; height: 160px; opacity: 0.6; }
         .topic-card::after { content: ''; position: absolute; bottom: -20%; right: -10%; width: 80px; height: 80px; border-radius: 50%; filter: blur(30px); opacity: 0; z-index: -1; transition: all 0.6s ease; }
@@ -1360,26 +1367,6 @@ footer {
             .mobile-left-container .logo-text { font-size: 1.2rem; }
             .mobile-search-trigger { display: block !important; }
 
-            /* --- MOBILE MENU STYLES (NEW) --- */
-            .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-            .menu-logo { display: flex; align-items: center; gap: 10px; } 
-            .menu-logo img { height: 35px; } 
-            .menu-logo span { font-weight: 800; font-size: 1.2rem; background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-            
-            /* Nút Thành viên To màu cam */
-            .member-btn-large { width: 100%; padding: 12px; background: var(--gradient-main); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 94, 98, 0.4); }
-            
-            /* Danh sách menu */
-            .mobile-menu-grid { display: flex; flex-direction: column; gap: 5px; max-height: 80vh; overflow-y: auto; }
-            .mobile-menu-link { color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem; padding: 12px 0; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--mobile-border); }
-            .mobile-menu-link i { width: 25px; color: var(--primary-color); text-align: center; }
-
-            /* --- MOBILE SEARCH OVERLAY STYLES (NEW) --- */
-            .search-header-mobile { display: flex; align-items: center; padding: 15px 20px; background: #2a2d3a; border-bottom: 1px solid rgba(255,255,255,0.1); }
-            .search-input-mobile { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; font-family: var(--font-main); margin-right: 15px; }
-            .search-content-mobile { padding: 10px; }
-            /* Định vị nút đóng */
-            .close-btn-overlay { position: static !important; } 
 
             /* --- CONTENT ADJUSTMENTS --- */
             .hero-title { font-size: 3rem; }
@@ -1748,7 +1735,7 @@ footer {
         }
 
         .modal-card-vertical:hover {
-            border-color: #FF8F50;
+            border-color: #ccc;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             z-index: 5;
         }
@@ -2148,13 +2135,13 @@ footer {
         <div class="mobile-left-container">
             <i class="fas fa-bars mobile-menu-toggle" onclick="openMobileMenu()"></i>
             <div class="logo" onclick="loadHome()">
-                <img src="/LOGO.WEBP" alt="Logo"><span class="logo-text">Wibey</span>
+                <img src="/LOGO.WEBP" alt="Logo"><span class="logo-text">WIBEY</span>
             </div>
         </div>
 
         <div class="header-left-group">
             <div class="logo" onclick="loadHome()">
-                <img src="/LOGO.WEBP" alt="Logo"><span class="logo-text text-gradient">Wibey</span>
+                <img src="/LOGO.WEBP" alt="Logo"><span class="logo-text text-gradient">WIBEY</span>
             </div>
             <ul class="nav-links" id="navLinks">
                 <li class="nav-item">
@@ -3606,7 +3593,7 @@ footer {
             if(data.status && data.data && data.data.items) {
                 let html = '';
                 data.data.items.forEach(m => {
-                    html += `<div class="modal-card-vertical" onclick="window.location.href='/xem-phim/${m.slug}'"><img src="${m.thumb_url}" loading="lazy"><div class="modal-info-overlay"><div class="modal-title">${m.name}</div><div class="modal-meta">${m.year || '2026'}</div></div></div>`;
+                    html += `<div class="modal-card-vertical" onclick="window.location.href='/xem-phim/${m.slug}'"><img src="${m.poster_url}" loading="lazy"><div class="modal-info-overlay"><div class="modal-title">${m.name}</div><div class="modal-meta">${m.year || '2026'}</div></div></div>`;
                 });
                 container.innerHTML = html;
             }
@@ -3625,14 +3612,7 @@ footer {
             if (data.status && data.data && data.data.items) {
                 let html = '';
                 data.data.items.forEach(m => {
-                    html += `
-                    <div class="n-card" onclick="window.location.href='/xem-phim/${m.slug}'">
-                        <img src="${m.thumb_url}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:12px; display:block;">
-                        <div class="n-info-layer" style="padding:10px;"> 
-                            <div class="n-title-in" style="font-size:0.9rem;">${m.name}</div>
-                            <div style="font-size:0.75rem; color:#aaa;">${m.year || '2026'}</div>
-                        </div>
-                    </div>`;
+                    html += `<div class="modal-card-vertical" onclick="window.location.href='/xem-phim/${m.slug}'"><img src="${m.poster_url}" loading="lazy"><div class="modal-info-overlay"><div class="modal-title">${m.name}</div><div class="modal-meta">${m.year || '2026'}</div></div></div>`;
                 });
                 modalContent.innerHTML = html;
             } else {
