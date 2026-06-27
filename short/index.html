@@ -643,7 +643,7 @@
     let episodes = [];
     let currentEpIndex = 0;
     let fullDesc = "";
-    let isMobile = window.innerWidth <= 1024;
+    let isMobile = window.innerWidth <= 1200;
     let pcPlyr = null;
     let currentTabStart = 0; 
     let infoTimeout = null;
@@ -656,7 +656,7 @@
 
     // SỰ KIỆN LĂN CHUỘT (PC)
     window.addEventListener('wheel', (e) => {
-        if (window.innerWidth > 1024 && !isScrolling) {
+        if (window.innerWidth > 1200 && !isScrolling) {
             const sidebar = document.querySelector('.pc-sidebar');
             if (sidebar && !sidebar.contains(e.target)) {
                 if (e.deltaY > 0) window.playNext(1);
