@@ -1020,7 +1020,7 @@
                     <div id="userNameDisplay" class="user-info-item">User</div>
                     
                     <div id="vipStatus" style="padding: 10px; font-size: 0.8rem; color: #aaa; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                        <i class="fas fa-crown"></i> Free Plan
+                        <i class="fas fa-crown"></i> Free plan
                     </div>
 
                     <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
@@ -1405,7 +1405,7 @@
                         } else {
                             if(userAvatar) userAvatar.classList.remove('vip-glow');
                             if(userNameDisplay) userNameDisplay.innerText = currentUser.customName;
-                            if(vipStatusLabel) vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free Plan`;
+                            if(vipStatusLabel) vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free plan`;
                         }
 
                         const balanceHTML = `<span class="balance-badge"><i class="fas fa-coins"></i> ${balance.toLocaleString()}</span>`;
@@ -1709,6 +1709,7 @@
                     movieSlug: tempSelectedMovie.slug,
                     movieName: tempSelectedMovie.name,
                     movieThumb: tempSelectedMovie.img,
+                    hostAvatar: currentUser.avatar || '/Guest.webp',
                     epIndex: 0,
                     videoState: 'paused', 
                     videoTime: 0,
@@ -2027,10 +2028,21 @@
                         const isMe = msg.uid === currentUser.uid;
                         const isMsgHost = msg.uid === targetRoomData.hostUid;
                         
+                        const isMsgVip = msg.isVip || (isMe && window.isCurrentVip) || false;
+                        const vipAvatarClass = isMsgVip ? 'vip-glow' : '';
+                        const vipNameStyle = isMsgVip ? 'color: #FFD700; text-shadow: 0 0 5px rgba(255,215,0,0.5);' : '';
+                        const vipGem = isMsgVip ? '<i class="fas fa-gem" style="color:#FFD700; font-size:0.7rem; margin-right: 3px;"></i>' : '';
+                        const hostCrown = isMsgHost ? '<i class="fas fa-crown" style="color:#FFD700;font-size:0.7rem; margin-right: 3px;"></i>' : '';
+                        
+                        const vipSelfBg = (isMsgVip && isMe) ? 'background: linear-gradient(135deg, #FFD700, #FDB931) !important; color: #000 !important; box-shadow: 0 2px 10px rgba(255,215,0,0.4) !important; font-weight: 600 !important;' : '';
+
                         chatBox.innerHTML += `
-                            <div class="msg-box ${isMe ? 'self' : ''}">
-                                <div class="msg-name">${isMsgHost ? '<i class="fas fa-crown" style="color:#FFD700;font-size:0.7rem;"></i> ' : ''} ${msg.name}</div>
-                                <div class="msg-text">${msg.text}</div>
+                            <div class="msg-container ${isMe ? 'self' : ''}" style="display: flex; gap: 8px; ${isMe ? 'justify-content: flex-end;' : ''} align-items: flex-end; width: 100%;">
+                                ${!isMe ? `<img src="${msg.avatar || '/Guest.webp'}" class="${vipAvatarClass}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" onerror="this.src='/Guest.webp'">` : ''}
+                                <div class="msg-box ${isMe ? 'self' : ''}" style="margin-bottom: 0;">
+                                    <div class="msg-name" style="margin-left: ${isMe ? '0' : '5px'}; ${vipNameStyle}">${hostCrown}${vipGem}${msg.name}</div>
+                                    <div class="msg-text" style="${vipSelfBg}">${msg.text}</div>
+                                </div>
                             </div>
                         `;
                     }
@@ -2051,6 +2063,7 @@
                     uid: currentUser.uid, 
                     name: currentUser.customName, 
                     avatar: currentUser.avatar,
+                    isVip: window.isCurrentVip || false,
                     text: text, 
                     type: 'user', 
                     timestamp: Date.now()

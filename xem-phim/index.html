@@ -2659,7 +2659,7 @@ footer {
                     <div id="userNameDisplay" class="user-info-item">User</div>
                     
                     <div id="vipStatus" style="padding: 10px; font-size: 0.8rem; color: #aaa; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                        <i class="fas fa-crown"></i> Free Plan
+                        <i class="fas fa-crown"></i> Free plan
                     </div>
 
                     <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
@@ -3222,7 +3222,7 @@ footer {
         } else {
             userAvatar.classList.remove('vip-glow');
             userNameDisplay.innerText = name;
-            vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free Plan`;
+            vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free plan`;
         }
         if(!userNameDisplay.innerHTML.includes('balance-badge')) {
             userNameDisplay.innerHTML += ` <span class="balance-badge"><i class="fas fa-coins"></i> ${balance.toLocaleString()}</span>`;
@@ -3307,7 +3307,7 @@ footer {
                 const vipClass = c.isVip ? 'is-vip' : '';
                 const avatarGlow = c.isVip ? 'vip-glow' : ''; 
                 const nameHtml = c.isVip 
-                    ? `<span class="vip-name" style="font-size:0.95rem;"><i class="fas fa-crown"></i> ${c.userName}</span>` 
+                    ? `<span class="comment-author" style="font-size:0.95rem;"><i class="fas fa-crown"></i> ${c.userName}</span>` 
                     : `<span class="comment-author">${c.userName}</span>`;
 
                 html += `
