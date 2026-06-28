@@ -282,9 +282,10 @@
         .custom-confirm-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
         
         .confirm-box { 
-            background: #1c1e29; width: 90%; max-width: 360px; padding: 35px 25px; 
-            border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
+            background: rgba(22, 24, 32, 0.95); width: 90%; max-width: 380px; padding: 40px 30px; 
+            border-radius: 24px; text-align: center; border: 1px solid rgba(255,255,255,0.08); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); 
+            backdrop-filter: blur(20px);
             /* Setup trượt nhẹ từ dưới lên */
             transform: scale(0.95) translateY(15px); 
             transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
@@ -292,17 +293,25 @@
         .custom-confirm-overlay.active .confirm-box { transform: scale(1) translateY(0); }
         
         .confirm-icon { 
-            width: 60px; height: 60px; margin: 0 auto 15px; 
-            background: rgba(255, 94, 98, 0.1); border-radius: 50%; 
+            width: 70px; height: 70px; margin: 0 auto 20px; 
+            background: linear-gradient(135deg, rgba(255, 143, 80, 0.15), rgba(255, 94, 98, 0.15)); 
+            border-radius: 50%; border: 2px solid rgba(255, 143, 80, 0.4);
             display: flex; justify-content: center; align-items: center; 
-            color: #FF8F50; font-size: 1.8rem; 
+            color: #FF8F50; font-size: 2.2rem; 
+            box-shadow: 0 0 25px rgba(255, 143, 80, 0.25);
+            animation: pulseWarning 2s infinite;
         }
-        .confirm-title { font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
-        .confirm-desc { font-size: 0.95rem; color: #a0a0a0; margin-bottom: 25px; line-height: 1.5; padding: 0 10px; }
-        .confirm-actions { display: flex; gap: 12px; justify-content: center; }
-        .btn-confirm { flex: 1; padding: 12px 0; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; font-size: 0.95rem; font-family: var(--font-main); outline: none;}
+        @keyframes pulseWarning {
+            0% { box-shadow: 0 0 0 0 rgba(255, 143, 80, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 143, 80, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 143, 80, 0); }
+        }
+        .confirm-title { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 12px; letter-spacing: 0.5px; }
+        .confirm-desc { font-size: 0.95rem; color: #a0a0a0; margin-bottom: 30px; line-height: 1.6; padding: 0 10px; }
+        .confirm-actions { display: flex; gap: 15px; justify-content: center; }
+        .btn-confirm { flex: 1; padding: 14px 0; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; outline: none;}
         .btn-cancel { background: rgba(255,255,255,0.05); color: #ccc; } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .btn-ok { background: var(--gradient-main); color: #fff; } .btn-ok:hover { filter: brightness(1.1); box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3); }
+        .btn-ok { background: var(--gradient-main); color: #fff; } .btn-ok:hover { filter: brightness(1.1); box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3); transform: translateY(-2px); }
 
         /* 2. CÁC BẢNG (MODAL) CỦA PHÒNG XEM CHUNG (CHỌN PHIM, SETUP...) */
         .modal-overlay { 
@@ -490,7 +499,7 @@
 
     <div id="confirmModal" class="custom-confirm-overlay">
         <div class="confirm-box">
-            <div class="confirm-icon"><i class="fas fa-exclamation"></i></div>
+            <div class="confirm-icon"><i class="fas fa-question"></i></div>
             <h3 class="confirm-title">Xác nhận yêu cầu</h3>
             <p class="confirm-desc" id="confirmMsg">Bạn có chắc chắn muốn thực hiện hành động này?</p>
             <div class="confirm-actions">
