@@ -4030,6 +4030,24 @@ footer {
         renderEpisodeList(episodesArray[0].server_data, savedEpName, savedTime);
         if (window.syncAudioPopupUI) window.syncAudioPopupUI(episodesArray[0].server_name);
     }
+    window.changeServer = function(index) {
+        if (!window.currentMovieEpisodesData || !window.currentMovieEpisodesData[index]) return;
+        window.currentServerIndex = index;
+
+        document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById(`btn-sv-desk-${index}`);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        const svData = window.currentMovieEpisodesData[index].server_data;
+        const serverName = window.currentMovieEpisodesData[index].server_name;
+        
+        const currentEpName = window.currentEpIndex !== undefined && window.currentMovieEpisodesData[0] ? window.currentMovieEpisodesData[0].server_data[window.currentEpIndex]?.name : null;
+        
+        renderEpisodeList(svData, currentEpName, null);
+        
+        if (window.syncAudioPopupUI) window.syncAudioPopupUI(serverName);
+    };
+
 
     window.currentActiveChunkIdx = 0;
 
