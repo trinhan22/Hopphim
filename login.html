@@ -292,7 +292,7 @@
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             setLoading(true);
-            const email = document.getElementById('login-email').value;
+            const email = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-password').value;
 
             try {
@@ -300,19 +300,30 @@
                 window.location.href = '/';
             } catch (err) {
                 setLoading(false);
-                alert("Đăng nhập thất bại: " + err.message);
+                let msg = err.message;
+                if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+                    msg = "Sai email hoặc mật khẩu! (Hoặc tài khoản chưa được đăng ký)";
+                } else if (err.code === 'auth/user-disabled') {
+                    msg = "Tài khoản của bạn đã bị khóa!";
+                } else if (err.code === 'auth/too-many-requests') {
+                    msg = "Bạn đã nhập sai quá nhiều lần. Vui lòng thử lại sau!";
+                } else if (err.code === 'auth/invalid-email') {
+                    msg = "Địa chỉ email không hợp lệ!";
+                }
+                alert("Đăng nhập thất bại: " + msg);
             }
         });
 
         // 2. REGISTER
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
             const pass = document.getElementById('reg-pass').value;
             const confirm = document.getElementById('reg-confirm').value;
 
             if(pass !== confirm) { alert("Mật khẩu không khớp!"); return; }
+            if(pass.length < 6) { alert("Mật khẩu phải có ít nhất 6 ký tự!"); return; }
             setLoading(true);
 
             try {
@@ -333,7 +344,15 @@
                 window.location.href = '/';
             } catch (err) {
                 setLoading(false);
-                alert("Đăng ký thất bại: " + err.message);
+                let msg = err.message;
+                if (err.code === 'auth/email-already-in-use') {
+                    msg = "Email này đã được sử dụng bởi một tài khoản khác!";
+                } else if (err.code === 'auth/weak-password') {
+                    msg = "Mật khẩu quá yếu (cần ít nhất 6 ký tự)!";
+                } else if (err.code === 'auth/invalid-email') {
+                    msg = "Địa chỉ email không hợp lệ!";
+                }
+                alert("Đăng ký thất bại: " + msg);
             }
         });
 
