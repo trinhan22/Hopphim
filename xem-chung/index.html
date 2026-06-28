@@ -298,7 +298,7 @@
         #mobileSearchOverlay .close-btn-overlay { position: static; color: #fff; }
 
         @media (max-width: 1200px) {
-            #header { transform: none; background: var(--bg-dark); }
+            #header { transform: none; background: linear-gradient(to bottom, #191b24 0%, rgba(25,27,36,0.85) 60%, transparent 100%); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: none; }
             .header-left-group { gap: 20px; order: 1; }
             .menu-toggle { display: block; font-size: 1.4rem; }
             .logo { order: 2; margin: 0; } 
@@ -747,6 +747,14 @@
             .footer-col h4 { margin-bottom: 15px; }
             .download-group { align-items: center; }
             .footer-bottom { flex-direction: column; gap: 10px; }
+            
+            /* Watch-Together Mobile Optimizations */
+            .hero-section { height: 250px; margin-top: 60px; }
+            .hero-actions { margin-top: 60px; gap: 12px; }
+            .btn-hero { padding: 8px 20px; font-size: 0.85rem; border-radius: 30px; }
+            .section-title { font-size: 1.4rem; margin: 15px; }
+            .room-title { font-size: 1.1rem; }
+            .room-meta { font-size: 0.8rem; }
         }
 
         /* ==========================================================================

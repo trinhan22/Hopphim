@@ -376,7 +376,7 @@
         .mobile-search-trigger { display: none; font-size: 1.5rem; color: #fff; cursor: pointer; }
 
         @media (max-width: 1200px) {
-            header { height: 65px; padding: 0 15px; justify-content: space-between; background: var(--bg-dark); }
+            header { height: 65px; padding: 0 15px; justify-content: space-between; background: linear-gradient(to bottom, #191b24 0%, rgba(25,27,36,0.85) 60%, transparent 100%); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: none; }
             /* Ẩn Desktop Elements */
             .header-left-group, .nav-links, .search-box, .desktop-auth { display: none !important; }
             
@@ -1391,7 +1391,7 @@ footer {
 
         /* --- MEDIA QUERY: MAX 900PX (TABLET & MOBILE) --- */
         @media (max-width: 900px) {
-            header { height: 65px; padding: 0 15px; justify-content: space-between; background: var(--bg-dark); }
+            header { height: 65px; padding: 0 15px; justify-content: space-between; background: linear-gradient(to bottom, #191b24 0%, rgba(25,27,36,0.85) 60%, transparent 100%); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: none; }
             /* Ẩn Desktop UI */
             .header-left-group, .nav-links, .search-box, .desktop-auth { display: none !important; }
             
@@ -1417,6 +1417,10 @@ footer {
             .n-meta-in, .n-actions-in { display: none; }
             .n-card:hover { transform: none; }
             .nav-arrow { display: none; } 
+
+            .short-section { padding: 0 20px 40px !important; overflow: hidden !important; }
+            .short-slider-wrapper { margin: 0 !important; }
+            .short-grid { padding: 0 !important; margin: 0 !important; gap: 12px !important; }
 
             .ch-title { font-size: 1.3rem !important; }
             .ch-link { font-size: 0.8rem !important; }
@@ -1759,8 +1763,7 @@ footer {
         @media (max-width: 1024px) { .short-card { flex: 0 0 calc(25% - 12px); } } /* 4 cột */
         @media (max-width: 768px) {
             .short-arrows, .view-all-link { display: none; } /* Mobile ẩn nút, vuốt tay */
-            .short-header { margin-bottom: 10px; }
-            .short-grid { gap: 10px; padding: 10px; }
+            .short-header { margin-bottom: 35px; }
             .short-card { flex: 0 0 130px; border-radius: 8px; } /* Mobile cố định px */
             .short-info { display: none !important; } /* Mobile ẩn info (title + gradient) */
         }
