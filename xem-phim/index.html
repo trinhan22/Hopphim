@@ -1842,7 +1842,7 @@ footer {
 
 /* Góc trên trái: Dụ dỗ nạp VIP */
 .preroll-info-box {
-    position: absolute; top: 0; left: 0; padding: 25px;
+    position: absolute; top: 65px; left: 0; padding: 25px;
     z-index: 10; pointer-events: none; /* Để không chặn click */
 }
 .preroll-info-box p { 
@@ -4311,10 +4311,17 @@ footer {
             }
 
             if (adVideo) {
-                // Lắng nghe sự kiện: Chỉ khi video quảng cáo THỰC SỰ BẮT ĐẦU PHÁT thì mới đếm ngược
-                adVideo.addEventListener('playing', () => {
-                    startCountdown();
-                });
+                // Nếu quảng cáo là ảnh (img), bộ đếm ngược chạy luôn khi ảnh load xong
+                if (adVideo.tagName.toLowerCase() === 'img') {
+                    if (adVideo.complete) {
+                        startCountdown();
+                    } else {
+                        adVideo.addEventListener('load', startCountdown);
+                    }
+                } else {
+                    // Nếu là video, chờ video bắt đầu phát mới đếm ngược
+                    adVideo.addEventListener('playing', startCountdown);
+                }
 
                 // DỰ PHÒNG 1: Nếu link video bị lỗi (404), bỏ qua quảng cáo luôn
                 adVideo.addEventListener('error', () => {
