@@ -895,6 +895,7 @@
                 <a href="/" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Trang chủ</a>
                 <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-tv"></i> Phim Bộ</a>
                 <a href="#" class="mobile-menu-link" onclick="closeMobileMenu()"><i class="fas fa-film"></i> Phim Lẻ</a>
+                <a href="/xem-chung/" class="mobile-menu-link"><i class="fas fa-user-group"></i> Xem Chung</a>
                 <div style="border-bottom: 1px solid var(--mobile-border); padding: 10px 0; color:#666; font-size:0.9rem; font-weight:700; text-transform:uppercase; margin-top:10px;">Quản Lý</div>
                 <a class='mobile-menu-link' href='/profile' onclick='closeMobileMenu()'><i class="fas fa-user-cog"></i> Tài Khoản</a>
                 <div id="drawerLogout" class="mobile-menu-link" style="color:#ff4757; display:none; cursor:pointer;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</div>
@@ -1020,7 +1021,7 @@
                     <div id="userNameDisplay" class="user-info-item">User</div>
                     
                     <div id="vipStatus" style="padding: 10px; font-size: 0.8rem; color: #aaa; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                        <i class="fas fa-crown"></i> Free plan
+                        <i class="fas fa-crown"></i> Tài khoản Thường
                     </div>
 
                     <button class="dropdown-item" onclick="window.location.href='/profile.html'"><i class="fas fa-user-cog"></i> Tài khoản</button>
@@ -1405,7 +1406,7 @@
                         } else {
                             if(userAvatar) userAvatar.classList.remove('vip-glow');
                             if(userNameDisplay) userNameDisplay.innerText = currentUser.customName;
-                            if(vipStatusLabel) vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Free plan`;
+                            if(vipStatusLabel) vipStatusLabel.innerHTML = `<i class="fas fa-crown"></i> Tài khoản Thường`;
                         }
 
                         const balanceHTML = `<span class="balance-badge"><i class="fas fa-coins"></i> ${balance.toLocaleString()}</span>`;
