@@ -818,6 +818,18 @@
             #wibu-chat-window {
                 display: none !important;
             }
+            
+            /* Footer */
+            .footer-grid { display: block; }
+            .footer-col:not(:first-child) { display: none !important; }
+            .footer-col:first-child .footer-socials { display: none !important; }
+            .footer-col:first-child { text-align: center; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+            .footer-logo { margin: 0 auto; }
+            .footer-desc { font-size: 0.85rem; opacity: 0.7; line-height: 1.5; margin-bottom: 0; }
+            footer { padding: 30px 20px 90px 20px !important; }
+            .footer-bottom { display: flex !important; flex-direction: column; align-items: center; justify-content: center; margin-top: 20px !important; padding-top: 15px !important; border-top: 1px solid rgba(255,255,255,0.05); }
+            .footer-bottom p { font-size: 0.75rem; opacity: 0.5; margin: 0 auto; }
+            .footer-disclaimer { display: none !important; }
         }
         .bottom-nav-item {
             display: flex;
@@ -1224,7 +1236,7 @@
             </div>
         </div>
     </div> <div class="footer-bottom" style="flex-direction: column; justify-content: center; gap: 12px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 30px; margin-top: 20px;">
-        <div style="max-width: 1000px; margin: 0 auto;">
+        <div class="footer-disclaimer" style="max-width: 1000px; margin: 0 auto;">
             <p style="color: #888; font-size: 0.8rem; line-height: 1.6; margin-bottom: 8px;">
                 Tất cả nội dung của trang web này được thu thập từ các trang web video chính thống trên Internet và không cung cấp phát trực tuyến chính hãng.<br>Nếu quyền lợi của bạn bị vi phạm, vui lòng thông báo cho chúng tôi, chúng tôi sẽ xóa nội dung vi phạm kịp thời, cảm ơn sự hợp tác của bạn!
             </p>
