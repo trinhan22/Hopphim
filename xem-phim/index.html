@@ -659,6 +659,26 @@
             animation: zoomOut 0.5s ease-in forwards !important; 
         }
 
+        @media (max-width: 900px) {
+            .loading-img:not(.zoom-out) {
+                content: url('/LOGO.WEBP');
+                width: 150px !important;
+                height: auto !important;
+                animation: heartbeatGlow 1.2s infinite ease-in-out !important;
+            }
+            .loading-img.zoom-out {
+                content: url('/LOGO.WEBP');
+                width: 150px !important;
+                height: auto !important;
+                animation: zoomOut 0.5s ease-in forwards !important; 
+            }
+        }
+        @keyframes heartbeatGlow {
+            0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(255, 143, 80, 0.4)); }
+            50% { transform: scale(1.15); filter: drop-shadow(0 0 25px rgba(255, 143, 80, 0.9)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(255, 143, 80, 0.4)); }
+        }
+
         /* Hiệu ứng lúc mới vào trang */
         @keyframes zoomIn { 0% { transform: scale(1.36); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes floatIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
@@ -1507,14 +1527,9 @@ footer {
             .rec-card-premium { flex: 0 0 160px; }
 
             /* Footer */
-            .footer-grid { display: block; }
-            .footer-col:not(:first-child) { display: none !important; }
-            .footer-col:first-child .footer-socials { display: none !important; }
-            .footer-col:first-child { text-align: center; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-            .footer-logo { margin: 0 auto; }
-            .footer-desc { font-size: 0.85rem; opacity: 0.7; line-height: 1.5; margin-bottom: 0; }
-            footer { padding: 30px 20px 90px 20px !important; }
-            .footer-bottom { display: flex !important; flex-direction: column; align-items: center; justify-content: center; margin-top: 20px !important; padding-top: 15px !important; border-top: 1px solid rgba(255,255,255,0.05); }
+            footer { display: flex; flex-direction: column; padding: 20px 20px 80px 20px !important; border-top: none; }
+            .footer-grid { display: none !important; }
+            .footer-bottom { display: flex !important; flex-direction: column; align-items: center; justify-content: center; margin-top: 0 !important; padding-top: 15px !important; border-top: 1px solid rgba(255,255,255,0.05) !important; margin-bottom: 0; }
             .footer-bottom p { font-size: 0.75rem; opacity: 0.5; margin: 0 auto; }
             .footer-disclaimer { display: none !important; }
             
@@ -4289,6 +4304,38 @@ footer {
         const finalType = type === 'youtube' ? 'youtube' : 'hls';
         initPlayer(finalType, link, currentMovieData?.poster_url, startTime);
     }
+
+
+        window.loadCategory = async (slug, title) => {
+            const modal = document.getElementById('modalPopup');
+            const modalContent = document.getElementById('modalContent');
+            const modalTitle = document.getElementById('modalTitle');
+
+            if (modalTitle) modalTitle.innerText = title;
+            if (modal) modal.classList.add('active');
+            if (modalContent) modalContent.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #a0a0a0; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;"></i><br>Đang tải phim ${title}...</div>`;
+
+            let data = await fetchListMultiSource(`/the-loai/${slug}`);
+            
+            if (slug === 'short-drama' && (!data.status || !data.data || !data.data.items || data.data.items.length === 0)) {
+                data = await fetchListMultiSource(`/the-loai/phim-ngan`);
+            } else if (slug === 'phim-ngan' && (!data.status || !data.data || !data.data.items || data.data.items.length === 0)) {
+                data = await fetchListMultiSource(`/the-loai/short-drama`);
+            }
+
+            if (data.status && data.data && data.data.items && data.data.items.length > 0) {
+                let html = '';
+                data.data.items.forEach(m => {
+                    let dest = (slug === 'short-drama' || slug === 'phim-ngan') ? `/short/${m.slug}` : `/xem-phim/${m.slug}`;
+                    let img = m.poster_url || m.thumb_url;
+                    html += `<div class="modal-card-vertical" onclick="window.location.href='${dest}'"><img src="${img}" loading="lazy" onerror="this.src='https://wibey.netlify.app/home-background.jpg'"><div class="modal-info-overlay"><div class="modal-title">${m.name}</div><div class="modal-meta">${m.year || '2026'}</div></div></div>`;
+                });
+                modalContent.innerHTML = html;
+            } else {
+                if (modalContent) modalContent.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; color:#ff4757;">Lỗi kết nối server hoặc không có phim!</div>';
+            }
+        };
+        window.closeModal = () => { const m = document.getElementById('modalPopup'); if(m) m.classList.remove('active'); };
 
     window.saveToHistory = async (movie, epName = "Tập 1", duration = 0) => { 
         if (!window.currentUser || !movie) return;

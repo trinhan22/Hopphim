@@ -163,9 +163,30 @@
             animation: zoomIn 0.8s ease-out forwards, floatIdle 3s ease-in-out infinite 0.8s; 
         }
         
-        /* Class này sẽ được JS thêm vào khi tải xong để hút vào trong */
+        /* Class này sẽ được JS thêm vào khi tải xong */
         .loading-img.zoom-out { 
+            /* Dùng ease-in để tạo cảm giác hút nhanh vào trong */
             animation: zoomOut 0.5s ease-in forwards !important; 
+        }
+
+        @media (max-width: 900px) {
+            .loading-img:not(.zoom-out) {
+                content: url('/LOGO.WEBP');
+                width: 150px !important;
+                height: auto !important;
+                animation: heartbeatGlow 1.2s infinite ease-in-out !important;
+            }
+            .loading-img.zoom-out {
+                content: url('/LOGO.WEBP');
+                width: 150px !important;
+                height: auto !important;
+                animation: zoomOut 0.5s ease-in forwards !important; 
+            }
+        }
+        @keyframes heartbeatGlow {
+            0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(255, 143, 80, 0.4)); }
+            50% { transform: scale(1.15); filter: drop-shadow(0 0 25px rgba(255, 143, 80, 0.9)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(255, 143, 80, 0.4)); }
         }
 
         /* Hiệu ứng lúc mới vào trang */

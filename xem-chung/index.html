@@ -772,6 +772,26 @@
             animation: zoomOut 0.5s ease-in forwards !important; 
         }
 
+        @media (max-width: 900px) {
+            .loading-img:not(.zoom-out) {
+                content: url('/LOGO.WEBP');
+                width: 150px !important;
+                height: auto !important;
+                animation: heartbeatGlow 1.2s infinite ease-in-out !important;
+            }
+            .loading-img.zoom-out {
+                content: url('/LOGO.WEBP');
+                width: 150px !important;
+                height: auto !important;
+                animation: zoomOut 0.5s ease-in forwards !important; 
+            }
+        }
+        @keyframes heartbeatGlow {
+            0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(255, 143, 80, 0.4)); }
+            50% { transform: scale(1.15); filter: drop-shadow(0 0 25px rgba(255, 143, 80, 0.9)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(255, 143, 80, 0.4)); }
+        }
+
         /* Hiệu ứng lúc mới vào trang */
         @keyframes zoomIn { 0% { transform: scale(1.36); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes floatIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
@@ -820,14 +840,9 @@
             }
             
             /* Footer */
-            .footer-grid { display: block; }
-            .footer-col:not(:first-child) { display: none !important; }
-            .footer-col:first-child .footer-socials { display: none !important; }
-            .footer-col:first-child { text-align: center; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-            .footer-logo { margin: 0 auto; }
-            .footer-desc { font-size: 0.85rem; opacity: 0.7; line-height: 1.5; margin-bottom: 0; }
-            footer { padding: 30px 20px 90px 20px !important; }
-            .footer-bottom { display: flex !important; flex-direction: column; align-items: center; justify-content: center; margin-top: 20px !important; padding-top: 15px !important; border-top: 1px solid rgba(255,255,255,0.05); }
+            footer { display: flex; flex-direction: column; padding: 20px 20px 80px 20px !important; border-top: none; }
+            .footer-grid { display: none !important; }
+            .footer-bottom { display: flex !important; flex-direction: column; align-items: center; justify-content: center; margin-top: 0 !important; padding-top: 15px !important; border-top: 1px solid rgba(255,255,255,0.05) !important; margin-bottom: 0; }
             .footer-bottom p { font-size: 0.75rem; opacity: 0.5; margin: 0 auto; }
             .footer-disclaimer { display: none !important; }
         }
