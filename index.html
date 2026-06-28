@@ -490,6 +490,7 @@
         .hero-slide {
             position: absolute;
             inset: 0;
+            background-image: var(--desktop-bg);
             background-size: cover;
             background-position: center center;
             opacity: 0;
@@ -679,6 +680,7 @@
 
         /* Responsive */
         @media (max-width: 900px) {
+            .hero-slide { background-image: var(--mobile-bg); }
             .hero-wrapper { height: 70vh; min-height: 450px; }
             .hero-wrapper::after { height: 250px; background: linear-gradient(to bottom, transparent 0%, rgba(15,17,26,0.1) 30%, rgba(15,17,26,0.5) 75%, var(--bg-body) 100%); }
             .hero-thumbnails { display: none; }
@@ -2974,6 +2976,8 @@ footer {
         // ============================================================
         // - slug: Tên phim (bắt buộc)
         // - titleImage: Link ảnh Logo PNG
+        // - customImage: Ảnh nền ngang cho Desktop
+        // - mobileImage: Ảnh nền dọc cho Mobile (Tùy chọn, nếu không điền sẽ lấy customImage)
         // - position: Vị trí ảnh nền (center top, center bottom...)
         // - imdb: Điểm số IMDb tùy chỉnh (Mặc định là 8.5 nếu không điền)
 
@@ -2982,30 +2986,35 @@ footer {
                 slug: "sep-oi-mai-dung-gap-nhau",
                 titleImage: "https://wibey.netlify.app/1_title.png",
                 customImage: "https://wibey.netlify.app/1_panel.webp",
+                mobileImage: "https://wibey.netlify.app/1_poster.png",
                 imdb: "8.7"
             },
             { 
                 slug: "bai-hoc-dang-doi",
                 titleImage: "https://wibey.netlify.app/2_title.png",
                 customImage: "https://wibey.netlify.app/2_panel.webp",
+                mobileImage: "https://wibey.netlify.app/2_poster.png",
                 imdb: "8.6"
             },
             { 
                 slug: "bong-ma-hanh-phuc",
                 titleImage: "https://wibey.netlify.app/3_title.png",
                 customImage: "https://wibey.netlify.app/3_panel.webp",
+                mobileImage: "https://wibey.netlify.app/3_poster.png",
                 imdb: "0.0"
             },
             { 
                 slug: "vi-me-anh-phan-chia-tay",
                 titleImage: "https://wibey.netlify.app/4_title.png",
                 customImage: "https://wibey.netlify.app/4_panel.webp",
+                mobileImage: "https://wibey.netlify.app/4_poster.png",
                 imdb: "0.0"
             },
             { 
                 slug: "phu-nhan-dai-quan-the-ky-21",
                 titleImage: "https://wibey.netlify.app/5_title.png",
                 customImage: "https://wibey.netlify.app/5_panel.webp",
+                mobileImage: "https://wibey.netlify.app/5_poster.png",
                 imdb: "8.0"
             },
         ];
@@ -3089,6 +3098,13 @@ footer {
                         }
                         if (!finalImage) finalImage = 'https://wibey.netlify.app/home-background.jpg';
 
+                        let finalMobileImage = '';
+                        if (config.mobileImage && config.mobileImage.trim() !== '') {
+                            finalMobileImage = config.mobileImage;
+                        } else {
+                            finalMobileImage = finalImage;
+                        }
+
                         const bgPos = config.position || 'center center';
 
                         // 2. XỬ LÝ TIÊU ĐỀ
@@ -3111,7 +3127,7 @@ footer {
                         // 5. RENDER HTML
                         slidesHtml += `
                             <div class="hero-slide ${active}" id="slide-${slideId}" 
-                                 style="background-image: url('${finalImage}'); background-position: ${bgPos};">
+                                 style="--desktop-bg: url('${finalImage}'); --mobile-bg: url('${finalMobileImage}'); background-position: ${bgPos};">
                                 <div class="hero-content">
                                     
                                     ${titleHTML}
