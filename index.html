@@ -261,7 +261,7 @@
         */
         #loadingScreen { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
-            background: var(--bg-body); z-index: 9999; display: flex; 
+            background: var(--bg-body); z-index: 99999 !important; display: flex; 
             justify-content: center; align-items: center; 
         }
         
@@ -1371,13 +1371,13 @@ footer {
             /* --- CONTENT ADJUSTMENTS --- */
             .hero-title { font-size: 3rem; }
             .topic-grid { display: flex; overflow-x: auto; scrollbar-width: none; }
-            .topic-card { flex: 0 0 160px; height: 95px; }
+            .topic-card { flex: 0 0 140px; height: 95px; }
             
             .merged-block { padding: 35px 20px; border-radius: 0; margin: 0 0 40px; overflow: hidden !important; }
             
             /* Grid phim ngang */
-            .country-grid { padding: 40px 30px !important; margin: -30px -30px !important; gap: 15px; }
-            .n-card { flex: 0 0 160px; aspect-ratio: 2/3; }
+            .country-grid { padding: 0 !important; margin: 0 !important; gap: 12px; overflow-x: auto; scrollbar-width: none; }
+            .n-card { flex: 0 0 130px; aspect-ratio: 2/3; }
             .n-info-layer { transform: translateY(0); padding: 10px; }
             .n-meta-in, .n-actions-in { display: none; }
             .n-card:hover { transform: none; }
@@ -2065,6 +2065,69 @@ footer {
             }
         }
 
+        /* --- GLOBAL NATIVE APP BOTTOM NAVIGATION --- */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 65px;
+            background: #191b24;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 9999;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        @media (max-width: 900px) {
+            .mobile-bottom-nav {
+                display: flex;
+            }
+            body {
+                padding-bottom: 65px !important; /* Make room for bottom nav */
+            }
+            /* Ẩn hamburger menu cũ */
+            .mobile-menu-toggle {
+                display: none !important;
+            }
+            /* Bỏ margin của header icon khi ẩn hamburger */
+            .header-left-group { gap: 10px !important; }
+
+            /* Disable Ads, Chatbot, BackToTop on Mobile */
+            .app-install-banner,
+            .back-to-top-btn,
+            #wibu-chat-launcher,
+            #wibu-chat-window {
+                display: none !important;
+            }
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.7rem;
+            gap: 5px;
+            flex: 1;
+            transition: all 0.2s ease;
+            height: 100%;
+        }
+        .bottom-nav-item i {
+            font-size: 1.35rem;
+            margin-bottom: 2px;
+        }
+        .bottom-nav-item.active {
+            color: #fff;
+        }
+        .bottom-nav-item:active {
+            transform: scale(0.9);
+        }
+
     </style>
 </head>
 <body>
@@ -2272,7 +2335,7 @@ footer {
         <div class="topic-grid">
             <div class="topic-card bg-marvel" onclick="loadCategory('hanh-dong', 'Marvel')"><i class="fab fa-quinscape floating-icon"></i><div class="topic-name">Marvel</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
             <div class="topic-card bg-sitcom" onclick="loadCategory('hai-huoc', 'Sitcom')"><i class="fas fa-laugh-squint floating-icon"></i><div class="topic-name">Sitcom</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
-            <div class="topic-card bg-voice" onclick="loadCategory('short-drama', 'Short Drama')"><i class="fas fa-torii-gate floating-icon"></i><div class="topic-name">Short Drama</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
+            <div class="topic-card bg-voice" onclick="loadCategory('short-drama', 'Short Drama')"><i class="fas fa-torii-gate floating-icon"></i><div class="topic-name">Short</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
             <div class="topic-card bg-trans" onclick="loadCategory('tam-ly', 'Tâm Lý')"><i class="fas fa-film floating-icon"></i><div class="topic-name">Tâm Lý</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
             <div class="topic-card bg-ancient" onclick="loadCategory('co-trang', 'Cổ Trang')"><i class="fas fa-dragon floating-icon"></i><div class="topic-name">Cổ Trang</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
             <div class="topic-card bg-4k" onclick="loadCategory('kinh-di', 'Kinh Dị')"><i class="fas fa-ghost floating-icon"></i><div class="topic-name">Kinh Dị</div><div class="topic-link">Xem ngay <i class="fas fa-arrow-right"></i></div></div>
@@ -3793,5 +3856,43 @@ footer {
 </script>
     <script src="backtotop.js"></script>
 
-    </body>
+    <!-- MOBILE BOTTOM NAVIGATION (NATIVE APP STYLE) -->
+    <div class="mobile-bottom-nav">
+        <a href="/" class="bottom-nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Trang Chủ</span>
+        </a>
+        <a href="javascript:void(0)" onclick="openShortsPopup()" class="bottom-nav-item">
+            <i class="fas fa-bolt"></i>
+            <span>Shorts</span>
+        </a>
+        <a href="/xem-chung/" class="bottom-nav-item">
+            <i class="fas fa-users"></i>
+            <span>Xem Chung</span>
+        </a>
+        <a href="/profile.html" class="bottom-nav-item">
+            <i class="fas fa-user-circle"></i>
+            <span>Cá Nhân</span>
+        </a>
+    </div>
+
+    <script>
+        function openShortsPopup() {
+            if (typeof openModal === 'function') {
+                openModal('phim-ngan', 'Phim Ngắn');
+            } else {
+                window.location.href = '/?action=open_shorts';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.get('action') === 'open_shorts') {
+                setTimeout(() => {
+                    if (typeof openModal === 'function') openModal('phim-ngan', 'Phim Ngắn');
+                }, 800);
+            }
+        });
+    </script>
+</body>
     </html>

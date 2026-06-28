@@ -152,8 +152,7 @@
            ========================================================================== */
         #loadingScreen { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
-            background: #191b24; /* Nền đen trùng với body của Short */
-            z-index: 9999; display: flex; 
+            background: var(--bg-body); z-index: 99999 !important; display: flex; 
             justify-content: center; align-items: center; 
         }
         
@@ -308,7 +307,7 @@
         /* ==================================================================
            2. MOBILE LAYOUT (TikTok Style)
            ================================================================== */
-        .mobile-container { display: none; width: 100%; height: 100dvh; overflow-y: scroll; scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        .mobile-container { display: none; width: 100%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scroll-behavior: smooth; }
         .mobile-container::-webkit-scrollbar { display: none; }
 
         /* Ẩn hiện theo thiết bị */
@@ -317,7 +316,7 @@
             .mobile-container { display: block; } /* Hiện Mobile */
             
             .m-slide {
-                width: 100%; height: 100dvh;
+                width: 100%; height: 100%;
                 scroll-snap-align: start; scroll-snap-stop: always;
                 position: relative; background: #000;
             }
@@ -478,6 +477,75 @@
         /* Class kích hoạt animation */
         .anim-next video { animation: slideUpEffect 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .anim-prev video { animation: slideDownEffect 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* --- GLOBAL NATIVE APP BOTTOM NAVIGATION --- */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 65px;
+            background: #191b24;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 9999;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        @media (max-width: 900px) {
+            .mobile-bottom-nav {
+                display: flex;
+            }
+            .top-nav {
+                display: none !important; /* Hide top header for immersive full-screen video */
+            }
+            .app-container {
+                height: calc(100vh - 65px) !important;
+                height: calc(100dvh - 65px) !important; /* Make room for bottom nav */
+            }
+            .m-info {
+                bottom: 65px !important; /* Move info up so it's not hidden by bottom nav */
+            }
+            .m-side-actions {
+                bottom: 85px !important; /* Move side actions up too */
+            }
+            .m-playlist-btn {
+                bottom: 85px !important;
+            }
+
+            /* Disable Ads, Chatbot, BackToTop on Mobile */
+            .app-install-banner,
+            .back-to-top-btn,
+            #wibu-chat-launcher,
+            #wibu-chat-window {
+                display: none !important;
+            }
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.7rem;
+            gap: 5px;
+            flex: 1;
+            transition: all 0.2s ease;
+            height: 100%;
+        }
+        .bottom-nav-item i {
+            font-size: 1.35rem;
+            margin-bottom: 2px;
+        }
+        .bottom-nav-item.active {
+            color: #fff;
+        }
+        .bottom-nav-item:active {
+            transform: scale(0.9);
+        }
     </style>
 </head>
 <body>
@@ -817,7 +885,7 @@
             let name = ep.name.replace(/tập/ig, '').trim();
             html += `
             <div class="m-slide" id="m-slide-${idx}" onclick="window.toggleMobileVideo(this, ${idx})">
-                <video ${srcAttr} playsinline loop muted></video>
+                <video ${srcAttr} autoplay playsinline loop muted></video>
                 <div class="mobile-play-overlay"><i class="fas fa-play"></i></div>
                 <div class="m-info" id="m-info-${idx}">
                     <div class="m-title"><span class="m-badge">Tập ${name}</span> ${movieData.name}</div>
@@ -1157,5 +1225,34 @@
         }
     });
 </script>
+    <!-- MOBILE BOTTOM NAVIGATION (NATIVE APP STYLE) -->
+    <div class="mobile-bottom-nav">
+        <a href="/" class="bottom-nav-item">
+            <i class="fas fa-home"></i>
+            <span>Trang Chủ</span>
+        </a>
+        <a href="javascript:void(0)" onclick="openShortsPopup()" class="bottom-nav-item active">
+            <i class="fas fa-bolt"></i>
+            <span>Shorts</span>
+        </a>
+        <a href="/xem-chung/" class="bottom-nav-item">
+            <i class="fas fa-users"></i>
+            <span>Xem Chung</span>
+        </a>
+        <a href="/profile.html" class="bottom-nav-item">
+            <i class="fas fa-user-circle"></i>
+            <span>Cá Nhân</span>
+        </a>
+    </div>
+
+    <script>
+        function openShortsPopup() {
+            if (typeof openModal === 'function') {
+                openModal('phim-ngan', 'Phim Ngắn');
+            } else {
+                window.location.href = '/?action=open_shorts';
+            }
+        }
+    </script>
 </body>
 </html>
