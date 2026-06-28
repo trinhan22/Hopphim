@@ -371,14 +371,6 @@
             .m-btn-icon:active { transform: scale(0.9); background: var(--primary); border-color: var(--primary); }
             .m-btn-text { font-size: 0.7rem; font-weight: 700; text-shadow: 0 1px 2px #000; }
 
-            /* Nút mở danh sách tập Mobile */
-            .m-playlist-btn {
-                position: absolute; bottom: 20px; left: 20px; z-index: 10;
-                background: rgba(30,30,30,0.7); backdrop-filter: blur(10px);
-                padding: 10px 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2);
-                display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.9rem;
-                color: #fff; pointer-events: auto;
-            }
         }
 
         /* Drawer Mobile */
@@ -414,9 +406,9 @@
         .read-more-btn:hover { text-decoration: underline; }
         /* --- 1. CSS HIỆU ỨNG MOBILE (Ẩn hiện thông tin) --- */
         .m-info { 
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            padding: 20px 70px 80px 20px; 
-            background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+            position: absolute; top: 0; left: 0; width: 100%;
+            padding: 40px 70px 20px 20px; 
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
             z-index: 5;
             
             /* Hiệu ứng mờ dần */
@@ -636,9 +628,7 @@
         <div class="mobile-container" id="mobileSwiper">
             </div>
         
-        <div class="m-playlist-btn pc-hidden" onclick="toggleDrawer()" style="display:none;" id="mPlaylistBtn">
-            <i class="fas fa-layer-group"></i> <span id="mCurEp">Danh sách tập</span>
-        </div>
+        
 
     </div>
 
@@ -837,7 +827,7 @@
                 renderGrids(); 
 
                 if (isMobile) {
-                    document.getElementById('mPlaylistBtn').style.display = 'flex';
+                    // Playlist button logic removed since it is now per slide
                     renderMobileSlides();
                 } else {
                     document.getElementById('pcBgBlur').style.backgroundImage = `url('${movieData.poster_url}')`;
@@ -914,9 +904,13 @@
                 </div>
                 <div class="m-actions">
                      <div class="m-btn-icon" style="color:#ff4757; border-color:#ff4757;" onclick="event.stopPropagation()"><i class="fas fa-heart"></i></div>
-                     <span class="m-btn-text">Love</span>
+                     <span class="m-btn-text">Thích</span>
+                     
                      <div class="m-btn-icon" style="margin-top:15px;" onclick="event.stopPropagation()"><i class="fas fa-share"></i></div>
-                     <span class="m-btn-text">Share</span>
+                     <span class="m-btn-text">Chia sẻ</span>
+                     
+                     <div class="m-btn-icon" style="margin-top:15px; color:#fff;" onclick="event.stopPropagation(); toggleDrawer()"><i class="fas fa-layer-group"></i></div>
+                     <span class="m-btn-text">Tập phim</span>
                 </div>
             </div>`;
         });
