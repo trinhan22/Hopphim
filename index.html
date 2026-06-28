@@ -726,8 +726,8 @@
         .topic-card:hover::after { opacity: 0.4; transform: translate(-10px, -10px); }
         .topic-card i.floating-icon { position: absolute; bottom: -8px; right: -5px; font-size: 3.8rem; color: rgba(255, 255, 255, 0.05); transform: rotate(-15deg); transition: 0.5s; z-index: -1; }
         .topic-card:hover i.floating-icon { color: rgba(255, 255, 255, 0.12); transform: rotate(0deg) scale(1.1); }
-        .topic-name { font-size: 1.3rem; font-weight: 900; z-index: 2; position: relative; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .topic-link { font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 6px; z-index: 2; position: relative; color: rgba(255,255,255,0.6); transition: 0.3s; }
+        .topic-name { font-size: 1.2rem; font-weight: 900; z-index: 2; position: relative; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .topic-link { font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; gap: 6px; z-index: 2; position: relative; color: rgba(255,255,255,0.6); transition: 0.3s; }
         .topic-card:hover .topic-link { color: #fff; gap: 10px; }
 
         /* Color Mixins */
@@ -1030,7 +1030,7 @@
         }
         
         .top-text-style2 { flex: 1; padding-top: 5px; }
-        .top-title-style2 { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
+        .top-title-style2 { font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
         .top-meta-style2 { font-size: 0.85rem; color: #aaa; font-weight: 600; display: flex; gap: 10px; }
         .top-meta-badge { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: #fff; font-size: 0.7rem; }
 
@@ -1418,7 +1418,11 @@ footer {
             .n-card:hover { transform: none; }
             .nav-arrow { display: none; } 
 
-            .top-10-header h2 { font-size: 2rem; }
+            .ch-title { font-size: 1.3rem !important; }
+            .ch-link { font-size: 0.8rem !important; }
+            .top-10-header h2 { font-size: 1.3rem !important; }
+            .cinema-header h2 { font-size: 1.3rem !important; }
+            .short-header h2 { font-size: 1.3rem !important; }
             .top-5-grid { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; gap: 15px; padding-bottom: 20px; scrollbar-width: none; }
             .top-card-style2 { flex: 0 0 160px; }
             .top-rank-style2 { font-size: 3.2rem !important; }
@@ -1449,13 +1453,20 @@ footer {
 
         /* --- 3. ĐIỀU CHỈNH KHI XUỐNG MOBILE --- */
         @media (max-width: 900px) {
-            /* Mobile: Ép Card phim Quốc gia/Lịch sử nằm NGANG */
-            .n-poster-wide { display: block !important; }
-            .n-poster-portrait { display: none !important; }
-            
-            .n-card {
-                flex: 0 0 240px; /* Tăng chiều rộng để hợp với ảnh ngang */
-                aspect-ratio: 16/9 !important; /* Bắt buộc tỷ lệ ngang 16:9 */
+            /* Phim các nước & Lịch sử (#historyList) -> Nằm DỌC (Dùng poster_url) */
+            .country-grid .n-poster-wide { display: none !important; }
+            .country-grid .n-poster-portrait { display: block !important; }
+            .country-grid .n-card {
+                flex: 0 0 140px; 
+                aspect-ratio: 2/3 !important; 
+            }
+
+            /* CHỈ CÓ Short Drama -> Nằm NGANG (Dùng thumb_url) */
+            .short-grid .n-poster-wide { display: block !important; }
+            .short-grid .n-poster-portrait { display: none !important; }
+            .short-grid .n-card {
+                flex: 0 0 240px; 
+                aspect-ratio: 16/9 !important; 
             }
         }
 
@@ -1751,7 +1762,7 @@ footer {
             .short-header { margin-bottom: 10px; }
             .short-grid { gap: 10px; padding: 10px; }
             .short-card { flex: 0 0 130px; border-radius: 8px; } /* Mobile cố định px */
-            .short-info { transform: translateY(0); opacity: 1; padding: 8px 5px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); } /* Mobile luôn hiện info */
+            .short-info { display: none !important; } /* Mobile ẩn info (title + gradient) */
         }
 
         /* --- CSS RIÊNG CHO MODAL CARD DỌC --- */
@@ -2165,7 +2176,13 @@ footer {
         .bottom-nav-item:active {
             transform: scale(0.9);
         }
-
+        @media (max-width: 900px) {
+            /* Ẩn hoàn toàn lớp phủ thông tin (ẩn title và gradient) trên mobile */
+            .country-grid .n-info-layer,
+            .short-grid .n-info-layer {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -3396,8 +3413,11 @@ footer {
 
         // --- RENDER CARD (Chuẩn hóa cho Đa Nguồn) ---
         window.createMovieCardHTML = (m, isHistory = false, timeString = "") => {
-            let imgFull = m.thumb_url || m.poster_url; 
-            let imgPortrait = m.poster_url || m.thumb_url;
+            let imgFull = m.thumb_url || m.poster_url || ''; 
+            let imgPortrait = m.poster_url || m.thumb_url || '';
+            
+            if (imgFull && !imgFull.startsWith('http')) imgFull = 'https://phimimg.com/' + imgFull;
+            if (imgPortrait && !imgPortrait.startsWith('http')) imgPortrait = 'https://phimimg.com/' + imgPortrait;
             
             const nameFixed = (m.name || "").replace(/'/g, "\\'");
             const historyClass = isHistory ? `history-card-${m.slug}` : '';
@@ -3438,7 +3458,7 @@ footer {
                 
                 <div class="n-info-layer" style="${paddingStyle} display: flex; flex-direction: column; justify-content: flex-end;"> 
                     <div class="n-title-in" style="margin-bottom: 0px; line-height: 1.2;">${m.name}</div>
-                    ${originName ? `<div style="font-size: 0.75rem; color: #aaa; margin-bottom: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">${originName}</div>` : ''}
+                    ${originName ? `<div class="n-origin-name" style="font-size: 0.75rem; color: #aaa; margin-bottom: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">${originName}</div>` : ''}
 
                     <div class="n-meta-in" style="flex-wrap: wrap; gap: 5px; margin-top: -4px;">
                         ${isHistory 
@@ -3450,7 +3470,7 @@ footer {
                             `
                         }
                     </div>
-                    <div style="font-size: 0.75rem; color: #999; margin-top: 1px; font-weight: 500;">${genreText}</div>
+                    <div class="n-genre-in" style="font-size: 0.75rem; color: #999; margin-top: 1px; font-weight: 500;">${genreText}</div>
 
                     <div class="n-actions-in" style="margin-top: 3px;">
                         <button class="btn-mini-play">
@@ -3587,11 +3607,11 @@ footer {
                             <div class="top-rank-style2">${i+1}</div>
                             <div class="top-text-style2">
                                 <div class="top-title-style2">${m.name}</div>
-                                <div style="font-size: 0.8rem; color: #888; font-weight: 500; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${m.origin_name || ''}</div>
+                                <div style="font-size: 0.75rem; color: #888; font-weight: 500; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${m.origin_name || ''}</div>
                                 <div class="top-meta-style2" style="gap: 8px; align-items: center;">
-                                    <span style="color: ${ageColor}">${ageTag}</span>
-                                    <span style="font-size: 0.7rem; color: #555;">●</span>
-                                    <span style="font-weight: 600; font-size: 0.66rem;">${m.episode_current || 'Full'}</span>
+                                    <span style="color: ${ageColor}; font-size: 0.55rem;">${ageTag}</span>
+                                    <span style="font-size: 0.75rem; color: #555;">●</span>
+                                    <span style="font-weight: 600; font-size: 0.55rem;">${m.episode_current || 'Full'}</span>
                                 </div>
                             </div>
                         </div>
@@ -3632,9 +3652,9 @@ footer {
                                 <div class="cinema-title-en">${m.origin_name || ''}</div>
                                 <div class="cinema-meta" style="display:flex; align-items:center; gap:8px; margin-top:5px;">
                                     <span style="color: ${ageColor}">${ageTag}</span>
-                                    <span style="color:#aaa; font-size:0.7rem;">●</span>
+                                    <span style="color:#aaa; font-size:0.75rem;">●</span>
                                     <span style="color:#ccc;">${m.year || '2026'}</span>
-                                    <span style="color:#aaa; font-size:0.7rem;">●</span>
+                                    <span style="color:#aaa; font-size:0.75rem;">●</span>
                                     <span style="color:#ccc;">${duration}</span>
                                 </div>
                             </div>
@@ -3670,13 +3690,13 @@ footer {
                             <div class="top-rank-style2">${i+1}</div>
                             <div class="top-text-style2">
                                 <div class="top-title-style2" style="font-size: 1rem; margin-bottom: 2px;">${m.name}</div>
-                                <div style="font-size: 0.8rem; color: #888; font-weight: 500; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${m.origin_name || ''}</div>
+                                <div style="font-size: 0.75rem; color: #888; font-weight: 500; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${m.origin_name || ''}</div>
                                 <div class="top-meta-style2" style="gap: 8px; align-items: center;">
-                                    <span style="color: ${ageColor}">${ageTag}</span>
-                                    <span style="font-size: 0.7rem; color: #555;">●</span>
-                                    <span style="font-weight: 600; font-size: 0.66rem;">${m.year || '2026'}</span>
-                                    <span style="font-size: 0.7rem; color: #555;">●</span>
-                                    <span style="font-weight: 600; font-size: 0.66rem;">${duration}</span>
+                                    <span style="color: ${ageColor}; font-size: 0.55rem;">${ageTag}</span>
+                                    <span style="font-size: 0.75rem; color: #555;">●</span>
+                                    <span style="font-weight: 600; font-size: 0.55rem;">${m.year || '2026'}</span>
+                                    <span style="font-size: 0.75rem; color: #555;">●</span>
+                                    <span style="font-weight: 600; font-size: 0.55rem;">${duration}</span>
                                 </div>
                             </div>
                         </div>
