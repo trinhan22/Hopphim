@@ -228,6 +228,40 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
+        /* --- 8. TABS & USER MANAGEMENT --- */
+        .admin-tabs {
+            display: flex; gap: 15px; margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px;
+        }
+        .admin-tab {
+            background: transparent; border: none; color: var(--text-sub); 
+            font-size: 1rem; font-weight: 600; padding: 10px 20px;
+            border-radius: 8px; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .admin-tab:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .admin-tab.active { background: rgba(255, 94, 98, 0.1); color: var(--primary); }
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+        
+        .badge-vip { background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3); }
+        .badge-standard { background: rgba(255,255,255,0.1); color: #ccc; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .badge-banned { background: rgba(239, 68, 68, 0.15); color: var(--danger); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(239, 68, 68, 0.3); }
+        
+        .btn-vip { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .btn-vip:hover { background: var(--warning); color: #fff; }
+        .btn-revoke { background: rgba(255,255,255,0.05); color: var(--text-sub); border: 1px solid rgba(255,255,255,0.1); }
+        .btn-revoke:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-ban { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .btn-ban:hover { background: var(--danger); color: #fff; }
+        .btn-unban { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .btn-unban:hover { background: var(--success); color: #fff; }
+        
+        .user-filters { display: flex; gap: 8px; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 8px; }
+        .filter-btn { background: transparent; border: none; color: var(--text-sub); padding: 6px 12px; font-size: 0.8rem; font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+        .filter-btn.active { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .filter-btn:hover:not(.active) { color: #fff; }
+
         @media (max-width: 768px) {
             .table-container { overflow-x: auto; }
             th, td { white-space: nowrap; }
@@ -248,50 +282,112 @@
     </header>
 
     <div class="container">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon-box icon-pending"><i class="fas fa-clock"></i></div>
-                <div class="stat-info">
-                    <span>Đơn chờ duyệt</span>
-                    <strong id="count-pending">0</strong>
+        <!-- TABS NAVIGATION -->
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-target="tab-topup"><i class="fas fa-coins"></i> Yêu cầu nạp xu</button>
+            <button class="admin-tab" data-target="tab-users"><i class="fas fa-users"></i> Quản lý người dùng</button>
+        </div>
+
+        <!-- TAB 1: YÊU CẦU NẠP XU (CURRENT) -->
+        <div id="tab-topup" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon-box icon-pending"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info">
+                        <span>Đơn chờ duyệt</span>
+                        <strong id="count-pending">0</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-box icon-revenue"><i class="fas fa-coins"></i></div>
+                    <div class="stat-info">
+                        <span>Doanh thu ước tính</span>
+                        <strong id="total-revenue">0đ</strong>
+                    </div>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon-box icon-revenue"><i class="fas fa-coins"></i></div>
-                <div class="stat-info">
-                    <span>Doanh thu ước tính</span>
-                    <strong id="total-revenue">0đ</strong>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Danh sách yêu cầu duyệt</h3>
+                    <div class="live-tag"><div class="dot"></div> Real-time</div>
+                </div>
+
+                <table id="request-table">
+                    <thead>
+                        <tr>
+                            <th>Khách hàng</th>
+                            <th>Gói nạp</th>
+                            <th>Mã giao dịch</th>
+                            <th>Trạng thái</th>
+                            <th style="text-align: right;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="request-body"></tbody>
+                </table>
+
+                <div id="initial-loading" class="loading-state">
+                    <div class="spinner"></div>
+                    <span>Đang tải dữ liệu...</span>
+                </div>
+                
+                <div id="no-data" class="empty-state">
+                    <i class="fas fa-clipboard-check"></i>
+                    <p>Tuyệt vời! Không có yêu cầu nào cần xử lý.</p>
                 </div>
             </div>
         </div>
 
-        <div class="table-container">
-            <div class="table-header">
-                <h3>Danh sách yêu cầu duyệt</h3>
-                <div class="live-tag"><div class="dot"></div> Real-time</div>
+        <!-- TAB 2: QUẢN LÝ NGƯỜI DÙNG (NEW) -->
+        <div id="tab-users" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon-box" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <span>Tổng Người Dùng</span>
+                        <strong id="count-users">0</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-box" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-crown"></i></div>
+                    <div class="stat-info">
+                        <span>Thành Viên VIP</span>
+                        <strong id="count-vip">0</strong>
+                    </div>
+                </div>
             </div>
 
-            <table id="request-table">
-                <thead>
-                    <tr>
-                        <th>Khách hàng</th>
-                        <th>Gói nạp</th>
-                        <th>Mã giao dịch</th>
-                        <th>Trạng thái</th>
-                        <th style="text-align: right;">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody id="request-body"></tbody>
-            </table>
+            <div class="table-container">
+                <div class="table-header" style="flex-wrap: wrap; gap: 15px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <h3>Danh sách tài khoản</h3>
+                        <div class="live-tag"><div class="dot"></div> Real-time</div>
+                    </div>
+                    
+                    <div class="user-filters">
+                        <button class="filter-btn active" data-filter="all">Tất cả</button>
+                        <button class="filter-btn" data-filter="vip"><i class="fas fa-crown" style="color:var(--warning);"></i> VIP</button>
+                        <button class="filter-btn" data-filter="standard">Tiêu chuẩn</button>
+                    </div>
+                </div>
 
-            <div id="initial-loading" class="loading-state">
+                <table id="users-table">
+                    <thead>
+                        <tr>
+                            <th>Tài khoản</th>
+                            <th>Trạng thái</th>
+                            <th>Xu hiện có</th>
+                            <th>Ngày tham gia</th>
+                            <th style="text-align: right;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-body"></tbody>
+                </table>
+            </div>
+
+            <div id="users-loading" class="loading-state">
                 <div class="spinner"></div>
-                <span>Đang tải dữ liệu...</span>
-            </div>
-            
-            <div id="no-data" class="empty-state">
-                <i class="fas fa-clipboard-check"></i>
-                <p>Tuyệt vời! Không có yêu cầu nào cần xử lý.</p>
+                <span>Đang tải danh sách người dùng...</span>
             </div>
         </div>
     </div>
@@ -419,6 +515,157 @@
             if (!confirmed) return;
             try { await deleteDoc(doc(db, "topupRequests", requestId)); showToast("Đã xóa yêu cầu!", 'success'); } 
             catch (e) { showToast("Lỗi: " + e.message, 'error'); }
+        };
+
+        // --- TAB SWITCHING ---
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.target).classList.add('active');
+                
+                if (tab.dataset.target === 'tab-users') {
+                    if (!window.usersLoaded) { loadUsers(); window.usersLoaded = true; }
+                }
+            });
+        });
+        
+        // --- FILTER SWITCHING ---
+        window.currentFilter = 'all';
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                window.currentFilter = btn.dataset.filter;
+                renderUsersTable();
+            });
+        });
+
+        // --- USER MANAGEMENT LOGIC ---
+        window.allUsersData = [];
+        
+        function loadUsers() {
+            const q = query(collection(db, "users"));
+            onSnapshot(q, (snapshot) => {
+                document.getElementById('users-loading').style.display = 'none';
+                window.allUsersData = [];
+                let totalUsers = 0; let vipUsers = 0;
+
+                snapshot.forEach((docSnap) => {
+                    totalUsers++;
+                    const data = docSnap.data();
+                    const uid = docSnap.id;
+                    const isVip = (data.vipExpiration || 0) > Date.now();
+                    if (isVip) vipUsers++;
+                    
+                    window.allUsersData.push({ uid, data, isVip });
+                });
+                
+                document.getElementById('count-users').innerText = totalUsers;
+                document.getElementById('count-vip').innerText = vipUsers;
+                
+                renderUsersTable();
+            }, (error) => {
+                showToast("Lỗi tải danh sách: " + error.message, "error");
+            });
+        }
+
+        function renderUsersTable() {
+            const body = document.getElementById('users-body');
+            body.innerHTML = "";
+            
+            const filteredUsers = window.allUsersData.filter(user => {
+                if (window.currentFilter === 'vip') return user.isVip;
+                if (window.currentFilter === 'standard') return !user.isVip;
+                return true; // 'all'
+            });
+
+            filteredUsers.forEach(userObj => {
+                const { uid, data, isVip } = userObj;
+                const isBanned = data.isBanned === true;
+                const coin = data.coinBalance !== undefined ? data.coinBalance : (data.coin || 0);
+                
+                let joinedStr = "Chưa rõ";
+                if (data.createdAt) {
+                    try {
+                        const date = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+                        joinedStr = date.toLocaleDateString('vi-VN');
+                    } catch(e) {}
+                }
+
+                let statusBadge = '';
+                if (isBanned) statusBadge = '<span class="badge-banned"><i class="fas fa-ban"></i> Bị khóa</span>';
+                else if (isVip) statusBadge = '<span class="badge-vip"><i class="fas fa-crown"></i> VIP</span>';
+                else statusBadge = '<span class="badge-standard">Tiêu chuẩn</span>';
+
+                let actionsHtml = '';
+                if (isBanned) {
+                    actionsHtml = `<button class="btn btn-unban" onclick="window.unbanUser('${uid}')"><i class="fas fa-unlock"></i> Mở khóa</button>`;
+                } else {
+                    actionsHtml += `<button class="btn btn-ban" onclick="window.banUser('${uid}')"><i class="fas fa-ban"></i> Khóa</button>`;
+                    if (isVip) {
+                        actionsHtml += `<button class="btn btn-revoke" onclick="window.revokeVip('${uid}')"><i class="fas fa-times"></i> Hủy VIP</button>`;
+                    } else {
+                        actionsHtml += `<button class="btn btn-vip" onclick="window.grantVip('${uid}')"><i class="fas fa-crown"></i> Cấp VIP</button>`;
+                    }
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="user-cell">
+                            <span class="user-email">${data.email || 'Người dùng ẩn danh'}</span>
+                            <span class="user-id">ID: ${uid.substring(0, 10)}...</span>
+                        </div>
+                    </td>
+                    <td>${statusBadge}</td>
+                    <td><div class="amount-badge" style="background: rgba(16,185,129,0.1); color: var(--success);">${coin.toLocaleString()} <i class="fas fa-coins"></i></div></td>
+                    <td style="color: #aaa; font-size: 0.85rem;">${joinedStr}</td>
+                    <td style="text-align: right;"><div class="action-btns">${actionsHtml}</div></td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        // Global functions for inline HTML button handlers
+        window.grantVip = async function(userId) {
+            const confirmed = await customConfirm("Xác nhận cấp VIP 1 tháng cho người dùng này?");
+            if (!confirmed) return;
+            try {
+                // Thêm 30 ngày (ms)
+                const newExpiration = Date.now() + (30 * 24 * 60 * 60 * 1000);
+                await setDoc(doc(db, "users", userId), { vipExpiration: newExpiration }, { merge: true });
+                showToast("Đã cấp VIP thành công!", 'success');
+            } catch(e) { showToast("Lỗi: " + e.message, 'error'); }
+        };
+
+        window.revokeVip = async function(userId) {
+            const confirmed = await customConfirm("Xác nhận HỦY VIP của người dùng này?");
+            if (!confirmed) return;
+            try {
+                await setDoc(doc(db, "users", userId), { vipExpiration: 0 }, { merge: true });
+                showToast("Đã hủy VIP!", 'success');
+            } catch(e) { showToast("Lỗi: " + e.message, 'error'); }
+        };
+
+        window.banUser = async function(userId) {
+            const confirmed = await customConfirm("CẢNH BÁO: Khóa vĩnh viễn tài khoản này?");
+            if (!confirmed) return;
+            try {
+                await setDoc(doc(db, "users", userId), { isBanned: true }, { merge: true });
+                showToast("Tài khoản đã bị khóa!", 'success');
+            } catch(e) { showToast("Lỗi: " + e.message, 'error'); }
+        };
+
+        window.unbanUser = async function(userId) {
+            const confirmed = await customConfirm("Xác nhận mở khóa tài khoản này?");
+            if (!confirmed) return;
+            try {
+                await setDoc(doc(db, "users", userId), { isBanned: false }, { merge: true });
+                showToast("Đã mở khóa tài khoản!", 'success');
+            } catch(e) { showToast("Lỗi: " + e.message, 'error'); }
         };
     </script>
     <script type="text/javascript">
