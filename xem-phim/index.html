@@ -2251,6 +2251,34 @@ footer {
         body.plyr--fullscreen-active > *:not(.plyr) {
             display: none !important;
         }
+        
+        /* 🔥 TOAST CHỈ BÁO GESTURE (SÁNG / ÂM LƯỢNG) */
+        .gesture-toast {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .gesture-toast.show {
+            opacity: 1;
+            visibility: visible;
+        }
 
         /* Ẩn Header, Footer và các thành phần khác khi đang Fullscreen */
         body.plyr--fullscreen-active header,
@@ -2624,7 +2652,7 @@ footer {
                             <a class="dropdown-item-link" onclick="loadCategory('tai-lieu', 'Tài Liệu')">Tài Liệu</a>
                             <a class="dropdown-item-link" onclick="loadCategory('gia-dinh', 'Gia Đình')">Gia Đình</a>
                             <a class="dropdown-item-link" onclick="loadCategory('hoc-duong', 'Học Đường')">Học Đường</a>
-                            <a class="dropdown-item-link" onclick="loadCategory('short-drama', 'Short Drama')">Short Drama</a>
+                            <a class="dropdown-item-link" onclick="loadCategory('phim-ngan', 'Short Drama')">Short Drama</a>
                         </div>
                     </div>
                 </li>
@@ -3458,23 +3486,131 @@ footer {
     // --- 2. AUTO ROTATION (ANDROID & IOS NATIVE) ---
     function setupAutoRotation(player) {
         player.on('enterfullscreen', async () => {
-            try {
-                if (window.innerWidth < 1024) {
-                    // Android
-                    if (screen.orientation && screen.orientation.lock) {
-                        await screen.orientation.lock('landscape');
-                    } 
-                    // iOS (Native Player)
-                    else if (player.media.webkitEnterFullscreen) {
+            if (window.innerWidth < 1024) {
+                try {
+                    const lockFunction = (window.screen.orientation && window.screen.orientation.lock) 
+                        || window.screen.lockOrientation 
+                        || window.screen.mozLockOrientation 
+                        || window.screen.msLockOrientation;
+                        
+                    if (lockFunction) {
+                        if (window.screen.orientation && window.screen.orientation.lock) {
+                            await window.screen.orientation.lock('landscape');
+                        } else {
+                            lockFunction('landscape');
+                        }
+                    } else if (player.media.webkitEnterFullscreen) {
                         player.media.webkitEnterFullscreen();
                     }
-                }
-            } catch (err) { console.log('Tự xoay không hỗ trợ trên thiết bị này'); }
+                } catch (err) { console.log('Tự xoay không hỗ trợ trên thiết bị này', err); }
+            }
         });
 
         player.on('exitfullscreen', async () => {
-            try { if (screen.orientation && screen.orientation.unlock) await screen.orientation.unlock(); } catch (err) {}
+            if (window.innerWidth < 1024) {
+                try {
+                    if (window.screen.orientation && window.screen.orientation.unlock) {
+                        window.screen.orientation.unlock();
+                    } else if (window.screen.unlockOrientation) {
+                        window.screen.unlockOrientation();
+                    }
+                } catch (err) {}
+            }
         });
+    }
+
+    // --- 3. MOBILE GESTURES (SWIPE VOLUME & BRIGHTNESS) ---
+    function setupMobileTouchGestures(player) {
+        if (window.innerWidth >= 1024) return;
+        const wrapper = player.elements.wrapper;
+        const video = player.media;
+        
+        let startY = 0;
+        let startX = 0;
+        let isRightSide = false;
+        let isDragging = false;
+        let initialVolume = 0;
+        let initialBrightness = 1; 
+        
+        const gestureToast = document.createElement('div');
+        gestureToast.className = 'gesture-toast';
+        wrapper.appendChild(gestureToast);
+
+        wrapper.addEventListener('touchstart', (e) => {
+            if (!player.fullscreen.active) return;
+            if (e.touches.length > 1) return; 
+            
+            if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.center-controls-layer')) return;
+
+            const touch = e.touches[0];
+            startY = touch.clientY;
+            startX = touch.clientX;
+            
+            isRightSide = startX > (window.innerWidth / 2); 
+            isDragging = true;
+            
+            initialVolume = player.volume;
+            const filterStr = video.style.filter || '';
+            const match = filterStr.match(/brightness\(([^)]+)\)/);
+            if (match) {
+                initialBrightness = parseFloat(match[1]);
+            } else {
+                initialBrightness = 1;
+            }
+        }, { passive: true });
+
+        wrapper.addEventListener('touchmove', (e) => {
+            if (!isDragging || !player.fullscreen.active) return;
+            
+            const touch = e.touches[0];
+            const deltaY = startY - touch.clientY; 
+            const deltaX = Math.abs(startX - touch.clientX);
+            
+            // Nếu vuốt dọc mạnh hơn vuốt ngang
+            if (Math.abs(deltaY) > 10 && Math.abs(deltaY) > deltaX) {
+                e.preventDefault(); 
+                
+                const screenHeight = window.innerHeight;
+                const changePct = deltaY / (screenHeight / 2); 
+                
+                if (isRightSide) {
+                    let newVolume = initialVolume + changePct;
+                    newVolume = Math.max(0, Math.min(1, newVolume));
+                    player.volume = newVolume;
+                    
+                    const pct = Math.round(newVolume * 100);
+                    let icon = 'fa-volume-up';
+                    if (pct === 0) icon = 'fa-volume-mute';
+                    else if (pct < 50) icon = 'fa-volume-down';
+                    
+                    showToast(`<i class="fas ${icon}"></i> ${pct}%`);
+                } else {
+                    let newBrightness = initialBrightness + changePct;
+                    newBrightness = Math.max(0.1, Math.min(1, newBrightness)); 
+                    video.style.filter = `brightness(${newBrightness})`;
+                    
+                    const pct = Math.round(newBrightness * 100);
+                    showToast(`<i class="fas fa-sun"></i> ${pct}%`);
+                }
+            }
+        }, { passive: false });
+
+        wrapper.addEventListener('touchend', () => {
+            isDragging = false;
+            hideToast();
+        });
+        
+        let toastTimeout;
+        function showToast(html) {
+            gestureToast.innerHTML = html;
+            gestureToast.classList.add('show');
+            clearTimeout(toastTimeout);
+        }
+        function hideToast() {
+            toastTimeout = setTimeout(() => {
+                gestureToast.classList.remove('show');
+            }, 800);
+        }
     }
 
     // --- KHỞI TẠO PLAYER (CÓ CHỌN ĐỘ PHÂN GIẢI + MENU TẬP/AUDIO TÙY CHỈNH) ---
@@ -4420,13 +4556,13 @@ footer {
 
             let data = await fetchListMultiSource(`/the-loai/${slug}`);
             
-            if (slug === 'short-drama' && (!data.status || !data.data || !data.data.items || data.data.items.length === 0)) {
+            if (slug === 'short-drama' && (!data || !data.status || !data.data || !data.data.items || data.data.items.length === 0)) {
                 data = await fetchListMultiSource(`/the-loai/phim-ngan`);
-            } else if (slug === 'phim-ngan' && (!data.status || !data.data || !data.data.items || data.data.items.length === 0)) {
+            } else if (slug === 'phim-ngan' && (!data || !data.status || !data.data || !data.data.items || data.data.items.length === 0)) {
                 data = await fetchListMultiSource(`/the-loai/short-drama`);
             }
 
-            if (data.status && data.data && data.data.items && data.data.items.length > 0) {
+            if (data && data.status && data.data && data.data.items && data.data.items.length > 0) {
                 let html = '';
                 data.data.items.forEach(m => {
                     let dest = (slug === 'short-drama' || slug === 'phim-ngan') ? `/short/${m.slug}` : `/xem-phim/${m.slug}`;
@@ -4773,8 +4909,8 @@ footer {
 
     <script>
         function openShortsPopup() {
-            if (typeof openModal === 'function') {
-                openModal('phim-ngan', 'Phim Ngắn');
+            if (typeof loadCategory === 'function') {
+                loadCategory('phim-ngan', 'Phim Ngắn');
             } else {
                 window.location.href = '/?action=open_shorts';
             }

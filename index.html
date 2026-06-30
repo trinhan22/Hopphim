@@ -3748,13 +3748,13 @@ footer {
             let data = await fetchListMultiSource(`/the-loai/${slug}`);
             
             // Fallback for Shorts API
-            if (slug === 'short-drama' && (!data.status || !data.data || !data.data.items || data.data.items.length === 0)) {
+            if (slug === 'short-drama' && (!data || !data.status || !data.data || !data.data.items || data.data.items.length === 0)) {
                 data = await fetchListMultiSource(`/the-loai/phim-ngan`);
-            } else if (slug === 'phim-ngan' && (!data.status || !data.data || !data.data.items || data.data.items.length === 0)) {
+            } else if (slug === 'phim-ngan' && (!data || !data.status || !data.data || !data.data.items || data.data.items.length === 0)) {
                 data = await fetchListMultiSource(`/the-loai/short-drama`);
             }
 
-            if (data.status && data.data && data.data.items && data.data.items.length > 0) {
+            if (data && data.status && data.data && data.data.items && data.data.items.length > 0) {
                 let html = '';
                 data.data.items.forEach(m => {
                     let dest = (slug === 'short-drama' || slug === 'phim-ngan') ? `/short/${m.slug}` : `/xem-phim/${m.slug}`;
@@ -3786,11 +3786,11 @@ footer {
             try {
                 // Tận dụng hàm fetchListMultiSource siêu mạnh (KKPhim dùng "phim-ngan", Ophim dùng "short-drama")
                 let data = await fetchListMultiSource(`/the-loai/phim-ngan?page=1`);
-                if (!data.status || data.data.items.length === 0) {
+                if (!data || !data.status || !data.data || !data.data.items || data.data.items.length === 0) {
                     data = await fetchListMultiSource(`/the-loai/short-drama?page=1`);
                 }
 
-                if (data.status && data.data.items && data.data.items.length > 0) {
+                if (data && data.status && data.data && data.data.items && data.data.items.length > 0) {
                     let html = '';
                     data.data.items.slice(0, 24).forEach(m => {
                         // Ép kiểu chống crash API trả về Number
@@ -3962,8 +3962,8 @@ footer {
 
     <script>
         function openShortsPopup() {
-            if (typeof openModal === 'function') {
-                openModal('phim-ngan', 'Phim Ngắn');
+            if (typeof loadCategory === 'function') {
+                loadCategory('phim-ngan', 'Phim Ngắn');
             } else {
                 window.location.href = '/?action=open_shorts';
             }
@@ -3973,7 +3973,7 @@ footer {
             const urlParams = new URLSearchParams(window.location.search);
             if(urlParams.get('action') === 'open_shorts') {
                 setTimeout(() => {
-                    if (typeof openModal === 'function') openModal('phim-ngan', 'Phim Ngắn');
+                    if (typeof loadCategory === 'function') loadCategory('phim-ngan', 'Phim Ngắn');
                 }, 800);
             }
         });

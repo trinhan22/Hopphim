@@ -932,8 +932,8 @@
 
     <script>
         function openShortsPopup() {
-            if (typeof openModal === 'function') {
-                openModal('phim-ngan', 'Phim Ngắn');
+            if (typeof loadCategory === 'function') {
+                loadCategory('phim-ngan', 'Phim Ngắn');
             } else {
                 window.location.href = '/?action=open_shorts';
             }
