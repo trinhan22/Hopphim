@@ -2050,9 +2050,10 @@
 
         // --- 2. AUTO ROTATION (ANDROID & IOS NATIVE) ---
         function setupAutoRotation(player) {
-            player.on('enterfullscreen', () => {
+            const handleFullscreen = async () => {
+                const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
                 if (window.innerWidth < 1024) {
-                    const tryLock = async () => {
+                    if (isFullscreen) {
                         try {
                             if (window.screen.orientation && window.screen.orientation.lock) {
                                 await window.screen.orientation.lock('landscape');
@@ -2062,26 +2063,29 @@
                                 window.screen.mozLockOrientation('landscape');
                             } else if (window.screen.msLockOrientation) {
                                 window.screen.msLockOrientation('landscape');
-                            } else if (player.media.webkitEnterFullscreen) {
-                                player.media.webkitEnterFullscreen();
                             }
-                        } catch (e) { console.warn("Lỗi xoay màn hình:", e); }
-                    };
-                    
-                    tryLock();
-                    setTimeout(tryLock, 300);
-                    setTimeout(tryLock, 600);
+                        } catch (err) { console.warn('Lỗi xoay màn hình:', err); }
+                    } else {
+                        try {
+                            if (window.screen.orientation && window.screen.orientation.unlock) {
+                                window.screen.orientation.unlock();
+                            } else if (window.screen.unlockOrientation) {
+                                window.screen.unlockOrientation();
+                            }
+                        } catch (err) {}
+                    }
                 }
-            });
-            player.on('exitfullscreen', () => {
-                if (window.innerWidth < 1024) {
-                    try {
-                        if (window.screen.orientation && window.screen.orientation.unlock) {
-                            window.screen.orientation.unlock();
-                        } else if (window.screen.unlockOrientation) {
-                            window.screen.unlockOrientation();
-                        }
-                    } catch (e) { console.warn("Lỗi mở khóa màn hình:", e); }
+            };
+
+            document.addEventListener('fullscreenchange', handleFullscreen);
+            document.addEventListener('webkitfullscreenchange', handleFullscreen);
+            document.addEventListener('mozfullscreenchange', handleFullscreen);
+            document.addEventListener('MSFullscreenChange', handleFullscreen);
+
+            // Fallback cho iOS Safari (iOS Native Player)
+            player.on('enterfullscreen', () => {
+                if (window.innerWidth < 1024 && player.media.webkitEnterFullscreen) {
+                    try { player.media.webkitEnterFullscreen(); } catch (e) {}
                 }
             });
         }
