@@ -430,7 +430,7 @@
         /* ==========================================================================
            🔥 GIAO DIỆN PLAYER (ĐƯỢC BÊ TỪ TRANG XEM PHIM SANG)
            ========================================================================== */
-        :root { --plyr-color-main: #FF5E62; }
+        :root { --plyr-color-main: #FF8F50; }
         .plyr--full-ui input[type=range] { color: var(--plyr-color-main); }
         .plyr__control--overlaid { display: none !important; }
         .plyr--video .plyr__control.plyr__tab-focus, 
@@ -482,6 +482,26 @@
             display: none !important;
         }
 
+        /* ==========================================================================
+           🔥 MOBILE CENTER CONTROLS (3 NÚT GIỮA MÀN HÌNH)
+           ========================================================================== */
+        
+        .center-controls-layer {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 60; display: flex; align-items: center; gap: 40px; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .cc-btn { background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255,255,255,0.1); color: #fff; border-radius: 50%; cursor: pointer; backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; transition: all 0.2s; pointer-events: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .cc-btn-small { width: 50px; height: 50px; font-size: 1.2rem; }
+        .cc-btn-large { width: 70px; height: 70px; font-size: 2rem; background: var(--plyr-color-main); border-color: transparent; box-shadow: 0 0 20px rgba(255, 143, 80, 0.4); opacity: 0.8; }
+        .cc-btn:active { transform: scale(0.9); background: #fff; color: #000; }
+        .center-controls-layer.hidden { opacity: 0; pointer-events: none; }
+        @media (min-width: 901px) { .center-controls-layer { display: none !important; } }
+        
+        @media (max-width: 900px) {
+            .pause-overlay { display: none !important; }
+            .plyr__control--overlaid { display: none !important; }
+        }
+
         /* NÚT QUAY LẠI TRÊN PLAYER */
         .btn-back-room {
             position: absolute;
@@ -510,10 +530,10 @@
         .pause-overlay { position: absolute; inset: 0; z-index: 40; background: radial-gradient(circle at 75% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 60%, rgba(16,18,27,0.95) 100%), linear-gradient(90deg, rgba(16,18,27,0.85) 0%, rgba(16,18,27,0.6) 45%, transparent 100%); backdrop-filter: blur(5px); display: flex; flex-direction: column; justify-content: center; padding-left: 50px; opacity: 0; visibility: hidden; transition: all 0.4s ease; pointer-events: none; }
         .pause-overlay.active { opacity: 1; visibility: visible; }
         .pause-info-content { max-width: 600px; display: flex; flex-direction: column; gap: 15px; animation: slideInUp 0.5s ease;}
-        .pause-ep-title { color: #FF5E62; font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px;}
-        .pause-ep-title::before { content: ''; display: block; width: 35px; height: 2.5px; background: linear-gradient(90deg, transparent, #FF5E62); }
+        .pause-ep-title { color: var(--plyr-color-main); font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px;}
+        .pause-ep-title::before { content: ''; display: block; width: 35px; height: 2.5px; background: linear-gradient(90deg, transparent, var(--plyr-color-main)); }
         .pause-movie-title { color: #fff; font-size: 2.8rem; font-weight: 900; line-height: 1.1; text-transform: capitalize; text-shadow: 0 5px 15px rgba(0,0,0,0.8); margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
-        .pause-desc { color: rgba(255, 255, 255, 0.9); font-size: 1.05rem; line-height: 1.6; max-width: 90%; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; border-left: 4px solid #FF5E62; padding-left: 15px; }
+        .pause-desc { color: rgba(255, 255, 255, 0.9); font-size: 1.05rem; line-height: 1.6; max-width: 90%; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; border-left: 4px solid var(--plyr-color-main); padding-left: 15px; }
         
         /* 🔥 BẢO ĐẢM KHÔNG BỊ CẮT CHỮ THANH THÔNG TIN (FIX TRIỆT ĐỂ LỖI BẸP CHỮ) */
         .video-info-bar { 
@@ -1936,6 +1956,93 @@
 
             renderPauseOverlay(movieData.name, epData.name, movieData.content);
             setupPauseLogic(plyrPlayer);
+            setupMobileControls(plyrPlayer);
+            setupAutoRotation(plyrPlayer);
+        }
+
+        // --- 🔥 1. MOBILE CONTROLS ---
+        function setupMobileControls(player) {
+            if (window.innerWidth >= 1024) return;
+            const container = player.elements.container;
+            
+            const oldLayer = container.querySelector('.center-controls-layer');
+            if (oldLayer) oldLayer.remove();
+
+            const layer = document.createElement('div');
+            layer.className = 'center-controls-layer';
+            layer.innerHTML = `
+                <div class="cc-btn cc-btn-small" id="cc-rewind"><i class="fas fa-undo-alt"></i></div>
+                <div class="cc-btn cc-btn-large" id="cc-play"><i class="fas fa-play"></i></div>
+                <div class="cc-btn cc-btn-small" id="cc-forward"><i class="fas fa-redo-alt"></i></div>
+            `;
+            container.appendChild(layer);
+
+            const btnRewind = layer.querySelector('#cc-rewind');
+            const btnPlay = layer.querySelector('#cc-play');
+            const btnForward = layer.querySelector('#cc-forward');
+            const iconPlay = btnPlay.querySelector('i');
+
+            let hideTimeout;
+            const showControls = () => {
+                layer.classList.remove('hidden');
+                clearTimeout(hideTimeout);
+                if (player.playing) {
+                    hideTimeout = setTimeout(() => layer.classList.add('hidden'), 2500);
+                }
+            };
+
+            btnRewind.onclick = (e) => { 
+                e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+                player.rewind(10); showControls(); 
+            };
+            btnForward.onclick = (e) => { 
+                e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+                player.forward(10); showControls(); 
+            };
+            btnPlay.onclick = (e) => { 
+                e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+                player.togglePlay();
+            };
+
+            player.on('play', () => { iconPlay.className = 'fas fa-pause'; showControls(); });
+            player.on('pause', () => { iconPlay.className = 'fas fa-play'; layer.classList.remove('hidden'); clearTimeout(hideTimeout); });
+
+            const wrapper = player.elements.wrapper;
+            wrapper.onclick = (e) => {
+                if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.center-controls-layer')) return;
+                if (layer.classList.contains('hidden')) {
+                    showControls();
+                } else if (player.playing) {
+                    layer.classList.add('hidden');
+                }
+            };
+            showControls();
+        }
+
+        // --- 2. AUTO ROTATION (ANDROID & IOS NATIVE) ---
+        function setupAutoRotation(player) {
+            player.on('enterfullscreen', async () => {
+                if (window.innerWidth < 1024) {
+                    try {
+                        if (screen.orientation && screen.orientation.lock) {
+                            await screen.orientation.lock('landscape');
+                        } else if (screen.lockOrientation) {
+                            screen.lockOrientation('landscape');
+                        }
+                    } catch (e) { console.warn("Lỗi xoay màn hình:", e); }
+                }
+            });
+            player.on('exitfullscreen', async () => {
+                if (window.innerWidth < 1024) {
+                    try {
+                        if (screen.orientation && screen.orientation.unlock) {
+                            screen.orientation.unlock();
+                        } else if (screen.unlockOrientation) {
+                            screen.unlockOrientation();
+                        }
+                    } catch (e) { console.warn("Lỗi mở khóa màn hình:", e); }
+                }
+            });
         }
 
         function renderPauseOverlay(movieName, epName, description) {

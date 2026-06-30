@@ -23,7 +23,7 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <style>
-        :root { --plyr-color-main: #FF5E62; }
+        :root { --plyr-color-main: #FF8F50; }
         .plyr--full-ui input[type=range] { color: var(--plyr-color-main); }
         .plyr__control--overlaid {
             display: none !important;
@@ -174,7 +174,7 @@
         }
         .plyr__custom-btn:hover { opacity: 1; color: #fff; background: rgba(255,255,255,0.1); }
         .plyr__custom-btn i { font-size: 1.1rem; color: #fff; }
-        .plyr__custom-btn:hover i { color: #FF5E62 !important; }
+        .plyr__custom-btn:hover i { color: var(--plyr-color-main) !important; }
 
         /* Khung Popup hiển thị Danh sách & Phụ đề */
         .plyr-popup-box {
@@ -308,9 +308,9 @@
         .plyr__controls {
             z-index: 99 !important; 
         }
-        /* Ép nút Bỏ qua giới thiệu / Chuyển tập chìm xuống dưới */
+        /* Ép nút Bỏ qua giới thiệu / Chuyển tập nổi lên trên các overlay nhưng dưới thanh controls */
         .skip-intro-btn {
-            z-index: 10 !important; 
+            z-index: 80 !important; 
         }
 
         /* ==========================================================================
@@ -423,7 +423,7 @@
             font-size: 1.05rem; color: #fff; background: rgba(0,0,0,0.3);
         }
         .pep-header i { color: #888; transition: 0.2s; }
-        .pep-header i:hover { color: var(--primary-color); transform: scale(1.1); }
+        .pep-header i:hover { color: var(--plyr-color-main); transform: scale(1.1); }
         
         .pep-list { 
             max-height: 350px; overflow-y: auto; padding: 12px; 
@@ -439,7 +439,7 @@
             cursor: pointer; transition: all 0.3s ease; align-items: center; border: 1px solid transparent;
         }
         .pep-item:hover { background: rgba(255,255,255,0.08); }
-        .pep-item.active { background: rgba(255, 94, 98, 0.1) !important; border: 1px solid rgba(255, 94, 98, 0.3); }
+        .pep-item.active { background: rgba(255, 94, 98, 0.1) !important; border: 1px solid var(--plyr-color-main); }
         
         /* ÉP ẢNH LUÔN NẰM NGANG 16:9, KHÔNG BỊ MÉO */
         .pep-img-box {
@@ -461,7 +461,7 @@
             color: #fff; font-size: 1.5rem; opacity: 0; transition: 0.3s; z-index: 2;
         }
         .pep-item:hover .pep-play-overlay { opacity: 1; }
-        .pep-item.active .pep-play-overlay { opacity: 1; color: #FF5E62; }
+        .pep-item.active .pep-play-overlay { opacity: 1; color: var(--plyr-color-main); }
         
         /* ÉP CHỮ CĂN LỀ TRÁI TUYỆT ĐỐI */
         .pep-info { 
@@ -472,16 +472,16 @@
             font-weight: 700; margin-bottom: 4px; font-size: 1rem; color: #fff; transition: 0.2s;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
         }
-        .pep-item.active .pep-ep-name { color: #FF5E62 !important; }
+        .pep-item.active .pep-ep-name { color: var(--plyr-color-main) !important; }
         .pep-desc { font-size: 0.75rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; text-align: left;}
 
         .popup-audiosub { width: 380px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
         .pas-col h4 { font-size: 1rem; color: #fff; margin-bottom: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;}
         .pas-item { padding: 10px; border-radius: 6px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; display: flex; align-items: center; gap: 10px; color: #aaa;}
         .pas-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .pas-item.active { color: #FF5E62 !important; }
+        .pas-item.active { color: var(--plyr-color-main) !important; }
         .pas-item i { opacity: 0; width: 14px; font-size: 0.85rem;}
-        .pas-item.active i { color: #FF5E62 !important; opacity: 1 !important; }
+        .pas-item.active i { color: var(--plyr-color-main) !important; opacity: 1 !important; }
 
         /* 3. NÚT TRƯỢT SLIDER (Dạng thanh dọc chữ nhật) */
         .slider-container { position: relative; max-width: 1600px; margin: 0 auto; }
@@ -1864,7 +1864,7 @@ footer {
 /* Góc dưới phải: Nút Bỏ qua */
 .preroll-skip-area {
     position: absolute; bottom: 50px; right: 0; 
-    z-index: 20; display: flex; align-items: center;
+    z-index: 80; display: flex; align-items: center;
 }
 .btn-skip-preroll {
     background: rgba(0, 0, 0, 0.6); 
@@ -1927,10 +1927,10 @@ footer {
             bottom: 60px !important; 
             
             /* Giao diện lúc đầu: Trong suốt + Mờ nền */
-            background-color: rgba(0, 0, 0, 0.3) !important; /* Đen mờ nhẹ để dễ đọc chữ */
+            background-color: rgba(0, 0, 0, 0.5) !important; /* Đen mờ nhẹ để dễ đọc chữ */
             backdrop-filter: blur(5px) !important; /* Hiệu ứng làm mờ video bên dưới */
             border: 1px solid rgba(255, 255, 255, 0.6) !important; /* Viền trắng mờ */
-            color: #fff !important;
+            color: #ffffff !important; /* Chữ trắng */
             
             padding: 10px 24px !important;
             border-radius: 50px !important; /* Bo tròn kiểu viên thuốc */
@@ -1942,7 +1942,7 @@ footer {
             letter-spacing: 1px;
             
             cursor: pointer !important;
-            z-index: 10 !important; /* Luôn nổi trên cùng */
+            z-index: 80 !important; /* Luôn nổi trên cùng (cao hơn pause/center controls) */
             
             /* Trạng thái ẩn */
             opacity: 0;
@@ -1973,9 +1973,9 @@ footer {
 
         /* --- TRẠNG THÁI HOVER (Rê chuột vào) --- */
         .skip-intro-btn:hover {
-            background-color: #ffffff !important; /* Nền trắng đục */
+            background-color: #ffffff !important; /* Nền trắng */
             border-color: #ffffff !important;
-            color: #FF5E62 !important; /* Chữ đen tương phản */
+            color: var(--plyr-color-main) !important; /* Chữ cam chủ đạo */
             
             /* Hiệu ứng bay lên và đổ bóng sáng */
             transform: translateY(-5px);
@@ -1991,13 +1991,15 @@ footer {
         @media (max-width: 768px) {
             .skip-intro-btn {
                 right: 15px !important;
-                padding: 8px 16px !important;
-                font-size: 0.75rem !important;
+                padding: 6px 12px !important;
+                font-size: 0.65rem !important;
                 border-radius: 30px !important;
             }
             
+            .skip-intro-btn i { font-size: 0.8rem !important; }
+            
             .skip-intro-btn.show {
-                bottom: 70px !important; /* Mobile thấp hơn xíu */
+                bottom: 50px !important; /* Thấp hơn nữa trên Mobile */
             }
         }
 /* ==========================================================================
@@ -2043,7 +2045,7 @@ footer {
         
         /* A. Dòng trạng thái (ĐANG PHÁT...) */
         .pause-ep-title {
-            color: #FF5E62;
+            color: var(--plyr-color-main);
             font-size: 0.95rem; /* Tăng 1 xíu */
             font-weight: 800;
             text-transform: uppercase;
@@ -2053,7 +2055,7 @@ footer {
         }
         .pause-ep-title::before {
             content: ''; display: block; width: 35px; height: 2.5px;
-            background: linear-gradient(90deg, transparent, #FF5E62);
+            background: linear-gradient(90deg, transparent, var(--plyr-color-main));
         }
 
         /* B. Tên phim */
@@ -2082,7 +2084,7 @@ footer {
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            border-left: 4px solid #FF5E62;
+            border-left: 4px solid var(--plyr-color-main);
             padding-left: 18px;
             opacity: 0;
         }
@@ -2180,9 +2182,10 @@ footer {
         /* Nút to (Play/Pause) */
         .cc-btn-large {
             width: 70px; height: 70px; font-size: 2rem;
-            background: rgba(255, 94, 98, 0.8); /* Màu chủ đạo */
+            background: var(--plyr-color-main);
             border-color: transparent;
-            box-shadow: 0 0 20px rgba(255, 94, 98, 0.4);
+            box-shadow: 0 0 20px rgba(255, 143, 80, 0.4);
+            opacity: 0.9;
         }
         
         /* Hiệu ứng khi nhấn */
@@ -2202,6 +2205,26 @@ footer {
             
             /* Tắt icon Play to mặc định của Plyr để dùng bộ nút mới */
             .plyr__control--overlaid { display: none !important; }
+            
+            /* Ẩn các nút trùng lặp ở thanh bottom trên Mobile */
+            .plyr__controls > button[data-plyr="play"],
+            .plyr__controls > button[data-plyr="rewind"],
+            .plyr__controls > button[data-plyr="fast-forward"] { 
+                display: none !important; 
+            }
+            
+            /* Tối ưu thanh tiến trình và thời gian */
+            .plyr__controls > .plyr__progress { margin: 0 8px !important; }
+            .plyr__controls > .plyr__time { font-size: 0.8rem !important; margin: 0 5px !important; }
+            
+            /* Thu gọn các nút phụ (Next/Prev) */
+            .plyr__controls .custom-controls-group { margin-left: 5px !important; gap: 2px; }
+            .plyr__custom-btn span { display: none; } /* Ẩn chữ Tập trước/Tập tiếp */
+            .plyr__custom-btn { padding: 5px; font-size: 0; }
+            .plyr__custom-btn i { font-size: 1.1rem; margin: 0 2px; }
+            
+            /* Cho phép thanh control giãn cách đều */
+            .plyr__controls { padding: 10px 8px !important; }
         }
 
         /* ==========================================================================
@@ -3485,7 +3508,7 @@ footer {
             setupMobileControls(plyrInstance); 
             setupAutoRotation(plyrInstance);   
             injectCustomPlayerMenus(plyrInstance);
-            setupThumbnailPreview(plyrInstance);
+            setupThumbnailPreview(plyrInstance, sourceType, sourceLink);
 
             if (window.innerWidth >= 1024) {
                 plyrInstance.elements.wrapper.addEventListener('click', (e) => {
@@ -3602,7 +3625,7 @@ footer {
                     
                     <div class="custom-control-wrapper">
                         <button class="plyr__custom-btn" id="btn-quality-custom" style="position:relative;" title="Chất lượng">
-                            <span id="quality-badge-ui" style="position:absolute; top:-6px; left:5px; background:#FF5E62; color:#fff; font-size:9px; padding:1px 4px; border-radius:3px; font-weight:800;">Auto</span>
+                            <span id="quality-badge-ui" style="position:absolute; top:-6px; left:5px; background:var(--plyr-color-main); color:#fff; font-size:9px; padding:1px 4px; border-radius:3px; font-weight:800;">Auto</span>
                             <i class="fas fa-cog"></i> HD
                         </button>
                         <div class="plyr-popup-box" id="popup-quality" style="width:220px; padding:15px;">
@@ -3740,8 +3763,8 @@ footer {
                         this.classList.add('active');
                         const qVal = parseInt(this.getAttribute('data-val'));
                         const badge = document.getElementById('quality-badge-ui');
-                        if(qVal === -1) { badge.innerText = "Auto"; badge.style.background = "#FF5E62"; } 
-                        else { badge.innerText = qVal + "p"; badge.style.background = "#FF5E62"; }
+                        if(qVal === -1) { badge.innerText = "Auto"; badge.style.background = "var(--plyr-color-main)"; } 
+                        else { badge.innerText = qVal + "p"; badge.style.background = "var(--plyr-color-main)"; }
                         if (window.hls) {
                             if (qVal === -1) window.hls.currentLevel = -1; 
                             else {
@@ -3812,8 +3835,9 @@ footer {
     // =========================================================
     // 🔥 HÀM TẠO PREVIEW THUMBNAIL KHI HOVER THANH TIẾN TRÌNH
     // =========================================================
-    function setupThumbnailPreview(player) {
+    function setupThumbnailPreview(player, sourceType, sourceLink) {
         if (window.innerWidth < 900) return; // Không cần thiết trên mobile (vì dùng cảm ứng)
+        if (sourceType === 'youtube') return; // Cannot easily do this for YouTube without custom APIs
 
         let checkExist = setInterval(() => {
             const progressContainer = document.querySelector('.plyr__progress');
@@ -3825,7 +3849,10 @@ footer {
                 // 1. Tạo khối HTML Popup Preview
                 const previewHTML = `
                     <div class="plyr-preview-container" id="custom-preview-box">
-                        <img class="plyr-preview-img" id="custom-preview-img" src="/home-background.jpg" alt="Preview">
+                        <div class="plyr-preview-vid-wrapper">
+                            <video class="plyr-preview-img" id="custom-preview-vid" muted playsinline preload="metadata" crossorigin="anonymous"></video>
+                            <div class="preview-spinner" id="preview-spinner" style="display:none;"><i class="fas fa-spinner fa-spin"></i></div>
+                        </div>
                         <div class="plyr-preview-time" id="custom-preview-time">00:00</div>
                     </div>
                 `;
@@ -3833,39 +3860,69 @@ footer {
 
                 const previewBox = document.getElementById('custom-preview-box');
                 const previewTime = document.getElementById('custom-preview-time');
-                const previewImg = document.getElementById('custom-preview-img');
+                const previewVid = document.getElementById('custom-preview-vid');
+                const previewSpinner = document.getElementById('preview-spinner');
+
+                // Add styling for video wrapper and hide native tooltip
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    .plyr__tooltip { display: none !important; }
+                    .plyr-preview-vid-wrapper { position: relative; width: 100%; height: 100%; border-radius: 4px; overflow: hidden; background: #000; }
+                    #custom-preview-vid { width: 100%; height: 100%; object-fit: cover; }
+                    .preview-spinner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fff; font-size: 1.2rem; }
+                `;
+                document.head.appendChild(style);
+
+                // Initialize secondary video source
+                let previewHls = null;
+                if (sourceType === 'hls' && typeof Hls !== 'undefined' && Hls.isSupported()) {
+                    previewHls = new Hls({
+                        startLevel: 0, // lowest quality for preview
+                        capLevelToPlayerSize: true,
+                        maxBufferLength: 5, // Prevent over-buffering for previews
+                        maxMaxBufferLength: 10
+                    });
+                    previewHls.loadSource(sourceLink);
+                    previewHls.attachMedia(previewVid);
+                } else if (sourceLink) {
+                    previewVid.src = sourceLink;
+                }
+
+                let seekTimeout = null;
+
+                // Listeners to show/hide loading spinner
+                previewVid.addEventListener('waiting', () => { previewSpinner.style.display = 'block'; });
+                previewVid.addEventListener('canplay', () => { previewSpinner.style.display = 'none'; });
+                previewVid.addEventListener('seeked', () => { previewSpinner.style.display = 'none'; });
 
                 // 2. Lắng nghe sự kiện di chuột
                 progressBar.addEventListener('mousemove', (e) => {
-                    if (!player.duration) return; // Phim chưa load xong thì bỏ qua
+                    if (!player.duration) return; 
 
                     const rect = progressBar.getBoundingClientRect();
                     let percent = (e.clientX - rect.left) / rect.width;
                     
-                    // Giới hạn không cho văng ra ngoài khung
                     if (percent < 0) percent = 0;
                     if (percent > 1) percent = 1;
 
-                    // Tính toán vị trí hiển thị
                     const pxPos = percent * rect.width;
                     previewBox.style.left = `${pxPos}px`;
 
-                    // Cập nhật thời gian
                     const hoverTime = percent * player.duration;
                     previewTime.innerText = formatPreviewTime(hoverTime);
-
-                    // Cập nhật ảnh động (Lấy ảnh ngang của phim hiện tại)
-                    if (window.currentMovieData) {
-                        const img = window.currentMovieData.thumb_url || window.currentMovieData.poster_url;
-                        if (img) previewImg.src = img;
-                    }
-
                     previewBox.classList.add('active');
+
+                    // Debounced seek to prevent excessive network spam
+                    clearTimeout(seekTimeout);
+                    seekTimeout = setTimeout(() => {
+                        previewVid.currentTime = hoverTime;
+                    }, 350);
                 });
 
                 // 3. Ẩn đi khi đưa chuột ra ngoài
                 progressBar.addEventListener('mouseleave', () => {
                     previewBox.classList.remove('active');
+                    clearTimeout(seekTimeout);
                 });
             }
         }, 500);

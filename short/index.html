@@ -16,7 +16,8 @@
 
     <style>
         /* --- ĐỒNG BỘ MÀU PLYR VÀ ẨN NÚT PLAY LỚN --- */
-        :root { --plyr-color-main: #FF5E62; }
+        :root { --plyr-color-main: #FF8F50; }
+        .plyr--full-ui input[type=range] { color: var(--plyr-color-main); }
         .plyr__control--overlaid { display: none !important; } /* Ẩn nút play mặc định để hiện Overlay Netflix */
 
         /* --- CSS CHO PAUSE OVERLAY (NETFLIX STYLE CHO SHORT) --- */
@@ -47,7 +48,7 @@
 
         .pause-ep-title {
             color: #fff;
-            background: #FF5E62;
+            background: var(--plyr-color-main);
             display: inline-block;
             padding: 4px 12px;
             border-radius: 4px;
@@ -55,7 +56,7 @@
             font-weight: 800;
             text-transform: uppercase;
             margin-bottom: 12px;
-            box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 143, 80, 0.3);
         }
 
         .pause-movie-title {
