@@ -2050,27 +2050,30 @@
 
         // --- 2. AUTO ROTATION (ANDROID & IOS NATIVE) ---
         function setupAutoRotation(player) {
-            player.on('enterfullscreen', async () => {
+            player.on('enterfullscreen', () => {
                 if (window.innerWidth < 1024) {
-                    try {
-                        const lockFunction = (window.screen.orientation && window.screen.orientation.lock) 
-                            || window.screen.lockOrientation 
-                            || window.screen.mozLockOrientation 
-                            || window.screen.msLockOrientation;
-                            
-                        if (lockFunction) {
+                    const tryLock = async () => {
+                        try {
                             if (window.screen.orientation && window.screen.orientation.lock) {
                                 await window.screen.orientation.lock('landscape');
-                            } else {
-                                lockFunction('landscape');
+                            } else if (window.screen.lockOrientation) {
+                                window.screen.lockOrientation('landscape');
+                            } else if (window.screen.mozLockOrientation) {
+                                window.screen.mozLockOrientation('landscape');
+                            } else if (window.screen.msLockOrientation) {
+                                window.screen.msLockOrientation('landscape');
+                            } else if (player.media.webkitEnterFullscreen) {
+                                player.media.webkitEnterFullscreen();
                             }
-                        } else if (player.media.webkitEnterFullscreen) {
-                            player.media.webkitEnterFullscreen();
-                        }
-                    } catch (e) { console.warn("Lỗi xoay màn hình:", e); }
+                        } catch (e) { console.warn("Lỗi xoay màn hình:", e); }
+                    };
+                    
+                    tryLock();
+                    setTimeout(tryLock, 300);
+                    setTimeout(tryLock, 600);
                 }
             });
-            player.on('exitfullscreen', async () => {
+            player.on('exitfullscreen', () => {
                 if (window.innerWidth < 1024) {
                     try {
                         if (window.screen.orientation && window.screen.orientation.unlock) {
