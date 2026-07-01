@@ -4,10 +4,10 @@
     style.textContent = `
         .back-to-top-btn {
             position: fixed;
-            bottom: 35px;
-            right: 110px;
-            width: 56px; 
-            height: 56px;
+            bottom: 36px;
+            right: 36px;
+            width: 55px; 
+            height: 55px;
             background: #ffffff;
             border-radius: 14px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
@@ -57,16 +57,16 @@
 
         .back-to-top-btn:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(255, 94, 98, 0.4);
-            border-color: #FF5E62;
+            box-shadow: 0 10px 25px rgba(255, 156, 94, 0.4);
+            border-color: #FF8F50;
         }
 
         /* Khi hover đổi màu cả icon SVG và chữ */
         .back-to-top-btn:hover svg {
-            stroke: #FF5E62;
+            stroke: #FF8F50;
         }
         .back-to-top-btn:hover span {
-            color: #FF5E62;
+            color: #FF8F50;
         }
     `;
     document.head.appendChild(style);

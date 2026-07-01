@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script type="module" src="https://unpkg.com/emoji-picker-element@1"></script>
 
     <style>
         /* ==========================================================================
@@ -613,6 +614,8 @@
         .chat-input-area input:focus { border-color: var(--primary-color); }
         .chat-input-area button { background: var(--primary-color); border: none; width: 40px; height: 40px; border-radius: 8px; color: #fff; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center;}
         .chat-input-area button:hover { opacity: 0.8; }
+        .chat-input-area .btn-chat-emoji:hover { color: var(--primary-color) !important; background: transparent !important; opacity: 1 !important; transform: scale(1.1); }
+        emoji-picker.active { display: block !important; }
 
         /* ==========================================================================
            6. MODALS & POPUPS
@@ -925,6 +928,71 @@
         .bottom-nav-item:active {
             transform: scale(0.9);
         }
+/* --- CUSTOM PLYR YOUTUBE-STYLE LAYOUT --- */
+.plyr__controls {
+    flex-wrap: wrap !important;
+    padding: 0 10px 10px 10px !important;
+}
+.plyr__controls > .plyr__progress__container,
+.plyr__controls > .plyr__progress {
+    width: 100% !important;
+    min-width: 100% !important;
+    flex: 0 0 100% !important;
+    order: -1 !important;
+    margin: 0 0 10px 0 !important;
+}
+.plyr__controls > .plyr__time {
+    position: absolute !important;
+    left: 15px !important;
+    top: -30px !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8) !important;
+    pointer-events: none;
+    z-index: 10;
+}
+.plyr__controls > .plyr__volume {
+    margin-right: auto !important; /* Push custom group to the right */
+}
+/* --- YOUTUBE-STYLE VOLUME SLIDER --- */
+.plyr__volume {
+    display: flex !important;
+    align-items: center !important;
+    max-width: 120px !important;
+}
+.plyr__volume input[type=range] {
+    position: static !important;
+    bottom: auto !important;
+    max-width: 0 !important;
+    opacity: 0 !important;
+    margin-left: 0 !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+.plyr__volume:hover input[type=range],
+.plyr__volume input[type=range]:focus,
+.plyr__volume input[type=range]:active {
+    max-width: 70px !important;
+    width: 70px !important;
+    opacity: 1 !important;
+    margin-left: 8px !important;
+}
+
+/* --- MOBILE VOLUME SLIDER (Always visible) --- */
+@media (max-width: 900px) {
+    .plyr__volume input[type=range] {
+        max-width: 50px !important;
+        width: 50px !important;
+        opacity: 1 !important;
+        margin-left: 5px !important;
+    }
+    .plyr__controls {
+        padding: 0 5px 10px 5px !important; /* Reduce padding to prevent wrapping */
+    }
+    .plyr__controls .plyr__control {
+        padding: 5px !important; /* Reduce button size slightly to fit */
+    }
+}
     </style>
 </head>
 <body>
@@ -1165,7 +1233,9 @@
             <div class="chat-messages" id="chat-box">
                 <div style="text-align: center; color: var(--text-sub); font-size: 0.85rem; margin-top: 50%;">Phòng chat đã kết nối!</div>
             </div>
-            <div class="chat-input-area">
+            <div class="chat-input-area" style="position: relative;">
+                <button class="btn-chat-emoji" onclick="toggleEmojiPicker('chatEmojiPicker', 'chat-input')" style="background: transparent; color: #888; border-radius: 50%; width: 30px; margin-right: 5px;"><i class="far fa-smile"></i></button>
+                <emoji-picker id="chatEmojiPicker" style="position: absolute; bottom: 60px; left: 10px; z-index: 100; display: none; --background: #23252f; --border-color: rgba(255,255,255,0.1); --indicator-color: #FF8F50;"></emoji-picker>
                 <input type="text" id="chat-input" placeholder="Gửi tin nhắn..." autocomplete="off" onkeypress="if(event.key === 'Enter') window.sendMessage()">
                 <button onclick="window.sendMessage()"><i class="fas fa-paper-plane"></i></button>
             </div>
@@ -1977,7 +2047,7 @@
 
         function initPlyrAndNetflix(movieData, epData) {
             plyrPlayer = new Plyr(videoElement, {
-                controls: ['play-large', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
+                controls: ['rewind', 'play', 'fast-forward', 'mute', 'volume', 'current-time', 'settings', 'pip', 'fullscreen', 'progress'],
                 seekTime: 10, ratio: '16:9'
             });
             if (isHost) setupHostControls();
@@ -2294,9 +2364,12 @@
                         chatBox.innerHTML += `
                             <div class="msg-container ${isMe ? 'self' : ''}" style="display: flex; gap: 8px; ${isMe ? 'justify-content: flex-end;' : ''} align-items: flex-end; width: 100%;">
                                 ${!isMe ? `<img src="${msg.avatar || '/Guest.webp'}" class="${vipAvatarClass}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" onerror="this.src='/Guest.webp'">` : ''}
-                                <div class="msg-box ${isMe ? 'self' : ''}" style="margin-bottom: 0;">
+                                <div class="msg-box ${isMe ? 'self' : ''}" style="margin-bottom: 0; position: relative;">
                                     <div class="msg-name" style="margin-left: ${isMe ? '0' : '5px'}; ${vipNameStyle}">${hostCrown}${vipGem}${msg.name}</div>
-                                    <div class="msg-text" style="${vipSelfBg}">${msg.text}</div>
+                                    <div class="msg-text" style="${vipSelfBg}">
+                                        ${msg.text}
+                                    </div>
+                                    ${isMe ? `<div style="text-align: right; margin-top: 3px;"><button class="btn-action" onclick="deleteMessage('${doc.id}')" style="background: transparent; border: none; color: #888; font-size: 0.75rem; cursor: pointer; padding: 0;"><i class="fas fa-trash-alt"></i> Xóa</button></div>` : ''}
                                 </div>
                             </div>
                         `;
@@ -2307,6 +2380,38 @@
                 console.error("Lỗi lấy lịch sử chat:", error);
             });
         }
+
+        window.deleteMessage = async (msgId) => {
+            if (!currentUser) return;
+            if (!confirm("Bạn có chắc muốn xóa tin nhắn này?")) return;
+            try {
+                await deleteDoc(doc(db, `watch_rooms/${roomIdParam}/messages`, msgId));
+            } catch (e) {
+                console.error("Lỗi xóa tin nhắn:", e);
+                if (window.showToast) window.showToast("Không thể xóa: " + e.message, "error");
+            }
+        };
+
+        window.toggleEmojiPicker = (pickerId, inputId) => {
+            const picker = document.getElementById(pickerId);
+            picker.classList.toggle('active');
+            
+            if (!picker.dataset.initialized) {
+                picker.addEventListener('emoji-click', event => {
+                    const input = document.getElementById(inputId);
+                    input.value += event.detail.unicode;
+                    picker.classList.remove('active');
+                    input.focus();
+                });
+                picker.dataset.initialized = 'true';
+            }
+        };
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.chat-input-area') && !e.target.closest('emoji-picker')) {
+                document.querySelectorAll('emoji-picker.active').forEach(p => p.classList.remove('active'));
+            }
+        });
 
         window.sendMessage = async () => {
             const input = document.getElementById('chat-input');
@@ -2445,6 +2550,9 @@
         }
     });
 </script>
+
+    <script src="/backtotop.js"></script>
+
     <!-- MOBILE BOTTOM NAVIGATION (NATIVE APP STYLE) -->
     <div class="mobile-bottom-nav">
         <a href="/" class="bottom-nav-item">
