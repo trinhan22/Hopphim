@@ -447,24 +447,6 @@
         #player-container { width: 100%; height: 100%; background: #000; }
         .plyr { width: 100%; height: 100%; } /* Video lấp đầy box, tự động sinh viền đen nhờ object-fit */
 
-        /* 🔥 CUSTOM VOLUME SLIDER (THANH DỌC) */
-        .plyr__volume { position: relative !important; overflow: visible !important; width: 32px !important; min-width: 32px !important; }
-        .plyr__volume input[type=range] {
-            display: block !important; position: absolute !important; 
-            bottom: 28px !important; left: 28px !important; 
-            transform: translateX(-50%) rotate(-90deg) !important; transform-origin: center bottom !important; 
-            width: 80px !important; height: 6px !important; 
-            opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            background: rgba(255, 255, 255, 0.95) !important; border-radius: 10px; padding: 12px 10px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
-            z-index: 9999; cursor: pointer; margin: 0 !important; color: var(--plyr-color-main);
-        }
-        .plyr__volume:hover input[type=range], .plyr__volume input[type=range]:hover, .plyr__volume input[type=range]:active, .plyr__volume input[type=range]:focus {
-            opacity: 1; visibility: visible; bottom: 77px !important; 
-        }
-        .plyr__progress input[type=range] {
-            display: block !important; position: relative !important; transform: none !important; width: 100% !important; 
-            opacity: 1 !important; visibility: visible !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; bottom: auto !important; left: auto !important;
-        }
 
         /* 🔥 FIX FULLSCREEN CHO MỌI THIẾT BỊ */
         @media (min-width: 901px) {
@@ -529,6 +511,23 @@
         @media (max-width: 900px) {
             .pause-overlay { display: none !important; }
             .plyr__control--overlaid { display: none !important; }
+            
+            /* Ẩn các nút trùng lặp ở thanh bottom trên Mobile */
+            .plyr__controls > button[data-plyr="play"],
+            .plyr__controls > button[data-plyr="rewind"],
+            .plyr__controls > button[data-plyr="fast-forward"] { 
+                display: none !important; 
+            }
+            
+            /* Tối ưu thanh tiến trình và thời gian */
+            .plyr__controls > .plyr__progress { margin: 0 8px !important; }
+            .plyr__controls > .plyr__time { font-size: 0.8rem !important; margin: 0 5px !important; }
+            
+            /* Thu gọn các nút phụ (Next/Prev) */
+            .plyr__controls .custom-controls-group { margin-left: 5px !important; gap: 2px; }
+            .plyr__custom-btn span { display: none; } /* Ẩn chữ bên trong nút custom */
+            .plyr__custom-btn { padding: 5px; font-size: 0; }
+            .plyr__custom-btn i { font-size: 1.1rem; margin: 0 2px; }
         }
 
         /* NÚT QUAY LẠI TRÊN PLAYER */
@@ -928,6 +927,30 @@
         .bottom-nav-item:active {
             transform: scale(0.9);
         }
+/* 1. Các nút cơ bản bên lề trái (Tua, Play, Volume) */
+.plyr__controls > button,
+.plyr__controls > .plyr__volume {
+    margin: 0 2px !important; /* Kéo xích lại gần nhau hơn */
+}
+
+/* Đồng bộ màu sắc nhạt (Xám & Mờ 20%) giống hệt các nút Custom mới */
+.plyr__controls > button,
+.plyr__controls > .plyr__volume > button {
+    color: #e5e5e5 !important;
+    opacity: 0.8 !important;
+    transition: all 0.2s ease !important;
+    border-radius: 6px !important; /* Bo nhẹ góc cho mượt mà */
+}
+
+/* Hiệu ứng rê chuột: Sáng lên 100%, đổi icon Đỏ Hồng, nền trong suốt nhẹ */
+.plyr__controls > button:hover,
+.plyr__controls > .plyr__volume > button:hover,
+.plyr__controls > button[aria-expanded=true] {
+    opacity: 1 !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--plyr-color-main) !important;
+}
+
 /* --- CUSTOM PLYR YOUTUBE-STYLE LAYOUT --- */
 .plyr__controls {
     flex-wrap: wrap !important;
@@ -955,6 +978,7 @@
 .plyr__controls > .plyr__volume {
     margin-right: auto !important; /* Push custom group to the right */
 }
+
 /* --- YOUTUBE-STYLE VOLUME SLIDER --- */
 .plyr__volume {
     display: flex !important;
@@ -993,6 +1017,201 @@
         padding: 5px !important; /* Reduce button size slightly to fit */
     }
 }
+
+.plyr__controls > button[data-plyr="pip"] {
+    display: none !important; /* Hide default PiP icon, we use custom button */
+}
+
+/* ==========================================================================
+   🔥 ĐỒNG BỘ TUYỆT ĐỐI 100% HIỆU ỨNG HOVER CHO TẤT CẢ CÁC NÚT
+   ========================================================================== */
+
+/* Cụm Menu Custom (Tốc độ, Chất lượng...) tự động hiển thị ngang ngang lề phải */
+.plyr__controls .custom-controls-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.plyr__custom-btn {
+    background: transparent; border: none; color: #e5e5e5; font-family: var(--font-main);
+    font-size: 0.95rem; display: flex; align-items: center; gap: 8px;
+    cursor: pointer; opacity: 0.8; transition: 0.2s; padding: 5px 8px; border-radius: 6px; white-space: nowrap;
+}
+.plyr__custom-btn i { font-size: 1.1rem; color: #fff; margin: 0 2px; }
+
+/* 1. Trạng thái đứng im (Idle) cho TẤT CẢ nút: Nền trong suốt, xám nhạt, mờ 80% */
+.plyr--video .plyr__controls .plyr__control,
+.plyr--video .plyr__controls .plyr__custom-btn {
+    background: transparent !important;
+    color: #e5e5e5 !important;
+    opacity: 0.8 !important;
+    border-radius: 8px !important;
+    transition: all 0.25s ease !important;
+}
+
+/* Đồng bộ màu của icon bên trong nút custom */
+.plyr--video .plyr__controls .plyr__custom-btn i {
+    color: #e5e5e5 !important;
+    transition: all 0.25s ease !important;
+}
+
+/* 2. Trạng thái rê chuột (Hover): Sáng lên 100%, nền xám mờ 12% sang trọng */
+.plyr--video .plyr__controls .plyr__control:hover,
+.plyr--video .plyr__controls .plyr__control[aria-expanded=true],
+.plyr--video .plyr__controls .plyr__custom-btn:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    opacity: 1 !important;
+    color: var(--plyr-color-main) !important;
+}
+
+/* Đổi màu Icon sang Đỏ Hồng (#FF5E62) khi hover */
+.plyr--video .plyr__controls .plyr__control:hover svg {
+    fill: var(--plyr-color-main) !important; /* Dành cho nút mặc định của Plyr */
+}
+.plyr--video .plyr__controls .plyr__custom-btn:hover i {
+    color: var(--plyr-color-main) !important; /* Dành cho nút tự thêm */
+}
+
+/* Giữ icon màu trắng khi hover để đồng bộ */
+.plyr__custom-btn:hover i { color: #fff !important; }
+
+/* Đổi nền thanh Âm lượng (Volume) thành màu Tối giống các Popup mới */
+.plyr__volume input[type=range] {
+    background: rgba(20, 20, 25, 0.95) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+/* ==========================================================================
+   🔥 2. FIX LỖI Z-INDEX (NÚT BỎ QUA CHE POPUP)
+   ========================================================================== */
+
+/* Đẩy toàn bộ thanh điều khiển (chứa popup) lên lớp trên cùng */
+.plyr__controls {
+    z-index: 99 !important; 
+}
+/* Ép nút Bỏ qua giới thiệu / Chuyển tập nổi lên trên các overlay nhưng dưới thanh controls */
+.skip-intro-btn {
+    z-index: 80 !important; 
+}
+
+/* ==========================================================================
+   🔥 GIAO DIỆN POPUP MỚI (NẰM NGAY TRÊN ĐẦU NÚT BẤM)
+   ========================================================================== */
+
+/* Bọc mỗi nút và popup của nó vào 1 khối (để neo vị trí) */
+.custom-control-wrapper {
+    position: relative;
+}
+
+/* Box Popup */
+.plyr-popup-box {
+    position: absolute;
+    bottom: calc(100% + 15px); /* Trồi lên ngay trên đầu nút bấm */
+    background: rgba(20, 20, 25, 0.95);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: #fff;
+    z-index: 2147483647 !important; /* Quyền lực tối cao, không ai che được */
+    opacity: 0;
+    visibility: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    overflow: hidden;
+    font-family: var(--font-main);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Các popup ở giữa -> Căn giữa nút */
+#popup-speed, #popup-quality, #popup-episodes {
+    left: 50%;
+    transform: translateX(-50%) translateY(15px);
+}
+#popup-speed.active, #popup-quality.active, #popup-episodes.active {
+    opacity: 1; visibility: visible;
+    transform: translateX(-50%) translateY(0); /* Trượt mượt lên */
+}
+
+/* Riêng popup Âm thanh ở góc phải -> Căn lề phải để không bị tràn ra ngoài viền video */
+#popup-audiosub {
+    right: 0;
+    transform: translateY(15px);
+}
+#popup-audiosub.active {
+    opacity: 1; visibility: visible;
+    transform: translateY(0);
+}
+
+/* Tinh chỉnh bên trong Popup */
+.popup-episodes { 
+    width: 420px; 
+    display: flex; flex-direction: column; 
+}
+.pep-header { 
+    padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); 
+    font-weight: 800; display: flex; justify-content: space-between; align-items: center;
+    font-size: 1.05rem; color: #fff; background: rgba(0,0,0,0.3);
+}
+.pep-header i { color: #888; transition: 0.2s; }
+.pep-header i:hover { color: var(--plyr-color-main); transform: scale(1.1); }
+
+.pep-list { 
+    max-height: 350px; overflow-y: auto; padding: 12px; 
+    display: flex; flex-direction: column; gap: 8px; 
+}
+.pep-list::-webkit-scrollbar { width: 5px; }
+.pep-list::-webkit-scrollbar-track { background: transparent; }
+.pep-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+.pep-list::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+.pep-item { 
+    display: flex; gap: 15px; padding: 8px; border-radius: 10px; 
+    cursor: pointer; transition: all 0.3s ease; align-items: center; border: 1px solid transparent;
+}
+.pep-item:hover { background: rgba(255,255,255,0.08); }
+.pep-item.active { background: rgba(255, 94, 98, 0.1) !important; border: 1px solid var(--plyr-color-main); }
+
+/* ÉP ẢNH LUÔN NẰM NGANG 16:9, KHÔNG BỊ MÉO */
+.pep-img-box {
+    position: relative;
+    width: 130px !important; 
+    min-width: 130px !important;
+    flex-shrink: 0; 
+    aspect-ratio: 16/9 !important; /* Định dạng ngang */
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.pep-img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+.pep-item:hover .pep-img-box img { filter: brightness(0.5); transform: scale(1.05); }
+.pep-item.active .pep-img-box img { filter: brightness(0.6); }
+
+.pep-play-overlay {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.5rem; opacity: 0; transition: 0.3s; z-index: 2;
+}
+.pep-item:hover .pep-play-overlay { opacity: 1; }
+.pep-item.active .pep-play-overlay { opacity: 1; color: var(--plyr-color-main); }
+
+/* ÉP CHỮ CĂN LỀ TRÁI TUYỆT ĐỐI */
+.pep-info { 
+    display: flex; flex-direction: column; justify-content: center; 
+    flex: 1; overflow: hidden; text-align: left; align-items: flex-start;
+}
+.pep-ep-name { 
+    font-weight: 700; margin-bottom: 4px; font-size: 1rem; color: #fff; transition: 0.2s;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.pep-item.active .pep-ep-name { color: var(--plyr-color-main) !important; }
+.pep-desc { font-size: 0.75rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; text-align: left;}
+
+.popup-audiosub { width: 380px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+.pas-col h4 { font-size: 1rem; color: #fff; margin-bottom: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;}
+.pas-item { padding: 10px; border-radius: 6px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; display: flex; align-items: center; gap: 10px; color: #aaa;}
+.pas-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.pas-item.active { color: var(--plyr-color-main) !important; }
+.pas-item i { opacity: 0; width: 14px; font-size: 0.85rem;}
+.pas-item.active i { color: var(--plyr-color-main) !important; opacity: 1 !important; }
     </style>
 </head>
 <body>
@@ -1214,6 +1433,7 @@
                 
                 <div class="vi-right">
                     <div id="host-exclusive-tools" style="display: none; gap: 10px;">
+                        <button class="btn-tool" onclick="window.openInviteModal()"><i class="fas fa-user-plus"></i> Mời Bạn</button>
                         <button class="btn-tool" onclick="window.openEpisodesModal()"><i class="fas fa-list"></i> Đổi Tập</button>
                         <button class="btn-tool primary" onclick="window.confirmDeleteRoom()"><i class="fas fa-power-off"></i> Đóng Phòng</button>
                     </div>
@@ -1298,6 +1518,20 @@
                 <button class="modal-close" onclick="window.closeModals()"><i class="fas fa-times"></i></button>
             </div>
             <div class="episodes-grid" id="episodes-grid"></div>
+        </div>
+    </div>
+
+    <!-- Modal: Mời Bạn Bè -->
+    <div class="modal-overlay" id="modal-invite">
+        <div class="modal-box" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus" style="color:var(--plyr-color-main)"></i> Mời Bạn Online</h2>
+                <button class="modal-close" onclick="window.closeModals()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="dynamic-online-users-list" style="max-height:300px; overflow-y:auto; margin-bottom:15px; padding-right:5px;">
+                <div style="color:#aaa; text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>
+            </div>
+            <button style="width: 100%; justify-content: center; padding:12px; border-radius:8px; background:var(--plyr-color-main); color:#000; font-weight:bold; border:none; cursor:pointer;" onclick="window.copyRoomLinkModal()"><i class="fas fa-link"></i> Copy Link Phòng</button>
         </div>
     </div>
 
@@ -1394,7 +1628,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, addDoc, query, orderBy, deleteDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, addDoc, query, where, orderBy, deleteDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // CẤU HÌNH FIREBASE
         const firebaseConfig = {
@@ -1408,6 +1642,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        window.db = db;
 
         const urlParams = new URLSearchParams(window.location.search);
         const roomIdParam = urlParams.get('room');
@@ -1508,6 +1743,36 @@
                 if(btnLogin) btnLogin.style.display = 'none';
                 if(userAvatar) { userAvatar.style.display = 'block'; userAvatar.src = user.photoURL || '/Guest.webp'; }
                 if(drawerLogout) drawerLogout.style.display = 'flex';
+
+                // --- ONLINE PRESENCE TRACKING ---
+                try {
+                    updateDoc(doc(db, "users", user.uid), { 
+                        isOnline: true, 
+                        lastActive: Date.now(),
+                        displayName: user.displayName || "Thành viên",
+                        photoURL: user.photoURL || "/Guest.webp"
+                    });
+                } catch(e) {}
+                
+                window.addEventListener('beforeunload', () => {
+                    try { updateDoc(doc(db, "users", user.uid), { isOnline: false }); } catch(e) {}
+                });
+
+                // --- INVITATION LISTENER ---
+                const invQuery = query(collection(db, "invitations"), where("receiverId", "==", user.uid), where("status", "==", "pending"));
+                onSnapshot(invQuery, (snapshot) => {
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === "added") {
+                            const invData = change.doc.data();
+                            const invId = change.doc.id;
+                            if (Date.now() - invData.timestamp < 300000) {
+                                if (typeof window.showInvitationPopup === 'function') {
+                                    window.showInvitationPopup(invId, invData);
+                                }
+                            }
+                        }
+                    });
+                });
 
                 onSnapshot(doc(db, "users", user.uid), (docSnap) => {
                     if (docSnap.exists()) {
@@ -2045,12 +2310,200 @@
             }
         }
 
-        function initPlyrAndNetflix(movieData, epData) {
+        function injectCustomPlayerMenus(plyrInstance) {
+        if (window.innerWidth < 900) return;
+
+        let retryCount = 0;
+        let checkExist = setInterval(function() {
+            retryCount++;
+            if(retryCount > 50) clearInterval(checkExist); 
+
+            const controls = document.querySelector('.plyr__controls');
+            if (controls) {
+                clearInterval(checkExist); 
+                if (controls.querySelector('.custom-controls-group')) return;
+
+                const plyrSettings = controls.querySelector('[data-plyr="settings"]');
+                if(plyrSettings) plyrSettings.style.display = 'none';
+
+                const customGroup = document.createElement('div');
+                customGroup.className = 'custom-controls-group';
+                
+                let episodesHtml = '';
+                if (isHost) {
+                    let epsList = '';
+                    if (globalEpisodes && globalEpisodes.length > 0) {
+                        epsList = globalEpisodes.map((ep, idx) => `
+                            <div class="pep-item ${idx === localEpIndex ? 'active' : ''}" onclick="window.changeEpisode(${idx})">
+                                <div class="pep-info">
+                                    <div class="pep-ep-name">${ep.name}</div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                    
+                    episodesHtml = `
+                    <div class="custom-control-wrapper">
+                        <button class="plyr__custom-btn" id="btn-show-episodes-mini" title="Danh sách tập">
+                            <i class="fas fa-clone"></i> Danh sách tập
+                        </button>
+                        <div class="plyr-popup-box popup-episodes" id="popup-episodes">
+                            <div class="pep-header">
+                                <span>Chọn tập phim</span>
+                                <i class="fas fa-times" style="cursor:pointer;" onclick="document.getElementById('popup-episodes').classList.remove('active')"></i>
+                            </div>
+                            <div class="pep-list" id="dynamic-pep-list">${epsList}</div>
+                        </div>
+                    </div>
+                    `;
+                }
+
+                customGroup.innerHTML = `
+                    <div class="custom-control-wrapper">
+                        <button class="plyr__custom-btn" id="btn-speed-custom" title="Tốc độ phát">
+                            <i class="fas fa-play-circle"></i> Tốc độ
+                        </button>
+                        <div class="plyr-popup-box" id="popup-speed" style="width:200px; padding:15px;">
+                            <h4 style="font-size:1rem; color:#fff; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Tốc độ phát</h4>
+                            <div class="pas-item speed-item" data-val="0.5"><i class="fas fa-check"></i> 0.5x</div>
+                            <div class="pas-item speed-item" data-val="0.75"><i class="fas fa-check"></i> 0.75x</div>
+                            <div class="pas-item speed-item active" data-val="1"><i class="fas fa-check"></i> Chuẩn (1x)</div>
+                            <div class="pas-item speed-item" data-val="1.25"><i class="fas fa-check"></i> 1.25x</div>
+                            <div class="pas-item speed-item" data-val="1.5"><i class="fas fa-check"></i> 1.5x</div>
+                            <div class="pas-item speed-item" data-val="2"><i class="fas fa-check"></i> 2x</div>
+                        </div>
+                    </div>
+                    
+                    <div class="custom-control-wrapper">
+                        <button class="plyr__custom-btn" id="btn-quality-custom" style="position:relative;" title="Chất lượng">
+                            <span id="quality-badge-ui" style="position:absolute; top:-6px; left:5px; background:var(--plyr-color-main); color:#fff; font-size:9px; padding:1px 4px; border-radius:3px; font-weight:800;">Auto</span>
+                            <i class="fas fa-cog"></i> HD
+                        </button>
+                        <div class="plyr-popup-box" id="popup-quality" style="width:220px; padding:15px;">
+                            <h4 style="font-size:1rem; color:#fff; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Chất lượng</h4>
+                            <div class="pas-item quality-item active" data-val="-1"><i class="fas fa-check"></i> Tự động (Auto)</div>
+                            <div class="pas-item quality-item" data-val="1080"><i class="fas fa-check"></i> 1080p FHD</div>
+                            <div class="pas-item quality-item" data-val="720"><i class="fas fa-check"></i> 720p HD</div>
+                        </div>
+                    </div>
+                    
+                    ${episodesHtml}
+
+                    <div class="custom-control-wrapper">
+                        <button class="plyr__custom-btn" id="btn-pip-custom" title="Cửa sổ (PiP)">
+                            <i class="fas fa-external-link-alt"></i> Cửa sổ
+                        </button>
+                    </div>
+                `;
+
+                const fullscreenBtn = controls.querySelector('[data-plyr="fullscreen"]');
+                if(fullscreenBtn) controls.insertBefore(customGroup, fullscreenBtn);
+                else controls.appendChild(customGroup);
+
+                // --- SỰ KIỆN NÚT PiP TÙY CHỈNH ---
+                const pipBtn = document.getElementById('btn-pip-custom');
+                if(pipBtn) {
+                    pipBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (plyrInstance) {
+                            plyrInstance.pip = !plyrInstance.pip;
+                        } else {
+                            const video = document.querySelector('video');
+                            if (document.pictureInPictureElement) {
+                                document.exitPictureInPicture();
+                            } else if (video && video.requestPictureInPicture) {
+                                video.requestPictureInPicture();
+                            }
+                        }
+                    });
+                }
+
+                // --- SỰ KIỆN MỞ CÁC POPUP CHUNG ---
+                const closeAllPopups = () => document.querySelectorAll('.plyr-popup-box').forEach(p => p.classList.remove('active'));
+
+                ['episodes', 'speed', 'quality'].forEach(key => {
+                    const btn = document.getElementById(`btn-show-${key}-mini`) || document.getElementById(`btn-${key}-custom`);
+                    if(btn) {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const p = document.getElementById(`popup-${key}`);
+                            if (!p) return;
+                            const isActive = p.classList.contains('active');
+                            closeAllPopups();
+                            if(!isActive) p.classList.add('active');
+                        });
+                    }
+                });
+
+                // Xử lý Speed
+                document.querySelectorAll('.speed-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        document.querySelectorAll('.speed-item').forEach(s => s.classList.remove('active'));
+                        this.classList.add('active');
+                        const speedVal = parseFloat(this.getAttribute('data-val'));
+                        if (plyrInstance) plyrInstance.speed = speedVal; 
+                        closeAllPopups();
+                        window.showToast("Đã đổi tốc độ: " + speedVal + "x");
+                    });
+                });
+
+                // Xử lý Quality
+                document.querySelectorAll('.quality-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        document.querySelectorAll('.quality-item').forEach(s => s.classList.remove('active'));
+                        this.classList.add('active');
+                        const qVal = parseInt(this.getAttribute('data-val'));
+                        const badge = document.getElementById('quality-badge-ui');
+                        if(qVal === -1) { badge.innerText = "Auto"; badge.style.background = "var(--plyr-color-main)"; } 
+                        else { badge.innerText = qVal + "p"; badge.style.background = "var(--plyr-color-main)"; }
+                        if (window.hls) {
+                            if (qVal === -1) window.hls.currentLevel = -1; 
+                            else {
+                                let targetLevel = -1;
+                                window.hls.levels.forEach((lvl, i) => { if (lvl.height === qVal) targetLevel = i; });
+                                if(targetLevel !== -1) window.hls.currentLevel = targetLevel;
+                            }
+                        }
+                        closeAllPopups();
+                    });
+                });
+
+                document.querySelector('.plyr').addEventListener('click', (e) => {
+                    if (!e.target.closest('.plyr-popup-box') && !e.target.closest('.custom-controls-group')) closeAllPopups();
+                });
+            }
+        }, 200); 
+    }
+
+    function initPlyrAndNetflix(movieData, epData) {
             plyrPlayer = new Plyr(videoElement, {
-                controls: ['rewind', 'play', 'fast-forward', 'mute', 'volume', 'current-time', 'settings', 'pip', 'fullscreen', 'progress'],
-                seekTime: 10, ratio: '16:9'
+                keyboard: { focused: true, global: true },
+                clickToPlay: false, 
+                invertTime: true,
+                toggleInvert: true,
+                controls: [
+                    'rewind', 'play', 'fast-forward', 
+                    'mute', 'volume', 'current-time', 
+                    'pip', 'fullscreen', 'progress'
+                ],
+                settings: ['quality', 'speed'], 
+                seekTime: 10, autoplay: true, ratio: '16:9'
             });
             if (isHost) setupHostControls();
+
+            // --- Bắt sự kiện ready để inject custom buttons ---
+            plyrPlayer.on('ready', () => {
+                injectCustomPlayerMenus(plyrPlayer);
+                
+                if (window.innerWidth >= 1024) {
+                    plyrPlayer.elements.wrapper.addEventListener('click', (e) => {
+                        if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.plyr__controls') || e.target.closest('.plyr-popup-box')) return;
+                        plyrPlayer.togglePlay();
+                    });
+                }
+            });
 
             renderPauseOverlay(movieData.name, epData.name, movieData.content);
             setupPauseLogic(plyrPlayer);
@@ -2315,6 +2768,59 @@
                 window.closeModals();
             }
         }
+
+        window.copyRoomLinkModal = () => {
+            navigator.clipboard.writeText(window.location.href);
+            window.showToast("Đã copy link phòng!", "success");
+        };
+
+        window.sendInvite = async (targetUid, targetName) => {
+            try {
+                const { collection, addDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                await addDoc(collection(window.db, "invitations"), {
+                    senderId: window.currentUser.uid,
+                    senderName: window.currentUser.customName || window.currentUser.displayName || "Khách",
+                    receiverId: targetUid,
+                    roomId: new URLSearchParams(window.location.search).get('room'),
+                    movieName: document.getElementById('film-name')?.innerText || "Phim",
+                    status: "pending",
+                    timestamp: Date.now()
+                });
+                window.showToast(`Đã gửi lời mời đến ${targetName}!`, "success");
+            } catch(e) {
+                window.showToast("Lỗi khi gửi lời mời", "error");
+            }
+        };
+
+        window.openInviteModal = async () => {
+            const m = document.getElementById('modal-invite');
+            if(m) m.style.display = 'flex';
+            
+            const onlineList = document.getElementById('dynamic-online-users-list');
+            onlineList.innerHTML = '<div style="color:#aaa; text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Đang tìm...</div>';
+            try {
+                const { collection, getDocs, query, where } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                const q = query(collection(window.db, "users"), where("isOnline", "==", true));
+                const snapshot = await getDocs(q);
+                let html = '';
+                snapshot.forEach(docSnap => {
+                    const u = docSnap.data();
+                    if (window.currentUser && docSnap.id === window.currentUser.uid) return; 
+                    html += `
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;">
+                            <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
+                                <img src="${u.photoURL || '/Guest.webp'}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">
+                                <div style="color:#fff; font-size:1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px;">${u.displayName || 'Thành viên'}</div>
+                            </div>
+                            <button onclick="window.sendInvite('${docSnap.id}', '${(u.displayName || 'Thành viên').replace(/'/g,"\\\\'")}')" style="background:var(--plyr-color-main); color:#000; border:none; padding:6px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.9rem;">Mời</button>
+                        </div>
+                    `;
+                });
+                onlineList.innerHTML = html || '<div style="color:#aaa; text-align:center; padding:20px;">Không có ai online</div>';
+            } catch(e) {
+                onlineList.innerHTML = '<div style="color:#ff4757; text-align:center; padding:20px;">Lỗi tải dữ liệu</div>';
+            }
+        };
 
         window.openEpisodesModal = () => {
             if(globalEpisodes.length === 0) return window.showToast("Chưa tải xong dữ liệu!", "error");
@@ -2581,6 +3087,61 @@
                 window.location.href = '/?action=open_shorts';
             }
         }
+
+    </script>
+    
+    <!-- ================= INVITATION POPUP ================= -->
+    <div id="invitationPopup" style="display:none; position:fixed; top:80px; right:20px; background:rgba(20,20,25,0.95); border:1px solid rgba(255,143,80,0.4); z-index:999999; padding:20px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.8); width:350px; backdrop-filter:blur(10px); transform:translateX(120%); transition:transform 0.4s cubic-bezier(0.25,0.8,0.25,1);">
+        <div style="display:flex; gap:15px; align-items:flex-start;">
+            <div style="background:rgba(255,143,80,0.2); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="fas fa-ticket-alt" style="color:var(--plyr-color-main); font-size:1.2rem;"></i>
+            </div>
+            <div>
+                <h4 style="margin:0 0 8px 0; color:#fff; font-size:1.1rem; font-weight:600;">Lời Mời Xem Chung</h4>
+                <p id="invitationMessage" style="margin:0 0 15px 0; color:#ccc; font-size:0.95rem; line-height:1.4;"></p>
+                <div style="display:flex; gap:10px;">
+                    <button id="btnDeclineInvite" style="flex:1; padding:8px 0; border-radius:6px; background:rgba(255,255,255,0.1); border:none; color:#fff; cursor:pointer; font-weight:500; transition:0.2s;">Từ chối</button>
+                    <button id="btnAcceptInvite" style="flex:1; padding:8px 0; border-radius:6px; background:var(--plyr-color-main); border:none; color:#000; cursor:pointer; font-weight:bold; transition:0.2s;">Tham Gia Ngay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.showInvitationPopup = function(invId, invData) {
+            const popup = document.getElementById('invitationPopup');
+            const msg = document.getElementById('invitationMessage');
+            const btnAccept = document.getElementById('btnAcceptInvite');
+            const btnDecline = document.getElementById('btnDeclineInvite');
+
+            msg.innerHTML = `<strong style="color:var(--plyr-color-main);">${invData.senderName}</strong> đang mời bạn cùng xem phim <strong style="color:#fff;">${invData.movieName}</strong>.`;
+            popup.style.display = 'block';
+            
+            popup.offsetHeight; 
+            popup.style.transform = 'translateX(0)';
+
+            const closePopup = () => {
+                popup.style.transform = 'translateX(120%)';
+                setTimeout(() => popup.style.display = 'none', 400);
+            };
+
+            btnAccept.onclick = async () => {
+                closePopup();
+                try {
+                    const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                    await updateDoc(doc(window.db, "invitations", invId), { status: "accepted" });
+                } catch(e) {}
+                window.location.href = `/xem-chung/index.html?room=${invData.roomId}`;
+            };
+
+            btnDecline.onclick = async () => {
+                closePopup();
+                try {
+                    const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                    await updateDoc(doc(window.db, "invitations", invId), { status: "declined" });
+                } catch(e) {}
+            };
+        };
     </script>
 </body>
 </html>

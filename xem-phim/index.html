@@ -1070,7 +1070,7 @@
         .action-row i { font-size: 1.4rem; }
 
         .crew-info { font-size: 0.95rem; line-height: 1.6; color: #a3a3a3; }
-        .crew-info span { color: #fff; font-weight: 600; margin-right: 5px; }
+        .crew-info span { color: #a3a3a3; font-weight: 600; margin-right: 5px; }
 
         /* 3. Tiêu đề Danh sách & Đề xuất */
         .premium-section-header { 
@@ -2609,6 +2609,14 @@ footer {
 .plyr__controls > button[data-plyr="pip"] {
     display: none !important; /* Hide default PiP icon, we use custom button */
 }
+.crew-link {
+    color: #a3a3a3;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.crew-link:hover {
+    color: #fff;
+}
     </style>
 </head>
 <body>
@@ -2837,9 +2845,9 @@ footer {
 
                     <!-- NEW: Moved action row here for Native App Layout Flow -->
                     <div class="action-row">
-                        <div onclick="window.showToast('Đã thêm vào danh sách yêu thích')"><i class="fas fa-plus"></i> Thêm vào</div>
+                        <div onclick="toggleFavorite()"><i class="fas fa-plus" id="favIcon"></i> <span id="favText">Thêm vào</span></div>
                         <div onclick="document.getElementById('commentSectionBox').scrollIntoView({behavior: 'smooth'})"><i class="fas fa-comment-alt"></i> Bình luận</div>
-                        <div onclick="window.showToast('Đã sao chép liên kết phim')"><i class="fas fa-share-alt"></i> Chia sẻ</div>
+                        <div onclick="shareMovie()"><i class="fas fa-share-alt"></i> Chia sẻ</div>
                     </div>
 
                     <div class="current-ep-title" id="breadCrumbTitle">Tập 1</div>
@@ -3387,9 +3395,92 @@ footer {
         });
     }
 
+    // --- CHIA SẺ PHIM ---
+    window.shareMovie = () => {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            window.showToast("Đã sao chép liên kết phim!");
+        }).catch(() => {
+            window.showToast("Không thể sao chép liên kết!", "error");
+        });
+    };
+
+    // --- YÊU THÍCH PHIM ---
+    window.checkFavorite = async (movie) => {
+        if (!movie) return;
+        const favIcon = document.getElementById('favIcon');
+        const favText = document.getElementById('favText');
+        if (!favIcon || !favText) return;
+
+        let isFav = false;
+        if (window.currentUser) {
+            const ref = doc(db, "users", window.currentUser.uid);
+            try {
+                const snap = await getDoc(ref);
+                const favorites = snap.exists() ? (snap.data().favorites || []) : [];
+                const currentSlug = decodeURIComponent(movie.slug);
+                isFav = favorites.some(m => decodeURIComponent(m.slug) === currentSlug);
+            } catch(e) { console.error(e); }
+        } else {
+            isFav = false;
+        }
+
+        if (isFav) {
+            favIcon.className = 'fas fa-check';
+            favText.innerText = 'Đã lưu';
+        } else {
+            favIcon.className = 'fas fa-plus';
+            favText.innerText = 'Thêm vào';
+        }
+    };
+
+    window.toggleFavorite = async () => {
+        if (typeof currentMovieData === 'undefined' || !currentMovieData) return;
+        const movie = currentMovieData;
+        const currentSlug = decodeURIComponent(movie.slug);
+        
+        let isFav = false;
+
+        if (window.currentUser) {
+            const ref = doc(db, "users", window.currentUser.uid);
+            try {
+                const snap = await getDoc(ref);
+                let favorites = snap.exists() ? (snap.data().favorites || []) : [];
+                const index = favorites.findIndex(m => decodeURIComponent(m.slug) === currentSlug);
+                
+                if (index > -1) {
+                    favorites.splice(index, 1);
+                    window.showToast("Đã xóa khỏi danh sách yêu thích");
+                } else {
+                    favorites.push({
+                        slug: movie.slug, name: movie.name, thumb_url: movie.thumb_url,
+                        poster_url: movie.poster_url || movie.thumb_url, savedAt: Date.now()
+                    });
+                    isFav = true;
+                    window.showToast("Đã thêm vào danh sách yêu thích");
+                }
+                await setDoc(ref, { favorites: favorites }, { merge: true });
+            } catch(e) { window.showToast("Lỗi khi lưu phim!", "error"); return; }
+        } else {
+            window.showToast("Vui lòng đăng nhập để thêm vào yêu thích!", "error");
+            return;
+        }
+
+        const favIcon = document.getElementById('favIcon');
+        const favText = document.getElementById('favText');
+        if (favIcon && favText) {
+            if (isFav) {
+                favIcon.className = 'fas fa-check';
+                favText.innerText = 'Đã lưu';
+            } else {
+                favIcon.className = 'fas fa-plus';
+                favText.innerText = 'Thêm vào';
+            }
+        }
+    };
+
     // --- GỬI BÌNH LUẬN ---
     window.sendComment = async (parentId = null) => {
-        if(!currentUser) return window.showToast("Vui lòng đăng nhập!", "error");
+        if(!currentUser) return window.showToast("Vui lòng đăng nhập để gửi bình luận!", "error");
         
         const inputId = parentId ? `cmtReplyInput-${parentId}` : 'cmtInput';
         const text = document.getElementById(inputId).value.trim();
@@ -4432,6 +4523,7 @@ footer {
                 }
                 currentMovieData = movie;
                 renderInfo(movie);
+                if (window.checkFavorite) window.checkFavorite(movie);
 
                 const episodesArray = data.episodes; // 🔥 Nhận list tập chuẩn hóa từ đa nguồn
                 
@@ -4938,10 +5030,12 @@ footer {
         document.getElementById('mQuality').innerText = movie.quality || 'Full HD';
         document.getElementById('mViews').innerText = Math.floor(Math.random() * 5000000 + 100000).toLocaleString('vi-VN');
 
+        const makeGoogleLinks = (items) => items.map(item => `<a href="https://www.google.com/search?q=${encodeURIComponent(item)}" target="_blank" class="crew-link">${item}</a>`).join(', ');
+
         if (movie.country && movie.country[0]) document.getElementById('mCountry').innerText = movie.country[0].name;
-        if(movie.actor && movie.actor.length > 0) document.getElementById('mActors').innerText = movie.actor.join(', ');
-        if(movie.director && movie.director.length > 0) document.getElementById('mDirector').innerText = movie.director.join(', ');
-        if(movie.category && movie.category.length > 0) document.getElementById('mGenres').innerText = movie.category.map(c => c.name).join(', ');
+        if(movie.actor && movie.actor.length > 0) document.getElementById('mActors').innerHTML = makeGoogleLinks(movie.actor);
+        if(movie.director && movie.director.length > 0) document.getElementById('mDirector').innerHTML = makeGoogleLinks(movie.director);
+        if(movie.category && movie.category.length > 0) document.getElementById('mGenres').innerHTML = makeGoogleLinks(movie.category.map(c => c.name));
 
         const rawContent = movie.content || "Đang cập nhật nội dung...";
         const tempDiv = document.createElement("div"); tempDiv.innerHTML = rawContent;

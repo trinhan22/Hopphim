@@ -2621,7 +2621,7 @@ footer {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
+    window.db = db;
     // 🔥 HÀM TIME HELPER (Đưa vào đây để module dùng được)
     function timeAgo(timestamp) {
         if (!timestamp) return '';
@@ -2803,6 +2803,37 @@ footer {
                 window.currentUser = user;
                 if(btnLogin) btnLogin.style.display = 'none';
                 if(userAvatar) { userAvatar.style.display = 'block'; userAvatar.src = user.photoURL || '/Guest.webp'; }
+
+                // --- ONLINE PRESENCE TRACKING ---
+                try {
+                    updateDoc(doc(db, "users", user.uid), { 
+                        isOnline: true, 
+                        lastActive: Date.now(),
+                        displayName: user.displayName || "Thành viên",
+                        photoURL: user.photoURL || "/Guest.webp"
+                    });
+                } catch(e) {}
+                
+                window.addEventListener('beforeunload', () => {
+                    try { updateDoc(doc(db, "users", user.uid), { isOnline: false }); } catch(e) {}
+                });
+
+                // --- INVITATION LISTENER ---
+                const invQuery = query(collection(db, "invitations"), where("receiverId", "==", user.uid), where("status", "==", "pending"));
+                onSnapshot(invQuery, (snapshot) => {
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === "added") {
+                            const invData = change.doc.data();
+                            const invId = change.doc.id;
+                            // Chỉ hiện popup nếu lời mời được gửi trong vòng 5 phút (tránh invite cũ)
+                            if (Date.now() - invData.timestamp < 300000) {
+                                if (typeof window.showInvitationPopup === 'function') {
+                                    window.showInvitationPopup(invId, invData);
+                                }
+                            }
+                        }
+                    });
+                });
 
                 // Lắng nghe dữ liệu
                 onSnapshot(doc(db, "users", user.uid), (docSnap) => {
@@ -3885,6 +3916,60 @@ footer {
                 panel.classList.remove('active');
             }
         });
+    </script>
+
+    <!-- ================= INVITATION POPUP ================= -->
+    <div id="invitationPopup" style="display:none; position:fixed; top:80px; right:20px; background:rgba(20,20,25,0.95); border:1px solid rgba(255,143,80,0.4); z-index:999999; padding:20px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.8); width:350px; backdrop-filter:blur(10px); transform:translateX(120%); transition:transform 0.4s cubic-bezier(0.25,0.8,0.25,1);">
+        <div style="display:flex; gap:15px; align-items:flex-start;">
+            <div style="background:rgba(255,143,80,0.2); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="fas fa-ticket-alt" style="color:var(--plyr-color-main); font-size:1.2rem;"></i>
+            </div>
+            <div>
+                <h4 style="margin:0 0 8px 0; color:#fff; font-size:1.1rem; font-weight:600;">Lời Mời Xem Chung</h4>
+                <p id="invitationMessage" style="margin:0 0 15px 0; color:#ccc; font-size:0.95rem; line-height:1.4;"></p>
+                <div style="display:flex; gap:10px;">
+                    <button id="btnDeclineInvite" style="flex:1; padding:8px 0; border-radius:6px; background:rgba(255,255,255,0.1); border:none; color:#fff; cursor:pointer; font-weight:500; transition:0.2s;">Từ chối</button>
+                    <button id="btnAcceptInvite" style="flex:1; padding:8px 0; border-radius:6px; background:var(--plyr-color-main); border:none; color:#000; cursor:pointer; font-weight:bold; transition:0.2s;">Tham Gia Ngay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.showInvitationPopup = function(invId, invData) {
+            const popup = document.getElementById('invitationPopup');
+            const msg = document.getElementById('invitationMessage');
+            const btnAccept = document.getElementById('btnAcceptInvite');
+            const btnDecline = document.getElementById('btnDeclineInvite');
+
+            msg.innerHTML = `<strong style="color:var(--plyr-color-main);">${invData.senderName}</strong> đang mời bạn cùng xem phim <strong style="color:#fff;">${invData.movieName}</strong>.`;
+            popup.style.display = 'block';
+            
+            popup.offsetHeight; 
+            popup.style.transform = 'translateX(0)';
+
+            const closePopup = () => {
+                popup.style.transform = 'translateX(120%)';
+                setTimeout(() => popup.style.display = 'none', 400);
+            };
+
+            btnAccept.onclick = async () => {
+                closePopup();
+                try {
+                    const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                    await updateDoc(doc(window.db, "invitations", invId), { status: "accepted" });
+                } catch(e) {}
+                window.location.href = `/xem-chung/index.html?room=${invData.roomId}`;
+            };
+
+            btnDecline.onclick = async () => {
+                closePopup();
+                try {
+                    const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                    await updateDoc(doc(window.db, "invitations", invId), { status: "declined" });
+                } catch(e) {}
+            };
+        };
     </script>
 <script type="text/javascript">
     // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
