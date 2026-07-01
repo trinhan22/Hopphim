@@ -3416,9 +3416,9 @@ footer {
             const ref = doc(db, "users", window.currentUser.uid);
             try {
                 const snap = await getDoc(ref);
-                const favorites = snap.exists() ? (snap.data().favorites || []) : [];
+                const myList = snap.exists() ? (snap.data().myList || snap.data().favorites || []) : [];
                 const currentSlug = decodeURIComponent(movie.slug);
-                isFav = favorites.some(m => decodeURIComponent(m.slug) === currentSlug);
+                isFav = myList.some(m => decodeURIComponent(m.slug) === currentSlug);
             } catch(e) { console.error(e); }
         } else {
             isFav = false;
@@ -3444,21 +3444,21 @@ footer {
             const ref = doc(db, "users", window.currentUser.uid);
             try {
                 const snap = await getDoc(ref);
-                let favorites = snap.exists() ? (snap.data().favorites || []) : [];
-                const index = favorites.findIndex(m => decodeURIComponent(m.slug) === currentSlug);
+                let myList = snap.exists() ? (snap.data().myList || snap.data().favorites || []) : [];
+                const index = myList.findIndex(m => decodeURIComponent(m.slug) === currentSlug);
                 
                 if (index > -1) {
-                    favorites.splice(index, 1);
-                    window.showToast("Đã xóa khỏi danh sách yêu thích");
+                    myList.splice(index, 1);
+                    window.showToast("Đã xóa khỏi danh sách đã lưu");
                 } else {
-                    favorites.push({
+                    myList.push({
                         slug: movie.slug, name: movie.name, thumb_url: movie.thumb_url,
                         poster_url: movie.poster_url || movie.thumb_url, savedAt: Date.now()
                     });
                     isFav = true;
-                    window.showToast("Đã thêm vào danh sách yêu thích");
+                    window.showToast("Đã thêm vào danh sách đã lưu");
                 }
-                await setDoc(ref, { favorites: favorites }, { merge: true });
+                await setDoc(ref, { myList: myList }, { merge: true });
             } catch(e) { window.showToast("Lỗi khi lưu phim!", "error"); return; }
         } else {
             window.showToast("Vui lòng đăng nhập để thêm vào yêu thích!", "error");
