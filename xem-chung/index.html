@@ -2777,9 +2777,9 @@
         window.sendInvite = async (targetUid, targetName) => {
             try {
                 const { collection, addDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                await addDoc(collection(window.db, "invitations"), {
-                    senderId: window.currentUser.uid,
-                    senderName: window.currentUser.customName || window.currentUser.displayName || "Khách",
+                await addDoc(collection(db, "invitations"), {
+                    senderId: currentUser.uid,
+                    senderName: currentUser.customName || currentUser.displayName || "Khách",
                     receiverId: targetUid,
                     roomId: new URLSearchParams(window.location.search).get('room'),
                     movieName: document.getElementById('film-name')?.innerText || "Phim",
@@ -2800,12 +2800,12 @@
             onlineList.innerHTML = '<div style="color:#aaa; text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Đang tìm...</div>';
             try {
                 const { collection, getDocs, query, where } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                const q = query(collection(window.db, "users"), where("isOnline", "==", true));
+                const q = query(collection(db, "users"), where("isOnline", "==", true));
                 const snapshot = await getDocs(q);
                 let html = '';
                 snapshot.forEach(docSnap => {
                     const u = docSnap.data();
-                    if (window.currentUser && docSnap.id === window.currentUser.uid) return; 
+                    if (currentUser && docSnap.id === currentUser.uid) return; 
                     html += `
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;">
                             <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
@@ -3091,17 +3091,17 @@
     </script>
     
     <!-- ================= INVITATION POPUP ================= -->
-    <div id="invitationPopup" style="display:none; position:fixed; top:80px; right:20px; background:rgba(20,20,25,0.95); border:1px solid rgba(255,143,80,0.4); z-index:999999; padding:20px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.8); width:350px; backdrop-filter:blur(10px); transform:translateX(120%); transition:transform 0.4s cubic-bezier(0.25,0.8,0.25,1);">
+    <div id="invitationPopup" style="display:none; position:fixed; top:80px; right:20px; background:rgba(15, 17, 26, 0.95); border:1px solid rgba(255,255,255,0.1); border-top: 3px solid var(--primary-color); z-index:999999; padding:20px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.5); width:350px; backdrop-filter:blur(10px); transform:translateX(120%); transition:transform 0.4s cubic-bezier(0.25,0.8,0.25,1);">
         <div style="display:flex; gap:15px; align-items:flex-start;">
-            <div style="background:rgba(255,143,80,0.2); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                <i class="fas fa-ticket-alt" style="color:var(--plyr-color-main); font-size:1.2rem;"></i>
+            <div style="background:var(--primary-color); width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 15px rgba(255,143,80,0.4);">
+                <i class="fas fa-ticket-alt" style="color:#fff; font-size:1.2rem;"></i>
             </div>
-            <div>
-                <h4 style="margin:0 0 8px 0; color:#fff; font-size:1.1rem; font-weight:600;">Lời Mời Xem Chung</h4>
-                <p id="invitationMessage" style="margin:0 0 15px 0; color:#ccc; font-size:0.95rem; line-height:1.4;"></p>
+            <div style="flex: 1;">
+                <h4 style="margin:0 0 6px 0; color:#fff; font-size:1.1rem; font-weight:700;">Lời Mời Xem Chung</h4>
+                <p id="invitationMessage" style="margin:0 0 15px 0; color:#aaa; font-size:0.9rem; line-height:1.5;"></p>
                 <div style="display:flex; gap:10px;">
-                    <button id="btnDeclineInvite" style="flex:1; padding:8px 0; border-radius:6px; background:rgba(255,255,255,0.1); border:none; color:#fff; cursor:pointer; font-weight:500; transition:0.2s;">Từ chối</button>
-                    <button id="btnAcceptInvite" style="flex:1; padding:8px 0; border-radius:6px; background:var(--plyr-color-main); border:none; color:#000; cursor:pointer; font-weight:bold; transition:0.2s;">Tham Gia Ngay</button>
+                    <button id="btnDeclineInvite" style="flex:1; padding:10px 0; border-radius:8px; background:rgba(255,255,255,0.1); border:none; color:#fff; cursor:pointer; font-weight:600; font-size:0.9rem; transition:0.2s; box-shadow:0 4px 10px rgba(0,0,0,0.2);" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">Từ chối</button>
+                    <button id="btnAcceptInvite" style="flex:1; padding:10px 0; border-radius:8px; background:var(--primary-color); border:none; color:#fff; cursor:pointer; font-weight:600; font-size:0.9rem; transition:0.2s; box-shadow:0 4px 15px rgba(255,143,80,0.4);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Tham Gia</button>
                 </div>
             </div>
         </div>
@@ -3114,7 +3114,7 @@
             const btnAccept = document.getElementById('btnAcceptInvite');
             const btnDecline = document.getElementById('btnDeclineInvite');
 
-            msg.innerHTML = `<strong style="color:var(--plyr-color-main);">${invData.senderName}</strong> đang mời bạn cùng xem phim <strong style="color:#fff;">${invData.movieName}</strong>.`;
+            msg.innerHTML = `<strong style="color:var(--primary-color);">${invData.senderName}</strong> đang mời bạn cùng xem phim <strong style="color:#fff;">${invData.movieName}</strong>.`;
             popup.style.display = 'block';
             
             popup.offsetHeight; 
